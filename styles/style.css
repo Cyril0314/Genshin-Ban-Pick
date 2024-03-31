@@ -1,11 +1,40 @@
+body,
+html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('../images/background.jpg') no-repeat center center;
+    background-size: cover;
+    opacity: 0.4;
+    z-index: -1;
+}
+
 .grid-container {
     position: relative;
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* 确保列从顶部开始对齐 */
+    align-items: flex-start;
 }
 
-.grid-row, .grid-column {
+.grid-column-center.center-column {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    margin: 0 20px;
+    margin-top: 300px;
+}
+
+.grid-row,
+.grid-column {
     display: flex;
 }
 
@@ -15,126 +44,171 @@
 
 .grid-column {
     flex-direction: column;
-    margin: 0 20px; /* 左右列与中间行的间隙 */
+    margin: 0 20px;
     margin-top: 120px;
 }
 
 .grid-item {
-    width: 160px; /* 保持方格宽度与图片一致 */
-    height: 90px; /* 保持方格高度，确保是正方形 */
+    width: 160px;
+    height: 90px;
     margin: 5px;
     position: relative;
-    border: 2px dashed #aaa;
+    border: 2px dashed #555353;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .grid-item-row {
-    width: 90px; /* 保持方格宽度与图片一致 */
-    height: 90px; /* 保持方格高度，确保是正方形 */
+    width: 90px;
+    height: 90px;
     margin: 5px;
     position: relative;
-    border: 2px dashed #d74747;
+    border: 2px dashed #181313;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.grid-item-row:nth-child(2)::after, .grid-item-row:nth-child(10)::after {
+.grid-item-row:nth-child(3)::after,
+.grid-item-row:nth-child(13)::after {
     content: "";
     position: absolute;
-    left: 100%; /* 从左边开始到达元素中心 */
-    transform: translateX(5px); /* 使用transform来细微调整分隔线的位置，确保它正好在元素中心 */
-    top:0;
+    left: 100%;
+    transform: translateX(13px);
+    top: 0;
     bottom: 0;
-    width: 1px;
-    border-right: 2px dashed #aaa;
-    height: 100%; /* 分隔线宽度超出方格宽度 */
+    border-right: 2px solid #0c0808;
+    height: 100%;
 }
 
-.grid-item-row:nth-child(6)::after {
+.grid-item-row:nth-child(8)::after {
     content: "";
     position: absolute;
-    left: 100%; /* 从左边开始到达元素中心 */
-    transform: translateX(5px); /* 使用transform来细微调整分隔线的位置，确保它正好在元素中心 */
+    left: 100%;
+    transform: translateX(12.5px);
     top: 0;
     bottom: 0;
     width: 1px;
-    border-right: 2px dashed #e2780f;
-    height: calc(100% + 1000px); /* 分隔线宽度超出方格宽度 */
+    border-right: 2px dashed #161615;
+    /* height: calc(100% + 850px); */
+    height: calc(100% + 5px);
 }
 
-/* 左右两列第4个方格的下方添加分隔线 */
-.grid-column .drop-zone:nth-child(4)::after {
+.grid-row .grid-item-row:nth-child(3),
+.grid-row .grid-item-row:nth-child(8),
+.grid-row .grid-item-row:nth-child(13) {
+    margin-right: 20px;
+}
+
+.grid-column .drop-zone:nth-child(6)::after {
     content: "";
     position: absolute;
-    left: 50%; /* 将分隔线移动到方格中心 */
-    top: 100%; /* 分隔线位于方格的底部 */
-    transform: translate(-50%, 6px);
-    border-top: 2px dashed #aaa; /* 分隔线样式 */
-    width: calc(100% + 50px); /* 分隔线宽度超出方格宽度 */
+    left: 50%;
+    top: 100%;
+    transform: translate(-50%, 13.5px);
+    border-top: 2px solid #251616;
+    width: calc(100% + 10px);
+}
+
+.grid-column .drop-zone:nth-child(6) {
+    margin-bottom: 20px;
 }
 
 .grid-item img {
-    max-width: 90px; /* 限制图片最大宽度，防止拉伸 */
-    max-height: 90px; /* 限制图片最大高度，保持比例 */
+    max-width: 90px;
+    height: auto;
     z-index: 15;
 }
 
 .grid-item-row img {
-    max-width: 90px; /* 限制图片最大宽度，防止拉伸 */
-    max-height: 90px; /* 限制图片最大高度，保持比例 */
+    max-width: 90px;
+    height: auto;
     z-index: 15;
 }
 
 #image-options img {
-    width: 90px; /* 图片宽度固定 */
+    width: 90px;
     height: auto;
     cursor: grab;
-    margin: 10px 0; /* 为图片选择器中的图片添加上下外边距 */
+    margin: 10px 0;
 }
 
 .ban-text {
-    position: absolute; /* 使用绝对定位，这样它不会影响方格中其他内容的布局 */
+    position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%); /* 使用 transform 来居中文本 */
-    font-weight: bold; /* 设置文本为粗体 */
-    color: #bc2f2f; /* 文本颜色 */
-    font-size: 0.85em; /* 文本大小 */
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    color: #181313;
+    font-size: 0.85em;
     z-index: 10;
 }
 
 .pick-text {
-    position: absolute; /* 使用绝对定位，这样它不会影响方格中其他内容的布局 */
+    position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%); /* 使用 transform 来居中文本 */
-    font-weight: bold; /* 设置文本为粗体 */
-    color: #3265d5; /* 文本颜色 */
-    font-size: 0.8em; /* 文本大小 */
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    font-size: 1.1em;
     z-index: 10;
+}
+
+.grid-column.left .pick-text {
+    color: #2468c7;
+}
+
+.grid-column.right .pick-text {
+    color: #d74747;
 }
 
 .drop-zone {
     position: relative;
 }
 
-.side-text {
-    position: absolute;
-    top: 40px; /* 根据需要向上调整 */
-    font-weight: bold; /* 设置文本为粗体 */
-    font-size: 1.2em; /* 文本大小 */
-    /* 其余样式保留 */
-}
-
 .left-text {
-    left: calc(0% + 100px); /* 向左调整，确保文本位于左列上方 */
-    color: #2468c7; /* 文本颜色 */
+    color: #2468c7;
 }
 
 .right-text {
-    right: calc(0% + 100px); /* 向右调整，确保文本位于右列上方 */
-    color: #d5c532; /* 文本颜色 */
+    color: #d74747;
+}
+
+.grid-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 20px;
+    margin-top: 105px;
+}
+
+.side-text {
+    position: absolute;
+    top: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2em;
+    height: 30px;
+    width: 100%;
+}
+
+.team-member-input {
+    position: absolute;
+    top: 25px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: inherit;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    width: 160px;
+    min-height: 60px;
+    height: auto;
+    resize: none;
+}
+
+.team-member-input:focus {
+    outline: none;
 }
