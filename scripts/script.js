@@ -3,10 +3,60 @@ document.addEventListener('DOMContentLoaded', () => {
     const dropZones = document.querySelectorAll('.drop-zone');
 
     const dropZonesTopRow = document.querySelectorAll('.grid-row .drop-zone');
-    const banTexts = ["Ban 16", "Ban 14", "Ban 12", "Ban 9", "Ban 7", "Ban 5", "Ban 3", "Ban 1", "Ban 2", "Ban 4", "Ban 6", "Ban 8", "Ban 10", "Ban 11", "Ban 13", "Ban 15"];
+    const banTexts = [
+        // "Ban 16", 
+        // "Ban 14", 
+        // "Ban 12", 
+        // "Ban 9", 
+        // "Ban 7", 
+        // "Ban 5", 
+        "Ban 4", 
+        "Ban 1", 
+        "Ban 2", 
+        "Ban 3", 
+        // "Ban 6", 
+        // "Ban 8", 
+        // "Ban 10", 
+        // "Ban 11", 
+        // "Ban 13", 
+        // "Ban 15"
+    ];
 
     const dropZonesColums = document.querySelectorAll('.grid-column .drop-zone');
-    const pickTexts = ["Pick 2", "Pick 3", "Pick 6", "Pick 7", "Pick 9", "Pick 12", "Pick 13", "Pick 16", "Pick 1", "Pick 4", "Pick 5", "Pick 8", "Pick 10", "Pick 11", "Pick 14", "Pick 15"];
+    const pickTexts = [
+        "Pick 1", 
+        "Pick 4", 
+        "Pick 5", 
+        "Pick 8", 
+        "Pick 9", 
+        "Pick 12", 
+        "Pick 13", 
+        "Pick 16", 
+        "Pick 18", 
+        "Pick 19", 
+        "Pick 22", 
+        "Pick 23", 
+        "Pick 26", 
+        "Pick 27", 
+        "Pick 30", 
+        "Pick 31",
+        "Pick 17", 
+        "Pick 20", 
+        "Pick 21", 
+        "Pick 24", 
+        "Pick 25", 
+        "Pick 28", 
+        "Pick 29", 
+        "Pick 32", 
+        "Pick 2", 
+        "Pick 3", 
+        "Pick 6", 
+        "Pick 7", 
+        "Pick 10", 
+        "Pick 11", 
+        "Pick 14", 
+        "Pick 15"
+    ];
     const resetButton = document.getElementById('resetButton');
 
     // 为一键清除按钮添加点击事件监听
