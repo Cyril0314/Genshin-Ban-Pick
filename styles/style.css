@@ -29,8 +29,9 @@ body::before {
     position: absolute;
     display: flex;
     flex-direction: column;
-    margin: 0 20px;
-    margin-top: 300px;
+    align-items: center; /* 子元素水平居中 */
+    /* margin: 0 20px; */
+    margin-top: 120px;
 }
 
 .grid-row,
@@ -70,8 +71,8 @@ body::before {
     align-items: center;
 }
 
-.grid-item-row:nth-child(3)::after,
-.grid-item-row:nth-child(13)::after {
+.grid-item-row:nth-child(1)::after,
+.grid-item-row:nth-child(3)::after {
     content: "";
     position: absolute;
     left: 100%;
@@ -82,7 +83,7 @@ body::before {
     height: 100%;
 }
 
-.grid-item-row:nth-child(8)::after {
+.grid-item-row:nth-child(2)::after {
     content: "";
     position: absolute;
     left: 100%;
@@ -95,13 +96,13 @@ body::before {
     height: calc(100% + 5px);
 }
 
-.grid-row .grid-item-row:nth-child(3),
-.grid-row .grid-item-row:nth-child(8),
-.grid-row .grid-item-row:nth-child(13) {
+.grid-row .grid-item-row:nth-child(1),
+.grid-row .grid-item-row:nth-child(2),
+.grid-row .grid-item-row:nth-child(3) {
     margin-right: 20px;
 }
 
-.grid-column .drop-zone:nth-child(6)::after {
+/* .grid-column .drop-zone:nth-child(6)::after {
     content: "";
     position: absolute;
     left: 50%;
@@ -113,7 +114,7 @@ body::before {
 
 .grid-column .drop-zone:nth-child(6) {
     margin-bottom: 20px;
-}
+} */
 
 .grid-item img {
     max-width: 90px;
@@ -212,3 +213,8 @@ body::before {
 .team-member-input:focus {
     outline: none;
 }
+
+/* 为所有元素添加红色边框 */
+/* * {
+    border: 1px solid red;
+} */
