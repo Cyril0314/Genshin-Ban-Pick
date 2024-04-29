@@ -1,5 +1,4 @@
-body,
-html {
+body, html {
     margin: 0;
     padding: 0;
     height: 100%;
@@ -34,8 +33,7 @@ body::before {
     margin-top: 120px;
 }
 
-.grid-row,
-.grid-column {
+.grid-row, .grid-column {
     display: flex;
 }
 
@@ -117,13 +115,11 @@ body::before {
 } */
 
 .grid-item img {
-    max-width: 90px;
     height: auto;
     z-index: 15;
 }
 
 .grid-item-row img {
-    max-width: 90px;
     height: auto;
     z-index: 15;
 }
@@ -135,37 +131,40 @@ body::before {
     margin: 10px 0;
 }
 
-.ban-text {
+.ban-text, .pick-text {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     font-weight: bold;
+    z-index: 10;
+}
+
+.ban-text {
     color: #181313;
     font-size: 0.85em;
-    z-index: 10;
 }
 
 .pick-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-weight: bold;
     font-size: 1.1em;
-    z-index: 10;
 }
 
-.grid-column.left .pick-text {
+.grid-column.left .pick-text, .left-text {
     color: #2468c7;
 }
 
-.grid-column.right .pick-text {
+.grid-column.right .pick-text, .right-text {
     color: #d74747;
 }
 
 .drop-zone {
     position: relative;
+}
+
+.drop-zone img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;  /* 保证图片填充整个容器但不失真 */
 }
 
 .left-text {
