@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'Raiden_Shogun_Profile': 'images/wish-images/Raiden_Shogun_Wish.png',
         'Razor_Profile': 'images/wish-images/Razor_Wish.png',
         'Rosaria_Profile': 'images/wish-images/Rosaria_Wish.png',
-        'Sangonomiya_Kokomi_Profile': 'images/wish-imagesSangonomiya_Kokomi_Wish.png',
+        'Sangonomiya_Kokomi_Profile': 'images/wish-images/Sangonomiya_Kokomi_Wish.png',
         'Sayu_Profile': 'images/wish-images/Sayu_Wish.png',
         'Shenhe_Profile': 'images/wish-images/Shenhe_Wish.png',
         'Shikanoin_Heizou_Profile': 'images/wish-images/Shikanoin_Heizou_Wish.png',
@@ -187,12 +187,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (draggedImg && !zone.querySelector('img')) {
 
                 // 检查是否是顶部行，避免替换图片
-                if (!zone.closest('.grid-row')) {
+                // if (!zone.closest('.grid-row')) {
                     // 如果有映射图片且不是顶部行，则替换图片
                     if (imageMap[draggedImgId]) {
                         draggedImg.src = imageMap[draggedImgId];
                     }
-                }
+                // }
                 zone.appendChild(draggedImg);
             }
         });
