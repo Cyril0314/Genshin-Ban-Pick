@@ -1,209 +1,434 @@
+import { utilityTexts, banTexts, pickTexts } from './constants/constants.js';
+
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOMContentLoaded');
+    const originalImageSrc = {};  // 原始圖片路徑
+    var characterMap;
+    
+    // 初始化函數
+    initializeApp();
+
+    // 初始化應用程式
+    function initializeApp() {
+        createImageElementsAndMap((map) => {
+            characterMap = map;
+        });
+        addDropZonesToCenterColumn(utilityTexts.length);
+        addDropZonesToColumns(pickTexts.length / 4);
+        addDropZonesToRow(banTexts.length);
+        setupResetButton();
+        setupRandomizeButton();
+        setupFilterButton();
+        setupLeftConfirmButton();
+        setupRightConfirmButton();
+        setupDragAndDrop();
+        setupClick();
+    }
+
+    // 設置重置按鈕
+    function setupResetButton() {
+        const resetButton = document.getElementById('resetButton');
+        resetButton.addEventListener('click', () => {
+            console.log('Reset button clicked');
+            resetImages();
+        });
+    }
+
+    // 設置隨機分配按鈕
+    function setupRandomizeButton() {
+        const randomizeButton = document.getElementById('randomizeButton');
+        randomizeButton.addEventListener('click', () => {
+            console.log('Random button clicked');
+            randomizeImages();
+        });
+    }
+
+    // 設置篩選按鈕
+    function setupFilterButton() {
+        const filterButton = document.getElementById('filterButton');
+        filterButton.addEventListener('click', () => {
+            console.log('Filter button clicked');
+            
+        });
+    }
+    
+    // 設置左側選擇器的確認按鈕
+    function setupLeftConfirmButton() {
+        const button = document.getElementById('left-confirm-button');
+        button.addEventListener('click', () => {
+            handleSelection('left');
+        });
+    }
+
+    // 設置右側選擇器的確認按鈕
+    function setupRightConfirmButton() {
+        const button = document.getElementById('right-confirm-button');
+        button.addEventListener('click', () => {
+            handleSelection('right');
+        });
+    }
+
+    // 設置拖拽和放置功能
+    function setupDragAndDrop() {
+        document.addEventListener('dragstart', (e) => handleDragStart(e));
+        const dropZones = document.querySelectorAll('.drop-zone');
+        dropZones.forEach(zone => setupDropZone(zone));
+    }
+
+    // 設置點擊功能
+    function setupClick() {
+        document.addEventListener('click', e => {
+            if (e.target.tagName === 'IMG' && e.target.parentElement.classList.contains('drop-zone')) {
+                const imgId = e.target.id.replace('_clone', '');
+                e.target.src = originalImageSrc[imgId] || e.target.src;  // 恢復原始圖片
+                imageOptions.appendChild(e.target);  // 圖片移回選擇區
+            }
+        });
+    }
+    
+    const gridItems = document.querySelectorAll('.grid-row .grid-item-row');
+
+    gridItems.forEach((item, index) => {
+        let middle = gridItems.length / 2;
+        let left = Math.floor(middle / 2);
+        let right = gridItems.length - left
+        if (index + 1 == middle || (index + 1 == left && middle != 1) || (index + 1 == right && middle != 1)) {
+            item.style.marginRight = '20px';
+            let style = document.createElement('style');
+            document.head.appendChild(style);
+            let sheet = style.sheet;
+            sheet.insertRule(`.grid-row .grid-item-row:nth-child(${index + 1})::after {
+                content: '';
+                position: absolute;
+                left: 100%;
+                transform: translateX(12.5px);
+                top: 0;
+                bottom: 0;
+                border-right: 2px solid #4e4040;
+                height: calc(100%);
+            }`, 0);
+        }
+    });
+
     const imageOptions = document.getElementById('image-options');
-    const dropZones = document.querySelectorAll('.drop-zone');
-    const originalImageSrc = {};  // 用于存储原始图片路径
 
-    const imageMap = {
-        'Albedo_Profile': 'images/wish-images/Albedo_Wish.png',
-        'Alhaitham_Profile': 'images/wish-images/Alhaitham_Wish.png',
-        'Amber_Profile': 'images/wish-images/Amber_Wish.png',
-        'Arataki_Itto_Profile': 'images/wish-images/Arataki_Itto_Wish.png',
-        'Arlecchino_Profile': 'images/wish-images/Arlecchino_Wish.png',
-        'Baizhu_Profile': 'images/wish-images/Baizhu_Wish.png',
-        'Barbara_Profile': 'images/wish-images/Barbara_Wish.png',
-        'Beidou_Profile': 'images/wish-images/Beidou_Wish.png',
-        'Bennett_Profile': 'images/wish-images/Bennett_Wish.png',
-        'Candace_Profile': 'images/wish-images/Candace_Wish.png',
-        'Charlotte_Profile': 'images/wish-images/Charlotte_Wish.png',
-        'Chevreuse_Profile': 'images/wish-images/Chevreuse_Wish.png',
-        'Chiori_Profile': 'images/wish-images/Chiori_Wish.png',
-        'Chongyun_Profile': 'images/wish-images/Chongyun_Wish.png',
-        'Collei_Profile': 'images/wish-images/Collei_Wish.png',
-        'Cyno_Profile': 'images/wish-images/Cyno_Wish.png',
-        'Dehya_Profile': 'images/wish-images/Dehya_Wish.png',
-        'Diluc_Profile': 'images/wish-images/Diluc_Wish.png',
-        'Diona_Profile': 'images/wish-images/Diona_Wish.png',
-        'Dori_Profile': 'images/wish-images/Dori_Wish.png',
-        'Eula_Profile': 'images/wish-images/Eula_Wish.png',
-        'Faruzan_Profile': 'images/wish-images/Faruzan_Wish.png',
-        'Fischl_Profile': 'images/wish-images/Fischl_Wish.png',
-        'Freminet_Profile': 'images/wish-images/Freminet_Wish.png',
-        'Furina_Profile': 'images/wish-images/Furina_Wish.png',
-        'Gaming_Profile': 'images/wish-images/Gaming_Wish.png',
-        'Ganyu_Profile': 'images/wish-images/Ganyu_Wish.png',
-        'Gorou_Profile': 'images/wish-images/Gorou_Wish.png',
-        'Hu_Tao_Profile': 'images/wish-images/Hu_Tao_Wish.png',
-        'Jean_Profile': 'images/wish-images/Jean_Wish.png',
-        'Kaedehara_Kazuha_Profile': 'images/wish-images/Kaedehara_Kazuha_Wish.png',
-        'Kaeya_Profile': 'images/wish-images/Kaeya_Wish.png',
-        'Kamisato_Ayaka_Profile': 'images/wish-images/Kamisato_Ayaka_Wish.png',
-        'Kamisato_Ayato_Profile': 'images/wish-images/Kamisato_Ayato_Wish.png',
-        'Kaveh_Profile': 'images/wish-images/Kaveh_Wish.png',
-        'Keqing_Profile': 'images/wish-images/Keqing_Wish.png',
-        'Kirara_Profile': 'images/wish-images/Kirara_Wish.png',
-        'Klee_Profile': 'images/wish-images/Klee_Wish.png',
-        'Kujou_Sara_Profile': 'images/wish-images/Kujou_Sara_Wish.png',
-        'Kuki_Shinobu_Profile': 'images/wish-images/Kuki_Shinobu_Wish.png',
-        'Layla_Profile': 'images/wish-images/Layla_Wish.png',
-        'Lisa_Profile': 'images/wish-images/Lisa_Wish.png',
-        'Lynette_Profile': 'images/wish-images/Lynette_Wish.png',
-        'Lyney_Profile': 'images/wish-images/Lyney_Wish.png',
-        'Mika_Profile': 'images/wish-images/Mika_Wish.png',
-        'Mona_Profile': 'images/wish-images/Mona_Wish.png',
-        'Nahida_Profile': 'images/wish-images/Nahida_Wish.png',
-        'Navia_Profile': 'images/wish-images/Navia_Wish.png',
-        'Neuvillette_Profile': 'images/wish-images/Neuvillette_Wish.png',
-        'Nilou_Profile': 'images/wish-images/Nilou_Wish.png',
-        'Ningguang_Profile': 'images/wish-images/Ningguang_Wish.png',
-        'Noelle_Profile': 'images/wish-images/Noelle_Wish.png',
-        'Qiqi_Profile': 'images/wish-images/Qiqi_Wish.png',
-        'Raiden_Shogun_Profile': 'images/wish-images/Raiden_Shogun_Wish.png',
-        'Razor_Profile': 'images/wish-images/Razor_Wish.png',
-        'Rosaria_Profile': 'images/wish-images/Rosaria_Wish.png',
-        'Sangonomiya_Kokomi_Profile': 'images/wish-images/Sangonomiya_Kokomi_Wish.png',
-        'Sayu_Profile': 'images/wish-images/Sayu_Wish.png',
-        'Shenhe_Profile': 'images/wish-images/Shenhe_Wish.png',
-        'Shikanoin_Heizou_Profile': 'images/wish-images/Shikanoin_Heizou_Wish.png',
-        'Sucrose_Profile': 'images/wish-images/Sucrose_Wish.png',
-        'Tartaglia_Profile': 'images/wish-images/Tartaglia_Wish.png',
-        'Thoma_Profile': 'images/wish-images/Thoma_Wish.png',
-        'Tighnari_Profile': 'images/wish-images/Tighnari_Wish.png',
-        'Traveler_Profile': 'images/wish-images/Traveler_Wish.png',
-        'Venti_Profile': 'images/wish-images/Venti_Wish.png',
-        'Wanderer_Profile': 'images/wish-images/Wanderer_Wish.png',
-        'Wriothesley_Profile': 'images/wish-images/Wriothesley_Wish.png',
-        'Xiangling_Profile': 'images/wish-images/Xiangling_Wish.png',
-        'Xianyun_Profile': 'images/wish-images/Xianyun_Wish.png',
-        'Xiao_Profile': 'images/wish-images/Xiao_Wish.png',
-        'Xingqiu_Profile': 'images/wish-images/Xingqiu_Wish.png',
-        'Xinyan_Profile': 'images/wish-images/Xinyan_Wish.png',
-        'Yae_Miko_Profile': 'images/wish-images/Yae_Miko_Wish.png',
-        'Yanfei_Profile': 'images/wish-images/Yanfei_Wish.png',
-        'Yaoyao_Profile': 'images/wish-images/Yaoyao_Wish.png',
-        'Yelan_Profile': 'images/wish-images/Yelan_Wish.png',
-        'Yoimiya_Profile': 'images/wish-images/Yoimiya_Wish.png',
-        'Yun_Jin_Profile': 'images/wish-images/Yun_Jin_Wish.png',
-        'Zhongli_Profile': 'images/wish-images/Zhongli_Wish.png',
-        // 添加更多映射关系...
-    };
-
-    const dropZonesTopRow = document.querySelectorAll('.grid-row .drop-zone');
-    const banTexts = [
-        // "Ban 16", 
-        // "Ban 14", 
-        // "Ban 12", 
-        // "Ban 9", 
-        // "Ban 7", 
-        // "Ban 5", 
-        "Ban 4",
-        "Ban 1",
-        "Ban 2",
-        "Ban 3",
-        // "Ban 6", 
-        // "Ban 8", 
-        // "Ban 10", 
-        // "Ban 11", 
-        // "Ban 13", 
-        // "Ban 15"
-    ];
-
-    const dropZonesColums = document.querySelectorAll('.grid-column .drop-zone');
-    const pickTexts = [
-        "Pick 1",
-        "Pick 4",
-        "Pick 5",
-        "Pick 8",
-        "Pick 9",
-        "Pick 12",
-        "Pick 13",
-        "Pick 16",
-        "Pick 18",
-        "Pick 19",
-        "Pick 22",
-        "Pick 23",
-        "Pick 26",
-        "Pick 27",
-        "Pick 30",
-        "Pick 31",
-        "Pick 17",
-        "Pick 20",
-        "Pick 21",
-        "Pick 24",
-        "Pick 25",
-        "Pick 28",
-        "Pick 29",
-        "Pick 32",
-        "Pick 2",
-        "Pick 3",
-        "Pick 6",
-        "Pick 7",
-        "Pick 10",
-        "Pick 11",
-        "Pick 14",
-        "Pick 15"
-    ];
-
-    const resetButton = document.getElementById('resetButton');
-
-    // 为一键清除按钮添加点击事件监听
-    resetButton.addEventListener('click', () => {
+    // 重置圖片到原始位置
+    function resetImages() {
         const placedImages = document.querySelectorAll('.drop-zone img');
         placedImages.forEach(img => {
             const imgId = img.id.replace('_clone', '');
-            img.src = originalImageSrc[imgId] || img.src;  // 恢复原始图片
+            img.src = originalImageSrc[imgId] || img.src;  // 恢復原始圖片
             img.id = imgId;
-            imageOptions.appendChild(img);  // 将图片移回选择器
+            document.getElementById('image-options').appendChild(img);  // 將圖片移回選擇器
         });
-    });
+    }
 
-    // 给顶部的12个方格的 .ban-text <span> 分别添加文本
-    dropZonesTopRow.forEach((zone, index) => {
-        const span = zone.querySelector('.ban-text');
-        span.textContent = banTexts[index]; // 设置文本
-    });
-
-    // 给左右的16个方格的 .pick-text <span> 分别添加文本
-    dropZonesColums.forEach((zone, index) => {
-        const span = zone.querySelector('.pick-text');
-        span.textContent = pickTexts[index]; // 设置文本
-    });
-
-    // 处理拖拽开始，记录原始图片路径
-    document.addEventListener('dragstart', e => {
-        if (e.target.tagName === 'IMG' && imageOptions.contains(e.target)) {
-            const imgId = e.target.id;
-            originalImageSrc[imgId] = e.target.src;  // 存储原始图片路径
-            e.dataTransfer.setData('text/plain', imgId);
+    // 隨機分配圖片
+    function randomizeImages() {
+        const images = Array.from(document.querySelectorAll('#image-options img'));
+        if (images.length < 32) {
+            console.error('Not enough images to select from.');
+            return;
         }
-    });
+        
+        // 將圖片按星級分類
+        const fiveStarImages = [];
+        const fourStarImages = [];
 
-    // 设置放置区的拖放事件
-    dropZones.forEach(zone => {
-        zone.addEventListener('dragover', e => e.preventDefault());
-        zone.addEventListener('drop', e => {
-            e.preventDefault();
-            const draggedImgId = e.dataTransfer.getData('text/plain');
-            const draggedImg = document.getElementById(draggedImgId);
-            if (draggedImg && !zone.querySelector('img')) {
-
-                // 检查是否是顶部行，避免替换图片
-                // if (!zone.closest('.grid-row')) {
-                    // 如果有映射图片且不是顶部行，则替换图片
-                    if (imageMap[draggedImgId]) {
-                        draggedImg.src = imageMap[draggedImgId];
-                    }
-                // }
-                zone.appendChild(draggedImg);
+        images.forEach(image => {
+            const imgId = image.id;
+            const character = characterMap[imgId];
+            if (character && character.name !== 'Traveler' && character.rarity === "5 Stars") {
+                fiveStarImages.push(image);
+            } else if (character && character.rarity === "4 Stars") {
+                fourStarImages.push(image);
             }
         });
+
+        // 隨機打亂圖片順序
+        const shuffledFiveStarImages = fiveStarImages.sort(() => 0.5 - Math.random());
+        const shuffledFourStarImages = fourStarImages.sort(() => 0.5 - Math.random());
+
+        // 確保有足夠的圖片進行分配
+        if (shuffledFiveStarImages.length < 16 || shuffledFourStarImages.length < 16) {
+            console.error('Not enough images to distribute according to the rules.');
+            return;
+        }
+
+        // 分配圖片到 drop zones
+        distributeImagesToDropZones(shuffledFiveStarImages, shuffledFourStarImages);
+    }    
+
+    // 處理拖拽開始的事件
+    function handleDragStart(e) {
+        const imageOptions = document.getElementById('image-options');
+        if (e.target.tagName === 'IMG' && imageOptions.contains(e.target)) {
+            const imgId = e.target.id;
+            originalImageSrc[imgId] = e.target.src;  // 存儲原始圖片路徑
+            e.dataTransfer.setData('text/plain', imgId);
+        }
+    }
+
+    // 設置每個 drop zone 的事件
+    function setupDropZone(zone) {
+        zone.addEventListener('dragover', e => e.preventDefault());
+        zone.addEventListener('drop', (e) => handleDrop(e, zone));
+    }
+
+    // 處理圖片放置的事件
+    function handleDrop(e, zone) {
+        e.preventDefault();
+        const draggedImgId = e.dataTransfer.getData('text/plain');
+        const draggedImg = document.getElementById(draggedImgId);
+        if (draggedImg && !zone.querySelector('img')) {
+            if (characterMap[draggedImgId]) {
+                draggedImg.src = getWishImagePath(draggedImgId);
+            }
+            zone.appendChild(draggedImg);
+        }
+    }
+
+    // 分配圖片到指定的 drop zone
+    function distributeImagesToDropZones(fiveStarImages, fourStarImages) {
+        // 獲取所有的 drop-zone 元素
+        const dropZones = document.querySelectorAll('.grid-item.drop-zone');
+
+        // 第一行和第四行分配五星圖片
+        [0, 3].forEach(row => {
+            for (let i = 0; i < 8; i++) {
+                const image = fiveStarImages.shift(); // 取出一張五星圖片
+                const imgId = image.id;
+                originalImageSrc[imgId] = image.src;
+
+                if (characterMap[imgId]) {
+                    image.src = getWishImagePath(imgId);
+                }
+
+                const dropZone = dropZones[row * 8 + i];
+                dropZone.appendChild(image);
+            }
+        });
+
+        // 第二行和第三行分配四星圖片
+        [1, 2].forEach(row => {
+            for (let i = 0; i < 8; i++) {
+                const image = fourStarImages.shift(); // 取出一張四星圖片
+                const imgId = image.id;
+                originalImageSrc[imgId] = image.src;
+
+                if (characterMap[imgId]) {
+                    image.src = getWishImagePath(imgId);
+                }
+
+                const dropZone = dropZones[row * 8 + i];
+                dropZone.appendChild(image);
+            }
+        });
+    }
+
+    // 創建圖片元素和角色映射
+    function createImageElementsAndMap(callback) {
+        const container = document.getElementById('image-options');
+        let map = {};
+        fetch('/api/characters')
+            .then(response => response.json())
+            .then(characters => {
+                characters.forEach(character => {
+                    let name = character.name;
+                    let profileImage = getProfileImagePath(name);
+                    const img = document.createElement('img');
+                    img.src = profileImage;
+                    img.draggable = true;
+                    img.id = `${name}`;
+                    container.appendChild(img);
+                    map[`${name}`] = character;  // 存儲角色信息
+                });
+                callback(map);
+            })
+            .catch(error => console.error('Error loading images:', error));
+    }
+
+    fetch('/api/data')
+        .then(response => response.json())
+        .then(data => {
+            console.log(data); // Log data to console for debugging
+            // Display data on the page
+            // dataContainer.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            // dataContainer.innerHTML = 'Failed to load data.';
+        });
+
+    fetch('/api/characters')
+    .then(response => response.json())
+    .then(characters => {
+        console.log(characters);
+        characters.forEach ( character => {
+
+            console.log(character.name);
+
+        });
+    })
+    .catch(error => {
+        console.error('Error fetching data:', error);
+        // dataContainer.innerHTML = 'Failed to load data.';
     });
 
-    // 图片点击事件，将图片移回选择区并恢复原始图片
-    document.addEventListener('click', e => {
-        if (e.target.tagName === 'IMG' && e.target.parentElement.classList.contains('drop-zone')) {
-            const imgId = e.target.id.replace('_clone', '');
-            e.target.src = originalImageSrc[imgId] || e.target.src;  // 恢复原始图片
-            imageOptions.appendChild(e.target);  // 将图片移回选择区
+    function addDropZonesToCenterColumn(numDropZones) {
+        const columns = document.querySelectorAll('.grid-column-center');
+        columns.forEach(column => {
+            let currentColumn = document.createElement('div');
+            currentColumn.style.display = 'inline-block';
+            currentColumn.style.verticalAlign = 'top';
+    
+            let itemsInColumn = 0;
+    
+            for (let i = 0; i < numDropZones; i++) {
+                const dropZone = document.createElement('div');
+                dropZone.className = 'grid-item-center drop-zone';
+                dropZone.style.width = '160px';  
+                dropZone.style.height = '90px'; 
+                dropZone.style.margin = '5px';  
+    
+                const span = document.createElement('span');
+                span.className = 'utility-text';
+                span.textContent = "Utility";
+                dropZone.appendChild(span);
+    
+                currentColumn.appendChild(dropZone);
+                itemsInColumn++;
+    
+                // 每列达到6个元素后，创建新的列
+                if (itemsInColumn === 4) {
+                    column.appendChild(currentColumn);
+                    currentColumn = document.createElement('div');
+                    currentColumn.style.display = 'inline-block';
+                    currentColumn.style.verticalAlign = 'top';
+                    itemsInColumn = 0;
+                }
+            }
+    
+            // 添加最后一列（如果有剩余元素）
+            if (itemsInColumn > 0) {
+                column.appendChild(currentColumn);
+            }
+        });
+    }
+
+    // 添加 drop zones 到行
+    function addDropZonesToRow(numDropZones) {
+        const row = document.querySelector('.grid-row');
+        for (let i = 0; i < numDropZones; i++) {
+            const dropZone = document.createElement('div');
+            dropZone.className = 'grid-item-row drop-zone';
+            const span = document.createElement('span');
+            span.className = 'ban-text';
+            span.textContent = banTexts[i];
+            dropZone.appendChild(span);
+            row.appendChild(dropZone);
         }
-    });
+    }
+
+    function addDropZonesToColumns(numDropZones) {
+        const columns = document.querySelectorAll('.grid-column');
+        
+        for (let i = 0; i < columns.length; i++) {
+            // 為每列創建特定數量的 drop-zone
+            for (let j = 0; j < numDropZones; j++) {
+                const dropZone = createDropZone('pick-text',pickTexts[i * numDropZones + j]);
+                columns[i].appendChild(dropZone);
+            }
+        }
+    }
+
+     // 創建 drop zone 的通用函數
+     function createDropZone(textClass, textContent) {
+        const dropZone = document.createElement('div');
+        dropZone.className = 'grid-item drop-zone';
+        const span = document.createElement('span');
+        span.className = textClass;
+        span.textContent = textContent;
+        dropZone.appendChild(span);
+        return dropZone;
+    }
+
+    function getProfileImagePath(imgId) {
+        const basePath = 'images/';
+        let nameWithoutSpaces = imgId.replace(/\s+/g, '');
+        let image = basePath + nameWithoutSpaces + '_Profile.webp';
+        return image;
+    }
+    
+    function getWishImagePath(imgId) {
+        const basePath = 'images/wish-images/';
+        let nameWithoutSpaces = imgId.replace(/\s+/g, '');
+        let image = basePath + nameWithoutSpaces + '_Wish.png';
+        return image;
+    }
+
+    // 處理選擇邏輯
+    function handleSelection(side) {
+        const weaponSelect = document.getElementById(`${side}-weapon-select`).value;
+        const elementSelect = document.getElementById(`${side}-element-select`).value;
+        const images = Array.from(document.querySelectorAll('#image-options img'));
+        
+        // 過濾符合條件的角色圖片
+        const filteredImages = images.filter(image => {
+            const character = characterMap[image.id];
+            if (character) {
+                const matchesWeapon = (weaponSelect === 'All' || character.weapon === weaponSelect);
+                const matchesElement = (elementSelect === 'All' || character.element === elementSelect);
+                return (matchesWeapon || matchesElement) && character.name !== 'Traveler';
+            }
+            return false;
+        });
+
+        if (filteredImages.length < 4) {
+            console.error('Not enough characters match the selected criteria.');
+            return;
+        }
+
+        // 隨機選擇四個圖片
+        const selectedImages = filteredImages.sort(() => 0.5 - Math.random()).slice(0, 4);
+
+        // 分配圖片到指定的 drop zone
+        distributeImagesToRow(selectedImages, side);
+    }
+
+    // 分配圖片到指定的 grid-row 的格子中
+    function distributeImagesToRow(images, side) {
+        const gridRow = document.querySelector('.grid-row');
+        const gridItems = gridRow.children;
+
+        if (side === 'left') {
+            // 左側條件分配到左邊格子
+            for (let i = 0; i < 4 && i < images.length; i++) {
+                const imgId = images[i].id;
+                originalImageSrc[imgId] = images[i].src;
+
+                if (characterMap[imgId]) {
+                    images[i].src = getWishImagePath(imgId);
+                }
+
+                const dropZone = gridItems[i];
+                dropZone.innerHTML = ''; // 清空之前的内容
+                dropZone.appendChild(images[i]);
+            }
+        } else if (side === 'right') {
+            // 右側條件分配到右邊格子
+            for (let i = 4; i < 8 && i - 4 < images.length; i++) {
+                const imgId = images[i - 4].id;
+                originalImageSrc[imgId] = images[i - 4].src;
+
+                if (characterMap[imgId]) {
+                    images[i - 4].src = getWishImagePath(imgId);
+                }
+
+                const dropZone = gridItems[i];
+                dropZone.innerHTML = ''; // 清空之前的内容
+                dropZone.appendChild(images[i - 4]);
+            }
+        }
+    }
 });
