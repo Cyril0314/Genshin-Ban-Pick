@@ -110,6 +110,17 @@
         "version": "3.1"
     },
     {
+        "icon": "Citlali Icon",
+        "name": "Citlali",
+        "rarity": "5 Stars",
+        "element": "Cryo",
+        "weapon": "Catalyst",
+        "region": "Natlan",
+        "model_type": "Medium Female",
+        "release_date": "January 01, 2025",
+        "version": "5.3"
+    },
+    {
         "icon": "Charlotte Icon",
         "name": "Charlotte",
         "rarity": "4 Stars",
@@ -119,6 +130,17 @@
         "model_type": "Medium Female",
         "release_date": "November 08, 2023",
         "version": "4.2"
+    },
+    {
+        "icon": "Chasca Icon",
+        "name": "Chasca",
+        "rarity": "5 Stars",
+        "element": "Anemo",
+        "weapon": "Bow",
+        "region": "Natlan",
+        "model_type": "Tall Female",
+        "release_date": "November 20, 2024",
+        "version": "5.2"
     },
     {
         "icon": "Chevreuse Icon",
@@ -352,6 +374,17 @@
         "version": "1.0"
     },
     {
+        "icon": "Kachina Icon",
+        "name": "Kachina",
+        "rarity": "4 Stars",
+        "element": "Geo",
+        "weapon": "Polearm",
+        "region": "Natlan",
+        "model_type": "Short Female",
+        "release_date": "August 28, 2024",
+        "version": "5.0"
+    },
+    {
         "icon": "Kaedehara Kazuha Icon",
         "name": "Kaedehara Kazuha",
         "rarity": "5 Stars",
@@ -418,6 +451,17 @@
         "version": "1.0"
     },
     {
+        "icon": "Kinich Icon",
+        "name": "Kinich",
+        "rarity": "5 Stars",
+        "element": "Dendro",
+        "weapon": "Claymore",
+        "region": "Natlan",
+        "model_type": "Medium Male",
+        "release_date": "September 17, 2024",
+        "version": "5.0"
+    },
+    {
         "icon": "Kirara Icon",
         "name": "Kirara",
         "rarity": "4 Stars",
@@ -462,6 +506,17 @@
         "version": "2.7"
     },
     {
+        "icon": "Lan Yan Icon",
+        "name": "Lan Yan",
+        "rarity": "4 Stars",
+        "element": "Anemo",
+        "weapon": "Catalyst",
+        "region": "Liyue",
+        "model_type": "Medium Female",
+        "release_date": "January 21, 2025",
+        "version": "5.3"
+    },
+    {
         "icon": "Layla Icon",
         "name": "Layla",
         "rarity": "4 Stars",
@@ -504,6 +559,28 @@
         "model_type": "Medium Male",
         "release_date": "August 16, 2023",
         "version": "4.0"
+    },
+    {
+        "icon": "Mavuika Icon",
+        "name": "Mavuika",
+        "rarity": "5 Stars",
+        "element": "Pyro",
+        "weapon": "Claymore",
+        "region": "Natlan",
+        "model_type": "Tall Female",
+        "release_date": "January 01, 2025",
+        "version": "5.3"
+    },
+    {
+        "icon": "Mualani Icon",
+        "name": "Mualani",
+        "rarity": "5 Stars",
+        "element": "Hydro",
+        "weapon": "Catalyst",
+        "region": "Natlan",
+        "model_type": "Medium Female",
+        "release_date": "August 28, 2024",
+        "version": "5.0"
     },
     {
         "icon": "Mika Icon",
@@ -592,6 +669,17 @@
         "model_type": "Medium Female",
         "release_date": "September 28, 2020",
         "version": "1.0"
+    },
+    {
+        "icon": "Ororon Icon",
+        "name": "Ororon",
+        "rarity": "4 Stars",
+        "element": "Electro",
+        "weapon": "Bow",
+        "region": "Natlan",
+        "model_type": "Tall Male",
+        "release_date": "November 20, 2024",
+        "version": "5.2"
     },
     {
         "icon": "Qiqi Icon",
@@ -823,6 +911,17 @@
         "model_type": "Medium Male",
         "release_date": "February 03, 2021",
         "version": "1.3"
+    },
+    {
+        "icon": "Xilonen Icon",
+        "name": "Xilonen",
+        "rarity": "5 Stars",
+        "element": "Geo",
+        "weapon": "Sword",
+        "region": "Natlan",
+        "model_type": "Tall Female",
+        "release_date": "October 09, 2024",
+        "version": "5.1"
     },
     {
         "icon": "Xingqiu Icon",

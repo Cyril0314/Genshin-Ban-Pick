@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 
 // 靜態文件服務
-app.use(express.static('.', {
+app.use(express.static(path.join(__dirname, '../'), {
     setHeaders: function (res, path) {
         if (path.endsWith('.js')) {
             // 設定 JavaScript 文件的正確 MIME 類型
