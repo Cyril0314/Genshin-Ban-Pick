@@ -11,9 +11,12 @@
 <body>
   <div class="background-image"></div>
   <div id="image-options"></div>
-  <button id="randomizeButton">Random</button>
-  <button id="resetButton">Reset</button>
-  <button id="filterButton">Filter</button>
+  <div class="tool-buttons">
+    <button id="randomize-button">Random</button>
+    <button id="reset-button">Reset</button>
+    <button id="filter-button">Filter</button>
+    <button id="utility-button">Utility</button>
+  </div>
   
   <div class="grid-container">
     <div class="grid-column left1">
@@ -23,20 +26,23 @@
     </div>
 
     <div class="grid-column left2">
-          <!-- 左側選擇器UI -->
+      <!-- 左側選擇器UI -->
       <div class="selector-container">
-        <label for="left-weapon-select">選擇武器：</label>
-        <select id="left-weapon-select">
+        <div class="selector-row">
+          <label for="left-weapon-select">選擇武器：</label>
+          <select id="left-weapon-select">
             <option value="All">所有武器</option>
             <option value="Sword">單手劍</option>
             <option value="Claymore">雙手劍</option>
             <option value="Polearm">長槍</option>
             <option value="Bow">弓</option>
             <option value="Catalyst">法器</option>
-        </select>
-
-        <label for="left-element-select">選擇屬性：</label>
-        <select id="left-element-select">
+          </select>
+        </div>
+      
+        <div class="selector-row">
+          <label for="left-element-select">選擇屬性：</label>
+          <select id="left-element-select">
             <option value="All">所有屬性</option>
             <option value="Anemo">風</option>
             <option value="Geo">岩</option>
@@ -45,8 +51,9 @@
             <option value="Hydro">水</option>
             <option value="Pyro">火</option>
             <option value="Cryo">冰</option>
-        </select>
-
+          </select>
+        </div>
+      
         <button id="left-confirm-button">確認</button>
       </div>
       <!-- Pick Zone  -->
@@ -56,29 +63,32 @@
       <!-- Ban Zone  -->
     </div>
 
-    <div class="grid-column-center-area">
+    <div class="center-area">
       <div class="grid-column-center center-column">
         <!-- Utility Zone  -->
       </div>
-      <img src="images/calendar/Calendar_January.png" alt="本月壽星" class="center" style="width:720; height:480px;">
+      <!-- <img src="images/calendar/Calendar_March.png" alt="本月壽星" class="center" style="width:720; height:480px;"> -->
       <!-- <img src="images/backgrounds/Tier.png" alt="本月壽星" class="center" style="width:540; height:360px;"> -->
     </div>
 
     <div class="grid-column right2">
       <!-- 右側選擇器UI -->
       <div class="selector-container">
-        <label for="right-weapon-select">選擇武器：</label>
-        <select id="right-weapon-select">
+        <div class="selector-row">
+          <label for="right-weapon-select">選擇武器：</label>
+          <select id="right-weapon-select">
             <option value="All">所有武器</option>
             <option value="Sword">單手劍</option>
             <option value="Claymore">雙手劍</option>
             <option value="Polearm">長槍</option>
             <option value="Bow">弓</option>
             <option value="Catalyst">法器</option>
-        </select>
-
-        <label for="right-element-select">選擇屬性：</label>
-        <select id="right-element-select">
+          </select>
+        </div>
+      
+        <div class="selector-row">
+          <label for="right-element-select">選擇屬性：</label>
+          <select id="right-element-select">
             <option value="All">所有屬性</option>
             <option value="Anemo">風</option>
             <option value="Geo">岩</option>
@@ -87,8 +97,9 @@
             <option value="Hydro">水</option>
             <option value="Pyro">火</option>
             <option value="Cryo">冰</option>
-        </select>
-
+          </select>
+        </div>
+      
         <button id="right-confirm-button">確認</button>
       </div>
       <!-- Pick Zone  -->

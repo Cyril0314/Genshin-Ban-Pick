@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setupResetButton();
         setupRandomizeButton();
         setupFilterButton();
+        setupUtilityButton();
         setupLeftConfirmButton();
         setupRightConfirmButton();
         setupDragAndDrop();
@@ -27,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 設置重置按鈕
     function setupResetButton() {
-        const resetButton = document.getElementById('resetButton');
+        const resetButton = document.getElementById('reset-button');
         resetButton.addEventListener('click', () => {
             console.log('Reset button clicked');
             resetImages();
@@ -36,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 設置隨機分配按鈕
     function setupRandomizeButton() {
-        const randomizeButton = document.getElementById('randomizeButton');
+        const randomizeButton = document.getElementById('randomize-button');
         randomizeButton.addEventListener('click', () => {
             console.log('Random button clicked');
             randomizeImages();
@@ -45,10 +46,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 設置篩選按鈕
     function setupFilterButton() {
-        const filterButton = document.getElementById('filterButton');
+        const filterButton = document.getElementById('filter-button');
         filterButton.addEventListener('click', () => {
             console.log('Filter button clicked');
             
+        });
+    }
+
+    // 設置自由位隨機按鈕
+    function setupUtilityButton() {
+        const utilityButton = document.getElementById('utility-button');
+        utilityButton.addEventListener('click', () => {
+            console.log('Utility button clicked');
+            handleUtiltiyRandom();
         });
     }
     
@@ -248,18 +258,6 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => console.error('Error loading images:', error));
     }
 
-    fetch('/api/data')
-        .then(response => response.json())
-        .then(data => {
-            console.log(data); // Log data to console for debugging
-            // Display data on the page
-            // dataContainer.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-        })
-        .catch(error => {
-            console.error('Error fetching data:', error);
-            // dataContainer.innerHTML = 'Failed to load data.';
-        });
-
     fetch('/api/characters')
     .then(response => response.json())
     .then(characters => {
@@ -279,17 +277,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const columns = document.querySelectorAll('.grid-column-center');
         columns.forEach(column => {
             let currentColumn = document.createElement('div');
-            currentColumn.style.display = 'inline-block';
-            currentColumn.style.verticalAlign = 'top';
+            // currentColumn.style.display = 'inline-block';
+            // currentColumn.style.verticalAlign = 'top';
     
             let itemsInColumn = 0;
     
             for (let i = 0; i < numDropZones; i++) {
                 const dropZone = document.createElement('div');
                 dropZone.className = 'grid-item-center drop-zone';
-                dropZone.style.width = '160px';  
-                dropZone.style.height = '90px'; 
-                dropZone.style.margin = '5px';  
     
                 const span = document.createElement('span');
                 span.className = 'utility-text';
@@ -367,6 +362,42 @@ document.addEventListener('DOMContentLoaded', () => {
         return image;
     }
 
+    function handleUtiltiyRandom() {
+        const mainCarryType = 0
+        const images = Array.from(document.querySelectorAll('#image-options img'));
+        
+        // 過濾符合條件的角色圖片
+        const filteredImages = images.filter(image => {
+            const character = characterMap[image.id];
+            if (character) {
+                return character.type === mainCarryType && character.rarity === "5 Stars";
+            }
+            return false;
+        });
+
+        // 找到 grid items
+        const gridItems = document.querySelectorAll('.grid-column-center .grid-item-center.drop-zone');
+
+        // 找到第一個還沒放圖片的格子
+        const emptyZone = Array.from(gridItems).find(zone => !zone.querySelector('img'));
+
+        if (!emptyZone) {
+            console.log('所有格子已經填滿了');
+            return;
+        }
+        const selectedImages = filteredImages.sort(() => 0.5 - Math.random());
+        const img = selectedImages.shift();
+        const imgId = img.id;
+
+        originalImageSrc[imgId] = img.src;
+
+        if (characterMap[imgId]) {
+            img.src = getWishImagePath(imgId);
+        }
+
+        emptyZone.appendChild(img);
+    }
+
     // 處理選擇邏輯
     function handleSelection(side) {
         const weaponSelect = document.getElementById(`${side}-weapon-select`).value;
@@ -384,26 +415,38 @@ document.addEventListener('DOMContentLoaded', () => {
             return false;
         });
 
-        if (filteredImages.length < 4) {
-            console.error('Not enough characters match the selected criteria.');
+        // 根據 grid-row 的子元素數量決定要分配的圖片數量
+        const gridRow = document.querySelector('.grid-row');
+        const gridItems = gridRow.children;
+        
+        // 如果 gridItems 數量為奇數則不進行分配
+        if (gridItems.length % 2 !== 0) {
+            console.error('Grid items 數量為奇數，不進行分配');
+            return;
+        }
+        
+        // 計算左右各自要分配的數量
+        const half = gridItems.length / 2;
+
+        if (filteredImages.length < half) {
+            console.error(`符合條件的角色圖片不足，需要 ${half} 張，但只有 ${filteredImages.length} 張`);
             return;
         }
 
-        // 隨機選擇四個圖片
-        const selectedImages = filteredImages.sort(() => 0.5 - Math.random()).slice(0, 4);
+        // 隨機選擇 half 個圖片
+        const selectedImages = filteredImages.sort(() => 0.5 - Math.random()).slice(0, half);
 
-        // 分配圖片到指定的 drop zone
-        distributeImagesToRow(selectedImages, side);
+        distributeImagesToRow(selectedImages, side, half);
     }
 
     // 分配圖片到指定的 grid-row 的格子中
-    function distributeImagesToRow(images, side) {
+    function distributeImagesToRow(images, side, half) {
         const gridRow = document.querySelector('.grid-row');
         const gridItems = gridRow.children;
 
         if (side === 'left') {
             // 左側條件分配到左邊格子
-            for (let i = 0; i < 4 && i < images.length; i++) {
+            for (let i = 0; i < half && i < images.length; i++) {
                 const imgId = images[i].id;
                 originalImageSrc[imgId] = images[i].src;
 
@@ -412,23 +455,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 const dropZone = gridItems[i];
-                dropZone.innerHTML = ''; // 清空之前的内容
                 dropZone.appendChild(images[i]);
             }
         } else if (side === 'right') {
             // 右側條件分配到右邊格子
-            for (let i = 4; i < 8 && i - 4 < images.length; i++) {
-                const imgId = images[i - 4].id;
-                originalImageSrc[imgId] = images[i - 4].src;
+            for (let i = half; i < 8 && i - half < images.length; i++) {
+                const imgId = images[i - half].id;
+                originalImageSrc[imgId] = images[i - half].src;
 
                 if (characterMap[imgId]) {
-                    images[i - 4].src = getWishImagePath(imgId);
+                    images[i - half].src = getWishImagePath(imgId);
                 }
 
                 const dropZone = gridItems[i];
-                dropZone.innerHTML = ''; // 清空之前的内容
-                dropZone.appendChild(images[i - 4]);
+                dropZone.appendChild(images[i - half]);
             }
         }
     }
+
+    fetch('/api/data')
+        .then(response => response.json())
+        .then(data => {
+            console.log(data); // Log data to console for debugging
+            // Display data on the page
+            // dataContainer.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            // dataContainer.innerHTML = 'Failed to load data.';
+        });
 });

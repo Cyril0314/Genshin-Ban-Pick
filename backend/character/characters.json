@@ -8,7 +8,8 @@
         "region": "Mondstadt",
         "model_type": "Medium Male",
         "release_date": "December 23, 2020",
-        "version": "1.2"
+        "version": "1.2",
+        "type": 1
     },
     {
         "icon": "Alhaitham Icon",
@@ -19,7 +20,8 @@
         "region": "Sumeru",
         "model_type": "Tall Male",
         "release_date": "January 18, 2023",
-        "version": "3.4"
+        "version": "3.4",
+        "type": 0
     },
     {
         "icon": "Amber Icon",
@@ -30,7 +32,8 @@
         "region": "Mondstadt",
         "model_type": "Medium Female",
         "release_date": "September 28, 2020",
-        "version": "1.0"
+        "version": "1.0",
+        "type": 1
     },
     {
         "icon": "Arataki Itto Icon",
@@ -41,7 +44,8 @@
         "region": "Inazuma",
         "model_type": "Tall Male",
         "release_date": "December 14, 2021",
-        "version": "2.3"
+        "version": "2.3",
+        "type": 0
     },
     {
         "icon": "Arlecchino Icon",
@@ -52,7 +56,8 @@
         "region": "Snezhnaya",
         "model_type": "Tall Female",
         "release_date": "April 24, 2024",
-        "version": "4.6"
+        "version": "4.6",
+        "type": 0
     },
     {
         "icon": "Baizhu Icon",
@@ -63,7 +68,8 @@
         "region": "Liyue",
         "model_type": "Tall Male",
         "release_date": "May 02, 2023",
-        "version": "3.6"
+        "version": "3.6",
+        "type": 2
     },
     {
         "icon": "Barbara Icon",
@@ -74,7 +80,8 @@
         "region": "Mondstadt",
         "model_type": "Medium Female",
         "release_date": "September 28, 2020",
-        "version": "1.0"
+        "version": "1.0",
+        "type": 2
     },
     {
         "icon": "Beidou Icon",
@@ -85,7 +92,8 @@
         "region": "Liyue",
         "model_type": "Tall Female",
         "release_date": "September 28, 2020",
-        "version": "1.0"
+        "version": "1.0",
+        "type": 1
     },
     {
         "icon": "Bennett Icon",
@@ -96,7 +104,8 @@
         "region": "Mondstadt",
         "model_type": "Medium Male",
         "release_date": "September 28, 2020",
-        "version": "1.0"
+        "version": "1.0",
+        "type": 2
     },
     {
         "icon": "Candace Icon",
@@ -107,7 +116,8 @@
         "region": "Sumeru",
         "model_type": "Tall Female",
         "release_date": "September 28, 2022",
-        "version": "3.1"
+        "version": "3.1",
+        "type": 2
     },
     {
         "icon": "Citlali Icon",
@@ -118,7 +128,8 @@
         "region": "Natlan",
         "model_type": "Medium Female",
         "release_date": "January 01, 2025",
-        "version": "5.3"
+        "version": "5.3",
+        "type": 2
     },
     {
         "icon": "Charlotte Icon",
@@ -129,7 +140,8 @@
         "region": "Fontaine",
         "model_type": "Medium Female",
         "release_date": "November 08, 2023",
-        "version": "4.2"
+        "version": "4.2",
+        "type": 2
     },
     {
         "icon": "Chasca Icon",
@@ -140,7 +152,8 @@
         "region": "Natlan",
         "model_type": "Tall Female",
         "release_date": "November 20, 2024",
-        "version": "5.2"
+        "version": "5.2",
+        "type": 0
     },
     {
         "icon": "Chevreuse Icon",
@@ -151,7 +164,8 @@
         "region": "Fontaine",
         "model_type": "Medium Female",
         "release_date": "January 09, 2024",
-        "version": "4.3"
+        "version": "4.3",
+        "type": 2
     },
     {
         "icon": "Chiori Icon",
@@ -162,7 +176,8 @@
         "region": "Inazuma",
         "model_type": "Medium Female",
         "release_date": "March 13, 2024",
-        "version": "4.5"
+        "version": "4.5",
+        "type": 1
     },
     {
         "icon": "Chongyun Icon",
@@ -173,7 +188,8 @@
         "region": "Liyue",
         "model_type": "Medium Male",
         "release_date": "September 28, 2020",
-        "version": "1.0"
+        "version": "1.0",
+        "type": 1
     },
     {
         "icon": "Clorinde Icon",
@@ -184,7 +200,8 @@
         "region": "Fontaine",
         "model_type": "Tall Female",
         "release_date": "June 05, 2024",
-        "version": "4.7"
+        "version": "4.7",
+        "type": 0
     },
     {
         "icon": "Collei Icon",
@@ -195,7 +212,8 @@
         "region": "Sumeru",
         "model_type": "Medium Female",
         "release_date": "August 24, 2022",
-        "version": "3.0"
+        "version": "3.0",
+        "type": 1
     },
     {
         "icon": "Cyno Icon",
@@ -206,7 +224,8 @@
         "region": "Sumeru",
         "model_type": "Medium Male",
         "release_date": "September 28, 2022",
-        "version": "3.1"
+        "version": "3.1",
+        "type": 0
     },
     {
         "icon": "Dehya Icon",
@@ -217,7 +236,8 @@
         "region": "Sumeru",
         "model_type": "Tall Female",
         "release_date": "March 01, 2023",
-        "version": "3.5"
+        "version": "3.5",
+        "type": 2
     },
     {
         "icon": "Diluc Icon",
@@ -228,7 +248,8 @@
         "region": "Mondstadt",
         "model_type": "Tall Male",
         "release_date": "September 28, 2020",
-        "version": "1.0"
+        "version": "1.0",
+        "type": 0
     },
     {
         "icon": "Diona Icon",
@@ -239,7 +260,8 @@
         "region": "Mondstadt",
         "model_type": "Short Female",
         "release_date": "November 11, 2020",
-        "version": "1.1"
+        "version": "1.1",
+        "type": 2
     },
     {
         "icon": "Dori Icon",
@@ -250,7 +272,8 @@
         "region": "Sumeru",
         "model_type": "Short Female",
         "release_date": "September 09, 2022",
-        "version": "3.0"
+        "version": "3.0",
+        "type": 2
     },
     {
         "icon": "Emilie Icon",
@@ -261,7 +284,8 @@
         "region": "Fontaine",
         "model_type": "Medium Female",
         "release_date": "August 06, 2024",
-        "version": "4.8"
+        "version": "4.8",
+        "type": 1
     },
     {
         "icon": "Eula Icon",
@@ -272,7 +296,8 @@
         "region": "Mondstadt",
         "model_type": "Tall Female",
         "release_date": "May 18, 2021",
-        "version": "1.5"
+        "version": "1.5",
+        "type": 0
     },
     {
         "icon": "Faruzan Icon",
@@ -283,7 +308,8 @@
         "region": "Sumeru",
         "model_type": "Medium Female",
         "release_date": "December 07, 2022",
-        "version": "3.3"
+        "version": "3.3",
+        "type": 2
     },
     {
         "icon": "Fischl Icon",
@@ -294,7 +320,8 @@
         "region": "Mondstadt",
         "model_type": "Medium Female",
         "release_date": "September 28, 2020",
-        "version": "1.0"
+        "version": "1.0",
+        "type": 1
     },
     {
         "icon": "Freminet Icon",
@@ -305,7 +332,8 @@
         "region": "Fontaine",
         "model_type": "Medium Male",
         "release_date": "September 05, 2023",
-        "version": "4.0"
+        "version": "4.0",
+        "type": 0
     },
     {
         "icon": "Furina Icon",
@@ -316,7 +344,8 @@
         "region": "Fontaine",
         "model_type": "Medium Female",
         "release_date": "November 08, 2023",
-        "version": "4.2"
+        "version": "4.2",
+        "type": 1
     },
     {
         "icon": "Gaming Icon",
@@ -327,7 +356,8 @@
         "region": "Liyue",
         "model_type": "Medium Male",
         "release_date": "January 31, 2024",
-        "version": "4.4"
+        "version": "4.4",
+        "type": 0
     },
     {
         "icon": "Ganyu Icon",
@@ -338,7 +368,8 @@
         "region": "Liyue",
         "model_type": "Medium Female",
         "release_date": "January 12, 2021",
-        "version": "1.2"
+        "version": "1.2",
+        "type": 0
     },
     {
         "icon": "Gorou Icon",
@@ -349,7 +380,8 @@
         "region": "Inazuma",
         "model_type": "Medium Male",
         "release_date": "December 14, 2021",
-        "version": "2.3"
+        "version": "2.3",
+        "type": 2
     },
     {
         "icon": "Hu Tao Icon",
@@ -360,7 +392,8 @@
         "region": "Liyue",
         "model_type": "Medium Female",
         "release_date": "March 02, 2021",
-        "version": "1.3"
+        "version": "1.3",
+        "type": 0
     },
     {
         "icon": "Jean Icon",
@@ -371,7 +404,8 @@
         "region": "Mondstadt",
         "model_type": "Tall Female",
         "release_date": "September 28, 2020",
-        "version": "1.0"
+        "version": "1.0",
+        "type": 2
     },
     {
         "icon": "Kachina Icon",
@@ -382,7 +416,8 @@
         "region": "Natlan",
         "model_type": "Short Female",
         "release_date": "August 28, 2024",
-        "version": "5.0"
+        "version": "5.0",
+        "type": 1
     },
     {
         "icon": "Kaedehara Kazuha Icon",
@@ -393,7 +428,8 @@
         "region": "Inazuma",
         "model_type": "Medium Male",
         "release_date": "June 29, 2021",
-        "version": "1.6"
+        "version": "1.6",
+        "type": 2
     },
     {
         "icon": "Kaeya Icon",
@@ -404,7 +440,8 @@
         "region": "Mondstadt",
         "model_type": "Tall Male",
         "release_date": "September 28, 2020",
-        "version": "1.0"
+        "version": "1.0",
+        "type": 1
     },
     {
         "icon": "Kamisato Ayaka Icon",
@@ -415,7 +452,8 @@
         "region": "Inazuma",
         "model_type": "Medium Female",
         "release_date": "July 21, 2021",
-        "version": "2.0"
+        "version": "2.0",
+        "type": 0
     },
     {
         "icon": "Kamisato Ayato Icon",
@@ -426,7 +464,8 @@
         "region": "Inazuma",
         "model_type": "Tall Male",
         "release_date": "March 30, 2022",
-        "version": "2.6"
+        "version": "2.6",
+        "type": 0
     },
     {
         "icon": "Kaveh Icon",
@@ -437,7 +476,8 @@
         "region": "Sumeru",
         "model_type": "Tall Male",
         "release_date": "May 02, 2023",
-        "version": "3.6"
+        "version": "3.6",
+        "type": 2
     },
     {
         "icon": "Keqing Icon",
@@ -448,7 +488,8 @@
         "region": "Liyue",
         "model_type": "Medium Female",
         "release_date": "September 28, 2020",
-        "version": "1.0"
+        "version": "1.0",
+        "type": 0
     },
     {
         "icon": "Kinich Icon",
@@ -459,7 +500,8 @@
         "region": "Natlan",
         "model_type": "Medium Male",
         "release_date": "September 17, 2024",
-        "version": "5.0"
+        "version": "5.0",
+        "type": 0
     },
     {
         "icon": "Kirara Icon",
@@ -470,7 +512,8 @@
         "region": "Inazuma",
         "model_type": "Medium Female",
         "release_date": "May 24, 2023",
-        "version": "3.7"
+        "version": "3.7",
+        "type": 2
     },
     {
         "icon": "Klee Icon",
@@ -481,7 +524,8 @@
         "region": "Mondstadt",
         "model_type": "Short Female",
         "release_date": "October 20, 2020",
-        "version": "1.0"
+        "version": "1.0",
+        "type": 0
     },
     {
         "icon": "Kujou Sara Icon",
@@ -492,7 +536,8 @@
         "region": "Inazuma",
         "model_type": "Tall Female",
         "release_date": "September 01, 2021",
-        "version": "2.1"
+        "version": "2.1",
+        "type": 2
     },
     {
         "icon": "Kuki Shinobu Icon",
@@ -503,7 +548,8 @@
         "region": "Inazuma",
         "model_type": "Medium Female",
         "release_date": "June 21, 2022",
-        "version": "2.7"
+        "version": "2.7",
+        "type": 2
     },
     {
         "icon": "Lan Yan Icon",
@@ -514,7 +560,8 @@
         "region": "Liyue",
         "model_type": "Medium Female",
         "release_date": "January 21, 2025",
-        "version": "5.3"
+        "version": "5.3",
+        "type": 2
     },
     {
         "icon": "Layla Icon",
@@ -525,7 +572,8 @@
         "region": "Sumeru",
         "model_type": "Medium Female",
         "release_date": "November 18, 2022",
-        "version": "3.2"
+        "version": "3.2",
+        "type": 2
     },
     {
         "icon": "Lisa Icon",
@@ -536,7 +584,8 @@
         "region": "Mondstadt",
         "model_type": "Tall Female",
         "release_date": "September 28, 2020",
-        "version": "1.0"
+        "version": "1.0",
+        "type": 1
     },
     {
         "icon": "Lynette Icon",
@@ -547,7 +596,8 @@
         "region": "Fontaine",
         "model_type": "Medium Female",
         "release_date": "August 16, 2023",
-        "version": "4.0"
+        "version": "4.0",
+        "type": 1
     },
     {
         "icon": "Lyney Icon",
@@ -558,7 +608,8 @@
         "region": "Fontaine",
         "model_type": "Medium Male",
         "release_date": "August 16, 2023",
-        "version": "4.0"
+        "version": "4.0",
+        "type": 0
     },
     {
         "icon": "Mavuika Icon",
@@ -569,7 +620,8 @@
         "region": "Natlan",
         "model_type": "Tall Female",
         "release_date": "January 01, 2025",
-        "version": "5.3"
+        "version": "5.3",
+        "type": 0
     },
     {
         "icon": "Mualani Icon",
@@ -580,7 +632,8 @@
         "region": "Natlan",
         "model_type": "Medium Female",
         "release_date": "August 28, 2024",
-        "version": "5.0"
+        "version": "5.0",
+        "type": 0
     },
     {
         "icon": "Mika Icon",
@@ -591,7 +644,8 @@
         "region": "Mondstadt",
         "model_type": "Medium Male",
         "release_date": "March 21, 2023",
-        "version": "3.5"
+        "version": "3.5",
+        "type": 2
     },
     {
         "icon": "Mona Icon",
@@ -602,7 +656,8 @@
         "region": "Mondstadt",
         "model_type": "Medium Female",
         "release_date": "September 28, 2020",
-        "version": "1.0"
+        "version": "1.0",
+        "type": 2
     },
     {
         "icon": "Nahida Icon",
@@ -613,7 +668,8 @@
         "region": "Sumeru",
         "model_type": "Short Female",
         "release_date": "November 02, 2022",
-        "version": "3.2"
+        "version": "3.2",
+        "type": 1
     },
     {
         "icon": "Navia Icon",
@@ -624,7 +680,8 @@
         "region": "Fontaine",
         "model_type": "Tall Female",
         "release_date": "December 20, 2023",
-        "version": "4.3"
+        "version": "4.3",
+        "type": 0
     },
     {
         "icon": "Neuvillette Icon",
@@ -635,7 +692,8 @@
         "region": "Fontaine",
         "model_type": "Tall Male",
         "release_date": "September 27, 2023",
-        "version": "4.1"
+        "version": "4.1",
+        "type": 0
     },
     {
         "icon": "Nilou Icon",
@@ -646,7 +704,8 @@
         "region": "Sumeru",
         "model_type": "Medium Female",
         "release_date": "October 14, 2022",
-        "version": "3.1"
+        "version": "3.1",
+        "type": 2
     },
     {
         "icon": "Ningguang Icon",
@@ -657,7 +716,8 @@
         "region": "Liyue",
         "model_type": "Tall Female",
         "release_date": "September 28, 2020",
-        "version": "1.0"
+        "version": "1.0",
+        "type": 1
     },
     {
         "icon": "Noelle Icon",
@@ -668,7 +728,8 @@
         "region": "Mondstadt",
         "model_type": "Medium Female",
         "release_date": "September 28, 2020",
-        "version": "1.0"
+        "version": "1.0",
+        "type": 2
     },
     {
         "icon": "Ororon Icon",
@@ -679,7 +740,8 @@
         "region": "Natlan",
         "model_type": "Tall Male",
         "release_date": "November 20, 2024",
-        "version": "5.2"
+        "version": "5.2",
+        "type": 1
     },
     {
         "icon": "Qiqi Icon",
@@ -690,7 +752,8 @@
         "region": "Liyue",
         "model_type": "Short Female",
         "release_date": "September 28, 2020",
-        "version": "1.0"
+        "version": "1.0",
+        "type": 2
     },
     {
         "icon": "Raiden Shogun Icon",
@@ -701,7 +764,8 @@
         "region": "Inazuma",
         "model_type": "Tall Female",
         "release_date": "September 01, 2021",
-        "version": "2.1"
+        "version": "2.1",
+        "type": 2
     },
     {
         "icon": "Razor Icon",
@@ -712,7 +776,8 @@
         "region": "Mondstadt",
         "model_type": "Medium Male",
         "release_date": "September 28, 2020",
-        "version": "1.0"
+        "version": "1.0",
+        "type": 0
     },
     {
         "icon": "Rosaria Icon",
@@ -723,7 +788,8 @@
         "region": "Mondstadt",
         "model_type": "Tall Female",
         "release_date": "April 06, 2021",
-        "version": "1.4"
+        "version": "1.4",
+        "type": 1
     },
     {
         "icon": "Sangonomiya Kokomi Icon",
@@ -734,7 +800,8 @@
         "region": "Inazuma",
         "model_type": "Medium Female",
         "release_date": "September 21, 2021",
-        "version": "2.1"
+        "version": "2.1",
+        "type": 2
     },
     {
         "icon": "Sayu Icon",
@@ -745,7 +812,8 @@
         "region": "Inazuma",
         "model_type": "Short Female",
         "release_date": "August 10, 2021",
-        "version": "2.0"
+        "version": "2.0",
+        "type": 2
     },
     {
         "icon": "Sethos Icon",
@@ -756,7 +824,8 @@
         "region": "Sumeru",
         "model_type": "Medium Male",
         "release_date": "June 05, 2024",
-        "version": "4.7"
+        "version": "4.7",
+        "type": 0
     },
     {
         "icon": "Shenhe Icon",
@@ -767,7 +836,8 @@
         "region": "Liyue",
         "model_type": "Tall Female",
         "release_date": "January 05, 2022",
-        "version": "2.4"
+        "version": "2.4",
+        "type": 2
     },
     {
         "icon": "Shikanoin Heizou Icon",
@@ -778,7 +848,8 @@
         "region": "Inazuma",
         "model_type": "Medium Male",
         "release_date": "July 13, 2022",
-        "version": "2.8"
+        "version": "2.8",
+        "type": 0
     },
     {
         "icon": "Sigewinne Icon",
@@ -789,7 +860,8 @@
         "region": "Fontaine",
         "model_type": "Short Female",
         "release_date": "June 25, 2024",
-        "version": "4.7"
+        "version": "4.7",
+        "type": 2
     },
     {
         "icon": "Sucrose Icon",
@@ -800,7 +872,8 @@
         "region": "Mondstadt",
         "model_type": "Medium Female",
         "release_date": "September 28, 2020",
-        "version": "1.0"
+        "version": "1.0",
+        "type": 2
     },
     {
         "icon": "Tartaglia Icon",
@@ -811,7 +884,8 @@
         "region": "Snezhnaya",
         "model_type": "Tall Male",
         "release_date": "November 11, 2020",
-        "version": "1.1"
+        "version": "1.1",
+        "type": 0
     },
     {
         "icon": "Thoma Icon",
@@ -822,7 +896,8 @@
         "region": "Inazuma",
         "model_type": "Tall Male",
         "release_date": "November 02, 2021",
-        "version": "2.2"
+        "version": "2.2",
+        "type": 2
     },
     {
         "icon": "Tighnari Icon",
@@ -833,7 +908,8 @@
         "region": "Sumeru",
         "model_type": "Medium Male",
         "release_date": "August 24, 2022",
-        "version": "3.0"
+        "version": "3.0",
+        "type": 0
     },
     {
         "icon": "Traveler Icon",
@@ -844,7 +920,8 @@
         "region": "None",
         "model_type": "Aether: Medium Male, Lumine: Medium Female",
         "release_date": "September 28, 2020",
-        "version": "1.0"
+        "version": "1.0",
+        "type": 1
     },
     {
         "icon": "Venti Icon",
@@ -855,7 +932,8 @@
         "region": "Mondstadt",
         "model_type": "Medium Male",
         "release_date": "September 28, 2020",
-        "version": "1.0"
+        "version": "1.0",
+        "type": 2
     },
     {
         "icon": "Wanderer Icon",
@@ -866,7 +944,8 @@
         "region": "Sumeru",
         "model_type": "Medium Male",
         "release_date": "December 07, 2022",
-        "version": "3.3"
+        "version": "3.3",
+        "type": 0
     },
     {
         "icon": "Wriothesley Icon",
@@ -877,7 +956,8 @@
         "region": "Fontaine",
         "model_type": "Tall Male",
         "release_date": "October 17, 2023",
-        "version": "4.1"
+        "version": "4.1",
+        "type": 0
     },
     {
         "icon": "Xiangling Icon",
@@ -888,7 +968,8 @@
         "region": "Liyue",
         "model_type": "Medium Female",
         "release_date": "September 28, 2020",
-        "version": "1.0"
+        "version": "1.0",
+        "type": 1
     },
     {
         "icon": "Xianyun Icon",
@@ -899,7 +980,8 @@
         "region": "Liyue",
         "model_type": "Tall Female",
         "release_date": "January 31, 2024",
-        "version": "4.4"
+        "version": "4.4",
+        "type": 2
     },
     {
         "icon": "Xiao Icon",
@@ -910,7 +992,8 @@
         "region": "Liyue",
         "model_type": "Medium Male",
         "release_date": "February 03, 2021",
-        "version": "1.3"
+        "version": "1.3",
+        "type": 0
     },
     {
         "icon": "Xilonen Icon",
@@ -921,7 +1004,8 @@
         "region": "Natlan",
         "model_type": "Tall Female",
         "release_date": "October 09, 2024",
-        "version": "5.1"
+        "version": "5.1",
+        "type": 2
     },
     {
         "icon": "Xingqiu Icon",
@@ -932,7 +1016,8 @@
         "region": "Liyue",
         "model_type": "Medium Male",
         "release_date": "September 28, 2020",
-        "version": "1.0"
+        "version": "1.0",
+        "type": 1
     },
     {
         "icon": "Xinyan Icon",
@@ -943,7 +1028,8 @@
         "region": "Liyue",
         "model_type": "Medium Female",
         "release_date": "December 01, 2020",
-        "version": "1.1"
+        "version": "1.1",
+        "type": 2
     },
     {
         "icon": "Yae Miko Icon",
@@ -954,7 +1040,8 @@
         "region": "Inazuma",
         "model_type": "Tall Female",
         "release_date": "February 16, 2022",
-        "version": "2.5"
+        "version": "2.5",
+        "type": 1
     },
     {
         "icon": "Yanfei Icon",
@@ -965,7 +1052,8 @@
         "region": "Liyue",
         "model_type": "Medium Female",
         "release_date": "April 28, 2021",
-        "version": "1.5"
+        "version": "1.5",
+        "type": 0
     },
     {
         "icon": "Yaoyao Icon",
@@ -976,7 +1064,8 @@
         "region": "Liyue",
         "model_type": "Short Female",
         "release_date": "January 18, 2023",
-        "version": "3.4"
+        "version": "3.4",
+        "type": 2
     },
     {
         "icon": "Yelan Icon",
@@ -987,7 +1076,8 @@
         "region": "Liyue",
         "model_type": "Tall Female",
         "release_date": "May 31, 2022",
-        "version": "2.7"
+        "version": "2.7",
+        "type": 1
     },
     {
         "icon": "Yoimiya Icon",
@@ -998,7 +1088,20 @@
         "region": "Inazuma",
         "model_type": "Medium Female",
         "release_date": "August 10, 2021",
-        "version": "2.0"
+        "version": "2.0",
+        "type": 0
+    },
+    {
+        "icon": "Yumemizuki Mizuki Icon",
+        "name": "Yumemizuki Mizuki",
+        "rarity": "5 Stars",
+        "element": "Anemo",
+        "weapon": "Catalyst",
+        "region": "Inazuma",
+        "model_type": "Medium Female",
+        "release_date": "February 12, 2025",
+        "version": "5.4",
+        "type": 2
     },
     {
         "icon": "Yun Jin Icon",
@@ -1009,7 +1112,8 @@
         "region": "Liyue",
         "model_type": "Medium Female",
         "release_date": "January 05, 2022",
-        "version": "2.4"
+        "version": "2.4",
+        "type": 2
     },
     {
         "icon": "Zhongli Icon",
@@ -1020,6 +1124,7 @@
         "region": "Liyue",
         "model_type": "Tall Male",
         "release_date": "December 01, 2020",
-        "version": "1.1"
+        "version": "1.1",
+        "type": 2
     }
 ]

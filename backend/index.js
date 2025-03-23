@@ -55,3 +55,7 @@ app.get('/api/character/images', (req, res) => {
         }
     });
 });
+
+// type: 0 主C
+// type: 1 副C
+// type: 2 輔助

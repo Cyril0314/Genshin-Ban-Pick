@@ -11,15 +11,60 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: url('../images/backgrounds/5.3.jpg') no-repeat center center;
+    background: url('../images/backgrounds/wallpaper.png') no-repeat center center;
     background-size: cover;
     opacity: 0.4;
     z-index: -1;
+    background-blend-mode: multiply; /* 圖片與背景混合模式，變暗 */
+    background-color: rgba(0, 0, 0, 0.2); /* 暗色透明遮罩 */
 }
 
-#resetButton, #randomizeButton, #filterButton {
+#image-options {
+    display: flex;
+    flex-wrap: wrap;            /* 允許內容自動換行 */
+    width: 100%;                /* 容器宽度 */
+    height: 190px;              /* 固定高度, 可以存放3行圖片，根據圖片高度調整 */
+    overflow-y: auto;           /* 超出部分垂直滚动 */
+    align-items: flex-start;    /* 頂部對齊，防止行高不一致時內容中斷 */
+    gap: 10px;                  /* 設置圖片間距 */
+}
+
+#image-options img {
+    width: 90px;
+    height: auto;
+    cursor: grab;
+}
+
+.tool-buttons {
     position: relative;
+    display: flex;
+    margin-top: 10px;
+    margin-bottom: 60px;
+}
+
+#reset-button, #randomize-button, #filter-button, #utility-button {
+    position: relative;
+    width: 120px;
     z-index: 1000;
+    background-color: #4e4040;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    font-size: 1em;
+    margin: 0 5px; /* 左右間隔 */
+}
+
+#reset-button:hover, #randomize-button:hover, #filter-button:hover, #utility-button:hover {
+    background-color: #6b5b5b;
+    transform: scale(1.05);
+}
+
+#reset-button:active, #randomize-button:active, #filter-button:active, #utility-button:active {
+    transform: scale(0.98);
 }
 
 .grid-container {
@@ -29,91 +74,64 @@ body::before {
     align-items: flex-start;
 }
 
-.grid-column-center-area {
+.grid-row {
+    display: flex;
+    flex-direction: row;
+}
+
+.center-area {
     position: absolute;
     display: flex;
     flex-direction: column;
     align-items: center; /* 子元素水平居中 */
     /* margin: 0 20px; */
-    margin-top: 120px;
-}
-
-.grid-column-center.center-column {
-    position: relative;
-    display: flex;
-    flex-direction: row;
-    align-items: center; /* 子元素水平居中 */
-    /* margin: 0 20px; */
-    margin-top: 10px;
-    margin-bottom: 20px;
-}
-
-.grid-row, .grid-column {
-    display: flex;
-}
-
-.grid-row {
-    flex-direction: row;
+    margin-top: 320px;
 }
 
 .grid-column {
+    display: flex;
     flex-direction: column;
-    margin: 0 20px;
-    margin-top: 120px;
+    align-items: center;
+    margin: 0 10px;
+    margin-top: 125px;
 }
 
-.grid-item, .grid-item-center {
+.grid-column-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 10px;
+}
+
+/* 指定 JavaScript 動態建立的容器為 Flexbox 排版，解決 margin collapse 的問題。 */
+.grid-column-center.center-column > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.grid-item, .grid-item-center, .grid-item-row {
     width: 160px;
     height: 90px;
     margin: 5px;
     position: relative;
-    border: 2px dashed #4e4040;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.grid-item-row {
-    width: 160px;
-    height: 90px;
-    margin: 5px;
-    position: relative;
-    border: 2px dashed #4e4040;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.grid-item:hover, .grid-item-center:hover, .grid-item-row:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.25);
 }
 
-.grid-item img {
+.grid-item img, .grid-item-center img, .grid-item-row img {
     height: auto;
     z-index: 15;
-}
-
-.grid-item-center img {
-    height: auto;
-    z-index: 15;
-}
-
-.grid-item-row img {
-    height: auto;
-    z-index: 15;
-}
-
-#image-options {
-    display: flex;
-    flex-wrap: wrap;            /* 允许内容自动换行 */
-    width: 100%;                /* 容器宽度 */
-    height: 290px;              /* 固定高度, 可存放三排图片，根据图片高度调整 */
-    overflow-y: auto;           /* 超出部分垂直滚动 */
-    align-items: flex-start;    /* 顶部对齐，防止行高不一致时内容中断 */
-    padding: 10px;               /* 添加内边距 */
-    gap: 10px;                   /* 设置图片间距 */
-}
-
-#image-options img {
-    width: 90px;
-    height: auto;
-    cursor: grab;
 }
 
 .ban-text, .pick-text, .utility-text {
@@ -134,11 +152,11 @@ body::before {
     font-size: 1.25em;
 }
 
-.grid-column.left1 .pick-text, .grid-column.left2 .pick-text, .left-text {
+.grid-column.left1 .pick-text, .grid-column.left2 .pick-text {
     color: #5191c2;
 }
 
-.grid-column.right1 .pick-text, .grid-column.right2 .pick-text, .right-text {
+.grid-column.right1 .pick-text, .grid-column.right2 .pick-text {
     color: #df5757;
 }
 
@@ -152,52 +170,105 @@ body::before {
     object-fit: cover;  /* 保证图片填充整个容器但不失真 */
 }
 
-.grid-column {
+.selector-container {
+    position: absolute;
+    top: 0px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 0 20px;
-    margin-top: 105px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #4e4040;
+    border-radius: 8px;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    width: 180px;
+    padding: 8px 8px;
+    box-sizing: border-box;
+    height: auto;
+    gap: 8px;
 }
 
-.selector-container {
-    position: absolute;
-    top: 20px;
+.selector-row {
     display: flex;
     align-items: center;
-    flex-direction: column; 
-    justify-content: center;
-    font-size: 1em;
-    height: 60px;
+    justify-content: space-between;
     width: 100%;
+}
+
+.selector-container label {
+    font-size: 0.9em;
+    white-space: nowrap;
+    margin-right: 4px;
+}
+
+.selector-container select {
+    flex-grow: 1;
+    padding: 5px 5px;
+    border-radius: 6px;
+    border: none;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #4e4040;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.selector-container select:hover {
+    background-color: #fff;
+}
+
+.selector-container button {
+    width: 100%;
+    padding: 8px;
+    border: none;
+    background-color: #4e4040;
+    color: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    font-weight: bold;
+}
+
+.selector-container button:hover {
+    background-color: #6b5b5b;
+    transform: scale(1.05);
+}
+
+.selector-container button:active {
+    transform: scale(0.98);
+}
+
+.team-member-input {
+    position: absolute;
+    top: 0;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #4e4040;
+    border: none;
+    border-radius: 8px;
+    width: 160px;
+    min-height: 100px;
+    height: auto;
+    resize: none;
+    font-size: 1.5em;
+    font-weight: bold;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 .side-text {
     position: absolute;
-    top: -35px;
+    top: -50px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
     font-size: 1.8em;
-    height: 60px;
-    width: 100%;
-}
-
-.team-member-input {
-    position: absolute;
-    top: 5px;
-    background-color: rgba(255, 255, 255, 0.2);
-    color: inherit;
-    border: none;
-    border-radius: 5px;
-    padding: 10px;
-    width: 160px;
-    min-height: 80px;
-    height: auto;
-    resize: none;
-    font-size: 1.5em;
-    font-weight: bold;
+    color: #4e4040;
+    background-color: #fff;
+    padding: 5px 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
 }
 
 .team-member-input:focus {
