@@ -74,9 +74,17 @@ body::before {
     align-items: flex-start;
 }
 
+.ban-zone-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
 .grid-row {
     display: flex;
     flex-direction: row;
+    margin-bottom: 10px;
 }
 
 .center-area {

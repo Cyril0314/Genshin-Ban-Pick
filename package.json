@@ -18,6 +18,6 @@
   },
   "homepage": "https://github.com/Cyril0314/Genshin-Ban-Pick#readme",
   "dependencies": {
-    "express": "^4.19.2"
+    "express": "^4.21.2"
   }
 }
