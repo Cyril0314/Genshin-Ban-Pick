@@ -1,4 +1,3 @@
-import { setupDropZone } from '../utils/domUtils.js';
 import { numberOfUtilityGrids, numberOfBanGrids, numberOfPickGrids } from '../constants/constants.js';
 
 /**
@@ -22,13 +21,13 @@ function addDropZonesToCenterColumn(num, characterMap) {
         for (let i = 0; i < num; i++) {
             const dropZone = document.createElement('div');
             dropZone.className = 'grid-item-center drop-zone';
+            dropZone.setAttribute('data-zone-id', `zone-Utility ${i + 1}`);
 
             const span = document.createElement('span');
             span.className = 'utility-text';
             span.textContent = 'Utility';
             dropZone.appendChild(span);
 
-            setupDropZone(dropZone, characterMap);
             currentColumn.appendChild(dropZone);
             itemsInColumn++;
 
@@ -61,7 +60,15 @@ function addDropZonesToColumns(num, characterMap) {
 
     for (let i = 0; i < columns.length; i++) {
         for (let j = 0; j < numPerColumn; j++) {
-            const dropZone = createDropZone('pick-text', pickTexts[index], characterMap);
+            const dropZone = document.createElement('div');
+            dropZone.className = 'grid-item drop-zone';
+            dropZone.setAttribute('data-zone-id', `zone-${pickTexts[index]}`);
+        
+            const span = document.createElement('span');
+            span.className = 'pick-text';
+            span.textContent = pickTexts[index];
+            dropZone.appendChild(span);
+        
             columns[i].appendChild(dropZone);
             index++;
         }
@@ -89,35 +96,19 @@ function addDropZonesToRows(num, characterMap) {
 
         const dropZone = document.createElement('div');
         dropZone.className = 'grid-item-row drop-zone';
+        dropZone.setAttribute('data-zone-id', `zone-Ban ${banIndex + 1}`);
 
         const span = document.createElement('span');
         span.className = 'ban-text';
         span.textContent = `Ban ${banIndex + 1}`;
         dropZone.appendChild(span);
 
-        setupDropZone(dropZone, characterMap);
         currentRow.appendChild(dropZone);
     }
 
     if (currentRow.children.length > 0) {
         container.appendChild(currentRow);
     }
-}
-
-/**
- * 共用的 Drop Zone 建立函數（適用於 pick zone）
- */
-function createDropZone(textClass, textContent, characterMap) {
-    const dropZone = document.createElement('div');
-    dropZone.className = 'grid-item drop-zone';
-
-    const span = document.createElement('span');
-    span.className = textClass;
-    span.textContent = textContent;
-    dropZone.appendChild(span);
-
-    setupDropZone(dropZone, characterMap);
-    return dropZone;
 }
 
 function generateBanOrder(num) {

@@ -2,6 +2,8 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const fs = require('fs');
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 
 // 靜態文件服務
 app.use(express.static(path.join(__dirname, '../'), {
@@ -13,10 +15,23 @@ app.use(express.static(path.join(__dirname, '../'), {
     }
 }));
 
-app.listen(3000, () => {
-    console.log('Server is running on http://localhost:3000');
+
+io.on('connection', (socket) => {
+    console.log('User connected:', socket.id);
+
+    socket.on('drag-update', (data) => {
+        // 廣播拖曳動作給其他使用者
+        socket.broadcast.emit('drag-update', data);
+    });
+
+    socket.on('reset-images', () => {
+        socket.broadcast.emit('reset-images');
+    });
 });
 
+http.listen(3000, () => {
+    console.log('Server is running on http://localhost:3000');
+});
 
 app.get('/api/characters', (req, res) => {
     const charactersFilePath = path.join(__dirname, 'character/characters.json');

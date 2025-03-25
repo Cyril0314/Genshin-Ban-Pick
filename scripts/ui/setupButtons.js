@@ -2,11 +2,14 @@ import { resetImages } from '../utils/imageUtils.js';
 import { randomizeImages, handleUtilityRandom } from '../features/randomizer.js';
 import { handleSelection } from '../features/filter.js';
 
-export function setupAllButtons(characterMap) {
+export function setupAllButtons(characterMap, socket) {
     // Reset Button
     document.getElementById('reset-button').addEventListener('click', () => {
         console.log('[UI] Reset button clicked');
         resetImages();
+
+        socket.emit('reset-images');
+        console.log("socket.emit reset-images")
     });
 
     // Randomize Button
