@@ -1,4 +1,5 @@
-body, html {
+body,
+html {
     margin: 0;
     padding: 0;
     height: 100%;
@@ -15,18 +16,26 @@ body::before {
     background-size: cover;
     opacity: 0.4;
     z-index: -1;
-    background-blend-mode: multiply; /* 圖片與背景混合模式，變暗 */
-    background-color: rgba(0, 0, 0, 0.2); /* 暗色透明遮罩 */
+    background-blend-mode: multiply;
+    /* 圖片與背景混合模式，變暗 */
+    background-color: rgba(0, 0, 0, 0.2);
+    /* 暗色透明遮罩 */
 }
 
 #image-options {
     display: flex;
-    flex-wrap: wrap;            /* 允許內容自動換行 */
-    width: 100%;                /* 容器宽度 */
-    height: 190px;              /* 固定高度, 可以存放3行圖片，根據圖片高度調整 */
-    overflow-y: auto;           /* 超出部分垂直滚动 */
-    align-items: flex-start;    /* 頂部對齊，防止行高不一致時內容中斷 */
-    gap: 10px;                  /* 設置圖片間距 */
+    flex-wrap: wrap;
+    /* 允許內容自動換行 */
+    width: 100%;
+    /* 容器宽度 */
+    height: 190px;
+    /* 固定高度, 可以存放3行圖片，根據圖片高度調整 */
+    overflow-y: auto;
+    /* 超出部分垂直滚动 */
+    align-items: flex-start;
+    /* 頂部對齊，防止行高不一致時內容中斷 */
+    gap: 10px;
+    /* 設置圖片間距 */
 }
 
 #image-options img {
@@ -42,7 +51,10 @@ body::before {
     margin-bottom: 60px;
 }
 
-#reset-button, #randomize-button, #filter-button, #utility-button {
+#reset-button,
+#randomize-button,
+#filter-button,
+#utility-button {
     position: relative;
     width: 120px;
     z-index: 1000;
@@ -55,15 +67,22 @@ body::before {
     transition: background-color 0.3s ease, transform 0.2s ease;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     font-size: 1em;
-    margin: 0 5px; /* 左右間隔 */
+    margin: 0 5px;
+    /* 左右間隔 */
 }
 
-#reset-button:hover, #randomize-button:hover, #filter-button:hover, #utility-button:hover {
+#reset-button:hover,
+#randomize-button:hover,
+#filter-button:hover,
+#utility-button:hover {
     background-color: #6b5b5b;
     transform: scale(1.05);
 }
 
-#reset-button:active, #randomize-button:active, #filter-button:active, #utility-button:active {
+#reset-button:active,
+#randomize-button:active,
+#filter-button:active,
+#utility-button:active {
     transform: scale(0.98);
 }
 
@@ -91,7 +110,8 @@ body::before {
     position: absolute;
     display: flex;
     flex-direction: column;
-    align-items: center; /* 子元素水平居中 */
+    align-items: center;
+    /* 子元素水平居中 */
     /* margin: 0 20px; */
     margin-top: 320px;
 }
@@ -112,37 +132,45 @@ body::before {
 }
 
 /* 指定 JavaScript 動態建立的容器為 Flexbox 排版，解決 margin collapse 的問題。 */
-.grid-column-center.center-column > div {
+.grid-column-center.center-column>div {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.grid-item, .grid-item-center, .grid-item-row {
+.grid-item,
+.grid-item-center,
+.grid-item-row {
     width: 160px;
     height: 90px;
     margin: 5px;
     position: relative;
     background-color: rgba(255, 255, 255, 0.3);
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     display: flex;
     justify-content: center;
     align-items: center;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.grid-item:hover, .grid-item-center:hover, .grid-item-row:hover {
+.grid-item:hover,
+.grid-item-center:hover,
+.grid-item-row:hover {
     transform: scale(1.03);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
 }
 
-.grid-item img, .grid-item-center img, .grid-item-row img {
+.grid-item img,
+.grid-item-center img,
+.grid-item-row img {
     height: auto;
     z-index: 15;
 }
 
-.ban-text, .pick-text, .utility-text {
+.ban-text,
+.pick-text,
+.utility-text {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -151,7 +179,8 @@ body::before {
     z-index: 10;
 }
 
-.ban-text, .utility-text {
+.ban-text,
+.utility-text {
     color: #4e4040;
     font-size: 1.25em;
 }
@@ -160,11 +189,13 @@ body::before {
     font-size: 1.25em;
 }
 
-.grid-column.left1 .pick-text, .grid-column.left2 .pick-text {
+.grid-column.left1 .pick-text,
+.grid-column.left2 .pick-text {
     color: #5191c2;
 }
 
-.grid-column.right1 .pick-text, .grid-column.right2 .pick-text {
+.grid-column.right1 .pick-text,
+.grid-column.right2 .pick-text {
     color: #df5757;
 }
 
@@ -172,10 +203,30 @@ body::before {
     position: relative;
 }
 
+.drop-zone.highlight {
+    outline: 3px dashed gold;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 5px gold;
+    }
+
+    50% {
+        box-shadow: 0 0 15px gold;
+    }
+
+    100% {
+        box-shadow: 0 0 5px gold;
+    }
+}
+
 .drop-zone img {
     width: 100%;
     height: 100%;
-    object-fit: cover;  /* 保证图片填充整个容器但不失真 */
+    object-fit: cover;
+    /* 保证图片填充整个容器但不失真 */
 }
 
 .selector-container {

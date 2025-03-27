@@ -1,4 +1,5 @@
 import { getWishImagePath, getProfileImagePath, originalImageSrc, resetImages } from '../utils/imageUtils.js';
+import { showCurrentStepText, highlightZones } from '../ui/banPickFlowUI.js';
 
 export function setupSocketListeners(characterMap, socket) {
     socket.on('connect', () => {
@@ -8,8 +9,6 @@ export function setupSocketListeners(characterMap, socket) {
     const urlParams = new URLSearchParams(window.location.search);
     const roomId = urlParams.get('room') || 'default-room';
     socket.emit('join-room', roomId);
-
-    socket.emit('get-state');
 
     socket.on('current-state', (state) => {
         console.log('[Client] Recovering state from server:', state);
@@ -50,5 +49,10 @@ export function setupSocketListeners(characterMap, socket) {
     socket.on('reset-images', () => {
         console.log("[Client] Reset received from other user");
         resetImages();
+    });
+
+    socket.on('step-update', (step) => {
+        showCurrentStepText(step);
+        highlightZones(step);
     });
 }

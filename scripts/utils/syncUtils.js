@@ -26,5 +26,6 @@ export function getSelectorForZone(zone) {
     if (zone.dataset.zoneId) {
         return `[data-zone-id="${zone.dataset.zoneId}"]`;
     }
+    console.log(`${'.' + zone.className.split(' ').join('.')}`)
     return '.' + zone.className.split(' ').join('.');
 }

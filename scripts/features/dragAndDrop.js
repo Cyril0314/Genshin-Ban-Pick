@@ -54,10 +54,3 @@ function setupClickRestore(socket) {
         }
     });
 }
-
-function getSelectorForZone(zone) {
-    if (zone.dataset.zoneId) {
-        return `[data-zone-id="${zone.dataset.zoneId}"]`;
-    }
-    return '.' + zone.className.split(' ').join('.');
-}

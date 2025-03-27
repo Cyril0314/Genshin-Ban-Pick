@@ -3,7 +3,7 @@ import { setupAllDropZones } from './ui/dropZones.js';
 import { setupAllButtons } from './ui/setupButtons.js';
 import { setupGlobalEvents } from './features/dragAndDrop.js';
 import { setupLayoutRules } from './ui/layout.js';
-import { setupSocketListeners } from './network/socketHandlers.js';
+import { setupSocketListeners } from './network/socketListeners.js';
 
 const socket = io();
 
