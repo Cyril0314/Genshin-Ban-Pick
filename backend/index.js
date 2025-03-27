@@ -20,18 +20,34 @@ let imageState = {};
 io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
 
+    socket.on('join-room', (roomId) => {
+        socket.join(roomId);
+        socket.roomId = roomId;
+
+        console.log(`[Server] ${socket.id} joined room: ${roomId}`);
+
+        if (!imageState[roomId]) imageState[roomId] = {};
+        socket.emit('current-state', imageState[roomId]);
+    });
+
     socket.on('get-state', () => {
         socket.emit('current-state', imageState);
     });
 
     socket.on('image-move', ({ imgId, zoneSelector, senderId })  => {
-        imageState[imgId] = zoneSelector;
-        socket.broadcast.emit('image-move', { imgId, zoneSelector, senderId });
+        const roomId = socket.roomId;
+        if (!roomId) return;
+
+        imageState[roomId][imgId] = zoneSelector;
+        socket.to(roomId).emit('image-move', { imgId, zoneSelector, senderId });
     });
 
     socket.on('reset-images', () => {
-        imageState = {};
-        socket.broadcast.emit('reset-images');
+        const roomId = socket.roomId;
+        if (!roomId) return;
+
+        imageState[roomId] = {};
+        socket.to(roomId).emit('reset-images');
     });
 });
 

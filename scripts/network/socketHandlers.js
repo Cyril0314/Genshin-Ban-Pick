@@ -5,6 +5,10 @@ export function setupSocketListeners(characterMap, socket) {
         console.log('[Client] Connected to server with ID:', socket.id);
     });
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomId = urlParams.get('room') || 'default-room';
+    socket.emit('join-room', roomId);
+
     socket.emit('get-state');
 
     socket.on('current-state', (state) => {
@@ -14,7 +18,7 @@ export function setupSocketListeners(characterMap, socket) {
             const zone = document.querySelector(zoneSelector);
     
             if (img && zone && !zone.querySelector('img')) {
-                img.src = getWishImagePath(imgId); // 顯示 wish 圖
+                img.src = getWishImagePath(imgId);
                 zone.appendChild(img);
             }
         }
