@@ -1,4 +1,5 @@
 import { originalImageSrc, getWishImagePath } from '../utils/imageUtils.js';
+import { updateAndBroadcastImage } from '../utils/syncUtils.js';
 
 /**
  * 綁定整體拖曳與放置、圖片還原點擊事件
@@ -31,15 +32,7 @@ function setupDragEvents(characterMap, socket) {
             const draggedImgId = e.dataTransfer.getData('text/plain');
             const draggedImg = document.getElementById(draggedImgId);
             if (draggedImg && !zone.querySelector('img')) {
-                if (characterMap[draggedImgId]) {
-                    draggedImg.src = getWishImagePath(draggedImgId);
-                }
-                zone.appendChild(draggedImg);
-
-                const zoneSelector = getSelectorForZone(zone);
-                console.log(`${zoneSelector}`)
-                socket.emit('drag-update', { imgId: draggedImgId, zoneSelector, senderId: socket.id });
-                console.log('[Client] Sent drag-update:', draggedImgId, zoneSelector);
+                updateAndBroadcastImage(draggedImg, zone, characterMap, socket);
             }
         });
     });
@@ -56,8 +49,8 @@ function setupClickRestore(socket) {
             e.target.src = originalImageSrc[imgId] || e.target.src;
             imageOptions.appendChild(e.target);
 
-            // 廣播還原圖片事件
-            socket.emit('drag-update', { imgId, zoneSelector: '#image-options' });
+            socket.emit('image-move', { imgId, zoneSelector: '#image-options', senderId: socket.id});
+            console.log('[Client] Sent image-move:', draggedImgId, zoneSelector);
         }
     });
 }

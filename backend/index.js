@@ -15,16 +15,22 @@ app.use(express.static(path.join(__dirname, '../'), {
     }
 }));
 
+let imageState = {};
 
 io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
 
-    socket.on('drag-update', (data) => {
-        // 廣播拖曳動作給其他使用者
-        socket.broadcast.emit('drag-update', data);
+    socket.on('get-state', () => {
+        socket.emit('current-state', imageState);
+    });
+
+    socket.on('image-move', ({ imgId, zoneSelector, senderId })  => {
+        imageState[imgId] = zoneSelector;
+        socket.broadcast.emit('image-move', { imgId, zoneSelector, senderId });
     });
 
     socket.on('reset-images', () => {
+        imageState = {};
         socket.broadcast.emit('reset-images');
     });
 });

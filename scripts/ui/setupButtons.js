@@ -15,25 +15,25 @@ export function setupAllButtons(characterMap, socket) {
     // Randomize Button
     document.getElementById('randomize-button').addEventListener('click', () => {
         console.log('[UI] Randomize button clicked');
-        randomizeImages(characterMap);
+        randomizeImages(characterMap, socket);
     });
 
     // Utility Button
     document.getElementById('utility-button').addEventListener('click', () => {
         console.log('[UI] Utility button clicked');
-        handleUtilityRandom(characterMap);
+        handleUtilityRandom(characterMap, socket);
     });
 
     // Left Side Confirm Button
     document.getElementById('left-confirm-button').addEventListener('click', () => {
         console.log('[UI] Left confirm clicked');
-        handleSelection('left', characterMap);
+        handleSelection('left', characterMap, socket);
     });
 
     // Right Side Confirm Button
     document.getElementById('right-confirm-button').addEventListener('click', () => {
         console.log('[UI] Right confirm clicked');
-        handleSelection('right', characterMap);
+        handleSelection('right', characterMap, socket);
     });
 
     // Filter Button (可留空或未來擴充)

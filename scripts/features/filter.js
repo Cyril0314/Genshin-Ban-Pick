@@ -1,9 +1,9 @@
-import { originalImageSrc, getWishImagePath } from '../utils/imageUtils.js';
+import { updateAndBroadcastImage } from '../utils/syncUtils.js';
 
 /**
  * 根據 side ('left' 或 'right') 選擇角色並分配
  */
-export function handleSelection(side, characterMap) {
+export function handleSelection(side, characterMap, socket) {
     const weapon = document.getElementById(`${side}-weapon-select`).value;
     const element = document.getElementById(`${side}-element-select`).value;
 
@@ -29,13 +29,13 @@ export function handleSelection(side, characterMap) {
     }
 
     const selected = filtered.sort(() => 0.5 - Math.random()).slice(0, totalNeeded);
-    distributeToRowsPerVisualRow(selected, side, characterMap);
+    distributeToRowsPerVisualRow(selected, side, characterMap, socket);
 }
 
 /**
  * 把圖片分配到 ban zone 左／右欄位
  */
-function distributeToRowsPerVisualRow(images, side, characterMap) {
+function distributeToRowsPerVisualRow(images, side, characterMap, socket) {
     const rows = Array.from(document.querySelectorAll('.ban-zone-wrapper .grid-row'));
     let imageIndex = 0;
 
@@ -45,27 +45,12 @@ function distributeToRowsPerVisualRow(images, side, characterMap) {
 
         if (side === 'left') {
             for (let i = 0; i < half && imageIndex < images.length; i++) {
-                updateAndAppend(images[imageIndex++], zones[i], characterMap);
+                updateAndBroadcastImage(images[imageIndex++], zones[i], characterMap, socket);
             }
         } else if (side === 'right') {
             for (let i = half; i < zones.length && imageIndex < images.length; i++) {
-                updateAndAppend(images[imageIndex++], zones[i], characterMap);
+                updateAndBroadcastImage(images[imageIndex++], zones[i], characterMap, socket);
             }
         }
     });
-}
-
-
-/**
- * 通用圖片更新＋放置
- */
-function updateAndAppend(img, zone, characterMap) {
-    const imgId = img.id;
-    originalImageSrc[imgId] = img.src;
-
-    if (characterMap[imgId]) {
-        img.src = getWishImagePath(imgId);
-    }
-
-    zone.appendChild(img);
 }
