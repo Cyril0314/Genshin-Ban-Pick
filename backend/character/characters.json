@@ -396,6 +396,18 @@
         "type": 0
     },
     {
+        "icon": "Iansan Icon",
+        "name": "Iansan",
+        "rarity": "4 Stars",
+        "element": "Electro",
+        "weapon": "Polearm",
+        "region": "Natlan",
+        "model_type": "Short Female",
+        "release_date": "March 26, 2025",
+        "version": "5.5",
+        "type": 2
+    },
+    {
         "icon": "Jean Icon",
         "name": "Jean",
         "rarity": "5 Stars",
@@ -922,6 +934,18 @@
         "release_date": "September 28, 2020",
         "version": "1.0",
         "type": 1
+    },
+    {
+        "icon": "Varesa Icon",
+        "name": "Varesa",
+        "rarity": "5 Stars",
+        "element": "Electro",
+        "weapon": "Catalyst",
+        "region": "Natlan",
+        "model_type": "Medium Female",
+        "release_date": "March 26, 2025",
+        "version": "5.5",
+        "type": 0
     },
     {
         "icon": "Venti Icon",
