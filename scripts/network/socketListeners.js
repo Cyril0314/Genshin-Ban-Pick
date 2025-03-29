@@ -1,5 +1,6 @@
 import { getWishImagePath, getProfileImagePath, originalImageSrc, resetImages } from '../utils/imageUtils.js';
 import { showCurrentStepText, highlightZones } from '../ui/banPickFlowUI.js';
+import { stepController } from '../logic/stepController.js';
 
 export function setupSocketListeners(characterMap, socket) {
     socket.on('connect', () => {
@@ -15,7 +16,7 @@ export function setupSocketListeners(characterMap, socket) {
         for (const [imgId, zoneSelector] of Object.entries(state)) {
             const img = document.getElementById(imgId);
             const zone = document.querySelector(zoneSelector);
-    
+
             if (img && zone && !zone.querySelector('img')) {
                 img.src = getWishImagePath(imgId);
                 zone.appendChild(img);
@@ -52,7 +53,20 @@ export function setupSocketListeners(characterMap, socket) {
     });
 
     socket.on('step-update', (step) => {
+        stepController.set(step)
         showCurrentStepText(step);
         highlightZones(step);
+    });
+
+    socket.on('team-members-update', ({ team, content }) => {
+        const target = document.querySelector(`.team-member-input[data-team="${team}"]`);
+        if (target) target.value = content;
+    });
+
+    socket.on('team-members-batch', (state) => {
+        for (const [team, content] of Object.entries(state)) {
+            const input = document.querySelector(`.team-member-input[data-team="${team}"]`);
+            if (input) input.value = content;
+        }
     });
 }

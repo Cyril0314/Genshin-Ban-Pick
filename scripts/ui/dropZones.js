@@ -1,18 +1,16 @@
-import { numberOfUtilityGrids, numberOfBanGrids, numberOfPickGrids } from '../constants/constants.js';
-
 /**
  * 建立所有 Drop Zones（utility + pick + ban）
  */
-export function setupAllDropZones(characterMap) {
-    addDropZonesToCenterColumn(numberOfUtilityGrids, characterMap);
-    addDropZonesToColumns(numberOfPickGrids, characterMap);
-    addDropZonesToRows(numberOfBanGrids, characterMap);
+export function setupAllDropZones({numberOfUtility, numberOfBan, numberOfPick, totalRounds}) {
+    addDropZonesToCenterColumn(numberOfUtility);
+    addDropZonesToRows(numberOfBan, totalRounds);
+    addDropZonesToColumns(numberOfPick, totalRounds);
 }
 
 /**
  * Utility Zone（中間欄）
  */
-function addDropZonesToCenterColumn(num, characterMap) {
+function addDropZonesToCenterColumn(num) {
     const columns = document.querySelectorAll('.grid-column-center');
     columns.forEach(column => {
         let currentColumn = document.createElement('div');
@@ -49,11 +47,11 @@ function addDropZonesToCenterColumn(num, characterMap) {
 /**
  * Pick Zone（左右欄）
  */
-function addDropZonesToColumns(num, characterMap) {
+function addDropZonesToColumns(num, totalRounds) {
     const columns = document.querySelectorAll('.grid-column');
     const numPerColumn = num / columns.length;
     console.log(`num ${num} numPerColumn ${numPerColumn} columns.length ${columns.length}`)
-    const pickOrder = generatePickOrder(num);
+    const pickOrder = generatePickOrder(num, totalRounds);
     const pickTexts = pickOrder.map(n => `Pick ${n + 1}`);
 
     let index = 0;
@@ -79,10 +77,11 @@ function addDropZonesToColumns(num, characterMap) {
 /**
  * Ban Zone（中間橫列）
  */
-function addDropZonesToRows(num, characterMap) {
+function addDropZonesToRows(num, totalRounds) {
     const container = document.querySelector('.ban-zone-wrapper');
     const maxPerRow = 8;
-    const order = generateBanOrder(num);
+    const order = generateBanOrder(num, maxPerRow, totalRounds);
+    console.log(`${order}`)
     let currentRow = document.createElement('div');
     currentRow.className = 'grid-row';
 
@@ -111,39 +110,50 @@ function addDropZonesToRows(num, characterMap) {
     }
 }
 
-function generateBanOrder(num) {
-    const maxPerRow = 8;
-    const pattern = [7, 5, 3, 1, 0, 2, 4, 6];
-    const order = [];
+function generateBanOrder(num, maxPerRow, totalRounds) {
+    const secondRoundOffset = num / totalRounds;
+    const rows = Math.ceil(num / maxPerRow)
+    const matrix = Array.from({ length: rows }, () => []);
 
-    const totalRounds = Math.ceil(num / maxPerRow);
+    const shouldUnshift = (i) => {
+        const isFirstHalf = i < secondRoundOffset;
+        const isOdd = i % 2 === 1;
+        return (isFirstHalf && isOdd) || (!isFirstHalf && i % 2 === 0);
+    };
 
-    for (let row = 0; row < totalRounds; row++) {
-        const offset = row * maxPerRow;
 
-        pattern.forEach(p => {
-            const index = offset + p;
-            if (index < num) {
-                order.push(index);
-            }
-        });
+    var row = 0;
+    for (let i = 0; i < num; i++) {
+        if (shouldUnshift(i)) {
+            matrix[row].unshift(i);
+        } else {
+            matrix[row].push(i);
+        }
+        if ((i + 1) % maxPerRow === 0) {
+            row++;
+        }
     }
 
-    return order;
+    return matrix.flat();
 }
-export function generatePickOrder(num) {
+
+function generatePickOrder(num, totalRounds) {
+    const offensivePattern = [0, 3, 4, 7, 8, 11, 12, 15];
+    const defensivePattern = [1, 2, 5, 6, 9, 10, 13, 14];
     const cols = 4;
-    const rowsPerCol = num / cols;
-  
     const matrix = Array.from({ length: cols }, () => []);
-  
-    for (let row = 0; row < rowsPerCol; row++) {
-      matrix[0].push(row * 2);                   // 左1: 奇數格中的左邊
-      matrix[1].push(16 + row * 2);              // 左2: 從 17 開始，每次 +2
-      matrix[2].push(16 + row * 2 + 1);          // 右2: 從 18 開始，每次 +2
-      matrix[3].push(row * 2 + 1);               // 右1: 偶數格中的右邊
-    }
-  
+    const secondRoundOffset = num / totalRounds;
+
+    offensivePattern.forEach(p => {
+        matrix[0].push(p);
+        matrix[2].push(secondRoundOffset + p);
+    });
+
+    defensivePattern.forEach(p => {
+        matrix[1].push(secondRoundOffset + p);
+        matrix[3].push(p);
+    });
+
     // Flatten: 先欄，再行（由上到下）
     return matrix.flat();
 }

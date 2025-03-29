@@ -1,7 +1,10 @@
-// banPickFlowUI.js (前端 UI 用)
+// banPickFlowUI.js
 
 export function showCurrentStepText(step) {
     const textBox = document.getElementById('step-indicator');
+    textBox.classList.add('active');
+    setTimeout(() => textBox.classList.remove('active'), 1200);
+
     if (!textBox) return;
 
     if (!step) {
@@ -14,12 +17,9 @@ export function showCurrentStepText(step) {
 export function highlightZones(step) {
     const allZones = document.querySelectorAll('.drop-zone');
     allZones.forEach(zone => zone.classList.remove('highlight'));
-
-    // if (!step || step.player !== myPlayerId) return;
-
     allZones.forEach(zone => {
         const zoneId = zone.dataset.zoneId;
-        console.log(`zoneId: ${zoneId} step.zoneId: ${step.zoneId}`)
+        // console.log(`zoneId: ${zoneId} step.zoneId: ${step.zoneId}`)
         if (zoneId === `zone-${step.zoneId}`) {
             zone.classList.add('highlight');
         }

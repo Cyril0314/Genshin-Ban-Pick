@@ -37,12 +37,4 @@ router.get('/api/character/images', (req, res) => {
     });
 });
 
-// 測試資料
-router.get('/api/data', (req, res) => {
-    res.json({
-        message: "Here is your data!",
-        data: [1, 2, 3, 4, 5]
-    });
-});
-
 export default router;

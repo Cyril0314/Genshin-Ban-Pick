@@ -1,5 +1,6 @@
-import { originalImageSrc, getWishImagePath } from '../utils/imageUtils.js';
+import { originalImageSrc } from '../utils/imageUtils.js';
 import { updateAndBroadcastImage } from '../utils/syncUtils.js';
+import { stepController } from '../logic/stepController.js';
 
 /**
  * 綁定整體拖曳與放置、圖片還原點擊事件
@@ -33,6 +34,11 @@ function setupDragEvents(characterMap, socket) {
             const draggedImg = document.getElementById(draggedImgId);
             if (draggedImg && !zone.querySelector('img')) {
                 updateAndBroadcastImage(draggedImg, zone, characterMap, socket);
+
+
+                if (stepController.isCurrentZone(zone.dataset.zoneId)) {
+                    socket.emit('step-next');
+                }
             }
         });
     });
@@ -43,14 +49,24 @@ function setupDragEvents(characterMap, socket) {
  */
 function setupClickRestore(socket) {
     document.addEventListener('click', e => {
-        if (e.target.tagName === 'IMG' && e.target.parentElement.classList.contains('drop-zone')) {
-            const imgId = e.target.id.replace('_clone', '');
-            const imageOptions = document.getElementById('image-options');
-            e.target.src = originalImageSrc[imgId] || e.target.src;
-            imageOptions.appendChild(e.target);
+        if (e.target.tagName !== 'IMG') return;
 
-            socket.emit('image-move', { imgId, zoneSelector: '#image-options', senderId: socket.id});
-            console.log('[Client] Sent image-move:', draggedImgId, zoneSelector);
-        }
+        const parent = e.target.parentElement;
+        if (!parent.classList.contains('drop-zone')) return;
+
+        const imgId = e.target.id.replace('_clone', '');
+        const imageOptions = document.getElementById('image-options');
+        e.target.src = originalImageSrc[imgId] || e.target.src;
+        imageOptions.appendChild(e.target);
+
+        socket.emit('image-move', { imgId, zoneSelector: '#image-options', senderId: socket.id });
+        console.log('[Client] Sent image-move: click image');
+
+        // const currentStep = stepController.get();
+        // const zoneId = parent.dataset.zoneId;
+        // if (stepController.isCurrentZone(zoneId)) {
+        //     socket.emit('step-prev');
+        //     console.log('[Client] Sent step-prev from restore');
+        // }
     });
 }

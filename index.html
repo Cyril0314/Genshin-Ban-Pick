@@ -17,15 +17,11 @@
     <button id="filter-button">Filter</button>
     <button id="utility-button">Utility</button>
   </div>
-
-  <div id="step-indicator" class="text-white text-xl font-semibold text-center my-4">
-    等待進入房間...
-  </div>
   
   <div class="grid-container">
     <div class="grid-column left1">
       <span class="side-text left-text">Team Aether</span>
-      <textarea placeholder="Members" class="team-member-input"></textarea>
+      <textarea placeholder="Members" class="team-member-input" data-team="aether"></textarea>
       <!-- Pick Zone  -->
     </div>
 
@@ -68,6 +64,7 @@
     </div>
 
     <div class="center-area">
+      <div id="step-indicator" class="text-white text-xl font-semibold text-center my-4"> 等待進入房間... </div>
       <div class="grid-column-center center-column">
         <!-- Utility Zone  -->
       </div>
@@ -110,7 +107,7 @@
     </div>
     <div class="grid-column right1">
       <span class="side-text right-text">Team Lumine</span>
-      <textarea placeholder="Members" class="team-member-input"></textarea>
+      <textarea placeholder="Members" class="team-member-input" data-team="lumine"></textarea>
       <!-- Pick Zone  -->
     </div>
   </div>
