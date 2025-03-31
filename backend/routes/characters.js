@@ -9,6 +9,10 @@ const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// type: 0 主C
+// type: 1 副C
+// type: 2 輔助
+
 // 角色資料
 router.get('/api/characters', (req, res) => {
     const charactersFilePath = path.join(__dirname, '../character/characters.json');
@@ -29,11 +33,12 @@ router.get('/api/character/images', (req, res) => {
         if (err) {
             console.log('Error getting directory information.');
             res.status(500).send('Failed to list images');
-        } else {
-            let imageFiles = files.filter(file => /\.(jpg|jpeg|png|gif|webp)$/.test(file))
-                .map(image => `/images/${image}`);
-            res.json(imageFiles);
-        }
+            return;
+        } 
+        let imageFiles = files
+            .filter(file => /\.(jpg|jpeg|png|gif|webp)$/.test(file))
+            .map(image => `/images/${image}`);
+        res.json(imageFiles);
     });
 });
 

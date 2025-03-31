@@ -65,7 +65,7 @@ export function handleUtilityRandom(characterMap, socket) {
         return char?.type === mainCarryType && char.rarity === "5 Stars";
     });
 
-    const zone = Array.from(document.querySelectorAll('.grid-column-center .drop-zone'))
+    const zone = Array.from(document.querySelectorAll('.utility-zone-wrapper .drop-zone'))
         .find(z => !z.querySelector('img'));
 
     if (!zone || filtered.length === 0) return;

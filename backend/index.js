@@ -32,7 +32,3 @@ server.listen(3000, '0.0.0.0', () => {
 
 app.use(characterRoutes);
 app.use(roomRoutes);
-
-// type: 0 主C
-// type: 1 副C
-// type: 2 輔助

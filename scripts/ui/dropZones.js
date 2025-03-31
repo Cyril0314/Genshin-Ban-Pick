@@ -1,7 +1,7 @@
 /**
  * 建立所有 Drop Zones（utility + pick + ban）
  */
-export function setupAllDropZones({numberOfUtility, numberOfBan, numberOfPick, totalRounds}) {
+export function setupAllDropZones({ numberOfUtility, numberOfBan, numberOfPick, totalRounds }) {
     addDropZonesToCenterColumn(numberOfUtility);
     addDropZonesToRows(numberOfBan, totalRounds);
     addDropZonesToColumns(numberOfPick, totalRounds);
@@ -11,68 +11,33 @@ export function setupAllDropZones({numberOfUtility, numberOfBan, numberOfPick, t
  * Utility Zone（中間欄）
  */
 function addDropZonesToCenterColumn(num) {
-    const columns = document.querySelectorAll('.grid-column-center');
-    columns.forEach(column => {
-        let currentColumn = document.createElement('div');
-        let itemsInColumn = 0;
+    const container = document.querySelector('.utility-zone-wrapper');
+    const maxPerColumn = 4;
+    let currentColumn = document.createElement('div');
+    currentColumn.className = 'grid-center-column';
 
-        for (let i = 0; i < num; i++) {
-            const dropZone = document.createElement('div');
-            dropZone.className = 'grid-item-center drop-zone';
-            dropZone.setAttribute('data-zone-id', `zone-Utility ${i + 1}`);
-
-            const span = document.createElement('span');
-            span.className = 'utility-text';
-            span.textContent = 'Utility';
-            dropZone.appendChild(span);
-
-            currentColumn.appendChild(dropZone);
-            itemsInColumn++;
-
-            if (itemsInColumn === 4) {
-                column.appendChild(currentColumn);
-                currentColumn = document.createElement('div');
-                currentColumn.style.display = 'inline-block';
-                currentColumn.style.verticalAlign = 'top';
-                itemsInColumn = 0;
-            }
+    for (let i = 0; i < num; i++) {
+        if (i > 0 && i % maxPerColumn === 0) {
+            container.appendChild(currentColumn);
+            currentColumn = document.createElement('div');
+            currentColumn.className = 'grid-center-column';
         }
+        const dropZone = document.createElement('div');
+        dropZone.className = 'grid-item-center drop-zone';
+        dropZone.setAttribute('data-zone-id', `zone-Utility ${i + 1}`);
 
-        if (itemsInColumn > 0) {
-            column.appendChild(currentColumn);
-        }
-    });
-}
+        const span = document.createElement('span');
+        span.className = 'utility-text';
+        span.textContent = 'Utility';
+        dropZone.appendChild(span);
 
-/**
- * Pick Zone（左右欄）
- */
-function addDropZonesToColumns(num, totalRounds) {
-    const columns = document.querySelectorAll('.grid-column');
-    const numPerColumn = num / columns.length;
-    console.log(`num ${num} numPerColumn ${numPerColumn} columns.length ${columns.length}`)
-    const pickOrder = generatePickOrder(num, totalRounds);
-    const pickTexts = pickOrder.map(n => `Pick ${n + 1}`);
+        currentColumn.appendChild(dropZone);
+    }
 
-    let index = 0;
-
-    for (let i = 0; i < columns.length; i++) {
-        for (let j = 0; j < numPerColumn; j++) {
-            const dropZone = document.createElement('div');
-            dropZone.className = 'grid-item drop-zone';
-            dropZone.setAttribute('data-zone-id', `zone-${pickTexts[index]}`);
-        
-            const span = document.createElement('span');
-            span.className = 'pick-text';
-            span.textContent = pickTexts[index];
-            dropZone.appendChild(span);
-        
-            columns[i].appendChild(dropZone);
-            index++;
-        }
+    if (currentColumn.children.length > 0) {
+        container.appendChild(currentColumn);
     }
 }
-
 
 /**
  * Ban Zone（中間橫列）
@@ -81,7 +46,6 @@ function addDropZonesToRows(num, totalRounds) {
     const container = document.querySelector('.ban-zone-wrapper');
     const maxPerRow = 8;
     const order = generateBanOrder(num, maxPerRow, totalRounds);
-    console.log(`${order}`)
     let currentRow = document.createElement('div');
     currentRow.className = 'grid-row';
 
@@ -92,14 +56,15 @@ function addDropZonesToRows(num, totalRounds) {
             currentRow.className = 'grid-row';
         }
         const banIndex = order[i];
+        const banText = `Ban ${banIndex + 1}`
 
         const dropZone = document.createElement('div');
         dropZone.className = 'grid-item-row drop-zone';
-        dropZone.setAttribute('data-zone-id', `zone-Ban ${banIndex + 1}`);
+        dropZone.setAttribute('data-zone-id', `zone-${banText}`);
 
         const span = document.createElement('span');
         span.className = 'ban-text';
-        span.textContent = `Ban ${banIndex + 1}`;
+        span.textContent = banText;
         dropZone.appendChild(span);
 
         currentRow.appendChild(dropZone);
@@ -107,6 +72,35 @@ function addDropZonesToRows(num, totalRounds) {
 
     if (currentRow.children.length > 0) {
         container.appendChild(currentRow);
+    }
+}
+
+/**
+ * Pick Zone（左右欄）
+ */
+function addDropZonesToColumns(num, totalRounds) {
+    const columns = document.querySelectorAll('.grid-column');
+    const numPerColumn = num / columns.length;
+    // console.log(`num ${num} numPerColumn ${numPerColumn} columns.length ${columns.length}`)
+    const order = generatePickOrder(num, totalRounds);
+
+    for (let i = 0; i < columns.length; i++) {
+        for (let j = 0; j < numPerColumn; j++) {
+            const index = i * columns.length + j
+            const pickIndex = order[index]
+            const pickText = `Pick ${pickIndex + 1}`
+
+            const dropZone = document.createElement('div');
+            dropZone.className = 'grid-item drop-zone';
+            dropZone.setAttribute('data-zone-id', `zone-${pickText}`);
+
+            const span = document.createElement('span');
+            span.className = 'pick-text';
+            span.textContent = pickText;
+            dropZone.appendChild(span);
+
+            columns[i].appendChild(dropZone);
+        }
     }
 }
 
@@ -120,7 +114,6 @@ function generateBanOrder(num, maxPerRow, totalRounds) {
         const isOdd = i % 2 === 1;
         return (isFirstHalf && isOdd) || (!isFirstHalf && i % 2 === 0);
     };
-
 
     var row = 0;
     for (let i = 0; i < num; i++) {
