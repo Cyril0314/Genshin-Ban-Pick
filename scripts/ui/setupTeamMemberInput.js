@@ -7,7 +7,7 @@ export function setupTeamMemberInput(socket) {
         const team = input.dataset.team;
         input.addEventListener('input', () => {
             const content = input.value;
-            socket.emit('team-members-update', { team, content });
+            socket.emit('team.members.update.request', { team, content });
         });
     });
 }

@@ -86,7 +86,7 @@ function addDropZonesToColumns(num, totalRounds) {
 
     for (let i = 0; i < columns.length; i++) {
         for (let j = 0; j < numPerColumn; j++) {
-            const index = i * columns.length + j
+            const index = i * numPerColumn + j
             const pickIndex = order[index]
             const pickText = `Pick ${pickIndex + 1}`
 

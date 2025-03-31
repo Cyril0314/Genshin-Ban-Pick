@@ -37,7 +37,7 @@ function setupDragEvents(characterMap, socket) {
 
 
                 if (stepController.isCurrentZone(zone.dataset.zoneId)) {
-                    socket.emit('step-next');
+                    socket.emit('step.advance.request');
                 }
             }
         });
@@ -59,13 +59,13 @@ function setupClickRestore(socket) {
         e.target.src = originalImageSrc[imgId] || e.target.src;
         imageOptions.appendChild(e.target);
 
-        socket.emit('image-move', { imgId, zoneSelector: '#image-options', senderId: socket.id });
-        console.log('[Client] Sent image-move: click image');
+        socket.emit('image.move.request', { imgId, zoneSelector: '#image-options', senderId: socket.id });
+        console.log('[Client] Sent image.move.request: click image');
 
         // const currentStep = stepController.get();
         // const zoneId = parent.dataset.zoneId;
         // if (stepController.isCurrentZone(zoneId)) {
-        //     socket.emit('step-prev');
+        //     socket.emit('step.rollback.request');
         //     console.log('[Client] Sent step-prev from restore');
         // }
     });

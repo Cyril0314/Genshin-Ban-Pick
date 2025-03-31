@@ -13,12 +13,12 @@ export function updateAndBroadcastImage(img, zone, characterMap, socket) {
 
     if (socket) {
         const zoneSelector = getSelectorForZone(zone);
-        socket.emit('image-move', {
+        socket.emit('image.move.request', {
             imgId,
             zoneSelector,
             senderId: socket.id
         });
-        console.log('[Client] Sent image-move:', imgId, zoneSelector);
+        console.log('[Client] Sent image.move.request:', imgId, zoneSelector);
     }
 }
 

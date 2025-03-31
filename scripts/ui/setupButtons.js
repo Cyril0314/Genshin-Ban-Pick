@@ -8,8 +8,10 @@ export function setupAllButtons(characterMap, socket) {
         console.log('[UI] Reset button clicked');
         resetImages();
 
-        socket.emit('reset-images');
-        console.log("socket.emit reset-images")
+        socket.emit('image.reset.request');
+        console.log("socket.emit image.reset.request")
+        socket.emit('step.reset.request');
+        console.log("socket.emit step.reset.request")
     });
 
     // Randomize Button

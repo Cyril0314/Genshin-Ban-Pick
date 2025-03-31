@@ -1,3 +1,5 @@
+// socketListener.js
+
 import { getWishImagePath, getProfileImagePath, originalImageSrc, resetImages } from '../utils/imageUtils.js';
 import { showCurrentStepText, highlightZones } from '../ui/banPickFlowUI.js';
 import { stepController } from '../logic/stepController.js';
@@ -9,9 +11,9 @@ export function setupSocketListeners(characterMap, socket) {
 
     const urlParams = new URLSearchParams(window.location.search);
     const roomId = urlParams.get('room') || 'default-room';
-    socket.emit('join-room', roomId);
+    socket.emit('room.join.request', roomId);
 
-    socket.on('current-state', (state) => {
+    socket.on('image.state.sync', (state) => {
         console.log('[Client] Recovering state from server:', state);
         for (const [imgId, zoneSelector] of Object.entries(state)) {
             const img = document.getElementById(imgId);
@@ -24,7 +26,7 @@ export function setupSocketListeners(characterMap, socket) {
         }
     });
 
-    socket.on('image-move', ({ imgId, zoneSelector, senderId }) => {
+    socket.on('image.move.broadcast', ({ imgId, zoneSelector, senderId }) => {
         console.log('[Client] Drag updated received from other user');
         if (socket.id === senderId) return;
 
@@ -47,26 +49,32 @@ export function setupSocketListeners(characterMap, socket) {
         }
     });
 
-    socket.on('reset-images', () => {
+    socket.on('images.reset.broadcast', () => {
         console.log("[Client] Reset received from other user");
         resetImages();
     });
 
-    socket.on('step-update', (step) => {
+    socket.on('step.state.sync', (step) => {
         stepController.set(step)
         showCurrentStepText(step);
         highlightZones(step);
     });
 
-    socket.on('team-members-update', ({ team, content }) => {
-        const target = document.querySelector(`.team-member-input[data-team="${team}"]`);
-        if (target) target.value = content;
+    socket.on('step.state.broadcast', (step) => {
+        stepController.set(step)
+        showCurrentStepText(step);
+        highlightZones(step);
     });
 
-    socket.on('team-members-batch', (state) => {
+    socket.on('team.members.state.sync', (state) => {
         for (const [team, content] of Object.entries(state)) {
             const input = document.querySelector(`.team-member-input[data-team="${team}"]`);
             if (input) input.value = content;
         }
+    });
+
+    socket.on('team.members.update.broadcast', ({ team, content }) => {
+        const target = document.querySelector(`.team-member-input[data-team="${team}"]`);
+        if (target) target.value = content;
     });
 }

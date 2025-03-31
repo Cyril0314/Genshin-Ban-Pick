@@ -14,17 +14,17 @@ export function getCurrentStep(roomId) {
 
 export function advanceStep(io, roomId) {
   stepMap[roomId] = (stepMap[roomId] || 0) + 1;
-  io.to(roomId).emit('step-update', getCurrentStep(roomId));
+  io.to(roomId).emit('step.state.broadcast', getCurrentStep(roomId));
 }
 
-export function reverseStep(io, roomId) {
+export function rollbackStep(io, roomId) {
   stepMap[roomId] = (stepMap[roomId] || 0) - 1;
-  io.to(roomId).emit('step-update', getCurrentStep(roomId));
+  io.to(roomId).emit('step.state.broadcast', getCurrentStep(roomId));
 }
 
 export function resetStep(io, roomId) {
   stepMap[roomId] = 0;
-  io.to(roomId).emit('step-update', getCurrentStep(roomId));
+  io.to(roomId).emit('step.state.broadcast', getCurrentStep(roomId));
 }
 
 export function generateBanPickFlow({
