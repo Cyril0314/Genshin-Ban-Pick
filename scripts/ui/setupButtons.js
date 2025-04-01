@@ -8,9 +8,14 @@ export function setupAllButtons(characterMap, socket) {
         console.log('[UI] Reset button clicked');
         resetImages();
 
-        socket.emit('image.reset.request');
+        socket.emit('image.reset.request', {
+            senderId: socket.id
+        });
         console.log("socket.emit image.reset.request")
-        socket.emit('step.reset.request');
+        
+        socket.emit('step.reset.request', { 
+            senderId: socket.id
+        });
         console.log("socket.emit step.reset.request")
     });
 

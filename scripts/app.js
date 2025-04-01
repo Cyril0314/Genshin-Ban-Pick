@@ -3,6 +3,7 @@ import { fetchRoomSetting } from './data/roomSetting.js';
 import { setupAllDropZones } from './ui/dropZones.js';
 import { setupAllButtons } from './ui/setupButtons.js';
 import { setupTeamMemberInput } from './ui/setupTeamMemberInput.js';
+import { setupChatRoom } from './ui/setupChatRoom.js';
 import { setupGlobalEvents } from './features/dragAndDrop.js';
 import { setupLayoutRules } from './ui/layout.js';
 import { setupSocketListeners } from './network/socketListeners.js';
@@ -19,5 +20,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupLayoutRules();
     setupSocketListeners(characterMap, socket);
     setupTeamMemberInput(socket);
+    setupChatRoom(socket);
 });
 

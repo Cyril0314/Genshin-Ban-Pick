@@ -49,8 +49,10 @@ export function setupSocketListeners(characterMap, socket) {
         }
     });
 
-    socket.on('images.reset.broadcast', () => {
+    socket.on('images.reset.broadcast', ({ senderId }) => {
         console.log("[Client] Reset received from other user");
+        if (socket.id === senderId) return;
+
         resetImages();
     });
 
@@ -73,8 +75,33 @@ export function setupSocketListeners(characterMap, socket) {
         }
     });
 
-    socket.on('team.members.update.broadcast', ({ team, content }) => {
+    socket.on('team.members.update.broadcast', ({ team, content, senderId }) => {
+        if (socket.id === senderId) return;
+
         const target = document.querySelector(`.team-member-input[data-team="${team}"]`);
         if (target) target.value = content;
+    });
+
+    socket.on('chat.message.send.broadcast', ({ senderName, message, timestamp, senderId }) => {
+        if (socket.id === senderId) return; // 可選：避免重複顯示自己
+
+        const chatBox = document.getElementById('chat-messages');
+        const msg = document.createElement('div');
+        msg.className = 'chat-message';
+        msg.innerHTML = `<strong>${senderId.slice(0, 6)}:</strong> ${message}`;
+        chatBox.appendChild(msg);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    });
+
+    socket.on('chat.history.sync', (history) => {
+        console.log(`${history}`)
+        const chatBox = document.getElementById('chat-messages');
+        history.forEach(({ senderName, message }) => {
+            const msg = document.createElement('div');
+            msg.className = 'chat-message';
+            msg.innerHTML = `<strong>${senderName}:</strong> ${message}`;
+            chatBox.appendChild(msg);
+        });
+        chatBox.scrollTop = chatBox.scrollHeight;
     });
 }

@@ -17,7 +17,18 @@
     <button id="filter-button">Filter</button>
     <button id="utility-button">Utility</button>
   </div>
-  
+  <div id="floating-chat" class="draggable">
+    <div id="chat-toggle">💬</div>
+    <div id="chat-window" class="hidden">
+      <div id="chat-header">
+        <span id="current-nickname">Nickname:</span>
+        <button id="change-nickname">Change</button>
+      </div>
+      <div id="chat-messages"></div>
+      <input id="chat-input" type="text" placeholder="講幹話" />
+      <button id="chat-send">Send</button>
+    </div>
+  </div>
   <div class="grid-container">
     <div class="grid-column left1">
       <span class="side-text left-text">Team Aether</span>
@@ -39,7 +50,7 @@
             <option value="Catalyst">法器</option>
           </select>
         </div>
-      
+
         <div class="selector-row">
           <label for="left-element-select">選擇屬性：</label>
           <select id="left-element-select">
@@ -53,7 +64,7 @@
             <option value="Cryo">冰</option>
           </select>
         </div>
-      
+
         <button id="left-confirm-button">確認</button>
       </div>
       <!-- Pick Zone  -->
@@ -86,7 +97,7 @@
             <option value="Catalyst">法器</option>
           </select>
         </div>
-      
+
         <div class="selector-row">
           <label for="right-element-select">選擇屬性：</label>
           <select id="right-element-select">
@@ -100,7 +111,7 @@
             <option value="Cryo">冰</option>
           </select>
         </div>
-      
+
         <button id="right-confirm-button">確認</button>
       </div>
       <!-- Pick Zone  -->
@@ -114,4 +125,5 @@
   <script src="/socket.io/socket.io.js"></script>
   <script type="module" src="scripts/app.js"></script>
 </body>
+
 </html>

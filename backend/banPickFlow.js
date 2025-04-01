@@ -3,7 +3,7 @@ import { numberOfBan, numberOfPick, totalRounds } from './constants/constants.js
 
 export const banPickFlow = generateBanPickFlow({ banCount: numberOfBan, pickCount: numberOfPick, order: ['Team Aether', 'Team Lumine'], totalRounds: totalRounds });
 
-console.log(JSON.stringify(banPickFlow, null, 2));
+// console.log(JSON.stringify(banPickFlow, null, 2));
 
 let stepMap = {}; // { roomId: stepIndex }
 
@@ -14,17 +14,23 @@ export function getCurrentStep(roomId) {
 
 export function advanceStep(io, roomId) {
   stepMap[roomId] = (stepMap[roomId] || 0) + 1;
-  io.to(roomId).emit('step.state.broadcast', getCurrentStep(roomId));
+  let step = getCurrentStep(roomId);
+  io.to(roomId).emit('step.state.broadcast', step);
+  console.log(`[Server] emit step.state.broadcast to roomId: ${roomId} step: ${JSON.stringify(step, null, 2)}`);
 }
 
 export function rollbackStep(io, roomId) {
   stepMap[roomId] = (stepMap[roomId] || 0) - 1;
-  io.to(roomId).emit('step.state.broadcast', getCurrentStep(roomId));
+  let step = getCurrentStep(roomId);
+  io.to(roomId).emit('step.state.broadcast', step);
+  console.log(`[Server] emit step.state.broadcast to roomId: ${roomId} step: ${JSON.stringify(step, null, 2)}`);
 }
 
 export function resetStep(io, roomId) {
   stepMap[roomId] = 0;
-  io.to(roomId).emit('step.state.broadcast', getCurrentStep(roomId));
+  let step = getCurrentStep(roomId);
+  io.to(roomId).emit('step.state.broadcast', step);
+  console.log(`[Server] emit step.state.broadcast to roomId: ${roomId} step: ${JSON.stringify(step, null, 2)}`);
 }
 
 export function generateBanPickFlow({
@@ -40,6 +46,7 @@ export function generateBanPickFlow({
   const backBan = Math.floor(banCount / totalRounds);
   // 平均選取數量
   const halfPick = Math.floor(pickCount / totalRounds);
+  const restPick = pickCount - halfPick;
 
   // ➤ 前段 Ban（交替）
   flow.push(...generateAlternateBanFlow({
@@ -65,7 +72,7 @@ export function generateBanPickFlow({
   // ➤ 後段 Pick（蛇行）
   flow.push(...generateSnakePickFlow({
     startIndex: halfPick + 1,
-    pickCount: pickCount - halfPick,
+    pickCount: restPick,
     startingTeam: order[1]
   }));
 
@@ -73,21 +80,18 @@ export function generateBanPickFlow({
 }
 
 function generateAlternateBanFlow({ startIndex, banCount, startingTeam }) {
-  const bans = [];
-  const teams = [startingTeam, startingTeam === 'Team Lumine' ? 'Team Aether' : 'Team Lumine'];
-  let current = startIndex;
+  const teams = [startingTeam, getOpponent(startingTeam)];
 
-  for (let i = 0; i < banCount; i++) {
-    const team = teams[i % 2]
-    bans.push({ player: team, zoneId: `Ban ${current++}`, action: 'ban' });
-  }
-
-  return bans;
+  return Array.from({ length: banCount }, (_, i) => ({
+    player: teams[i % 2],
+    zoneId: `Ban ${startIndex + i}`,
+    action: 'ban',
+  }));
 }
 
 function generateSnakePickFlow({ startIndex, pickCount, startingTeam }) {
   const picks = [];
-  const teams = [startingTeam, startingTeam === 'Team Lumine' ? 'Team Aether' : 'Team Lumine'];
+  const teams = [startingTeam, getOpponent(startingTeam)];
   let current = startIndex;
 
   const pairRounds = Math.floor(pickCount / 4);
@@ -100,4 +104,8 @@ function generateSnakePickFlow({ startIndex, pickCount, startingTeam }) {
   }
 
   return picks;
+}
+
+function getOpponent(team) {
+  return team === 'Team Lumine' ? 'Team Aether' : 'Team Lumine';
 }
