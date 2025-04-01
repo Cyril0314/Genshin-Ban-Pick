@@ -88,7 +88,7 @@ export function setupSocketListeners(characterMap, socket) {
         const chatBox = document.getElementById('chat-messages');
         const msg = document.createElement('div');
         msg.className = 'chat-message';
-        msg.innerHTML = `<strong>${senderId.slice(0, 6)}:</strong> ${message}`;
+        msg.innerHTML = `<strong>${senderName}:</strong> ${message}`;
         chatBox.appendChild(msg);
         chatBox.scrollTop = chatBox.scrollHeight;
     });

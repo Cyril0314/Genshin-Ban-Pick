@@ -20,20 +20,12 @@ export function setupChatRoom(socket) {
         const chatBox = document.getElementById('chat-messages');
         const msg = document.createElement('div');
         msg.className = 'chat-message self';
-        msg.innerHTML = `<strong>You:</strong> ${message}`;
+        msg.innerHTML = `<strong>${nickname}:</strong> ${message}`;
         chatBox.appendChild(msg);
         chatBox.scrollTop = chatBox.scrollHeight;
 
         input.value = '';
     });
-
-    document.getElementById('chat-toggle').addEventListener('click', (e) => {
-        if (e.detail === 0) return; // 忽略拖動 mouseup 導致的 click
-        const windowEl = document.getElementById('chat-window');
-        windowEl.classList.toggle('hidden');
-    });
-
-    makeDraggable(document.getElementById('floating-chat'), document.getElementById('chat-toggle'));
 }
 
 function setupNickName() {
@@ -52,47 +44,6 @@ function setupNickName() {
             nickname = newName;
             localStorage.setItem('nickname', nickname);
             nicknameDisplay.textContent = `暱稱: ${nickname}`;
-        }
-    });
-}
-
-function makeDraggable(element, dragHandle = element) {
-    let offsetX = 0, offsetY = 0;
-    let isDragging = false;
-    let shouldBlockClick = false;
-
-    dragHandle.addEventListener('mousedown', (e) => {
-        offsetX = e.clientX - element.getBoundingClientRect().left;
-        offsetY = e.clientY - element.getBoundingClientRect().top;
-
-        const onMouseMove = (e) => {
-            isDragging = true;
-            shouldBlockClick = true;
-            element.style.left = `${e.clientX - offsetX}px`;
-            element.style.top = `${e.clientY - offsetY}px`;
-            element.style.right = 'auto';
-            element.style.bottom = 'auto';
-            element.style.position = 'fixed';
-        };
-
-        const onMouseUp = () => {
-            document.removeEventListener('mousemove', onMouseMove);
-            document.removeEventListener('mouseup', onMouseUp);
-            document.body.style.userSelect = '';
-        };
-
-        document.addEventListener('mousemove', onMouseMove);
-        document.addEventListener('mouseup', onMouseUp);
-        document.body.style.userSelect = 'none';
-        isDragging = false;
-    });
-
-    // 🔒 阻止拖曳後觸發的 click
-    dragHandle.addEventListener('click', (e) => {
-        if (shouldBlockClick) {
-            e.preventDefault();
-            e.stopImmediatePropagation();
-            shouldBlockClick = false;
         }
     });
 }

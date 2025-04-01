@@ -17,18 +17,6 @@
     <button id="filter-button">Filter</button>
     <button id="utility-button">Utility</button>
   </div>
-  <div id="floating-chat" class="draggable">
-    <div id="chat-toggle">💬</div>
-    <div id="chat-window" class="hidden">
-      <div id="chat-header">
-        <span id="current-nickname">Nickname:</span>
-        <button id="change-nickname">Change</button>
-      </div>
-      <div id="chat-messages"></div>
-      <input id="chat-input" type="text" placeholder="講幹話" />
-      <button id="chat-send">Send</button>
-    </div>
-  </div>
   <div class="grid-container">
     <div class="grid-column left1">
       <span class="side-text left-text">Team Aether</span>
@@ -74,12 +62,29 @@
       <!-- JS 會在這裡 append 多個 .grid-row -->
     </div>
 
+
     <div class="center-area">
-      <div id="step-indicator" class="text-white text-xl font-semibold text-center my-4"> 等待進入房間... </div>
-      <div class="utility-zone-wrapper">
+      <div class="center-area-left">
+        <div id="chat-window">
+          <div id="chat-header">
+            <span id="current-nickname">Nickname:</span>
+            <button id="change-nickname">Change</button>
+          </div>
+          <div id="chat-messages"></div>
+          <div id="chat-footer">
+            <input id="chat-input" type="text" placeholder="講幹話" />
+            <button id="chat-send">Send</button>
+          </div>
+        </div>
+      </div>
+      <div class="center-area-middle">
+        <div id="step-indicator" class="text-white text-xl font-semibold text-center my-4"> 等待進入房間... </div>
+        <div class="utility-zone-wrapper"></div>
         <!-- Utility Zone  -->
       </div>
-      <!-- <img src="images/calendar/Calendar_March.png" alt="本月壽星" class="center" style="width:720; height:480px;"> -->
+      <div class="center-area-right">
+        <img src="images/calendar/Calendar_March.png" alt="本月壽星" class="center" style="width:720; height:480px;">
+      </div>
       <!-- <img src="images/backgrounds/Tier.png" alt="本月壽星" class="center" style="width:540; height:360px;"> -->
     </div>
 
