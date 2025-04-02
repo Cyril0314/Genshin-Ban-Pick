@@ -10,7 +10,7 @@ export function getWishImagePath(name) {
 
 export function resetImages() {
     const imageOptions = document.getElementById('image-options');
-    const placedImages = document.querySelectorAll('.drop-zone img');
+    const placedImages = document.querySelectorAll('.grid-item__drop-zone img');
 
     placedImages.forEach(img => {
         const imgId = img.id.replace('_clone', '');

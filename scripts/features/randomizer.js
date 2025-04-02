@@ -36,7 +36,7 @@ export function randomizeImages(characterMap, socket) {
  * 分配到主欄位四行：前後五星、中間四星
  */
 function distributeImagesToDropZones(fiveStars, fourStars, characterMap, socket) {
-    const zones = document.querySelectorAll('.grid-item.drop-zone');
+    const zones = document.querySelectorAll('.grid-item__drop-zone--pick');
 
     [0, 3].forEach(row => {
         for (let i = 0; i < 8; i++) {
@@ -65,7 +65,7 @@ export function handleUtilityRandom(characterMap, socket) {
         return char?.type === mainCarryType && char.rarity === "5 Stars";
     });
 
-    const zone = Array.from(document.querySelectorAll('.utility-zone-wrapper .drop-zone'))
+    const zone = Array.from(document.querySelectorAll('.utility-zone__columns .grid-item__drop-zone'))
         .find(z => !z.querySelector('img'));
 
     if (!zone || filtered.length === 0) return;

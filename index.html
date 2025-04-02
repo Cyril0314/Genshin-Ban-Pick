@@ -11,120 +11,98 @@
 <body>
   <div class="background-image"></div>
   <div id="image-options"></div>
-  <div class="tool-buttons">
-    <button id="randomize-button">Random</button>
-    <button id="reset-button">Reset</button>
-    <button id="filter-button">Filter</button>
-    <button id="utility-button">Utility</button>
+  <div class="toolbar">
+    <button id="toolbar__random">Random</button>
+    <button id="toolbar__reset">Reset</button>
+    <button id="toolbar__utility">Utility</button>
   </div>
-  <div class="grid-container">
-    <div class="grid-column left1">
-      <span class="side-text left-text">Team Aether</span>
-      <textarea placeholder="Members" class="team-member-input" data-team="aether"></textarea>
-      <!-- Pick Zone  -->
-    </div>
-
-    <div class="grid-column left2">
-      <!-- 左側選擇器UI -->
-      <div class="selector-container">
-        <div class="selector-row">
-          <label for="left-weapon-select">選擇武器：</label>
-          <select id="left-weapon-select">
-            <option value="All">所有武器</option>
-            <option value="Sword">單手劍</option>
-            <option value="Claymore">雙手劍</option>
-            <option value="Polearm">長槍</option>
-            <option value="Bow">弓</option>
-            <option value="Catalyst">法器</option>
-          </select>
-        </div>
-
-        <div class="selector-row">
-          <label for="left-element-select">選擇屬性：</label>
-          <select id="left-element-select">
-            <option value="All">所有屬性</option>
-            <option value="Anemo">風</option>
-            <option value="Geo">岩</option>
-            <option value="Electro">雷</option>
-            <option value="Dendro">草</option>
-            <option value="Hydro">水</option>
-            <option value="Pyro">火</option>
-            <option value="Cryo">冰</option>
-          </select>
-        </div>
-
-        <button id="left-confirm-button">確認</button>
+  <div class="layout">
+    <div class="layout__side layout__side--left">
+      <span class="layout__team-name layout__team-name--left">Team Aether</span>
+      <textarea class="team-member-input" placeholder="Members" data-team="aether"></textarea>
+      <div class="pick-zone__columns pick-zone__columns--left">
+        <div class="grid__column grid__column--side"></div>
+        <div class="grid__column grid__column--side"></div>
       </div>
-      <!-- Pick Zone  -->
     </div>
 
-    <div class="ban-zone-wrapper">
-      <!-- JS 會在這裡 append 多個 .grid-row -->
-    </div>
-
-
-    <div class="center-area">
-      <div class="center-area-left">
-        <div id="chat-window">
-          <div id="chat-header">
-            <span id="current-nickname">Nickname:</span>
-            <button id="change-nickname">Change</button>
-          </div>
-          <div id="chat-messages"></div>
-          <div id="chat-footer">
-            <input id="chat-input" type="text" placeholder="講幹話" />
-            <button id="chat-send">Send</button>
+    <div class="layout__center">
+      <div class="layout__ban-zone">
+        <div class="ban-zone__rows">
+          <!-- Ban Zone -->
+        </div>
+      </div>
+      <div class="layout__common">
+        <div class="layout__common-side">
+          <div class="chat__window">
+            <div class="chat__header">
+              <span id="current-nickname">Nickname:</span>
+              <button id="change-nickname">Change</button>
+            </div>
+            <div id="chat-messages"></div>
+            <div class="chat__footer">
+              <input id="chat-input" type="text" placeholder="講幹話" />
+              <button id="chat-send">Send</button>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="center-area-middle">
-        <div id="step-indicator" class="text-white text-xl font-semibold text-center my-4"> 等待進入房間... </div>
-        <div class="utility-zone-wrapper"></div>
-        <!-- Utility Zone  -->
-      </div>
-      <div class="center-area-right">
-        <img src="images/calendar/Calendar_March.png" alt="本月壽星" class="center" style="width:720; height:480px;">
-      </div>
-      <!-- <img src="images/backgrounds/Tier.png" alt="本月壽星" class="center" style="width:540; height:360px;"> -->
-    </div>
-
-    <div class="grid-column right2">
-      <!-- 右側選擇器UI -->
-      <div class="selector-container">
-        <div class="selector-row">
-          <label for="right-weapon-select">選擇武器：</label>
-          <select id="right-weapon-select">
-            <option value="All">所有武器</option>
-            <option value="Sword">單手劍</option>
-            <option value="Claymore">雙手劍</option>
-            <option value="Polearm">長槍</option>
-            <option value="Bow">弓</option>
-            <option value="Catalyst">法器</option>
-          </select>
+        <div class="layout__utility-zone">
+          <div id="step-indicator" class="text-white text-xl font-semibold text-center my-4"> 等待進入房間... </div>
+          <div class="utility-zone__columns"></div>
+          <!-- Utility Zone  -->
         </div>
+        <div class="layout__common-side">
+          <div class="container__selector">
+            <div class="selector__row">
+              <label for="team-select">選擇隊伍：</label>
+              <select id="team-select">
+                <option value="Aether">Team Aether</option>
+                <option value="Lumine">Team Lumine</option>
+              </select>
+            </div>
 
-        <div class="selector-row">
-          <label for="right-element-select">選擇屬性：</label>
-          <select id="right-element-select">
-            <option value="All">所有屬性</option>
-            <option value="Anemo">風</option>
-            <option value="Geo">岩</option>
-            <option value="Electro">雷</option>
-            <option value="Dendro">草</option>
-            <option value="Hydro">水</option>
-            <option value="Pyro">火</option>
-            <option value="Cryo">冰</option>
-          </select>
+            <div class="selector__row">
+              <label for="weapon-select">選擇武器：</label>
+              <select id="weapon-select">
+                <option value="All">所有武器</option>
+                <option value="Sword">單手劍</option>
+                <option value="Claymore">雙手劍</option>
+                <option value="Polearm">長槍</option>
+                <option value="Bow">弓</option>
+                <option value="Catalyst">法器</option>
+              </select>
+            </div>
+
+            <div class="selector__row">
+              <label for="element-select">選擇屬性：</label>
+              <select id="element-select">
+                <option value="All">所有屬性</option>
+                <option value="Anemo">風</option>
+                <option value="Geo">岩</option>
+                <option value="Electro">雷</option>
+                <option value="Dendro">草</option>
+                <option value="Hydro">水</option>
+                <option value="Pyro">火</option>
+                <option value="Cryo">冰</option>
+              </select>
+            </div>
+
+            <button id="selector-confirm-button">確認</button>
+          </div>
+
+          <!-- <img src="images/calendar/Calendar_March.png" alt="本月壽星" class="center" style="width:720; height:480px;"> -->
+          <!-- <img src="images/backgrounds/Tier.png" alt="本月壽星" class="center" style="width:540; height:360px;"> -->
         </div>
-
-        <button id="right-confirm-button">確認</button>
       </div>
-      <!-- Pick Zone  -->
     </div>
-    <div class="grid-column right1">
-      <span class="side-text right-text">Team Lumine</span>
-      <textarea placeholder="Members" class="team-member-input" data-team="lumine"></textarea>
-      <!-- Pick Zone  -->
+    <div class="layout__side layout__side--right">
+      <span class="layout__team-name layout__team-name--right">Team Lumine</span>
+      <textarea class="team-member-input" placeholder="Members" data-team="lumine"></textarea>
+
+      <div class="pick-zone__columns pick-zone__columns--right">
+        <div class="grid__column grid__column--side"></div>
+        <div class="grid__column grid__column--side"></div>
+      </div>
     </div>
   </div>
   <script src="/socket.io/socket.io.js"></script>

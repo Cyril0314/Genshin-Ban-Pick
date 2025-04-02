@@ -35,13 +35,13 @@ export function setupSocketIO(io) {
         });
 
         socket.on('image.reset.request', ({ senderId }) => {
-            console.log(`[Server] receive image.reset.request from ${senderId} imgId: ${imgId}`);
+            console.log(`[Server] receive image.reset.request from ${senderId}`);
             const roomId = socket.roomId;
             if (!roomId) return;
 
             imageState[roomId] = {};
             socket.to(roomId).emit('images.reset.broadcast', { senderId });
-            console.log(`[Server] emit image.reset.broadcast to roomId: ${roomId} imgId: ${imgId}`);
+            console.log(`[Server] emit image.reset.broadcast to roomId: ${roomId}`);
         });
 
         socket.on('step.advance.request', ({ senderId }) => {

@@ -24,7 +24,7 @@ function setupDragEvents(characterMap, socket) {
         }
     });
 
-    const dropZones = document.querySelectorAll('.drop-zone');
+    const dropZones = document.querySelectorAll('.grid-item__drop-zone');
     dropZones.forEach(zone => {
         zone.addEventListener('dragover', e => e.preventDefault());
         zone.addEventListener('drop', (e) => {
@@ -54,7 +54,7 @@ function setupClickRestore(socket) {
         if (e.target.tagName !== 'IMG') return;
 
         const parent = e.target.parentElement;
-        if (!parent.classList.contains('drop-zone')) return;
+        if (!parent.classList.contains('grid-item__drop-zone')) return;
 
         const imgId = e.target.id.replace('_clone', '');
         const imageOptions = document.getElementById('image-options');

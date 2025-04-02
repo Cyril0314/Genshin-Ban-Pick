@@ -55,17 +55,16 @@ body::before {
 /* 🔘 Buttons: Action Buttons    */
 /* ============================= */
 
-.tool-buttons {
+.toolbar {
     position: relative;
     display: flex;
     margin-top: 10px;
-    margin-bottom: 60px;
+    margin-bottom: 10px;
 }
 
-#reset-button,
-#randomize-button,
-#filter-button,
-#utility-button {
+#toolbar__random,
+#toolbar__reset,
+#toolbar__utility {
     position: relative;
     width: 120px;
     z-index: 1000;
@@ -82,105 +81,102 @@ body::before {
     /* 左右間隔 */
 }
 
-#reset-button:hover,
-#randomize-button:hover,
-#filter-button:hover,
-#utility-button:hover {
+#toolbar__random:hover,
+#toolbar__reset:hover,
+#toolbar__utility:hover {
     background-color: #6b5b5b;
     transform: scale(1.05);
 }
 
-#reset-button:active,
-#randomize-button:active,
-#filter-button:active,
-#utility-button:active {
+#toolbar__random:active,
+#toolbar__reset:active,
+#toolbar__utility:active {
     transform: scale(0.98);
 }
 
 /* ============================= */
-/* 🎨 Grid Layout                */
+/* 🎨 Layout                    */
 /* ============================= */
 
-.grid-container {
+.layout {
     position: relative;
     display: flex;
     justify-content: center;
     align-items: flex-start;
 }
 
-.ban-zone-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 20px;
-}
-.grid-row {
-    display: flex;
-    flex-direction: row;
-    margin-bottom: 10px;
-}
-
-.grid-column {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 0 10px;
-    margin-top: 125px;
-}
-
-.center-area {
-    position: absolute;
-    display: flex;
-    flex-direction: row;
-    align-items: last baseline;
-    /* 子元素水平居中 */
-    /* margin: 0 20px; */
-    margin-top: 200px;
-    gap: 20px;
-}
-
-.center-area-left {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 360px;
-}
-
-.center-area-middle {
+.ban-zone__rows {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.center-area-right {
+.layout__side {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.layout__center {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.layout__ban-zone {
+    position: relative;
+    display: flex;
+}
+
+.layout__common {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: start;
+}
+
+/* .layout__common-side {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 360px;
+} */
+
+.layout__utility-zone {
+    display: flex;
+    flex-direction: column;
+    justify-self: center;
+    align-items: center;
 }
 
-.utility-zone-wrapper {
+.utility-zone__columns {
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
     align-items: center;
-    margin: 0 10px;
 }
 
-/* JavaScript 動態建立的容器為 Flexbox 排版，解決 margin collapse 的問題。 */
-.grid-center-column {
+.pick-zone__columns {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.grid__column {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin: 0 5px;
+}
+
+.grid__row {
+    display: flex;
+    flex-direction: row;
 }
 
 /* ============================= */
 /* 🔲 Grid Item                */
 /* ============================= */
 
-.grid-item,
-.grid-item-center,
-.grid-item-row {
+.grid-item__drop-zone {
     width: 160px;
     height: 90px;
     margin: 5px;
@@ -194,31 +190,20 @@ body::before {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.grid-item:hover,
-.grid-item-center:hover,
-.grid-item-row:hover {
+.grid-item__drop-zone:hover {
     transform: scale(1.03);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
 }
 
-.grid-item img,
-.grid-item-center img,
-.grid-item-row img {
+.grid-item__drop-zone img {
     height: auto;
     z-index: 15;
-}
-
-.drop-zone {
-    position: relative;
-}
-
-.drop-zone img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.drop-zone.highlight {
+.grid-item__drop-zone.highlight {
     outline: 4px solid rgba(255, 200, 0, 0.9);
     box-shadow:
         0 0 10px rgba(255, 200, 0, 0.5),
@@ -267,13 +252,11 @@ body::before {
     font-size: 1.25em;
 }
 
-.grid-column.left1 .pick-text,
-.grid-column.left2 .pick-text {
+.pick-zone__columns.pick-zone__columns--left .pick-text {
     color: #5191c2;
 }
 
-.grid-column.right1 .pick-text,
-.grid-column.right2 .pick-text {
+.pick-zone__columns.pick-zone__columns--right .pick-text {
     color: #df5757;
 }
 
@@ -318,9 +301,7 @@ body::before {
 /* 🧩 Utility Tools     */
 /* ============================= */
 
-.selector-container {
-    position: absolute;
-    top: 0px;
+.container__selector {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -329,27 +310,26 @@ body::before {
     border-radius: 8px;
     font-weight: bold;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    width: 180px;
     padding: 8px 8px;
     box-sizing: border-box;
     height: auto;
     gap: 8px;
 }
 
-.selector-row {
+.selector__row {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
 }
 
-.selector-container label {
+.container__selector label {
     font-size: 0.9em;
     white-space: nowrap;
     margin-right: 4px;
 }
 
-.selector-container select {
+.container__selector select {
     flex-grow: 1;
     padding: 5px 5px;
     border-radius: 6px;
@@ -361,11 +341,11 @@ body::before {
     transition: background-color 0.2s ease;
 }
 
-.selector-container select:hover {
+.container__selector select:hover {
     background-color: #fff;
 }
 
-.selector-container button {
+.container__selector button {
     width: 100%;
     padding: 8px;
     border: none;
@@ -377,18 +357,16 @@ body::before {
     font-weight: bold;
 }
 
-.selector-container button:hover {
+.container__selector button:hover {
     background-color: #6b5b5b;
     transform: scale(1.05);
 }
 
-.selector-container button:active {
+.container__selector button:active {
     transform: scale(0.98);
 }
 
 .team-member-input {
-    position: absolute;
-    top: 0;
     background-color: rgba(255, 255, 255, 0.2);
     color: #4e4040;
     border: none;
@@ -403,9 +381,7 @@ body::before {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-.side-text {
-    position: absolute;
-    top: -50px;
+.layout__team-name {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -423,10 +399,9 @@ body::before {
     outline: none;
 }
 
-#chat-window {
+.chat__window {
     background-color: rgba(255, 255, 255, 0.2);
     border-radius: 10px;
-    /* margin-top: 8px; */
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
@@ -436,7 +411,7 @@ body::before {
     /* max-height: 360px; */
 }
 
-#chat-header {
+.chat__header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -464,13 +439,12 @@ body::before {
     overflow-y: auto;
     height: 300px;
     font-size: 1em;
-    /* margin-bottom: 4px; */
     padding: 10px 0px;
     /* border: 1px solid #ccc; */
     /* border-radius: 6px; */
 }
 
-#chat-footer {
+.chat__footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -480,8 +454,11 @@ body::before {
     padding: 5px;
     border-radius: 6px;
     /* border: 1px solid #ccc; */
-    /* margin-top: 5px; */
     font-size: 1em;
+}
+
+#chat-input:focus {
+    outline: none;
 }
 
 #chat-send {
@@ -492,9 +469,6 @@ body::before {
     padding: 6px;
     cursor: pointer;
     font-size: 1em;
-}
-.chat-input:focus {
-    outline: none;
 }
 
 /* ============================= */

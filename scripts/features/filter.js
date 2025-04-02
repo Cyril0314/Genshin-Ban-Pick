@@ -3,9 +3,11 @@ import { updateAndBroadcastImage } from '../utils/syncUtils.js';
 /**
  * 根據 side ('left' 或 'right') 選擇角色並分配
  */
-export function handleSelection(side, characterMap, socket) {
-    const weapon = document.getElementById(`${side}-weapon-select`).value;
-    const element = document.getElementById(`${side}-element-select`).value;
+export function handleSelection(characterMap, socket) {
+    const team = document.getElementById(`team-select`).value;
+    const weapon = document.getElementById(`weapon-select`).value;
+    const element = document.getElementById(`element-select`).value;
+    const side = team === 'Aether' ? 'left' : 'right';
 
     const images = Array.from(document.querySelectorAll('#image-options img'));
     const filtered = images.filter(img => {
@@ -17,10 +19,10 @@ export function handleSelection(side, characterMap, socket) {
         return matchWeapon || matchElement;
     });
     // 計算總需配的數量
-    const rows = Array.from(document.querySelectorAll('.ban-zone-wrapper .grid-row'));
+    const rows = Array.from(document.querySelectorAll('.ban-zone__rows .grid__row'));
     let totalNeeded = 0;
     rows.forEach(row => {
-        totalNeeded += Math.floor(row.querySelectorAll('.grid-item-row').length / 2);
+        totalNeeded += Math.floor(row.querySelectorAll('.grid-item__drop-zone').length / 2);
     });
 
     if (filtered.length < totalNeeded) {
@@ -36,11 +38,11 @@ export function handleSelection(side, characterMap, socket) {
  * 把圖片分配到 ban zone 左／右欄位
  */
 function distributeToRowsPerVisualRow(images, side, characterMap, socket) {
-    const rows = Array.from(document.querySelectorAll('.ban-zone-wrapper .grid-row'));
+    const rows = Array.from(document.querySelectorAll('.ban-zone__rows .grid__row'));
     let imageIndex = 0;
 
     rows.forEach(row => {
-        const zones = Array.from(row.querySelectorAll('.grid-item-row.drop-zone'));
+        const zones = Array.from(row.querySelectorAll('.grid-item__drop-zone'));
         const half = Math.floor(zones.length / 2);
 
         if (side === 'left') {

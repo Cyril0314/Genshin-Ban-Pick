@@ -15,7 +15,7 @@ export function showCurrentStepText(step) {
 }
 
 export function highlightZones(step) {
-    const allZones = document.querySelectorAll('.drop-zone');
+    const allZones = document.querySelectorAll('.grid-item__drop-zone');
     allZones.forEach(zone => zone.classList.remove('highlight'));
     allZones.forEach(zone => {
         const zoneId = zone.dataset.zoneId;

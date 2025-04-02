@@ -3,8 +3,14 @@ import { randomizeImages, handleUtilityRandom } from '../features/randomizer.js'
 import { handleSelection } from '../features/filter.js';
 
 export function setupAllButtons(characterMap, socket) {
+    // Randomize Button
+    document.getElementById('toolbar__random').addEventListener('click', () => {
+        console.log('[UI] Randomize button clicked');
+        randomizeImages(characterMap, socket);
+    });
+
     // Reset Button
-    document.getElementById('reset-button').addEventListener('click', () => {
+    document.getElementById('toolbar__reset').addEventListener('click', () => {
         console.log('[UI] Reset button clicked');
         resetImages();
 
@@ -19,33 +25,15 @@ export function setupAllButtons(characterMap, socket) {
         console.log("socket.emit step.reset.request")
     });
 
-    // Randomize Button
-    document.getElementById('randomize-button').addEventListener('click', () => {
-        console.log('[UI] Randomize button clicked');
-        randomizeImages(characterMap, socket);
-    });
-
     // Utility Button
-    document.getElementById('utility-button').addEventListener('click', () => {
+    document.getElementById('toolbar__utility').addEventListener('click', () => {
         console.log('[UI] Utility button clicked');
         handleUtilityRandom(characterMap, socket);
     });
 
-    // Left Side Confirm Button
-    document.getElementById('left-confirm-button').addEventListener('click', () => {
-        console.log('[UI] Left confirm clicked');
-        handleSelection('left', characterMap, socket);
-    });
-
-    // Right Side Confirm Button
-    document.getElementById('right-confirm-button').addEventListener('click', () => {
-        console.log('[UI] Right confirm clicked');
-        handleSelection('right', characterMap, socket);
-    });
-
-    // Filter Button (可留空或未來擴充)
-    document.getElementById('filter-button').addEventListener('click', () => {
-        console.log('[UI] Filter button clicked');
-        // TODO: add filtering logic here if needed
+    // Selector Confirm Button
+    document.getElementById('selector-confirm-button').addEventListener('click', () => {
+        console.log('[UI] selector confirm clicked');
+        handleSelection(characterMap, socket);
     });
 }
