@@ -85,9 +85,9 @@ export function setupSocketListeners(characterMap, socket) {
     socket.on('chat.message.send.broadcast', ({ senderName, message, timestamp, senderId }) => {
         if (socket.id === senderId) return; // 可選：避免重複顯示自己
 
-        const chatBox = document.getElementById('chat-messages');
+        const chatBox = document.querySelector('.chat__messages');
         const msg = document.createElement('div');
-        msg.className = 'chat-message';
+        msg.className = 'chat__message';
         msg.innerHTML = `<strong>${senderName}:</strong> ${message}`;
         chatBox.appendChild(msg);
         chatBox.scrollTop = chatBox.scrollHeight;
@@ -95,10 +95,10 @@ export function setupSocketListeners(characterMap, socket) {
 
     socket.on('chat.history.sync', (history) => {
         console.log(`${history}`)
-        const chatBox = document.getElementById('chat-messages');
+        const chatBox = document.querySelector('.chat__messages');
         history.forEach(({ senderName, message }) => {
             const msg = document.createElement('div');
-            msg.className = 'chat-message';
+            msg.className = 'chat__message';
             msg.innerHTML = `<strong>${senderName}:</strong> ${message}`;
             chatBox.appendChild(msg);
         });

@@ -17,9 +17,9 @@ export function setupChatRoom(socket) {
         });
 
         // 顯示自己發的訊息
-        const chatBox = document.getElementById('chat-messages');
+        const chatBox = document.querySelector('.chat__messages');
         const msg = document.createElement('div');
-        msg.className = 'chat-message self';
+        msg.className = 'chat__message self';
         msg.innerHTML = `<strong>${nickname}:</strong> ${message}`;
         chatBox.appendChild(msg);
         chatBox.scrollTop = chatBox.scrollHeight;
