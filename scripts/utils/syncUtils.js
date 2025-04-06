@@ -11,8 +11,14 @@ export function updateAndBroadcastImage(img, zone, characterMap, socket) {
 
     zone.appendChild(img);
 
+    const zoneSelector = getSelectorForZone(zone);
+
+    const event = new CustomEvent('imageMoved', {
+        detail: {imgId, zoneSelector}
+    });
+    document.dispatchEvent(event);
+
     if (socket) {
-        const zoneSelector = getSelectorForZone(zone);
         socket.emit('image.move.request', {
             imgId,
             zoneSelector,

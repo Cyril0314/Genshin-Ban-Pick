@@ -13,7 +13,7 @@ export function resetImages() {
     const placedImages = document.querySelectorAll('.grid-item__drop-zone img');
 
     placedImages.forEach(img => {
-        const imgId = img.id.replace('_clone', '');
+        const imgId = img.id;
         img.src = originalImageSrc[imgId] || img.src;
         img.id = imgId;
         imageOptions.appendChild(img);

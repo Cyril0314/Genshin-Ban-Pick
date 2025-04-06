@@ -5,8 +5,10 @@ let nickname = 'Anonymous';
 export function setupChatRoom(socket) {
     setupNickName();
 
-    document.getElementById('chat-send').addEventListener('click', () => {
-        const input = document.getElementById('chat-input');
+    let input = document.getElementById('chat-input');
+    let sendButton = document.getElementById('chat-send');
+
+    sendButton.addEventListener('click', () => {
         const message = input.value.trim();
         if (!message) return;
 
@@ -25,6 +27,13 @@ export function setupChatRoom(socket) {
         chatBox.scrollTop = chatBox.scrollHeight;
 
         input.value = '';
+    });
+
+    input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            sendButton.click();
+        }
     });
 }
 

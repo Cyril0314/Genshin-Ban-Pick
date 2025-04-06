@@ -12,12 +12,12 @@ export function setupLayoutRules() {
             const isSplitPoint = index === middle - 1;
 
             if (isSplitPoint) {
-                item.style.marginRight = '20px';
+                item.style.marginRight = '10px';
 
                 const divider = document.createElement('div');
                 divider.style.position = 'absolute';
                 divider.style.left = '100%';
-                divider.style.transform = 'translateX(12.5px)';
+                divider.style.transform = 'translateX(9px)';
                 divider.style.top = '0';
                 divider.style.bottom = '0';
                 divider.style.borderRight = '2px solid #4e4040';

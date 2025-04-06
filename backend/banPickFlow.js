@@ -3,7 +3,7 @@ import { numberOfBan, numberOfPick, totalRounds } from './constants/constants.js
 
 export const banPickFlow = generateBanPickFlow({ banCount: numberOfBan, pickCount: numberOfPick, order: ['Team Aether', 'Team Lumine'], totalRounds: totalRounds });
 
-// console.log(JSON.stringify(banPickFlow, null, 2));
+console.log(JSON.stringify(banPickFlow, null, 2));
 
 let stepMap = {}; // { roomId: stepIndex }
 

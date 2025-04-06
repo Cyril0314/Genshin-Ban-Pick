@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { numberOfUtility, numberOfBan, numberOfPick, totalRounds } from '../constants/constants.js';
+import { banPickFlow } from '../banPickFlow.js';
 
 
 const router = express.Router();
@@ -13,7 +14,8 @@ router.get('/api/room-setting', (req, res) => {
         "numberOfUtility": numberOfUtility,
         "numberOfBan": numberOfBan,
         "numberOfPick": numberOfPick,
-        "totalRounds": totalRounds
+        "totalRounds": totalRounds,
+        "banPickFlow": banPickFlow
     });
 });
 

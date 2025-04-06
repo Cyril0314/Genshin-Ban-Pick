@@ -34,7 +34,7 @@ router.get('/api/character/images', (req, res) => {
             console.log('Error getting directory information.');
             res.status(500).send('Failed to list images');
             return;
-        } 
+        }
         let imageFiles = files
             .filter(file => /\.(jpg|jpeg|png|gif|webp)$/.test(file))
             .map(image => `/images/${image}`);

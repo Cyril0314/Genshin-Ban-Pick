@@ -1,9 +1,15 @@
 /* ============================= */
 /* 🌐 Base / Global Reset       */
 /* ============================= */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
 body,
 html {
-    margin: 0;
+    margin: 20;
     padding: 0;
     height: 100%;
 }
@@ -15,7 +21,7 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: url('../images/backgrounds/wallpaper.png') no-repeat center center;
+    background: url('../images/backgrounds/wallpaper2.png') no-repeat center center;
     background-size: cover;
     opacity: 0.4;
     z-index: -1;
@@ -43,6 +49,7 @@ body::before {
     /* 頂部對齊，防止行高不一致時內容中斷 */
     gap: 10px;
     /* 設置圖片間距 */
+    background: rgba(0, 0, 0, 0.1);
 }
 
 #image-options img {
@@ -58,13 +65,11 @@ body::before {
 .toolbar {
     position: relative;
     display: flex;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    padding: 10px 0px;
+    gap: 10px;
 }
 
-#toolbar__random,
-#toolbar__reset,
-#toolbar__utility {
+.toolbar__button {
     position: relative;
     width: 120px;
     z-index: 1000;
@@ -77,20 +82,15 @@ body::before {
     transition: background-color 0.3s ease, transform 0.2s ease;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     font-size: 1em;
-    margin: 0 5px;
     /* 左右間隔 */
 }
 
-#toolbar__random:hover,
-#toolbar__reset:hover,
-#toolbar__utility:hover {
+.toolbar__button:hover {
     background-color: #6b5b5b;
     transform: scale(1.05);
 }
 
-#toolbar__random:active,
-#toolbar__reset:active,
-#toolbar__utility:active {
+.toolbar__button:active {
     transform: scale(0.98);
 }
 
@@ -101,79 +101,91 @@ body::before {
 .layout {
     position: relative;
     display: flex;
-    justify-content: center;
     align-items: flex-start;
-    max-width: 1440px;
+    gap: 10px;
+    /* justify-content: space-between; */
+    justify-content: center;
+    /* max-width: 1440px;
     width: 100%;
-    margin: 0 auto;
-}
-
-.ban-zone__rows {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    margin: 0 auto; */
 }
 
 .layout__side {
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 10px;
 }
 
 .layout__center {
     position: relative;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }
 
 .layout__ban-zone {
     position: relative;
     display: flex;
+    min-height: 170px;
+    align-items: center;
+}
+
+.ban-zone__rows {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }
 
 .layout__common {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
-    gap: 20px;
+    gap: 10px;
     align-items: start;
 }
 
-/* .layout__common-side {
+.layout__common-side {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 360px;
-} */
+    gap: 10px;
+}
 
 .layout__utility-zone {
     display: flex;
     flex-direction: column;
     justify-self: center;
     align-items: center;
+    gap: 25px;
 }
 
 .utility-zone__columns {
     display: flex;
     flex-direction: row;
     align-items: center;
+    gap: 10px;
 }
 
 .pick-zone__columns {
     display: flex;
     flex-direction: row;
     align-items: center;
+    gap: 10px;
 }
 
 .grid__column {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 0 5px;
+    gap: 10px;
 }
 
 .grid__row {
     display: flex;
     flex-direction: row;
+    gap: 10px;
 }
 
 /* ============================= */
@@ -183,7 +195,6 @@ body::before {
 .grid-item__drop-zone {
     width: 160px;
     height: 90px;
-    margin: 5px;
     position: relative;
     background-color: rgba(255, 255, 255, 0.3);
     border-radius: 8px;
@@ -267,11 +278,10 @@ body::before {
 #step-indicator {
     background-color: rgba(255, 255, 255, 0.2);
     color: #4e4040;
-    font-size: 1.5em;
+    font-size: 1.8em;
     font-weight: bold;
     text-align: center;
     padding: 12px 20px;
-    margin: 40px auto;
     border-radius: 10px;
     width: fit-content;
     /* max-width: 90%; */
@@ -314,7 +324,8 @@ body::before {
     border-radius: 8px;
     font-weight: bold;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    padding: 8px 8px;
+    padding: 10px 10px;
+    width: 100%;
     box-sizing: border-box;
     height: auto;
     gap: 8px;
@@ -330,7 +341,6 @@ body::before {
 .container__selector label {
     font-size: 0.9em;
     white-space: nowrap;
-    margin-right: 4px;
 }
 
 .container__selector select {
@@ -370,13 +380,28 @@ body::before {
     transform: scale(0.98);
 }
 
-.team-member-input {
+.layout__team-name {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 50px;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.8em;
+    color: #4e4040;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+}
+
+.team__member-input {
     background-color: rgba(255, 255, 255, 0.2);
     color: #4e4040;
     border: none;
     border-radius: 8px;
-    width: 160px;
-    min-height: 100px;
+    width: 100%;
+    min-height: 110px;
     height: auto;
     resize: none;
     font-size: 1.5em;
@@ -385,89 +410,7 @@ body::before {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-.layout__team-name {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 1.8em;
-    color: #4e4040;
-    background-color: #fff;
-    padding: 5px 10px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    white-space: nowrap;
-}
-
-.team-member-input:focus {
-    outline: none;
-}
-
-.chat__window {
-    background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    width: 90%;
-    /* min-height: 200px; */
-    /* max-height: 360px; */
-}
-
-.chat__window button{
-    background: #6b5b5b;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 6px;
-    cursor: pointer;
-    font-size: 1em;
-    width: 65px;
-    flex-shrink: 0;
-}
-
-.chat__header {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-#current-nickname {
-    font-size: 1em;
-    font-weight: bold;
-    color: #4e4040;
-    flex: 1;        /* 填滿剩餘空間 */
-    min-width: 50px;   /* 防止 overflow 溢出 */
-}
-
-.chat__messages {
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-    height: 300px;
-    font-size: 1em;
-    padding: 10px 0px;
-    /* border: 1px solid #ccc; */
-    /* border-radius: 6px; */
-}
-
-.chat__footer {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-#chat-input {
-    padding: 5px;
-    border-radius: 6px;
-    /* border: 1px solid #ccc; */
-    font-size: 1em;
-    flex: 1;        /* 填滿剩餘空間 */
-    min-width: 50px;   /* 防止 overflow 溢出 */
-}
-
-#chat-input:focus {
+.team__member-input:focus {
     outline: none;
 }
 
@@ -478,9 +421,241 @@ body::before {
 }
 
 /* ============================= */
+/* 🧪 Chat                     */
+/* ============================= */
+
+.chat__window {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    /* min-height: 200px; */
+    /* max-height: 360px; */
+}
+
+.chat__window button {
+    background: #6b5b5b;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px;
+    cursor: pointer;
+    font-size: 1.2em;
+    width: 65px;
+    flex-shrink: 0;
+}
+
+.chat__header {
+    display: flex;
+    gap: 10px;
+    padding: 5px 0px;
+    align-items: center;
+}
+
+#current-nickname {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #4e4040;
+    flex: 1;
+    /* 填滿剩餘空間 */
+    min-width: 50px;
+    /* 防止 overflow 溢出 */
+}
+
+.chat__messages {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    height: 300px;
+    font-size: 1.2em;
+    padding: 10px 0px;
+    /* border: 1px solid #ccc; */
+    /* border-radius: 6px; */
+}
+
+.chat__footer {
+    display: flex;
+    align-items: center;
+    padding: 5px 0px;
+    gap: 10px;
+}
+
+#chat-input {
+    padding: 5px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1.2em;
+    flex: 1;
+    /* 填滿剩餘空間 */
+    min-width: 50px;
+    height: 40px;
+    /* 防止 overflow 溢出 */
+}
+
+#chat-input:focus {
+    outline: none;
+}
+
+/* ============================= */
+/* 🧪 Tactical                 */
+/* ============================= */
+
+.tactical__board {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    gap: 10px;
+}
+
+.tactical__board-tabs {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.tactical__tab {
+    flex: 1;
+    padding: 8px 16px;
+    background: #ddd;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s ease;
+}
+
+.tactical__tab:hover {
+    background: #ccc;
+}
+
+.tactical__tab--active {
+    background: #4e4040;
+    color: #fff;
+}
+
+.tactical__board-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.tactical__board-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tactical__pool {
+    display: flex;
+    flex-wrap: wrap;
+    background: rgba(0, 0, 0, 0.1);
+    width: 440px;
+    height: 170px;
+    min-height: 170px;
+    overflow-y: auto;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.tactical__pool img {
+    width: 80px;
+    cursor: grab;
+}
+
+.tactical__grid {
+    display: grid;
+    grid-template-columns: repeat(5, 80px);
+    grid-template-rows: repeat(5, 80px);
+    gap: 10px;
+    width: 440px;
+}
+
+.tactical__cell {
+    position: relative;
+}
+
+.tactical__cell--title::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* 利用 linear-gradient 將 cell 分成兩部分，
+       50% 透明 50% 填充顏色 (可根據需求調整) */
+    background: linear-gradient(to top right,
+            transparent 50%,
+            rgba(0, 0, 0, 0.1) 50%);
+    pointer-events: none;
+    /* 不影響滑鼠事件 */
+}
+
+.tactical__title {
+    position: absolute;
+    font-size: 1.0em;
+    color: #4e4040;
+    font-weight: bold;
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* 右上顯示隊員 */
+.tactical__title--order {
+    top: 50px;
+    right: 40px;
+    text-align: right;
+}
+
+/* 左下顯示隊伍 */
+.tactical__title--member {
+    bottom: 50px;
+    left: 40px;
+    text-align: left;
+}
+
+.tactical__cell--drop-zone {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tactical__cell img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    cursor: grab;
+}
+
+.tactical__member-name,
+.tactical__team-order {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 4px;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.0em;
+    z-index: 10;
+    pointer-events: none;
+    color: #4e4040;
+}
+
+/* ============================= */
 /* 🧪 Debug Mode                */
 /* ============================= */
 
 /* * {
-    border: 1px solid red;
+    box-sizing: border-box;
+    outline: 1px solid red;
 } */

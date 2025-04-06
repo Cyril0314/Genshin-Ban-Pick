@@ -15,7 +15,6 @@ export function setupGlobalEvents(characterMap, socket) {
  */
 function setupDragEvents(characterMap, socket) {
     document.addEventListener('dragstart', (e) => {
-        console.log(`dragstart`)
         const imageOptions = document.getElementById('image-options');
         if (e.target.tagName === 'IMG' && imageOptions.contains(e.target)) {
             const imgId = e.target.id;
@@ -28,18 +27,18 @@ function setupDragEvents(characterMap, socket) {
     dropZones.forEach(zone => {
         zone.addEventListener('dragover', e => e.preventDefault());
         zone.addEventListener('drop', (e) => {
-            console.log(`drop`)
             e.preventDefault();
             const draggedImgId = e.dataTransfer.getData('text/plain');
             const draggedImg = document.getElementById(draggedImgId);
             if (draggedImg && !zone.querySelector('img')) {
                 updateAndBroadcastImage(draggedImg, zone, characterMap, socket);
 
-
                 if (stepController.isCurrentZone(zone.dataset.zoneId)) {
                     socket.emit('step.advance.request', {
-                         senderId: socket.id
-                        });
+                        senderId: socket.id
+                    });
+
+                    console.log('[Client] Sent step.advance.request');
                 }
             }
         });
@@ -56,17 +55,22 @@ function setupClickRestore(socket) {
         const parent = e.target.parentElement;
         if (!parent.classList.contains('grid-item__drop-zone')) return;
 
-        const imgId = e.target.id.replace('_clone', '');
+        const imgId = e.target.id;
         const imageOptions = document.getElementById('image-options');
         e.target.src = originalImageSrc[imgId] || e.target.src;
         imageOptions.appendChild(e.target);
 
+        const event = new CustomEvent('imageMoved', {
+            detail: { imgId, zoneSelector: '#image-options' }
+        });
+        document.dispatchEvent(event);
+        const zoneSelector = '#image-options';
         socket.emit('image.move.request', {
-             imgId, 
-             zoneSelector: '#image-options', 
-             senderId: socket.id 
-            });
-        console.log('[Client] Sent image.move.request: click image');
+            imgId,
+            zoneSelector,
+            senderId: socket.id
+        });
+        console.log('[Client] Sent image.move.request: click image', imgId, zoneSelector);
 
         // const currentStep = stepController.get();
         // const zoneId = parent.dataset.zoneId;

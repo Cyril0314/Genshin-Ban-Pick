@@ -12,14 +12,15 @@
   <div class="background-image"></div>
   <div id="image-options"></div>
   <div class="toolbar">
-    <button id="toolbar__random">Random</button>
-    <button id="toolbar__reset">Reset</button>
-    <button id="toolbar__utility">Utility</button>
+    <button class="toolbar__button toolbar__button--reset">Reset</button>
+    <button class="toolbar__button toolbar__button--random">Random</button>
+    <button class="toolbar__button toolbar__button--utility">Utility</button>
+    <button class="toolbar__button toolbar__button--ban">Ban</button>
   </div>
   <div class="layout">
     <div class="layout__side layout__side--left">
       <span class="layout__team-name layout__team-name--left">Team Aether</span>
-      <textarea class="team-member-input" placeholder="Members" data-team="aether"></textarea>
+      <textarea class="team__member-input" placeholder="Members" data-team="aether"></textarea>
       <div class="pick-zone__columns pick-zone__columns--left">
         <div class="grid__column grid__column--side"></div>
         <div class="grid__column grid__column--side"></div>
@@ -34,25 +35,7 @@
       </div>
       <div class="layout__common">
         <div class="layout__common-side">
-          <div class="chat__window">
-            <div class="chat__header">
-              <span id="current-nickname">暱稱:</span>
-              <button id="change-nickname">更改</button>
-            </div>
-            <div class="chat__messages"></div>
-            <div class="chat__footer">
-              <input id="chat-input" type="text" placeholder="講幹話" />
-              <button id="chat-send">傳送</button>
-            </div>
-          </div>
-        </div>
-        <div class="layout__utility-zone">
-          <div id="step-indicator" class="text-white text-xl font-semibold text-center my-4"> 等待進入房間... </div>
-          <div class="utility-zone__columns"></div>
-          <!-- Utility Zone  -->
-        </div>
-        <div class="layout__common-side">
-          <div class="container__selector">
+          <!-- <div class="container__selector">
             <div class="selector__row">
               <label for="team-select">選擇隊伍：</label>
               <select id="team-select">
@@ -60,7 +43,6 @@
                 <option value="Lumine">Team Lumine</option>
               </select>
             </div>
-
             <div class="selector__row">
               <label for="weapon-select">選擇武器：</label>
               <select id="weapon-select">
@@ -88,15 +70,58 @@
             </div>
 
             <button id="selector-confirm-button">確認</button>
+          </div> -->
+          <div class="chat__window">
+            <div class="chat__header">
+              <span id="current-nickname">暱稱:</span>
+              <button id="change-nickname">更改</button>
+            </div>
+            <div class="chat__messages"></div>
+            <div class="chat__footer">
+              <input id="chat-input" type="text" placeholder="講幹話" />
+              <button id="chat-send">傳送</button>
+            </div>
           </div>
-
+        </div>
+        <div class="layout__utility-zone">
+          <div id="step-indicator" class="text-white text-xl font-semibold text-center my-4"> 等待進入房間... </div>
+          <div class="utility-zone__columns"></div>
+          <!-- Utility Zone  -->
+        </div>
+        <div class="layout__common-side">
+          <div class="tactical__board">
+            <div class="tactical__board-tabs">
+              <button id="aether-tab" class="tactical__tab tactical__tab--active">Aether 隊</button>
+              <button id="lumine-tab" class="tactical__tab">Lumine 隊</button>
+            </div>
+            <div class="tactical__board-content">
+              <!-- Aether 隊的戰術板 -->
+              <div id="aether-board" class="tactical__board-section">
+                <div class="tactical__pool">
+                  <!-- Aether 隊的 pool 內容 -->
+                </div>
+                <div class="tactical__grid">
+                  <!-- Aether 隊的 grid 內容 -->
+                </div>
+              </div>
+              <!-- Lumine 隊的戰術板，預設隱藏 -->
+              <div id="lumine-board" class="tactical__board-section" style="display: none;">
+                <div class="tactical__pool">
+                  <!-- Lumine 隊的 pool 內容 -->
+                </div>
+                <div class="tactical__grid">
+                  <!-- Lumine 隊的 grid 內容 -->
+                </div>
+              </div>
+            </div>
+          </div>
           <!-- <img class="calendar__image" src="images/calendar/Calendar_March.png" alt="本月壽星"> -->
         </div>
       </div>
     </div>
     <div class="layout__side layout__side--right">
       <span class="layout__team-name layout__team-name--right">Team Lumine</span>
-      <textarea class="team-member-input" placeholder="Members" data-team="lumine"></textarea>
+      <textarea class="team__member-input" placeholder="Members" data-team="lumine"></textarea>
 
       <div class="pick-zone__columns pick-zone__columns--right">
         <div class="grid__column grid__column--side"></div>
