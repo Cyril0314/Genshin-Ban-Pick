@@ -2,6 +2,7 @@
 // import { RouterLink, RouterView } from 'vue-router'
 // import HelloWorld from './components/HelloWorld.vue'
 import ChatRoom from './features/ChatRoom/ChatRoom.vue'
+import BanPickPage from './pages/BanPickPage.vue'
 </script>
 
 <template>
@@ -19,7 +20,8 @@ import ChatRoom from './features/ChatRoom/ChatRoom.vue'
   <!-- </header> -->
 
   <div id="app">
-    <ChatRoom />
+    <!-- <ChatRoom /> -->
+    <BanPickPage />
   </div>
 </template>
 

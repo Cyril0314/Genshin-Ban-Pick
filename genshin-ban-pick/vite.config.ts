@@ -7,6 +7,11 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    proxy: {
+      '/api': 'http://localhost:3000' // ← 你的後端 port
+    }
+  },
   plugins: [
     vue(),
     vueJsx(),
