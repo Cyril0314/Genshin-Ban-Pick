@@ -1,4 +1,4 @@
-// routes/characters.js
+// backend/routes/characters.js
 
 import express from 'express';
 import fs from 'fs';
@@ -8,10 +8,6 @@ import { fileURLToPath } from 'url';
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-// type: 0 主C
-// type: 1 副C
-// type: 2 輔助
 
 // 角色資料
 router.get('/api/characters', (req, res) => {

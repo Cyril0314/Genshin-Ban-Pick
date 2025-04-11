@@ -9,7 +9,8 @@
         "model_type": "Medium Male",
         "release_date": "December 23, 2020",
         "version": "1.2",
-        "type": 1
+        "role": "Sub DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Alhaitham Icon",
@@ -21,7 +22,8 @@
         "model_type": "Tall Male",
         "release_date": "January 18, 2023",
         "version": "3.4",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Amber Icon",
@@ -33,7 +35,8 @@
         "model_type": "Medium Female",
         "release_date": "September 28, 2020",
         "version": "1.0",
-        "type": 1
+        "role": "Sub DPS",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Arataki Itto Icon",
@@ -45,7 +48,8 @@
         "model_type": "Tall Male",
         "release_date": "December 14, 2021",
         "version": "2.3",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Arlecchino Icon",
@@ -57,7 +61,8 @@
         "model_type": "Tall Female",
         "release_date": "April 24, 2024",
         "version": "4.6",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Baizhu Icon",
@@ -69,7 +74,8 @@
         "model_type": "Tall Male",
         "release_date": "May 02, 2023",
         "version": "3.6",
-        "type": 2
+        "role": "Support",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Barbara Icon",
@@ -81,7 +87,8 @@
         "model_type": "Medium Female",
         "release_date": "September 28, 2020",
         "version": "1.0",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Beidou Icon",
@@ -93,7 +100,8 @@
         "model_type": "Tall Female",
         "release_date": "September 28, 2020",
         "version": "1.0",
-        "type": 1
+        "role": "Sub DPS",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Bennett Icon",
@@ -105,7 +113,8 @@
         "model_type": "Medium Male",
         "release_date": "September 28, 2020",
         "version": "1.0",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Candace Icon",
@@ -117,7 +126,8 @@
         "model_type": "Tall Female",
         "release_date": "September 28, 2022",
         "version": "3.1",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Citlali Icon",
@@ -129,7 +139,8 @@
         "model_type": "Medium Female",
         "release_date": "January 01, 2025",
         "version": "5.3",
-        "type": 2
+        "role": "Support",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Charlotte Icon",
@@ -141,7 +152,8 @@
         "model_type": "Medium Female",
         "release_date": "November 08, 2023",
         "version": "4.2",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Chasca Icon",
@@ -153,7 +165,8 @@
         "model_type": "Tall Female",
         "release_date": "November 20, 2024",
         "version": "5.2",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Chevreuse Icon",
@@ -165,7 +178,8 @@
         "model_type": "Medium Female",
         "release_date": "January 09, 2024",
         "version": "4.3",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Chiori Icon",
@@ -177,7 +191,8 @@
         "model_type": "Medium Female",
         "release_date": "March 13, 2024",
         "version": "4.5",
-        "type": 1
+        "role": "Sub DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Chongyun Icon",
@@ -189,7 +204,8 @@
         "model_type": "Medium Male",
         "release_date": "September 28, 2020",
         "version": "1.0",
-        "type": 1
+        "role": "Sub DPS",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Clorinde Icon",
@@ -201,7 +217,8 @@
         "model_type": "Tall Female",
         "release_date": "June 05, 2024",
         "version": "4.7",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Collei Icon",
@@ -213,7 +230,8 @@
         "model_type": "Medium Female",
         "release_date": "August 24, 2022",
         "version": "3.0",
-        "type": 1
+        "role": "Sub DPS",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Cyno Icon",
@@ -225,7 +243,8 @@
         "model_type": "Medium Male",
         "release_date": "September 28, 2022",
         "version": "3.1",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Dehya Icon",
@@ -237,7 +256,8 @@
         "model_type": "Tall Female",
         "release_date": "March 01, 2023",
         "version": "3.5",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Diluc Icon",
@@ -249,7 +269,8 @@
         "model_type": "Tall Male",
         "release_date": "September 28, 2020",
         "version": "1.0",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Diona Icon",
@@ -261,7 +282,8 @@
         "model_type": "Short Female",
         "release_date": "November 11, 2020",
         "version": "1.1",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Dori Icon",
@@ -273,7 +295,8 @@
         "model_type": "Short Female",
         "release_date": "September 09, 2022",
         "version": "3.0",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Emilie Icon",
@@ -285,7 +308,8 @@
         "model_type": "Medium Female",
         "release_date": "August 06, 2024",
         "version": "4.8",
-        "type": 1
+        "role": "Sub DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Eula Icon",
@@ -297,7 +321,8 @@
         "model_type": "Tall Female",
         "release_date": "May 18, 2021",
         "version": "1.5",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Faruzan Icon",
@@ -309,7 +334,8 @@
         "model_type": "Medium Female",
         "release_date": "December 07, 2022",
         "version": "3.3",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Fischl Icon",
@@ -321,7 +347,8 @@
         "model_type": "Medium Female",
         "release_date": "September 28, 2020",
         "version": "1.0",
-        "type": 1
+        "role": "Sub DPS",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Freminet Icon",
@@ -333,7 +360,8 @@
         "model_type": "Medium Male",
         "release_date": "September 05, 2023",
         "version": "4.0",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Furina Icon",
@@ -345,7 +373,8 @@
         "model_type": "Medium Female",
         "release_date": "November 08, 2023",
         "version": "4.2",
-        "type": 1
+        "role": "Sub DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Gaming Icon",
@@ -357,7 +386,8 @@
         "model_type": "Medium Male",
         "release_date": "January 31, 2024",
         "version": "4.4",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Ganyu Icon",
@@ -369,7 +399,8 @@
         "model_type": "Medium Female",
         "release_date": "January 12, 2021",
         "version": "1.2",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Gorou Icon",
@@ -381,7 +412,8 @@
         "model_type": "Medium Male",
         "release_date": "December 14, 2021",
         "version": "2.3",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Hu Tao Icon",
@@ -393,7 +425,8 @@
         "model_type": "Medium Female",
         "release_date": "March 02, 2021",
         "version": "1.3",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Iansan Icon",
@@ -405,7 +438,8 @@
         "model_type": "Short Female",
         "release_date": "March 26, 2025",
         "version": "5.5",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Jean Icon",
@@ -417,7 +451,8 @@
         "model_type": "Tall Female",
         "release_date": "September 28, 2020",
         "version": "1.0",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Kachina Icon",
@@ -429,7 +464,8 @@
         "model_type": "Short Female",
         "release_date": "August 28, 2024",
         "version": "5.0",
-        "type": 1
+        "role": "Sub DPS",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Kaedehara Kazuha Icon",
@@ -441,7 +477,8 @@
         "model_type": "Medium Male",
         "release_date": "June 29, 2021",
         "version": "1.6",
-        "type": 2
+        "role": "Support",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Kaeya Icon",
@@ -453,7 +490,8 @@
         "model_type": "Tall Male",
         "release_date": "September 28, 2020",
         "version": "1.0",
-        "type": 1
+        "role": "Sub DPS",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Kamisato Ayaka Icon",
@@ -465,7 +503,8 @@
         "model_type": "Medium Female",
         "release_date": "July 21, 2021",
         "version": "2.0",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Kamisato Ayato Icon",
@@ -477,7 +516,8 @@
         "model_type": "Tall Male",
         "release_date": "March 30, 2022",
         "version": "2.6",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Kaveh Icon",
@@ -489,7 +529,8 @@
         "model_type": "Tall Male",
         "release_date": "May 02, 2023",
         "version": "3.6",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Keqing Icon",
@@ -501,7 +542,8 @@
         "model_type": "Medium Female",
         "release_date": "September 28, 2020",
         "version": "1.0",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Kinich Icon",
@@ -513,7 +555,8 @@
         "model_type": "Medium Male",
         "release_date": "September 17, 2024",
         "version": "5.0",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Kirara Icon",
@@ -525,7 +568,8 @@
         "model_type": "Medium Female",
         "release_date": "May 24, 2023",
         "version": "3.7",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Klee Icon",
@@ -537,7 +581,8 @@
         "model_type": "Short Female",
         "release_date": "October 20, 2020",
         "version": "1.0",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Kujou Sara Icon",
@@ -549,7 +594,8 @@
         "model_type": "Tall Female",
         "release_date": "September 01, 2021",
         "version": "2.1",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Kuki Shinobu Icon",
@@ -561,7 +607,8 @@
         "model_type": "Medium Female",
         "release_date": "June 21, 2022",
         "version": "2.7",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Lan Yan Icon",
@@ -573,7 +620,8 @@
         "model_type": "Medium Female",
         "release_date": "January 21, 2025",
         "version": "5.3",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Layla Icon",
@@ -585,7 +633,8 @@
         "model_type": "Medium Female",
         "release_date": "November 18, 2022",
         "version": "3.2",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Lisa Icon",
@@ -597,7 +646,8 @@
         "model_type": "Tall Female",
         "release_date": "September 28, 2020",
         "version": "1.0",
-        "type": 1
+        "role": "Sub DPS",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Lynette Icon",
@@ -609,7 +659,8 @@
         "model_type": "Medium Female",
         "release_date": "August 16, 2023",
         "version": "4.0",
-        "type": 1
+        "role": "Sub DPS",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Lyney Icon",
@@ -621,7 +672,8 @@
         "model_type": "Medium Male",
         "release_date": "August 16, 2023",
         "version": "4.0",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Mavuika Icon",
@@ -633,7 +685,8 @@
         "model_type": "Tall Female",
         "release_date": "January 01, 2025",
         "version": "5.3",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Mualani Icon",
@@ -645,7 +698,8 @@
         "model_type": "Medium Female",
         "release_date": "August 28, 2024",
         "version": "5.0",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Mika Icon",
@@ -657,7 +711,8 @@
         "model_type": "Medium Male",
         "release_date": "March 21, 2023",
         "version": "3.5",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Mona Icon",
@@ -669,7 +724,8 @@
         "model_type": "Medium Female",
         "release_date": "September 28, 2020",
         "version": "1.0",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Nahida Icon",
@@ -681,7 +737,8 @@
         "model_type": "Short Female",
         "release_date": "November 02, 2022",
         "version": "3.2",
-        "type": 1
+        "role": "Sub DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Navia Icon",
@@ -693,7 +750,8 @@
         "model_type": "Tall Female",
         "release_date": "December 20, 2023",
         "version": "4.3",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Neuvillette Icon",
@@ -705,7 +763,8 @@
         "model_type": "Tall Male",
         "release_date": "September 27, 2023",
         "version": "4.1",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Nilou Icon",
@@ -717,7 +776,8 @@
         "model_type": "Medium Female",
         "release_date": "October 14, 2022",
         "version": "3.1",
-        "type": 2
+        "role": "Support",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Ningguang Icon",
@@ -729,7 +789,8 @@
         "model_type": "Tall Female",
         "release_date": "September 28, 2020",
         "version": "1.0",
-        "type": 1
+        "role": "Sub DPS",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Noelle Icon",
@@ -741,7 +802,8 @@
         "model_type": "Medium Female",
         "release_date": "September 28, 2020",
         "version": "1.0",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Ororon Icon",
@@ -753,7 +815,8 @@
         "model_type": "Tall Male",
         "release_date": "November 20, 2024",
         "version": "5.2",
-        "type": 1
+        "role": "Sub DPS",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Qiqi Icon",
@@ -765,7 +828,8 @@
         "model_type": "Short Female",
         "release_date": "September 28, 2020",
         "version": "1.0",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Raiden Shogun Icon",
@@ -777,7 +841,8 @@
         "model_type": "Tall Female",
         "release_date": "September 01, 2021",
         "version": "2.1",
-        "type": 2
+        "role": "Support",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Razor Icon",
@@ -789,7 +854,8 @@
         "model_type": "Medium Male",
         "release_date": "September 28, 2020",
         "version": "1.0",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Rosaria Icon",
@@ -801,7 +867,8 @@
         "model_type": "Tall Female",
         "release_date": "April 06, 2021",
         "version": "1.4",
-        "type": 1
+        "role": "Sub DPS",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Sangonomiya Kokomi Icon",
@@ -813,7 +880,8 @@
         "model_type": "Medium Female",
         "release_date": "September 21, 2021",
         "version": "2.1",
-        "type": 2
+        "role": "Support",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Sayu Icon",
@@ -825,7 +893,8 @@
         "model_type": "Short Female",
         "release_date": "August 10, 2021",
         "version": "2.0",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Sethos Icon",
@@ -837,7 +906,8 @@
         "model_type": "Medium Male",
         "release_date": "June 05, 2024",
         "version": "4.7",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Shenhe Icon",
@@ -849,7 +919,8 @@
         "model_type": "Tall Female",
         "release_date": "January 05, 2022",
         "version": "2.4",
-        "type": 2
+        "role": "Support",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Shikanoin Heizou Icon",
@@ -861,7 +932,8 @@
         "model_type": "Medium Male",
         "release_date": "July 13, 2022",
         "version": "2.8",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Sigewinne Icon",
@@ -873,7 +945,8 @@
         "model_type": "Short Female",
         "release_date": "June 25, 2024",
         "version": "4.7",
-        "type": 2
+        "role": "Support",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Sucrose Icon",
@@ -885,7 +958,8 @@
         "model_type": "Medium Female",
         "release_date": "September 28, 2020",
         "version": "1.0",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Tartaglia Icon",
@@ -897,7 +971,8 @@
         "model_type": "Tall Male",
         "release_date": "November 11, 2020",
         "version": "1.1",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Thoma Icon",
@@ -909,7 +984,8 @@
         "model_type": "Tall Male",
         "release_date": "November 02, 2021",
         "version": "2.2",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Tighnari Icon",
@@ -921,7 +997,8 @@
         "model_type": "Medium Male",
         "release_date": "August 24, 2022",
         "version": "3.0",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Traveler Icon",
@@ -930,10 +1007,11 @@
         "element": "None",
         "weapon": "Sword",
         "region": "None",
-        "model_type": "Aether: Medium Male, Lumine: Medium Female",
+        "model_type": "None",
         "release_date": "September 28, 2020",
         "version": "1.0",
-        "type": 1
+        "role": "Sub DPS",
+        "wish": "None"
     },
     {
         "icon": "Varesa Icon",
@@ -945,7 +1023,8 @@
         "model_type": "Medium Female",
         "release_date": "March 26, 2025",
         "version": "5.5",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Venti Icon",
@@ -957,7 +1036,8 @@
         "model_type": "Medium Male",
         "release_date": "September 28, 2020",
         "version": "1.0",
-        "type": 2
+        "role": "Support",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Wanderer Icon",
@@ -969,7 +1049,8 @@
         "model_type": "Medium Male",
         "release_date": "December 07, 2022",
         "version": "3.3",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Wriothesley Icon",
@@ -981,7 +1062,8 @@
         "model_type": "Tall Male",
         "release_date": "October 17, 2023",
         "version": "4.1",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Xiangling Icon",
@@ -993,7 +1075,8 @@
         "model_type": "Medium Female",
         "release_date": "September 28, 2020",
         "version": "1.0",
-        "type": 1
+        "role": "Sub DPS",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Xianyun Icon",
@@ -1005,7 +1088,8 @@
         "model_type": "Tall Female",
         "release_date": "January 31, 2024",
         "version": "4.4",
-        "type": 2
+        "role": "Support",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Xiao Icon",
@@ -1017,7 +1101,8 @@
         "model_type": "Medium Male",
         "release_date": "February 03, 2021",
         "version": "1.3",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Xilonen Icon",
@@ -1029,7 +1114,8 @@
         "model_type": "Tall Female",
         "release_date": "October 09, 2024",
         "version": "5.1",
-        "type": 2
+        "role": "Support",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Xingqiu Icon",
@@ -1041,7 +1127,8 @@
         "model_type": "Medium Male",
         "release_date": "September 28, 2020",
         "version": "1.0",
-        "type": 1
+        "role": "Sub DPS",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Xinyan Icon",
@@ -1053,7 +1140,8 @@
         "model_type": "Medium Female",
         "release_date": "December 01, 2020",
         "version": "1.1",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Yae Miko Icon",
@@ -1065,7 +1153,8 @@
         "model_type": "Tall Female",
         "release_date": "February 16, 2022",
         "version": "2.5",
-        "type": 1
+        "role": "Sub DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Yanfei Icon",
@@ -1077,7 +1166,8 @@
         "model_type": "Medium Female",
         "release_date": "April 28, 2021",
         "version": "1.5",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Yaoyao Icon",
@@ -1089,7 +1179,8 @@
         "model_type": "Short Female",
         "release_date": "January 18, 2023",
         "version": "3.4",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Yelan Icon",
@@ -1101,7 +1192,8 @@
         "model_type": "Tall Female",
         "release_date": "May 31, 2022",
         "version": "2.7",
-        "type": 1
+        "role": "Sub DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Yoimiya Icon",
@@ -1113,7 +1205,8 @@
         "model_type": "Medium Female",
         "release_date": "August 10, 2021",
         "version": "2.0",
-        "type": 0
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Yumemizuki Mizuki Icon",
@@ -1125,7 +1218,8 @@
         "model_type": "Medium Female",
         "release_date": "February 12, 2025",
         "version": "5.4",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Yun Jin Icon",
@@ -1137,7 +1231,8 @@
         "model_type": "Medium Female",
         "release_date": "January 05, 2022",
         "version": "2.4",
-        "type": 2
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Zhongli Icon",
@@ -1149,6 +1244,7 @@
         "model_type": "Tall Male",
         "release_date": "December 01, 2020",
         "version": "1.1",
-        "type": 2
+        "role": "Support",
+        "wish": "Limited-Time Event Wish"
     }
 ]

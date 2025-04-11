@@ -1,3 +1,4 @@
+// scripts/data/roomsetting.js
 
 export async function fetchRoomSetting() {
     const response = await fetch('/api/room-setting');

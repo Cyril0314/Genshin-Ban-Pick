@@ -1,3 +1,5 @@
+// scripts/utils/imageUtils.js
+
 export const originalImageSrc = {};
 
 export function getProfileImagePath(name) {

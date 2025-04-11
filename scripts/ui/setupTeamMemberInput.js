@@ -1,4 +1,4 @@
-// scripts/ui/teamMemberInput.js
+// scripts/ui/setupTeamMemberInput.js
 
 export function setupTeamMemberInput(socket) {
     const inputs = document.querySelectorAll('.team__member-input');

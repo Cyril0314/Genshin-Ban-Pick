@@ -1,9 +1,9 @@
-// socketController.js
+// backend/socketController.js
 
 import { advanceStep, rollbackStep, resetStep, getCurrentStep } from './banPickFlow.js';
 
-const imageState = {}; // { roomId: { imgId: zoneSelector } }
-const teamMembersState = {};
+export const imageState = {}; // { roomId: { imgId: zoneSelector } }
+export const teamMembersState = {};
 const chatHistory = {};
 
 export function setupSocketIO(io) {

@@ -1,3 +1,5 @@
+// scripts/ui/dropZones.js
+
 /**
  * 建立所有 Drop Zones（utility + pick + ban）
  */
@@ -24,10 +26,10 @@ function addDropZonesToCenterColumn(num) {
         }
         const dropZone = document.createElement('div');
         dropZone.className = 'grid-item__drop-zone grid-item__drop-zone--utility';
-        dropZone.setAttribute('data-zone-id', `zone-Utility ${i + 1}`);
+        dropZone.id = `zone-utility-${i + 1}`;
 
         const span = document.createElement('span');
-        span.className = 'utility-text';
+        span.className = 'grid-item__text grid-item__text--utility';
         span.textContent = 'Utility';
         dropZone.appendChild(span);
 
@@ -60,10 +62,10 @@ function addDropZonesToRows(num, totalRounds) {
 
         const dropZone = document.createElement('div');
         dropZone.className = 'grid-item__drop-zone grid-item__drop-zone--ban';
-        dropZone.setAttribute('data-zone-id', `zone-${banText}`);
+        dropZone.id = `zone-ban-${banIndex + 1}`;
 
         const span = document.createElement('span');
-        span.className = 'ban-text';
+        span.className = 'grid-item__text grid-item__text--ban';
         span.textContent = banText;
         dropZone.appendChild(span);
 
@@ -92,10 +94,10 @@ function addDropZonesToColumns(num, totalRounds) {
 
             const dropZone = document.createElement('div');
             dropZone.className = 'grid-item__drop-zone grid-item__drop-zone--pick';
-            dropZone.setAttribute('data-zone-id', `zone-${pickText}`);
+            dropZone.id =`zone-pick-${pickIndex + 1}`;
 
             const span = document.createElement('span');
-            span.className = 'pick-text';
+            span.className = 'grid-item__text grid-item__text--pick';
             span.textContent = pickText;
             dropZone.appendChild(span);
 

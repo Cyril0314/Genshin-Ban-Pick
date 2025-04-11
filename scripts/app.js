@@ -1,5 +1,9 @@
-import { initializeCharacterMap } from './data/characters.js';
+// scripts/app.js
+
+import { fetchCharacterMap } from './data/characters.js';
 import { fetchRoomSetting } from './data/roomSetting.js';
+import { setupImageOptions } from './ui/setupImageOptions.js';
+import { setupSelectors } from './ui/setupSelectors.js';
 import { setupAllDropZones } from './ui/dropZones.js';
 import { setupAllButtons } from './ui/setupButtons.js';
 import { setupTeamMemberInput } from './ui/setupTeamMemberInput.js';
@@ -13,8 +17,10 @@ const socket = io();
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('DOMContentLoaded');
-    const characterMap = await initializeCharacterMap();
+    const characterMap = await fetchCharacterMap();
     const roomSetting = await fetchRoomSetting();
+    setupImageOptions(characterMap);
+    setupSelectors(characterMap);
     setupAllButtons(characterMap, roomSetting, socket);
     setupAllDropZones(roomSetting);
     setupGlobalEvents(characterMap, socket);

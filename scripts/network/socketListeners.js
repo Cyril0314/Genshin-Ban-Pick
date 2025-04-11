@@ -1,4 +1,4 @@
-// socketListener.js
+// scripts/network/socketListener.js
 
 import { getWishImagePath, getProfileImagePath, originalImageSrc, resetImages } from '../utils/imageUtils.js';
 import { showCurrentStepText, highlightZones } from '../ui/banPickFlowUI.js';
@@ -35,7 +35,7 @@ export function setupSocketListeners(characterMap, socket) {
     socket.on('image.move.broadcast', ({ imgId, zoneSelector, senderId }) => {
         console.log('[Client] Drag updated received from other user');
         if (socket.id === senderId) return;
-
+        console.log(`zoneSelector ${zoneSelector}`)
         const draggedImg = document.getElementById(imgId);
         const dropZone = document.querySelector(zoneSelector);
 

@@ -1,6 +1,9 @@
+// backend/index.js
+
 import { setupSocketIO } from './socketController.js';
 import characterRoutes from './routes/characters.js';
 import roomRoutes from './routes/room.js';
+import recordRoutes from './routes/record.js';
 import express from 'express';
 import path from 'path';
 
@@ -32,3 +35,4 @@ server.listen(3000, '0.0.0.0', () => {
 
 app.use(characterRoutes);
 app.use(roomRoutes);
+app.use(recordRoutes);
