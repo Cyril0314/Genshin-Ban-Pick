@@ -1,7 +1,7 @@
-<!-- ChatRoom.vue -->
+<!-- src/features/ChatRoom/ChatRoom.vue -->
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useChat } from './useChat.ts'
+import { useChat } from './composables/useChat.ts'
 
 const newMessage = ref('')
 const { messages, nickname, sendMessage, changeNickname } = useChat()
