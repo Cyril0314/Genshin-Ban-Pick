@@ -42,14 +42,14 @@ const __dirname = path.dirname(__filename);
 // Express 提供前端的靜態檔案 (非常重要!)
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(characterRoutes);
+app.use(roomRoutes);
+app.use(recordRoutes);
+
 // 讓所有未知的 request 都回傳 index.html (支援 Vue Router history mode)
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public/index.html"));
 });
-
-app.use(characterRoutes);
-app.use(roomRoutes);
-app.use(recordRoutes);
 
 server.listen(3000, "0.0.0.0", () => {
   console.log("Server is running on http://localhost:3000");
