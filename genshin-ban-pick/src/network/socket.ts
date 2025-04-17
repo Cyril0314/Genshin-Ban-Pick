@@ -2,10 +2,11 @@
 // 建立 Socket 實例
 
 import { io, type Socket } from 'socket.io-client'
+const baseURL = import.meta.env.VITE_SOCKET_URL
 
 const roomId = new URLSearchParams(window.location.search).get('room') || 'default-room'
 
-export const socket: Socket = io('http://localhost:3000', {
+export const socket: Socket = io(baseURL, {
     autoConnect: true
 })
 
