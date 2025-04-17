@@ -1,3 +1,5 @@
+// scripts/features/dragAndDrop.js
+
 import { originalImageSrc } from '../utils/imageUtils.js';
 import { updateAndBroadcastImage } from '../utils/syncUtils.js';
 import { stepController } from '../logic/stepController.js';
@@ -33,7 +35,7 @@ function setupDragEvents(characterMap, socket) {
             if (draggedImg && !zone.querySelector('img')) {
                 updateAndBroadcastImage(draggedImg, zone, characterMap, socket);
 
-                if (stepController.isCurrentZone(zone.dataset.zoneId)) {
+                if (stepController.isCurrentZone(zone.id)) {
                     socket.emit('step.advance.request', {
                         senderId: socket.id
                     });
@@ -73,7 +75,7 @@ function setupClickRestore(socket) {
         console.log('[Client] Sent image.move.request: click image', imgId, zoneSelector);
 
         // const currentStep = stepController.get();
-        // const zoneId = parent.dataset.zoneId;
+        // const zoneId = parent.id;
         // if (stepController.isCurrentZone(zoneId)) {
         //     socket.emit('step.rollback.request', { senderId: socket.id});
         //     console.log('[Client] Sent step-prev from restore');

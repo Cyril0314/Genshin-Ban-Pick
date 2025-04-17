@@ -1,5 +1,6 @@
+// backend/banPickFlow.js
+
 import { numberOfBan, numberOfPick, totalRounds } from './constants/constants.js';
-// banPickFlow.js
 
 export const banPickFlow = generateBanPickFlow({ banCount: numberOfBan, pickCount: numberOfPick, order: ['Team Aether', 'Team Lumine'], totalRounds: totalRounds });
 
@@ -84,7 +85,7 @@ function generateAlternateBanFlow({ startIndex, banCount, startingTeam }) {
 
   return Array.from({ length: banCount }, (_, i) => ({
     player: teams[i % 2],
-    zoneId: `Ban ${startIndex + i}`,
+    zoneId: `zone-ban-${startIndex + i}`,
     action: 'ban',
   }));
 }
@@ -97,10 +98,10 @@ function generateSnakePickFlow({ startIndex, pickCount, startingTeam }) {
   const pairRounds = Math.floor(pickCount / 4);
 
   for (let i = 0; i < pairRounds; i++) {
-    picks.push({ player: teams[0], zoneId: `Pick ${current++}`, action: 'pick' });
-    picks.push({ player: teams[1], zoneId: `Pick ${current++}`, action: 'pick' });
-    picks.push({ player: teams[1], zoneId: `Pick ${current++}`, action: 'pick' });
-    picks.push({ player: teams[0], zoneId: `Pick ${current++}`, action: 'pick' });
+    picks.push({ player: teams[0], zoneId: `zone-pick-${current++}`, action: 'pick' });
+    picks.push({ player: teams[1], zoneId: `zone-pick-${current++}`, action: 'pick' });
+    picks.push({ player: teams[1], zoneId: `zone-pick-${current++}`, action: 'pick' });
+    picks.push({ player: teams[0], zoneId: `zone-pick-${current++}`, action: 'pick' });
   }
 
   return picks;

@@ -1,4 +1,5 @@
-// scripts/ui/tacticalBoard.js
+// scripts/ui/setupTacticalBoard.js
+
 import { originalImageSrc } from '../utils/imageUtils.js';
 
 const aetherTab = document.getElementById('aether-tab');
@@ -114,7 +115,7 @@ function setupImageMovedListener(roomSetting) {
       const clones = board.querySelectorAll(`[id^="${imgId}_tactical_"]`);
       clones.forEach(clone => clone.remove());
     } else if (dropZone.className.includes('pick')) {
-      const team = getTeamByZone(dropZone.dataset.zoneId, roomSetting.banPickFlow);
+      const team = getTeamByZone(dropZone.id, roomSetting.banPickFlow);
       console.log(`Drop zone ID: ${dropZone.id}`);
       console.log(`Team: ${team}`);
       makeCloneForTacticalPool(team, imgId);
@@ -190,9 +191,7 @@ function makeCloneForTacticalPool(team, imgId) {
 }
 
 // 根據 zoneInput 與 banPickFlow 資料判斷隊伍
-function getTeamByZone(zoneInput, banPickFlow) {
-  const zoneId = zoneInput.replace(/^zone-/, '');
-  if (!zoneId.startsWith("Pick")) return null;
+function getTeamByZone(zoneId, banPickFlow) {
   const record = banPickFlow.find(item => item.zoneId === zoneId && item.action === "pick");
   if (record) {
     return record.player.replace("Team ", "").toLowerCase();

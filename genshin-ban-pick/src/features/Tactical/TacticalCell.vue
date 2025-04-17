@@ -1,0 +1,74 @@
+<!-- src/features/Tactical/TacticalCell.vue -->
+<script setup lang="ts">
+import { ref } from 'vue'
+import { getProfileImagePath } from '@/utils/imageRegistry'
+
+const props = defineProps<{
+  zoneId: string
+  imageId?: string
+}>()
+
+const emit = defineEmits<{
+  (e: 'drop', payload: { zoneId: string; imgId: string }): void
+  (e: 'clear', payload: { zoneId: string }): void
+}>()
+
+const isOver = ref(false)
+
+function handleDragStartEvent(event: DragEvent) {
+  if (props.imageId && event.dataTransfer) {
+    console.log(`onDragStart ${props.imageId}`)
+    event?.dataTransfer?.setData('text/plain', props.imageId)
+  }  
+}
+
+function handleDropEvent(event: DragEvent) {
+  event.preventDefault()
+  isOver.value = false
+  const imgId = event.dataTransfer?.getData('text/plain')
+  if (!imgId || props.imageId) return
+  emit('drop', { zoneId: props.zoneId, imgId })
+}
+
+function handleClickEvent() {
+  if (props.imageId) emit('clear', { zoneId: props.zoneId })
+}
+</script>
+
+<template>
+  <div
+    class="tactical__cell"
+    :class="{ 'tactical__cell--active': isOver }"
+    @dragover.prevent="isOver = true"
+    @dragleave="isOver = false"
+    @dragstart="handleDragStartEvent"
+    @drop="handleDropEvent"
+    @click="handleClickEvent"
+  >
+    <img v-if="imageId" :src="getProfileImagePath(imageId)" />
+  </div>
+</template>
+
+<style scoped>
+.tactical__cell {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+}
+
+.tactical__cell--active {
+  outline: 3px solid #ffaa00;
+}
+
+.tactical__cell img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    cursor: grab;
+    z-index: 10;
+}
+</style>

@@ -1,12 +1,13 @@
+// scripts/ui/setupButtons.js
+
 import { resetImages } from '../utils/imageUtils.js';
-import { randomizeImages, handleUtilityRandom, handleBanRandom } from '../features/randomizer.js';
-import { handleSelection } from '../features/filter.js';
+import { handlePickRandom, handleUtilityRandom, handleBanRandom } from '../features/randomizer.js';
+import { handleRecord } from '../features/record.js';
 
 export function setupAllButtons(characterMap, roomSetting, socket) {
 
     // Reset Button
     document.querySelector('.toolbar__button--reset').addEventListener('click', () => {
-        console.log('[UI] Reset button clicked');
         resetImages();
 
         const event = new CustomEvent('imageReset');
@@ -25,28 +26,23 @@ export function setupAllButtons(characterMap, roomSetting, socket) {
         console.log("[Client] Sent step.reset.request")
     });
 
-    // Randomize Button
-    document.querySelector('.toolbar__button--random').addEventListener('click', () => {
-        console.log('[UI] Randomize button clicked');
-        randomizeImages(characterMap, socket);
+    // Record Button
+    document.querySelector('.toolbar__button--record').addEventListener('click', () => {
+        handleRecord(characterMap);
     });
 
-
     // Utility Button
-    document.querySelector('.toolbar__button--utility').addEventListener('click', () => {
-        console.log('[UI] Utility button clicked');
+    document.querySelector('.selector__button--utility').addEventListener('click', () => {
         handleUtilityRandom(characterMap, socket);
     });
 
-    // Ban Button
-    document.querySelector('.toolbar__button--ban').addEventListener('click', () => {
-        console.log('[UI] Ban button clicked');
-        handleBanRandom(characterMap, roomSetting, socket);
+    // Pick Button
+    document.querySelector('.selector__button--pick').addEventListener('click', () => {
+        handlePickRandom(characterMap, roomSetting, socket);
     });
 
-    // Selector Confirm Button
-    // document.getElementById('selector-confirm-button').addEventListener('click', () => {
-    //     console.log('[UI] selector confirm clicked');
-    //     handleSelection(characterMap, socket);
-    // });
+    // Ban Button
+    document.querySelector('.selector__button--ban').addEventListener('click', () => {
+        handleBanRandom(characterMap, roomSetting, socket);
+    });
 }

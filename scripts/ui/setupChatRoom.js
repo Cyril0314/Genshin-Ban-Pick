@@ -1,4 +1,4 @@
-// scripts/ui/chatRoom.js
+// scripts/ui/setupChatRoom.js
 
 let nickname = 'Anonymous';
 

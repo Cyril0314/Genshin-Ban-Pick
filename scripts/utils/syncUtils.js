@@ -1,4 +1,5 @@
-// syncUtils.js
+// scripts/utils/syncUtils.js
+
 import { getWishImagePath, originalImageSrc } from '../utils/imageUtils.js';
 
 export function updateAndBroadcastImage(img, zone, characterMap, socket) {
@@ -29,8 +30,9 @@ export function updateAndBroadcastImage(img, zone, characterMap, socket) {
 }
 
 export function getSelectorForZone(zone) {
-    if (zone.dataset.zoneId) {
-        return `[data-zone-id="${zone.dataset.zoneId}"]`;
+    if (zone.id) {
+        return `#${zone.id}`;
+        // return `[data-zone-id="${zone.dataset.id}"]`;
     }
     console.log(`${'.' + zone.className.split(' ').join('.')}`)
     return '.' + zone.className.split(' ').join('.');

@@ -1,1 +1,1 @@
-// constants.js
+// scripts/constants/constants.js

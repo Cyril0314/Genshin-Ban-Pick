@@ -1,112 +1,143 @@
+// scripts/features/radomizer.js
+
+import { filteredImages } from './filter.js';
 import { updateAndBroadcastImage } from '../utils/syncUtils.js';
 import { stepController } from '../logic/stepController.js';
-
-/**
- * 隨機分配圖片至四行：前兩行是四星，後兩行是五星
- */
-export function randomizeImages(characterMap, socket) {
-    const images = Array.from(document.querySelectorAll('#image-options img'));
-    if (images.length < 32) {
-        console.error('Not enough images to select from.');
-        return;
-    }
-
-    const fiveStar = [], fourStar = [];
-
-    images.forEach(image => {
-        const char = characterMap[image.id];
-        if (!char || char.name === 'Traveler') return;
-
-        if (char.rarity === "5 Stars") fiveStar.push(image);
-        else if (char.rarity === "4 Stars") fourStar.push(image);
-    });
-
-    if (fiveStar.length < 16 || fourStar.length < 16) {
-        console.error('Insufficient 5★ or 4★ characters for random distribution');
-        return;
-    }
-
-    const shuffled5 = fiveStar.sort(() => 0.5 - Math.random());
-    const shuffled4 = fourStar.sort(() => 0.5 - Math.random());
-
-    distributeImagesToDropZones(shuffled5, shuffled4, characterMap, socket);
-}
-
-/**
- * 分配到主欄位四行：前後五星、中間四星
- */
-function distributeImagesToDropZones(fiveStars, fourStars, characterMap, socket) {
-    const zones = document.querySelectorAll('.grid-item__drop-zone--pick');
-
-    [0, 3].forEach(row => {
-        for (let i = 0; i < 8; i++) {
-            const img = fiveStars.shift();
-            updateAndBroadcastImage(img, zones[row * 8 + i], characterMap, socket);
-        }
-    });
-
-    [1, 2].forEach(row => {
-        for (let i = 0; i < 8; i++) {
-            const img = fourStars.shift();
-            updateAndBroadcastImage(img, zones[row * 8 + i], characterMap, socket);
-        }
-    });
-}
 
 /**
  * 處理 Utility 隨機功能
  */
 export function handleUtilityRandom(characterMap, socket) {
-    const mainCarryType = 0;  // 假設用來篩選某一類角色
-    const images = Array.from(document.querySelectorAll('#image-options img'));
-
-    const filtered = images.filter(img => {
-        const char = characterMap[img.id];
-        return char?.type === mainCarryType && char.rarity === "5 Stars";
-    });
+    const images = filteredImages(characterMap)
 
     const zone = Array.from(document.querySelectorAll('.utility-zone__columns .grid-item__drop-zone'))
         .find(z => !z.querySelector('img'));
 
-    if (!zone || filtered.length === 0) return;
+    if (!zone || images.length === 0) return;
 
-    const selected = filtered.sort(() => 0.5 - Math.random())[0];
+    const selected = images.sort(() => 0.5 - Math.random())[0];
     updateAndBroadcastImage(selected, zone, characterMap, socket);
+}
+
+/**
+ * 處理 Pick 隨機功能
+ */
+export function handlePickRandom(characterMap, roomSetting, socket) {
+    const images = filteredImages(characterMap)
+
+    const pickZones = Array.from(document.querySelectorAll('.pick-zone__columns .grid-item__drop-zone'))
+    const nextPickStep = roomSetting.banPickFlow.find(step => {
+        if (step.action !== "pick") return false;
+        const zone = pickZones.find(z => z.id === step.zoneId);
+        return zone && !zone.querySelector('img');
+    });
+    if (!nextPickStep || images.length === 0) return;
+
+    const targetPickZone = pickZones.find(z => z.id === nextPickStep.zoneId);
+    if (!targetPickZone) return;
+
+    const selected = images.sort(() => 0.5 - Math.random())[0];
+    updateAndBroadcastImage(selected, targetPickZone, characterMap, socket);
+
+    if (stepController.isCurrentZone(targetPickZone.id)) {
+        socket.emit('step.advance.request', {
+            senderId: socket.id
+        });
+    }
 }
 
 /**
  * 處理 Ban 隨機功能
  */
 export function handleBanRandom(characterMap, roomSetting, socket) {
-    // const mainCarryType = 0;  // 假設用來篩選某一類角色
-    const images = Array.from(document.querySelectorAll('#image-options img'));
-
-    // 篩選出 5★ 角色圖片
-    const fiveStarImages = images.filter(img => {
-        const char = characterMap[img.id];
-        return char.rarity === "5 Stars";
-    });
+    const images = filteredImages(characterMap)
 
     const banZones = Array.from(document.querySelectorAll('.ban-zone__rows .grid-item__drop-zone'))
-    // 找出下一個 ban 的步驟（找到尚未放置圖片的 ban zone）
     const nextBanStep = roomSetting.banPickFlow.find(step => {
         if (step.action !== "ban") return false;
-        const zone = banZones.find(z => z.dataset.zoneId === `zone-${step.zoneId}`);
+        const zone = banZones.find(z => z.id === step.zoneId);
         return zone && !zone.querySelector('img');
     });
-    // 如果沒有下一個 ban 步驟，或沒有 5★ 圖片，則不處理
-    if (!nextBanStep || fiveStarImages.length === 0) return;
+    if (!nextBanStep || images.length === 0) return;
 
-    // 取得對應的 ban zone
-    const targetBanZone = banZones.find(z => z.dataset.zoneId === `zone-${nextBanStep.zoneId}`);
+    const targetBanZone = banZones.find(z => z.id === nextBanStep.zoneId);
     if (!targetBanZone) return;
 
-    const selected = fiveStarImages.sort(() => 0.5 - Math.random())[0];
+    const selected = images.sort(() => 0.5 - Math.random())[0];
     updateAndBroadcastImage(selected, targetBanZone, characterMap, socket);
-    
-    if (stepController.isCurrentZone(targetBanZone.dataset.zoneId)) {
+
+    if (stepController.isCurrentZone(targetBanZone.id)) {
         socket.emit('step.advance.request', {
             senderId: socket.id
         });
     }
 }
+
+// /**
+//  * 分配到主欄位四行：前後五星、中間四星
+//  */
+// function distributeImagesToDropZones(fiveStars, fourStars, characterMap, socket) {
+//     const zones = document.querySelectorAll('.grid-item__drop-zone--pick');
+
+//     [0, 3].forEach(row => {
+//         for (let i = 0; i < 8; i++) {
+//             const img = fiveStars.shift();
+//             updateAndBroadcastImage(img, zones[row * 8 + i], characterMap, socket);
+//         }
+//     });
+
+//     [1, 2].forEach(row => {
+//         for (let i = 0; i < 8; i++) {
+//             const img = fourStars.shift();
+//             updateAndBroadcastImage(img, zones[row * 8 + i], characterMap, socket);
+//         }
+//     });
+// }
+
+// /**
+//  * 把圖片分配到 ban zone 左／右欄位
+//  */
+// function distributeToRowsPerVisualRow(images, side, characterMap, socket) {
+//     const rows = Array.from(document.querySelectorAll('.ban-zone__rows .grid__row'));
+//     let imageIndex = 0;
+
+//     rows.forEach(row => {
+//         const zones = Array.from(row.querySelectorAll('.grid-item__drop-zone'));
+//         const half = Math.floor(zones.length / 2);
+
+//         if (side === 'left') {
+//             for (let i = 0; i < half && imageIndex < images.length; i++) {
+//                 updateAndBroadcastImage(images[imageIndex++], zones[i], characterMap, socket);
+//             }
+//         } else if (side === 'right') {
+//             for (let i = half; i < zones.length && imageIndex < images.length; i++) {
+//                 updateAndBroadcastImage(images[imageIndex++], zones[i], characterMap, socket);
+//             }
+//         }
+//     });
+// }
+
+// /**
+//  * 根據 side ('left' 或 'right') 選擇角色並分配
+//  */
+// export function handleSelection(characterMap, socket) {
+//     const team = document.querySelector(`.selector__select--team`).value;
+//     const side = team === 'Aether' ? 'left' : 'right';
+
+//     const images = Array.from(document.querySelectorAll('#image-options img'));
+//     const filtered = filteredImages(characterMap);
+//     // 計算總需配的數量
+//     const rows = Array.from(document.querySelectorAll('.ban-zone__rows .grid__row'));
+//     let totalNeeded = 0;
+//     rows.forEach(row => {
+//         totalNeeded += Math.floor(row.querySelectorAll('.grid-item__drop-zone').length / 2);
+//     });
+
+//     if (filtered.length < totalNeeded) {
+//         console.error(`[Filter] 篩選後圖片不足，需 ${totalNeeded} 張，僅有 ${filtered.length}`);
+//         return;
+//     }
+
+//     const selected = filtered.sort(() => 0.5 - Math.random()).slice(0, totalNeeded);
+//     distributeToRowsPerVisualRow(selected, side, characterMap, socket);
+// }
