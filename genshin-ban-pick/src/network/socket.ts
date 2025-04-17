@@ -3,12 +3,13 @@
 
 import { io, type Socket } from 'socket.io-client'
 const baseURL = import.meta.env.VITE_SOCKET_URL
-console.log(`${baseURL}`)
+
 const roomId = new URLSearchParams(window.location.search).get('room') || 'default-room'
 
-export const socket: Socket = io("http://52.87.171.134:5173", {
+console.log(`baseURL ${baseURL}`)
+export const socket: Socket = io(baseURL, {
     autoConnect: true
-})
+  })
 
 export interface ChatMessage {
     senderName: string
