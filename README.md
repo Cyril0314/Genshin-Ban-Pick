@@ -20,7 +20,8 @@ Genshin-Ban-Pick
 │  ├─ package-lock.json
 │  ├─ package.json
 │  ├─ public
-│  │  └─ favicon.ico
+│  │  ├─ favicon.ico
+│  │  └─ wish.png
 │  ├─ src
 │  │  ├─ App.vue
 │  │  ├─ assets
@@ -227,8 +228,6 @@ Genshin-Ban-Pick
 │  │  ├─ components
 │  │  │  ├─ HelloWorld.vue
 │  │  │  ├─ TheWelcome.vue
-│  │  │  ├─ ToolBar
-│  │  │  │  └─ ToolBar.vue
 │  │  │  ├─ WelcomeItem.vue
 │  │  │  └─ icons
 │  │  │     ├─ IconCommunity.vue
@@ -241,15 +240,23 @@ Genshin-Ban-Pick
 │  │  ├─ features
 │  │  │  ├─ BanPick
 │  │  │  │  ├─ BanPickBoard.vue
-│  │  │  │  ├─ BanZone.vue
-│  │  │  │  ├─ DropZone.vue
-│  │  │  │  ├─ PickZone.vue
-│  │  │  │  ├─ UtilityZone.vue
+│  │  │  │  ├─ components
+│  │  │  │  │  ├─ BanZone.vue
+│  │  │  │  │  ├─ DropZone.vue
+│  │  │  │  │  ├─ PickZone.vue
+│  │  │  │  │  ├─ StepIndicator.vue
+│  │  │  │  │  ├─ ToolBar.vue
+│  │  │  │  │  └─ UtilityZone.vue
 │  │  │  │  └─ composables
 │  │  │  │     ├─ useBanPickImageSync.ts
-│  │  │  │     └─ useBanPickOrder.ts
+│  │  │  │     ├─ useBanPickOrder.ts
+│  │  │  │     ├─ useBanPickStep.ts
+│  │  │  │     └─ useRandomizeImage.ts
 │  │  │  ├─ CharacterSelector
-│  │  │  │  └─ CharacterSelector.vue
+│  │  │  │  ├─ CharacterSelector.vue
+│  │  │  │  └─ composables
+│  │  │  │     ├─ useCharacterFilter.ts
+│  │  │  │     └─ useSelectorOptions.ts
 │  │  │  ├─ ChatRoom
 │  │  │  │  ├─ ChatRoom.vue
 │  │  │  │  └─ composables
@@ -274,7 +281,6 @@ Genshin-Ban-Pick
 │  │  │  ├─ roomService.ts
 │  │  │  ├─ socket.ts
 │  │  │  └─ useSocket.ts
-│  │  ├─ pages
 │  │  ├─ stores
 │  │  │  └─ counter.ts
 │  │  ├─ types
