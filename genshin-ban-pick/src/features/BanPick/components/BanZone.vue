@@ -59,12 +59,12 @@ function handleImageRestore({ imgId }: { imgId: string }) {
 .ban-zone__rows {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--space-sm);
 }
 
 .grid__row {
   display: flex;
   flex-direction: row;
-  gap: 10px;
+  gap: var(--space-sm);
 }
 </style>

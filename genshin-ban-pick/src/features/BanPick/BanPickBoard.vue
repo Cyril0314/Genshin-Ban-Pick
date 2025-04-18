@@ -102,12 +102,12 @@ console.log(`pickZones: ${pickZones.value.right}`)
       </div>
       <div class="layout__common">
         <div class="layout__common-side">
-          <CharacterSelector
+          <!-- <CharacterSelector
             :characterMap="props.characterMap"
             @filter-changed="handleSelectorFilterChanged"
             @pull="handleSelectorPull"
-          />
-          <ChatRoom />
+          /> -->
+          <!-- <ChatRoom /> -->
         </div>
         <div class="layout__utility-zone">
           <div class="layout__step-indicator">
@@ -121,7 +121,7 @@ console.log(`pickZones: ${pickZones.value.right}`)
           />
         </div>
         <div class="layout__common-side">
-          <TacticalBoardPanel />
+          <!-- <TacticalBoardPanel /> -->
         </div>
       </div>
     </div>
@@ -144,15 +144,9 @@ console.log(`pickZones: ${pickZones.value.right}`)
 
 <style scoped>
 .layout__main {
-  /* background: rgba(0, 255, 0, 0.1); */
-  min-height: 200px;
-}
-
-.layout__main {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
-  /* justify-content: space-between; */
+  gap: var(--space-sm);
   justify-content: center;
 }
 
@@ -160,7 +154,7 @@ console.log(`pickZones: ${pickZones.value.right}`)
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-sm);
 }
 
 .layout__center {
@@ -168,7 +162,7 @@ console.log(`pickZones: ${pickZones.value.right}`)
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-sm);
 }
 
 .layout__ban-zone {
@@ -182,15 +176,14 @@ console.log(`pickZones: ${pickZones.value.right}`)
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: start;
-  gap: 10px;
+  gap: var(--space-sm);
 }
 
 .layout__common-side {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  max-width: 500px;
+  gap: var(--space-sm);
 }
 
 .layout__utility-zone {
@@ -198,13 +191,11 @@ console.log(`pickZones: ${pickZones.value.right}`)
   flex-direction: column;
   justify-self: center;
   align-items: center;
-  gap: 25px;
+  gap: var(--space-sm);
 }
 
 .layout__step-indicator {
   display: flex;
-  width: 330px;
-  height: 100px;
   align-items: center;
   justify-content: center;
 }

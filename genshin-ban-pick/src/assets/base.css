@@ -1,5 +1,5 @@
 /* color palette from <https://github.com/vuejs/theme> */
-/* :root {
+:root {
   --vt-c-white: #ffffff;
   --vt-c-white-soft: #f8f8f8;
   --vt-c-white-mute: #f2f2f2;
@@ -19,10 +19,48 @@
   --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
   --vt-c-text-dark-1: var(--vt-c-white);
   --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
-} */
+}
+
+:root {
+  --font-size-xs: clamp(0.75rem, 0.8vw, 0.875rem);   /* 小註解：12px~14px */
+  --font-size-sm: clamp(0.875rem, 1vw, 1rem);        /* 次標/按鈕：14px~16px */
+  --font-size-md: clamp(1rem, 1.2vw, 1.125rem);      /* 內文主體：16px~18px */
+  --font-size-lg: clamp(1.25rem, 2vw, 1.75rem);      /* 小標題：20px~28px */
+  --font-size-xl: clamp(1.75rem, 3vw, 2.5rem);       /* 主標題：28px~40px */
+
+  /* 📏 行高 */
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-loose: 1.75;
+
+  /* 🅱️ 字重 */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  --font-weight-heavy: 900;
+
+  /* 🧬 字體家族 */
+  --font-family-sans: 'Inter', 'Noto Sans TC', sans-serif;
+  --font-family-mono: 'Fira Code', monospace;
+  --font-family-title: 'Bungee', 'Noto Sans TC', sans-serif;
+  --font-family-body: 'Noto Sans TC', 'Helvetica Neue', 'Microsoft JhengHei', sans-serif;
+  --font-family-pixel: 'Press Start 2P', 'Zpix', 'Noto Sans TC', monospace;
+  --font-family-tech-title: 'Orbitron', 'Noto Sans TC', sans-serif;
+  --font-family-tech-ui: 'Audiowide', 'Noto Sans TC', sans-serif;
+  --font-family-tech-mono: 'Share Tech Mono', monospace;
+  --font-family-body: 'Exo 2', 'Noto Sans TC', sans-serif;
+}
+
+:root {
+  --space-xs: clamp(0.25rem, 0.3vw, 0.5rem);   /* 4px~8px */
+  --space-sm: clamp(0.5rem, 0.6vw, 0.75rem);   /* 8px~12px */
+  --space-md: clamp(0.75rem, 1vw, 1.25rem);    /* 12px~20px */
+  --space-lg: clamp(1.25rem, 1.6vw, 2rem);     /* 20px~32px */
+  --space-xl: clamp(2rem, 3vw, 3rem);          /* 32px~48px */
+}
 
 /* semantic color variables for this project */
-/* :root {
+:root {
   --color-background: var(--vt-c-white);
   --color-background-soft: var(--vt-c-white-soft);
   --color-background-mute: var(--vt-c-white-mute);
@@ -32,10 +70,9 @@
 
   --color-heading: var(--vt-c-text-light-1);
   --color-text: var(--vt-c-text-light-1);
-
-  --section-gap: 160px;
 }
 
+/*
 @media (prefers-color-scheme: dark) {
   :root {
     --color-background: var(--vt-c-black);
@@ -50,15 +87,20 @@
   }
 } */
 
-*,
+/* *,
 *::before,
 *::after {
   box-sizing: border-box;
   margin: 0;
   font-weight: normal;
+} */
+
+html {
+  font-size: 16px;
 }
 
 body {
+  min-width: 100vw;
   min-height: 100vh;
   color: var(--color-text);
   background: var(--color-background);
@@ -79,13 +121,12 @@ body {
     'Droid Sans',
     'Helvetica Neue',
     sans-serif;
-  font-size: 15px;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* * {
+* {
     box-sizing: border-box;
     outline: 1px solid red;
-} */
+}

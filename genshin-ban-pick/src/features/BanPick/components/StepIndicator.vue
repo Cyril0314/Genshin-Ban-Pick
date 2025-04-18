@@ -48,8 +48,9 @@ onUnmounted(() => {
 #step-indicator {
   background-color: rgba(255, 255, 255, 0.2);
   color: #4e4040;
-  font-size: 1.5em;
-  font-weight: bold;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family-tech-title);
   text-align: center;
   width: fit-content;
   padding: 12px 16px;

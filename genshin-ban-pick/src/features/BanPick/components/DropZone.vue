@@ -75,8 +75,8 @@ const isHighlighted = computed(() => {
 
 <style scoped>
 .drop-zone {
-  width: 160px;
-  height: 90px;
+  width: clamp(4rem, 7vw, 10rem);
+  aspect-ratio: 16 / 9;
   position: relative;
   background-color: rgba(255, 255, 255, 0.3);
   border-radius: 8px;
@@ -155,8 +155,9 @@ const isHighlighted = computed(() => {
 } */
 
 .drop-zone__label {
-  font-size: 1.25em;
-  font-weight: 500;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family-tech-ui);
   text-align: center;
   pointer-events: none;
   user-select: none;

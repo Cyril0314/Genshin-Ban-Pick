@@ -87,14 +87,14 @@ function handleClickPickButton() {
 }
 
 .container__selector label {
-  font-size: 1.2em;
+  font-size: 1rem;
   font-weight: 500;
   white-space: nowrap;
 }
 
 .container__selector select {
   flex-grow: 1;
-  font-size: 1.2em;
+  font-size: 1rem;
   padding: 5px 5px;
   border-radius: 6px;
   border: none;

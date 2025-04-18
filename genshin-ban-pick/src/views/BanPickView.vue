@@ -119,9 +119,12 @@ function handleRandomPull({ zoneType }: { zoneType: 'utility' | 'ban' | 'pick' }
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  /* max-width: 2560px; */
-  width: 2560px;
-  /* width: 100%; */
+  justify-content: center;
+  
+  gap: var(--space-sm);
+  width: 100%;
+  max-width: 1440px;
+  min-height: 100vh;
+  padding: clamp(1rem, 5vw, 2rem);
 }
 </style>

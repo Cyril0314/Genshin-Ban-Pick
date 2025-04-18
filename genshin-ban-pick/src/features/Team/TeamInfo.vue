@@ -42,17 +42,18 @@ function updateMembers(e: Event) {
   display: flex;
   flex-direction: column;
   width: 100%;
-  gap: 10px;
+  gap: var(--space-sm);
 }
 
 .team__name {
   display: flex;
   align-items: center;
   width: 100%;
-  height: 50px;
+  padding: var(--space-xs) var(--space-sm);
   justify-content: center;
-  font-weight: bold;
-  font-size: 1.8em;
+  font-weight: var(--font-weight-heavy);
+  font-size: var(--font-size-md);
+  font-family: var(--font-family-tech-title);
   color: #4e4040;
   background-color: #fff;
   border-radius: 8px;
@@ -66,12 +67,14 @@ function updateMembers(e: Event) {
   border: none;
   border-radius: 8px;
   width: 100%;
-  min-height: 130px;
+  min-height: calc(var(--font-size-sm) * var(--line-height-tight) * 4 + var(--space-xs) * 2);
   height: auto;
   resize: none;
-  font-size: 1.5em;
-  font-weight: bold;
-  padding: 10px;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-family-body);
+  padding: var(--space-xs);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 

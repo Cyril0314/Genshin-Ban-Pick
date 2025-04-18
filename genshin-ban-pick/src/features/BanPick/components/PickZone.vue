@@ -61,13 +61,13 @@ function handleImageRestore({ imgId }: { imgId: string }) {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-sm);
 }
 
 .grid__column {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-sm);
 }
 </style>
