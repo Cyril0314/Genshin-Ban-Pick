@@ -64,9 +64,12 @@ const boardCells = computed(() => {
 .tactical__grid {
   display: grid;
   justify-content: center;
-  grid-template-columns: repeat(5, 75px);
-  grid-template-rows: repeat(5, 75px);
-  gap: 10px;
+  grid-template-columns: repeat(5, var(--size-tactical-cell));
+  grid-template-rows: repeat(5, var(--size-tactical-cell));
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  border-radius: var(--border-radius-xs);
+  background-color: var(--md-sys-color-surface-container-alpha);
 }
 
 .tactical__cell--header {
@@ -76,35 +79,37 @@ const boardCells = computed(() => {
 .tactical__cell--header::before {
   content: '';
   position: absolute;
+  border-radius: var(--border-radius-xs);
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   /* 利用 linear-gradient 將 cell 分成兩部分，
        50% 透明 50% 填充顏色 (可根據需求調整) */
-  background: linear-gradient(to top right, transparent 50%, rgba(0, 0, 0, 0.1) 50%);
+  background: linear-gradient(to top right, transparent 50%, var(--md-sys-color-surface-variant) 50%);
   pointer-events: none;
   /* 不影響滑鼠事件 */
 }
 
 .tactical__header {
   position: absolute;
-  font-size: 1em;
-  color: #4e4040;
-  font-weight: 500;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family-tech-ui);
+  color: var(--md-sys-color-on-surface);
   z-index: 10;
   pointer-events: none;
 }
 
 .tactical__header--team-number {
-  top: 45px;
-  right: 35px;
+  top: calc(var(--space-xl) + var(--space-xs));
+  right: calc(var(--space-lg) + var(--space-xs));
   text-align: right;
 }
 
 .tactical__header--member {
-  bottom: 45px;
-  left: 35px;
+  bottom: calc(var(--space-xl) + var(--space-xs));
+  left: calc(var(--space-lg) + var(--space-xs));
   text-align: left;
 }
 
@@ -117,10 +122,18 @@ const boardCells = computed(() => {
   width: 100%;
   height: 100%;
   text-align: center;
-  font-weight: bold;
-  font-size: 1em;
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family-tech-ui);
   z-index: 10;
   pointer-events: none;
-  color: #4e4040;
+  color: var(--md-sys-color-on-surface);
+}
+
+.tactical__cell--member {
+  font-size: var(--font-size-xs);
+}
+
+.tactical__cell--team-number {
+  font-size: var(--font-size-sm);
 }
 </style>

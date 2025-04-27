@@ -27,25 +27,27 @@ function handleClickRecordButton() {
 <style scoped>
 .toolbar {
   display: flex;
-  gap: 10px;
+  flex-direction: column;
+  gap: var(--space-sm);
 }
 .toolbar__button {
-  width: 120px;
-  background-color: #4e4040;
-  color: #fff;
+  width: var(--size-tool-button);
+  background-color: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-on-error-container);
   border: none;
-  border-radius: 8px;
-  padding: 10px 20px;
+  border-radius: var(--border-radius-xs);
+  padding: calc(var(--space-xs)) calc(var(--space-xs));
   cursor: pointer;
   transition:
     background-color 0.3s ease,
     transform 0.2s ease;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-  font-size: 1em;
-  font-weight: bold;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-regular);
+  font-family: var(--font-family-tech-ui);
 }
 .toolbar__button:hover {
-  background-color: #6b5b5b;
+  background-color: var(--md-sys-color-error-container);
   transform: scale(1.05);
 }
 .toolbar__button:active {

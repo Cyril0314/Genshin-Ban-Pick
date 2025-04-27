@@ -31,20 +31,21 @@ function handleDragStart(event: DragEvent, id: string) {
 
 <style scoped>
 .tactical__pool {
-  display: flex;
-  flex-wrap: wrap;
-  background: rgba(0, 0, 0, 0.1);
-  width: 440px;
-  height: 170px;
-  min-height: 170px;
+  --gap: var(--space-xs);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, var(--size-image-sm));
+  background: var(--md-sys-color-surface-container-high-alpha);
+  min-height: calc(var(--size-image-sm) * 2 + var(--gap) * 3);
+  max-height: calc(var(--size-image-sm) * 2 + var(--gap) * 3);
+  border-radius: var(--border-radius-xs);
   overflow-y: auto;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 10px;
+  gap: var(--gap);
+  padding: var(--gap);
 }
 
 .tactical__pool img {
-  width: 75px;
+  width: 100%;
+  aspect-ratio: 1 / 1;
   cursor: grab;
 }
 </style>

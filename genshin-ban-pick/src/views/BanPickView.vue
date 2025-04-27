@@ -19,13 +19,13 @@ import type { RoomSetting } from '@/types/RoomSetting'
 const characterMap = ref({})
 const roomSetting = ref<RoomSetting | null>(null)
 const currentFilters = ref({
-  weapon: 'All',
-  element: 'All',
-  region: 'All',
-  rarity: 'All',
-  model_type: 'All',
-  role: 'All',
-  wish: 'All',
+  weapon: [],
+  element: [],
+  region: [],
+  rarity: [],
+  model_type: [],
+  role: [],
+  wish: [],
 })
 const {
   imageMap,
@@ -47,7 +47,7 @@ onMounted(async () => {
   }
 })
 
-function handleFilterChanged(newFilters: Record<string, string>) {
+function handleFilterChanged(newFilters: Record<string, string[]>) {
   Object.assign(currentFilters.value, newFilters)
 }
 
@@ -79,23 +79,27 @@ function handleRandomPull({ zoneType }: { zoneType: 'utility' | 'ban' | 'pick' }
   <div>
     <div class="background-image"></div>
     <div class="layout">
-      <ImageOptions
-        :characterMap="characterMap"
-        :usedIds="usedIds"
-        :filteredIds="filteredCharacterIds"
-      />
-      <Toolbar @reset="handleImageReset" @record="handleBanPickRecord" />
-      <BanPickBoard
-        v-if="roomSetting"
-        :roomSetting="roomSetting"
-        :characterMap="characterMap"
-        :imageMap="imageMap"
-        @image-drop="handleImageDropped"
-        @image-restore="handleImageRestore"
-        @filter-changed="handleFilterChanged"
-        @pull="handleRandomPull"
-      />
-      <div v-else class="loading">載入房間設定中...</div>
+      <div class="layout__toolbar">
+        <Toolbar @reset="handleImageReset" @record="handleBanPickRecord" />
+      </div>
+      <div class="layout__core">
+        <ImageOptions
+          :characterMap="characterMap"
+          :usedIds="usedIds"
+          :filteredIds="filteredCharacterIds"
+        />
+        <BanPickBoard
+          v-if="roomSetting"
+          :roomSetting="roomSetting"
+          :characterMap="characterMap"
+          :imageMap="imageMap"
+          @image-drop="handleImageDropped"
+          @image-restore="handleImageRestore"
+          @filter-changed="handleFilterChanged"
+          @pull="handleRandomPull"
+        />
+        <div v-else class="loading">載入房間設定中...</div>
+      </div>
     </div>
   </div>
 </template>
@@ -105,23 +109,35 @@ function handleRandomPull({ zoneType }: { zoneType: 'utility' | 'ban' | 'pick' }
   position: fixed;
   top: 0;
   left: 0;
-  z-index: -1;
+  z-index: -1000;
   width: 100vw;
   height: 100vh;
-  background: url('@/assets/images/background/wallpaper3.png') no-repeat center center;
+  background: 
+  linear-gradient(var(--md-sys-color-surface-container-lowest-alpha), var(--md-sys-color-surface-container-lowest-alpha)),
+  url('@/assets/images/background/wallpaper4.jpg') no-repeat center center;
   background-size: cover;
-  background-blend-mode: multiply;
-  background-color: rgba(0, 0, 0, 0.2);
-  opacity: 0.4;
 }
 
 .layout {
+  display: grid;
+  align-items: start;
+  grid-template-columns: 1fr auto 1fr;
+  gap: var(--space-sm);
+  min-height: 100vh;
+  padding: var(--space-sm);
+}
+
+.layout__toolbar {
+  display: flex;
+  justify-content: center;
+}
+
+.layout__core {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  /* max-width: 2560px; */
-  width: 2560px;
-  /* width: 100%; */
+  justify-content: center;
+  gap: var(--space-sm);
 }
+
 </style>

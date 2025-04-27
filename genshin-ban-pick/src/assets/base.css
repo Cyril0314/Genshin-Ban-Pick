@@ -1,64 +1,83 @@
-/* color palette from <https://github.com/vuejs/theme> */
-/* :root {
-  --vt-c-white: #ffffff;
-  --vt-c-white-soft: #f8f8f8;
-  --vt-c-white-mute: #f2f2f2;
-
-  --vt-c-black: #181818;
-  --vt-c-black-soft: #222222;
-  --vt-c-black-mute: #282828;
-
-  --vt-c-indigo: #2c3e50;
-
-  --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
-  --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
-  --vt-c-divider-dark-1: rgba(84, 84, 84, 0.65);
-  --vt-c-divider-dark-2: rgba(84, 84, 84, 0.48);
-
-  --vt-c-text-light-1: var(--vt-c-indigo);
-  --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
-  --vt-c-text-dark-1: var(--vt-c-white);
-  --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
-} */
-
-/* semantic color variables for this project */
-/* :root {
-  --color-background: var(--vt-c-white);
-  --color-background-soft: var(--vt-c-white-soft);
-  --color-background-mute: var(--vt-c-white-mute);
-
-  --color-border: var(--vt-c-divider-light-2);
-  --color-border-hover: var(--vt-c-divider-light-1);
-
-  --color-heading: var(--vt-c-text-light-1);
-  --color-text: var(--vt-c-text-light-1);
-
-  --section-gap: 160px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-background: var(--vt-c-black);
-    --color-background-soft: var(--vt-c-black-soft);
-    --color-background-mute: var(--vt-c-black-mute);
-
-    --color-border: var(--vt-c-divider-dark-2);
-    --color-border-hover: var(--vt-c-divider-dark-1);
-
-    --color-heading: var(--vt-c-text-dark-1);
-    --color-text: var(--vt-c-text-dark-2);
-  }
-} */
-
 *,
 *::before,
 *::after {
   box-sizing: border-box;
   margin: 0;
-  font-weight: normal;
+}
+:root {
+  /* 🔧 基準縮放：全站核心縮放節奏 */
+  /* --base-size: clamp(1rem, 1vw, 4rem);  約 16px ~ 24px */
+
+  /* --base-size: 2rem;  約 16px ~ 24px */
+  --base-size: 1.25vw;
+
+  /* 🅰️ 字體大小 */
+  --font-size-xs: calc(var(--base-size) * 0.5);  /* 12px ~ 18px */
+  --font-size-sm: calc(var(--base-size) * 0.675); /* 14px ~ 21px */
+  --font-size-md: calc(var(--base-size) * 0.75);     /* 16px ~ 24px */
+  --font-size-lg: calc(var(--base-size) * 1);  /* 20px ~ 30px */
+  --font-size-xl: calc(var(--base-size) * 1.25);   /* 24px ~ 36px */
+  --font-size-xxl: calc(var(--base-size) * 1.5);    /* 32px ~ 48px */
+
+  /* 🅱️ 間距 spacing */
+  --space-xs: calc(var(--base-size) * 0.25);  /* 4px ~ 6px */
+  --space-sm: calc(var(--base-size) * 0.375);   /* 8px ~ 12px */
+  --space-md: calc(var(--base-size) * 0.5);     /* 16px ~ 24px */
+  --space-lg: calc(var(--base-size) * 0.75);   /* 24px ~ 36px */
+  --space-xl: calc(var(--base-size) * 1);     /* 32px ~ 48px */
+
+  /* border-radius */
+  --border-radius-xs: calc(var(--base-size) * 0.25);
+  --border-radius-sm: calc(var(--base-size) * 0.5);
+  --border-radius-md: calc(var(--base-size) * 1); 
+  --border-radius-lg: calc(var(--base-size) * 1.5);
+  --border-radius-xl: calc(var(--base-size) * 2);
+
+  /* 📦 元件尺寸（保持關聯，縮放一致） */
+  --size-dropzone: calc(var(--base-size) * 5.5);      /* 80px ~ 120px */
+  --size-tool-button: calc(var(--base-size) * 2.5);   /* 64px ~ 96px */
+  --size-image: calc(var(--base-size) * 2.5);         /* 48px ~ 72px */
+  --size-image-sm: calc(var(--base-size) * 2.5);
+  --size-char-room: calc(var(--base-size) * 12);
+  --size-tactical-cell: calc(var(--base-size) * 2.5);
+  --size-selector-height: calc(var(--base-size) * 2.25);
+
+  /* 📏 行高與字重  */
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-loose: 1.75;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  --font-weight-heavy: 900;
+
+  /* 字體家族 */
+  --font-family-sans: 'Inter', 'Noto Sans TC', sans-serif;
+  --font-family-mono: 'Fira Code', monospace;
+  --font-family-title: 'Bungee', 'Noto Sans TC', sans-serif;
+  --font-family-body: 'Exo 2', 'Noto Sans TC', sans-serif;
+  --font-family-pixel: 'Press Start 2P', 'Zpix', 'Noto Sans TC', monospace;
+  --font-family-tech-title: 'Orbitron', 'Noto Sans TC', sans-serif;
+  --font-family-tech-ui: 'Audiowide', 'Noto Sans TC', sans-serif;
+  --font-family-tech-mono: 'Share Tech Mono', monospace;
+
+  --box-shadow: 0 calc(var(--space-xs) / 2) calc(var(--space-xs) / 2) var(--md-sys-color-shadow-alpha);
+  --box-shadow-hover: 0 calc(var(--space-xs)) calc(var(--space-xs)) var(--md-sys-color-shadow-alpha);
+
+  --box-shadow-lg: 0 var(--space-xs) var(--space-xs) var(--md-sys-color-shadow-alpha);
+
+  --backdrop-filter: blur(4px);
+  --background-overlay: var(--md-sys-color-shadow-alpha);
+
+}
+
+html {
+  font-size: 16px;
 }
 
 body {
+  min-width: 100vw;
   min-height: 100vh;
   color: var(--color-text);
   background: var(--color-background);
@@ -79,13 +98,11 @@ body {
     'Droid Sans',
     'Helvetica Neue',
     sans-serif;
-  font-size: 15px;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* * {
-    box-sizing: border-box;
-    outline: 1px solid red;
-} */
+* {
+    /* outline: 1px solid red; */
+}

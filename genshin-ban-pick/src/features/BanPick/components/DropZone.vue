@@ -75,88 +75,64 @@ const isHighlighted = computed(() => {
 
 <style scoped>
 .drop-zone {
-  width: 160px;
-  height: 90px;
   position: relative;
-  background-color: rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  width: var(--size-dropzone);
+  aspect-ratio: 16 / 9;
+  background-color: var(--md-sys-color-surface-container-high-alpha);
+  border-radius: var(--border-radius-xs);
+  box-shadow: var(--box-shadow);
   display: flex;
   justify-content: center;
   align-items: center;
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease;
-  backdrop-filter: blur(4px);
+  backdrop-filter: var(--backdrop-filter);
   overflow: hidden;
 }
 
 .drop-zone--active {
-  outline: 3px solid #ffaa00;
+  outline: calc(var(--space-xs) / 2) solid var(--md-sys-color-secondary-container);
 }
 
 .drop-zone:hover {
   transform: scale(1.03);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--box-shadow-hover);
 }
 
 .drop-zone img {
-  height: auto;
-  z-index: 15;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  z-index: 10;
 }
 
 .drop-zone.highlight {
-  outline: 2px #ffcc00;
-  background-color: rgba(255, 255, 200, 0.2);
+  outline: var(--space-xs) var(--md-sys-color-secondary-container);
+  background-color: var(--md-sys-color-surface-container-highest-alpha);
   box-shadow:
-    0 0 8px #ffd700,
-    0 0 16px #ffc107;
+    0 0 var(--space-xs) var(--md-sys-color-secondary-container),
+    0 0 var(--space-sm) var(--md-sys-color-secondary-container);
   animation: highlightGlow 1.2s ease-in-out infinite;
   transform: scale(1.08);
 }
 
 @keyframes highlightGlow {
   0% {
-    box-shadow: 0 0 5px #ffd700;
+    box-shadow: 0 0 var(--space-xs) var(--md-sys-color-secondary-container);
   }
   50% {
-    box-shadow: 0 0 20px #ffc107;
+    box-shadow: 0 0 var(--space-md) var(--md-sys-color-secondary-container);
   }
   100% {
-    box-shadow: 0 0 5px #ffd700;
+    box-shadow: 0 0 var(--space-xs) var(--md-sys-color-secondary-container);
   }
 }
-/* 
-.drop-zone.highlight {
-  outline: 4px solid rgba(255, 200, 0, 0.9);
-  box-shadow:
-    0 0 10px rgba(255, 200, 0, 0.5),
-    0 0 25px rgba(255, 150, 0, 0.6);
-  animation: intensePulse 0.8s infinite ease-in-out;
-  transform: scale(1.07);
-  border-radius: 10px;
-}
-
-@keyframes intensePulse {
-  0% {
-    box-shadow: 0 0 8px rgba(255, 200, 0, 0.3);
-  }
-
-  50% {
-    box-shadow: 0 0 20px rgba(255, 120, 0, 0.8);
-  }
-
-  100% {
-    box-shadow: 0 0 8px rgba(255, 200, 0, 0.3);
-  }
-} */
 
 .drop-zone__label {
-  font-size: 1.25em;
-  font-weight: 500;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-regular); 
+  font-family: var(--font-family-tech-ui);
   text-align: center;
   pointer-events: none;
   user-select: none;

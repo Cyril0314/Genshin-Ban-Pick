@@ -40,20 +40,21 @@ function handleDragStartEvent(event: DragEvent, id: string) {
 
 <style scoped>
 .image-options {
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-  height: 190px;
+  --gap: var(--space-sm);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--size-image), 1fr));
+  max-height: calc(var(--size-image) * 2.5 + var(--gap) * 2);
+  width: calc(var(--size-dropzone) * 12 + var(--gap) * 11);
+  padding: var(--gap);
   overflow-y: auto;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 10px;
-  background: rgba(0, 0, 0, 0.1);
+  gap: var(--gap);
+  border-radius: var(--border-radius-xs);
+  background: var(--md-sys-color-surface-container-highest-alpha);
 }
 
 .image-options img {
-  width: 90px;
-  height: auto;
+  width: 100%;
+  aspect-ratio: 1 / 1;
   cursor: grab;
 }
 

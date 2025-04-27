@@ -1,115 +1,158 @@
 <!-- src/features/ChatRoom/ChatRoom.vue -->
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, nextTick, watch } from 'vue'
 import { useChat } from './composables/useChat.ts'
 
 const newMessage = ref('')
+const messagesContainer = ref<HTMLElement | null>(null)
 const { messages, nickname, sendMessage, changeNickname } = useChat()
 
+watch(messages, (newMessages) => {
+  scrollToBottom()
+})
+
 function handleSend() {
-    if (newMessage.value.trim()) {
-        sendMessage(newMessage.value)
-        newMessage.value = ''
+  if (newMessage.value.trim()) {
+    sendMessage(newMessage.value)
+    newMessage.value = ''
+    scrollToBottom()
+  }
+}
+
+function scrollToBottom() {
+  nextTick(() => {
+    if (messagesContainer.value) {
+      messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
     }
+  })
 }
 </script>
 
 <template>
-    <div class="chat__window">
-        <div class="chat__header">
-            <span id="current-nickname">暱稱: {{ nickname }}</span>
-            <button @click="changeNickname">更改</button>
-        </div>
-
-        <div class="chat__messages">
-            <div v-for="(msg, index) in messages" :key="index" class="chat__message">
-                <strong>{{ msg.senderName }}:</strong> {{ msg.message }}
-            </div>
-        </div>
-
-        <div class="chat__footer">
-            <input v-model="newMessage" @keydown.enter="handleSend" type="text" placeholder="閉嘴！" id="chat-input" />
-            <button @click="handleSend">傳送</button>
-        </div>
+  <div class="chat__window">
+    <div class="chat__header">
+      <span id="current-nickname">暱稱: {{ nickname }}</span>
+      <button @click="changeNickname">更改</button>
     </div>
+
+    <div ref="messagesContainer" class="chat__messages">
+      <div v-for="(msg, index) in messages" :key="index" class="chat__message">
+        <strong>{{ msg.senderName }}:</strong> {{ msg.message }}
+      </div>
+    </div>
+
+    <div class="chat__footer">
+      <input
+        v-model="newMessage"
+        @keydown.enter="handleSend"
+        type="text"
+        placeholder="哈囉今天過得好嗎"
+        id="chat-input"
+      />
+      <button @click="handleSend">傳送</button>
+    </div>
+  </div>
 </template>
 
 <style scoped>
 .chat__window {
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    width: 100%;
-    background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(4px);
-    /* min-height: 200px; */
-    /* max-height: 360px; */
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: var(--size-char-room);
+  padding: calc(var(--space-sm));
+  gap: var(--space-xs);
+  border-radius: var(--border-radius-xs);
+  background-color: var(--md-sys-color-surface-container-alpha);
+  backdrop-filter: var(--backdrop-filter);
+  box-shadow: var(--box-shadow);
+
+  /* min-height: 200px; */
+  /* max-height: 360px; */
 }
 
 .chat__window button {
-    background: #6b5b5b;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 6px;
-    cursor: pointer;
-    font-size: 1.2em;
-    width: 65px;
-    flex-shrink: 0;
+  border: none;
+  border-radius: var(--border-radius-xs);
+  padding: var(--space-sm);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-family-tech-ui);
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.chat__window button:hover {
+  background-color: var(--md-sys-color-surface-tint);
+  transform: scale(1.05);
 }
 
 .chat__header {
-    display: flex;
-    gap: 10px;
-    padding: 5px 0px;
-    align-items: center;
+  display: flex;
+  gap: var(--space-xs);
+  align-items: center;
 }
 
 #current-nickname {
-    font-size: 1.2em;
-    font-weight: bold;
-    color: #4e4040;
-    flex: 1;
-    min-width: 50px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-family-sans);
+  color: var(--md-sys-color-primary);
+  flex: 1;
+  min-width: 50px;
 }
 
 .chat__messages {
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-    height: 300px;
-    font-size: 1.2em;
-    padding: 10px 0px;
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  overflow-y: auto;
+  color: var(--md-sys-color-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-regular);
+  font-family: var(--font-family-sans);
+  padding: var(--space-xs) 0px;
 }
 
 .chat__message {
-    max-width: 100%;
-    word-break: break-all;
-    overflow-wrap: break-word;
+  max-width: 100%;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  color: var(--md-sys-color-on-surface-variant);
 }
 
 .chat__footer {
-    display: flex;
-    align-items: center;
-    padding: 5px 0px;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
 }
 
 #chat-input {
-    padding: 5px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 1.2em;
-    flex: 1;
-    /* 填滿剩餘空間 */
-    min-width: 50px;
-    height: 40px;
-    /* 防止 overflow 溢出 */
+  height: 100%;
+  padding: var(--space-xs);
+  border-radius: var(--border-radius-xs);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-regular);
+  font-family: var(--font-family-sans);
+  flex: 1;
+  background-color: var(--md-sys-color-surface-container-highest-alpha);
+  color: var(--md-sys-color-on-surface);
+  border: none;
+  outline: none;
+  /* 填滿剩餘空間 */
+  /* 防止 overflow 溢出 */
+}
+
+#chat-input::placeholder {
+  color: var(--md-sys-color-on-surface-variant);
 }
 
 #chat-input:focus {
-    outline: none;
+  outline: none;
 }
 </style>

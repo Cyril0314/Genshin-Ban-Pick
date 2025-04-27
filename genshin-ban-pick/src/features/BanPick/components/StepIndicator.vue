@@ -12,7 +12,13 @@ const { setStep } = useBanPickStep()
 
 const displayText = computed(() => {
   if (!localStep.value) return '選角結束'
-  return `現在輪到 ${localStep.value.player}\n選擇 ${localStep.value.zoneId} 角色`
+  const input = `${localStep.value.zoneId}`
+  const output = input
+  .replace(/^zone-ban-(\d+)$/, 'Ban $1')
+  .replace(/^zone-pick-(\d+)$/, 'Pick $1')
+  .replace(/^zone-utility-(\d+)$/, 'Utility $1')
+
+  return `輪到 ${localStep.value.player}\n選擇 ${output} 角色`
 })
 
 function updateStep(step: BanPickStep | null) {
@@ -39,28 +45,29 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div id="step-indicator" :class="{ active }">
+  <div class="step-indicator" :class="{ active }">
     {{ displayText }}
   </div>
 </template>
 
 <style scoped>
-#step-indicator {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: #4e4040;
-  font-size: 1.5em;
-  font-weight: bold;
+.step-indicator {
+  background-color: var(--md-sys-color-surface-container-highest-alpha);
+  color: var(--md-sys-color-on-surface);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-family-tech-title);
   text-align: center;
-  width: fit-content;
-  padding: 12px 16px;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(4px);
+  width: calc(var(--size-dropzone) * 2 + var(--space-sm) * 1);
+  padding: var(--space-sm) var(--space-xs);
+  border-radius: var(--border-radius-xs);
+  box-shadow: var(--box-shadow-lg);
+  backdrop-filter: var(--backdrop-filter);
   white-space: pre-line;
   transition: all 0.3s ease;
 }
 
-#step-indicator.active {
+.step-indicator.active {
   animation: indicatorPulse 1.2s ease-in-out 1;
 }
 

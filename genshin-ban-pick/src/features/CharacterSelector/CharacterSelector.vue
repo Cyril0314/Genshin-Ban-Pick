@@ -1,22 +1,47 @@
 <!-- src/features/CharacterSelector/CharacterSelector.vue -->
- 
+
 <script setup lang="ts">
-import { reactive, watch, computed } from 'vue'
+import { watch } from 'vue'
 import type { CharacterInfo } from '@/types/CharacterInfo'
 import { useSelectorOptions } from './composables/useSelectorOptions'
 import { useCharacterFilter } from './composables/useCharacterFilter'
+import 'vue-select/dist/vue-select.css'
+// @ts-ignore
+import vSelect from 'vue-select'
 
 const props = defineProps<{
   characterMap: Record<string, CharacterInfo>
 }>()
 
 const emit = defineEmits<{
-  (e: 'filter-changed', filters: Record<string, string>): void
+  (e: 'filter-changed', filters: Record<string, string[]>): void
   (e: 'pull', payload: { zoneType: 'utility' | 'ban' | 'pick' }): void
 }>()
 
 const selectorsData = useSelectorOptions(props.characterMap)
 const { localFilters } = useCharacterFilter((filters) => emit('filter-changed', filters))
+
+watch(
+  localFilters,
+  () => {
+    for (const filter of selectorsData.value) {
+      const key = filter.key
+      const selected = localFilters[key]
+      const items = filter.items
+      const hasAll = selected.includes('All')
+
+      // ✅ 點到 'All' → 改成全選（排除 'All' 本身）
+      if (hasAll && selected.length < items.length + 1) {
+        localFilters[key] = [...items]
+      }
+
+      if (hasAll && selected.length === items.length + 1) {
+        localFilters[key] = []
+      }
+    }
+  },
+  { deep: true },
+)
 
 function handleClickUtilityButton() {
   console.log('Selector utility clicked')
@@ -37,16 +62,37 @@ function handleClickPickButton() {
 <template>
   <div class="container__selector">
     <div class="selector__row" v-for="filter in selectorsData" :key="filter.key">
-      <label class="selector__label">{{ filter.label }}：</label>
-      <select
-        class="selector__select selector__select--{{ filter.key }}"
+      <!-- <label class="selector__label">{{ filter.label }}：</label> -->
+      <v-select
+        class="selector__select"
+        :options="['All', ...filter.items]"
+        :reduce="(val: string) => val"
+        :multiple="true"
+        :placeholder="`${filter.label}`"
+        :get-option-label="(val: string) => (val === 'All' ? '所有' : filter.translateFn(val))"
         v-model="localFilters[filter.key]"
       >
-        <option value="All">所有</option>
-        <option v-for="item in filter.items" :key="item" :value="item">
-          {{ filter.translateFn(item) }}
-        </option>
-      </select>
+          <template #open-indicator="{ attributes }">
+            <span class="selector__open-indicator" v-bind="attributes">▲</span>
+          </template>
+        <template #option="{ label }">
+          <div class="selector__option">
+            <span>{{ filter.translateFn(label) }}</span>
+          </div>
+        </template>
+        <template #selected-option-container="{ option, deselect, multiple, disabled }">
+          <div class="selector__selected-option">
+            <span class="selector__selected-option-label">{{ filter.translateFn(option.label) }}</span>
+            <span
+              v-if="!disabled"
+              class="selector__remove-btn"
+              @click.stop="deselect(option.label)"
+            >
+              ×
+            </span>
+          </div>
+        </template>
+      </v-select>
     </div>
     <div class="selector__toolbar">
       <button class="selector__button selector__button--utility" @click="handleClickUtilityButton">
@@ -64,62 +110,160 @@ function handleClickPickButton() {
 
 <style scoped>
 .container__selector {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: rgba(255, 255, 255, 0.2);
-  color: #4e4040;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-  padding: 10px 10px;
+  z-index: 1000;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-content: start;
+  column-gap: var(--space-sm);
+  row-gap: var(--space-sm);
   width: 100%;
-  box-sizing: border-box;
-  height: auto;
-  gap: 12px;
-  backdrop-filter: blur(4px);
+  padding: var(--space-sm);
+  border-radius: var(--border-radius-xs);
+  background-color: var(--md-sys-color-surface-container-alpha);
+  backdrop-filter: var(--backdrop-filter);
+  box-shadow: var(--box-shadow);
 }
 
 .selector__row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   width: 100%;
+  /* height: var(--size-selector-height); */
 }
 
-.container__selector label {
-  font-size: 1.2em;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-.container__selector select {
+.v-select {
   flex-grow: 1;
-  font-size: 1.2em;
-  padding: 5px 5px;
-  border-radius: 6px;
-  border: none;
-  background-color: rgba(255, 255, 255, 0.9);
-  color: #4e4040;
-  font-weight: 500;
+  --vs-font-size: var(--font-size-sm);
+  --vs-font-family: var(--font-family-tech-ui);
+  background-color: var(--md-sys-color-surface-container-high-alpha);
+  color: var(--md-sys-color-on-surface-variant);
+  box-shadow: var(--box-shadow);
+  border-radius: var(--border-radius-xs);
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
+  /* height: var(--size-selector-height); */
+  /* overflow-y: auto; */
+  gap: var(--space-xs);
 }
 
-.container__selector select:hover {
-  background-color: rgba(255, 255, 255, 0.9);
+.v-select:hover {
+  background-color: var(--md-sys-color-surface-container-highest-alpha);
   transform: scale(1.02);
 }
 
-.container__selector select:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(110, 110, 110, 0.4);
+:deep(.vs__search) {
+  font-weight: var(--font-weight-bold);
+  text-align: start;
+  padding: 0px;
+}
+
+:deep(.vs__dropdown-toggle) {
+  display: flex;
+  align-items: center;
+  padding: 0px;
+  gap: 0px;
+}
+
+:deep(.vs__actions) {
+  display: flex;
+  align-items: center;
+  padding-right: var(--space-xs);
+}
+
+.selector__open-indicator {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+:deep(.v-select.vs--open) {
+  z-index: 9999;
+}
+
+:deep(.vs__dropdown-menu) {
+  background-color: var(--md-sys-color-surface-container-highest);
+}
+
+:deep(.vs__dropdown-option) {
+  background-color: var(--md-sys-color-surface-container-highest);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+:deep(.vs__dropdown-option--highlight) {
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+}
+
+.selector__option {
+  display: flex;
+  width: 100%;
+  cursor: pointer;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-family-tech-ui);
+  font-weight: var(--font-weight-medium);
+}
+
+:deep(.vs__selected-options) {
+  display: flex;
+  /* height: 100%; */
+  align-items: center;
+  padding: var(--space-xs);
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.selector__selected-option {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--md-sys-color-on-primary-container);
+  background-color: var(--md-sys-color-surface-tint);
+  border-radius: var(--border-radius-xs);
+}
+
+.selector__selected-option-label {
+  cursor: pointer;
+  padding: 0 0 0 var(--space-xs);
+  font-size: var(--font-size-xs);
+  font-family: var(--font-family-tech-ui);
+  font-weight: var(--font-weight-medium);
+}
+
+.selector__remove-btn {
+  cursor: pointer;
+  color: var(--md-sys-color-on-primary-container);
+  padding: 0 var(--space-xs) calc(var(--space-xs) / 2) calc(var(--space-xs) / 2);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: color 0.2s ease;
+}
+
+.selector__remove-btn:hover {
+  transform: scale(1.1);
+}
+
+.selector__remove-btn:active {
+  transform: scale(0.98);
+}
+
+.container__selector label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family-tech-ui);
+  white-space: nowrap;
 }
 
 .selector__toolbar {
+  grid-column: span 2;
   display: flex;
   justify-content: space-between;
   width: 100%;
-  gap: 10px;
+  gap: calc(var(--space-xs));
 }
 
 .selector__button {
@@ -128,23 +272,24 @@ function handleClickPickButton() {
   justify-content: center;
   flex: 1;
   z-index: 50;
-  background-color: #4e4040;
-  color: #fff;
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
   border: none;
-  border-radius: 8px;
-  padding: 10px 20px;
+  border-radius: var(--border-radius-xs);
+  padding: var(--space-sm);
   cursor: pointer;
   transition:
     background-color 0.3s ease,
     transform 0.2s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--box-shadow);
   text-align: center;
-  font-size: 1em;
-  font-weight: bold;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-regular);
+  font-family: var(--font-family-tech-ui);
 }
 
 .selector__button:hover {
-  background-color: #6b5b5b;
+  background-color: var(--md-sys-color-surface-tint);
   transform: scale(1.05);
 }
 

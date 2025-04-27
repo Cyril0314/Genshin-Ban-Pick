@@ -7,7 +7,7 @@ const currentTeam = ref<'aether' | 'lumine'>('aether')
 </script>
 
 <template>
-  <div class="tactical__board">
+  <div class="tactical__board" :class="`team-${currentTeam}`">
     <div class="tactical__board-tabs">
       <button
         :class="['tactical__tab', { 'tactical__tab--active': currentTeam === 'aether' }]"
@@ -45,49 +45,65 @@ const currentTeam = ref<'aether' | 'lumine'>('aether')
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  gap: 10px;
-  backdrop-filter: blur(4px);
+  width: 100%;
+  padding: var(--space-sm);
+  gap: var(--space-sm);
+  border-radius: var(--border-radius-xs);
+  background-color: var(--md-sys-color-surface-container-low-alpha);
+  backdrop-filter: var(--backdrop-filter);
+  box-shadow: var(--box-shadow);
 }
 
 .tactical__board-tabs {
   display: flex;
   width: 100%;
   justify-content: space-between;
-  gap: 10px;
+  gap: var(--space-sm);
+}
+
+.team-aether {
+  --team-tab-color: var(--md-sys-color-on-secondary-container);
+  --team-tab-active-bg: var(--md-sys-color-secondary-container);
+  --team-tab-hover-bg: var(--md-sys-color-secondary);
+}
+.team-lumine {
+  --team-tab-active-color: var(--md-sys-color-on-tertiary-container);
+  --team-tab-active-bg: var(--md-sys-color-tertiary-container);
+  --team-tab-hover-bg: var(--md-sys-color-tertiary);
 }
 
 .tactical__tab {
   flex: 1;
-  padding: 8px 16px;
-  background: #ddd;
+  padding: var(--space-sm);
+  color: var(--md-sys-color-on-surface);
+  background: var(--md-sys-color-surface-container-highest-alpha);
   border: none;
-  border-radius: 6px;
+  border-radius: var(--border-radius-xs);
   cursor: pointer;
-  font-size: 1em;
-  font-weight: bold;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-family-tech-title);
   transition: background 0.3s ease;
 }
 
 .tactical__tab:hover {
-  background: #ccc;
+  background: var(--team-tab-hover-bg);
 }
 
 .tactical__tab--active {
-  background: #4e4040;
-  color: #fff;
+  background: var(--team-tab-active-bg);
+  color: var(--team-tab-active-color);
 }
 
 .tactical__board-content {
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .tactical__board-section {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--space-sm);
 }
 </style>

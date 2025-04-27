@@ -1,7 +1,6 @@
 <!-- src/features/BanPick/components/PickZone.vue -->
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import DropZone from './DropZone.vue'
 
 const props = defineProps<{
@@ -48,7 +47,7 @@ function handleImageRestore({ imgId }: { imgId: string }) {
         :imageMap="props.imageMap"
         :label="`Pick ${n + 1}`"
         type="pick"
-        :labelColor="side === 'left' ? '#5191c2' : '#df5757'"
+        :labelColor="side === 'left' ? 'var(--md-sys-color-secondary)' : 'var(--md-sys-color-tertiary)'"
         @image-drop="handleImageDropped"
         @image-restore="handleImageRestore"
       />
@@ -61,13 +60,13 @@ function handleImageRestore({ imgId }: { imgId: string }) {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-sm);
 }
 
 .grid__column {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-sm);
 }
 </style>

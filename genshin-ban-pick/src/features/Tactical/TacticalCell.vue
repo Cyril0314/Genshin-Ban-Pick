@@ -51,22 +51,26 @@ function handleClickEvent() {
 
 <style scoped>
 .tactical__cell {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
+  background: var(--md-sys-color-surface-container-highest-alpha);
+  border-radius: var(--border-radius-xs);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  backdrop-filter: blur(4px);
 }
 
 .tactical__cell--active {
-  outline: 3px solid #ffaa00;
+  outline: calc(var(--space-xs) / 2) solid var(--md-sys-color-secondary-container);
+}
+
+.tactical__cell:hover {
+  transform: scale(1.03);
+  box-shadow: var(--box-shadow-hover);
 }
 
 .tactical__cell img {
     width: 100%;
-    height: 100%;
+    aspect-ratio: 1 / 1;
     object-fit: contain;
     cursor: grab;
     z-index: 10;

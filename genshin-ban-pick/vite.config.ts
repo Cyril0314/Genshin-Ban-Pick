@@ -9,8 +9,8 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 export default defineConfig({
   server: {
     proxy: {
-      '/api': 'http://localhost:3000' // ← 你的後端 port
-      // '/api': 'http://127.0.0.1:3000' // ← 你的後端 port
+      // '/api': 'http://localhost:3000' // ← 你的後端 port
+      '/api': 'http://127.0.0.1:3000' // ← 你的後端 port
     }
   },
   plugins: [

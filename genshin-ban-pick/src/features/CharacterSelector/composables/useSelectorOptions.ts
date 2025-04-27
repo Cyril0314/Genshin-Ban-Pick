@@ -35,12 +35,6 @@ export function useSelectorOptions(characterMap: Record<string, CharacterInfo>) 
       translateFn: translateRegion,
     },
     {
-      key: 'rarity',
-      label: '選擇星級',
-      items: uniqueByKey(characters.value, 'rarity', rarityOrder),
-      translateFn: translateRarity,
-    },
-    {
       key: 'model_type',
       label: '選擇體型',
       items: uniqueByKey(characters.value, 'model_type', modelTypeOrder),
@@ -57,6 +51,12 @@ export function useSelectorOptions(characterMap: Record<string, CharacterInfo>) 
       label: '選擇祈願',
       items: uniqueByKey(characters.value, 'wish', wishOrder),
       translateFn: translateWish,
+    },
+    {
+      key: 'rarity',
+      label: '選擇星級',
+      items: uniqueByKey(characters.value, 'rarity', rarityOrder),
+      translateFn: translateRarity,
     },
   ])
 }

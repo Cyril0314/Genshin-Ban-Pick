@@ -1,7 +1,6 @@
 <!-- src/features/BanPick/components/UtilityZone.vue -->
  
 <script setup lang="ts">
-import { computed } from 'vue'
 import DropZone from './DropZone.vue'
 
 const props = defineProps<{
@@ -47,7 +46,7 @@ function handleImageRestore({ imgId }: { imgId: string }) {
         :imageMap="props.imageMap"
         :label="`Utility`"
         type="utility"
-        :labelColor="'#4e4040'"
+        :labelColor="'var(--md-sys-color-primary)'"
         @image-drop="handleImageDropped"
         @image-restore="handleImageRestore"
       />
@@ -60,13 +59,13 @@ function handleImageRestore({ imgId }: { imgId: string }) {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-sm);
 }
 
 .grid__column {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-sm);
 }
 </style>

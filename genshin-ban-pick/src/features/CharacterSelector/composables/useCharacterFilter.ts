@@ -3,15 +3,15 @@
 import { reactive, watch } from 'vue'
 import type { FilterKey } from './useSelectorOptions'
 
-export function useCharacterFilter(emit: (filters: Record<FilterKey, string>) => void) {
-  const localFilters = reactive<Record<FilterKey, string>>({
-    weapon: 'All',
-    element: 'All',
-    region: 'All',
-    rarity: 'All',
-    model_type: 'All',
-    role: 'All',
-    wish: 'All',
+export function useCharacterFilter(emit: (filters: Record<FilterKey, string[]>) => void) {
+  const localFilters = reactive<Record<FilterKey, string[]>>({
+    weapon: [],
+    element: [],
+    region: [],
+    rarity: [],
+    model_type: [],
+    role: [],
+    wish: [],
   })
 
   watch(localFilters, () => emit({ ...localFilters }), { deep: true })

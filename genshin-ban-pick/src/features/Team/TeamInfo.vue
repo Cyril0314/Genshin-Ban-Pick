@@ -42,37 +42,55 @@ function updateMembers(e: Event) {
   display: flex;
   flex-direction: column;
   width: 100%;
-  gap: 10px;
+  gap: var(--space-sm);
+}
+
+.team__name--aether {
+  --team-name-color: var(--md-sys-color-on-secondary-container);
+  --team-name-bg: var(--md-sys-color-secondary-container);
+  --team-tab-hover-bg: var(--md-sys-color-secondary);
+}
+.team__name--lumine {
+  --team-name-color: var(--md-sys-color-on-tertiary-container);
+  --team-name-bg: var(--md-sys-color-tertiary-container);
+  --team-tab-hover-bg: var(--md-sys-color-tertiary);
 }
 
 .team__name {
   display: flex;
   align-items: center;
   width: 100%;
-  height: 50px;
+  padding: var(--space-xs) var(--space-sm);
   justify-content: center;
-  font-weight: bold;
-  font-size: 1.8em;
-  color: #4e4040;
-  background-color: #fff;
-  border-radius: 8px;
+  font-weight: var(--font-weight-heavy);
+  font-size: var(--font-size-lg);
+  font-family: var(--font-family-tech-title);
+  color: var(--team-name-color);
+  background-color: var(--team-name-bg);
+  border-radius: var(--border-radius-xs);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   white-space: nowrap;
 }
 
 .team__member-input {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: #4e4040;
+  background-color: var(--md-sys-color-surface-container-highest-alpha);
+  color: var(--md-sys-color-on-surface);
   border: none;
-  border-radius: 8px;
+  border-radius: var(--border-radius-xs);
   width: 100%;
-  min-height: 130px;
+  min-height: calc(var(--font-size-sm) * var(--line-height-tight) * 4 + var(--space-xs) * 2);
   height: auto;
   resize: none;
-  font-size: 1.5em;
-  font-weight: bold;
-  padding: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-family-body);
+  padding: var(--space-xs);
+  box-shadow: var(--box-shadow);
+}
+
+.team__member-input::placeholder {
+  color: var(--md-sys-color-on-surface-variant);
 }
 
 .team__member-input:focus {

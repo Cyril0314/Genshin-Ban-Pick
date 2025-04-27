@@ -32,7 +32,7 @@ const { teamInfoMap, updateTeam } = useTeamInfoSync()
 const emit = defineEmits<{
   (e: 'image-drop', payload: { imgId: string; zoneId: string }): void
   (e: 'image-restore', payload: { imgId: string }): void
-  (e: 'filter-changed', filters: Record<string, string>): void
+  (e: 'filter-changed', filters: Record<string, string[]>): void
   (e: 'pull', payload: { zoneType: 'utility' | 'ban' | 'pick' }): void
 }>()
 
@@ -58,7 +58,7 @@ function handleImageRestore({ imgId }: { imgId: string }) {
   emit('image-restore', { imgId })
 }
 
-function handleSelectorFilterChanged(filters: Record<string, string>) {
+function handleSelectorFilterChanged(filters: Record<string, string[]>) {
   emit('filter-changed', filters)
 }
 
@@ -102,12 +102,13 @@ console.log(`pickZones: ${pickZones.value.right}`)
       </div>
       <div class="layout__common">
         <div class="layout__common-side">
+          <ChatRoom />
           <CharacterSelector
             :characterMap="props.characterMap"
             @filter-changed="handleSelectorFilterChanged"
             @pull="handleSelectorPull"
           />
-          <ChatRoom />
+          
         </div>
         <div class="layout__utility-zone">
           <div class="layout__step-indicator">
@@ -144,15 +145,9 @@ console.log(`pickZones: ${pickZones.value.right}`)
 
 <style scoped>
 .layout__main {
-  /* background: rgba(0, 255, 0, 0.1); */
-  min-height: 200px;
-}
-
-.layout__main {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
-  /* justify-content: space-between; */
+  gap: var(--space-sm);
   justify-content: center;
 }
 
@@ -160,7 +155,7 @@ console.log(`pickZones: ${pickZones.value.right}`)
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-sm);
 }
 
 .layout__center {
@@ -168,7 +163,7 @@ console.log(`pickZones: ${pickZones.value.right}`)
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-sm);
 }
 
 .layout__ban-zone {
@@ -182,15 +177,15 @@ console.log(`pickZones: ${pickZones.value.right}`)
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: start;
-  gap: 10px;
+  gap: var(--space-sm);
 }
 
 .layout__common-side {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  max-width: 500px;
+  width: calc(var(--size-dropzone) * 3 + var(--space-sm) * 2);
+  gap: var(--space-sm);
 }
 
 .layout__utility-zone {
@@ -198,13 +193,12 @@ console.log(`pickZones: ${pickZones.value.right}`)
   flex-direction: column;
   justify-self: center;
   align-items: center;
-  gap: 25px;
+  /* align-self: center; */
+  gap: var(--space-sm);
 }
 
 .layout__step-indicator {
   display: flex;
-  width: 330px;
-  height: 100px;
   align-items: center;
   justify-content: center;
 }

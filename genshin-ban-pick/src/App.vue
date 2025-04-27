@@ -1,30 +1,37 @@
 <script setup lang="ts">
-// import { RouterLink, RouterView } from 'vue-router'
-// import HelloWorld from './components/HelloWorld.vue'
+import { RouterLink, RouterView } from 'vue-router'
 import BanPickView from './views/BanPickView.vue'
 </script>
 
 <template>
-  <!-- <header> -->
-    <!-- <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" /> -->
+  <!-- <header>
+    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
 
-    <!-- <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
+    <div class="wrapper">
       <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
       </nav>
-    </div> -->
-  <!-- </header> -->
+    </div>
+  </header> -->
 
   <div id="app">
-    <!-- <ChatRoom /> -->
     <BanPickView />
   </div>
 </template>
 
 <style scoped>
+#app {
+  --layout-width: clamp(
+    calc(var(--base-size) * 60),   /* 最小：960px */
+    calc(var(--base-size) * 80),   /* 成長期 */
+    calc(var(--base-size) * 100)   /* 最大：2400px */
+  );
+  width: var(--layout-width);
+  /* max-width: var(--layout-width); */
+  /* margin: 0 auto; */
+}
+
 header {
   line-height: 1.5;
   max-height: 100vh;

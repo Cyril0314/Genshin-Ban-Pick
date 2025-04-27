@@ -1,7 +1,6 @@
 <!-- src/features/BanPick/components/BanZone.vue -->
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import DropZone from './DropZone.vue'
 
 const props = defineProps<{
@@ -47,7 +46,7 @@ function handleImageRestore({ imgId }: { imgId: string }) {
         :imageMap="props.imageMap"
         :label="`Ban ${n + 1}`"
         type="ban"
-        :labelColor="'#4e4040'"
+        :labelColor="'var(--md-sys-color-error)'"
         @image-drop="handleImageDropped"
         @image-restore="handleImageRestore"
       />
@@ -59,12 +58,12 @@ function handleImageRestore({ imgId }: { imgId: string }) {
 .ban-zone__rows {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--space-sm);
 }
 
 .grid__row {
   display: flex;
   flex-direction: row;
-  gap: 10px;
+  gap: var(--space-sm);
 }
 </style>
