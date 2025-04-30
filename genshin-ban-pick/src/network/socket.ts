@@ -4,7 +4,7 @@
 import { io, type Socket } from 'socket.io-client'
 const baseURL = import.meta.env.VITE_SOCKET_URL
 
-const roomId = new URLSearchParams(window.location.search).get('room') || 'default-room'
+export const roomId = new URLSearchParams(window.location.search).get('room') || 'default-room'
 
 console.log(`baseURL ${baseURL}`)
 export const socket: Socket = io(baseURL, {

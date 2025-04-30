@@ -6,6 +6,8 @@ import { useInjectedSocket } from '@/network/SocketProvider'
 import { useBanPickStep } from './useBanPickStep'
 import { useTacticalBoardSync } from '@/features/Tactical/composables/useTacticalBoardSync'
 import type { RoomSetting } from '@/types/RoomSetting'
+import type { Socket } from 'socket.io-client'
+import { roomId } from '@/network/socket'
 
 type ImageMap = Record<string, string>
 
@@ -114,7 +116,24 @@ export function useBanPickImageSync(roomSettingRef: Ref<RoomSetting | null>) {
     resetStep()
   }
 
-  function handleBanPickRecord() {}
+  function handleBanPickRecord() {
+    console.log(`${roomId}`)
+    const grouped: Record<'ban' | 'pick' | 'utility' | 'other', Record<string, string>> = {
+      ban: {},
+      pick: {},
+      utility: {},
+      other: {},
+    }
+  
+    for (const [zoneId, charId] of Object.entries(imageMap.value)) {
+      if (zoneId.startsWith('zone-ban')) grouped.ban[zoneId] = charId
+      else if (zoneId.startsWith('zone-pick')) grouped.pick[zoneId] = charId
+      else if (zoneId.startsWith('zone-utility')) grouped.utility[zoneId] = charId
+      else grouped.other[zoneId] = charId
+    }
+  
+    console.log('Grouped BanPick Data:', grouped)
+  }
 
   function syncImageMapFromServer(state: Record<string, string>) {
     if (!roomSettingRef.value) {

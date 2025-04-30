@@ -18,7 +18,8 @@ function handleDragStart(event: DragEvent, id: string) {
 </script>
 
 <template>
-  <div class="tactical__pool">
+  <div class="tactical__pool"
+  :class="`tactical__pool--${team}`">
     <img
       v-for="id in poolImages"
       :key="id"
@@ -30,13 +31,22 @@ function handleDragStart(event: DragEvent, id: string) {
 </template>
 
 <style scoped>
+.tactical__pool--aether {
+  --tactical__pool-bg: var(--md-sys-color-on-secondary-container-alpha);
+}
+.tactical__pool--lumine {
+  --tactical__pool-bg: var(--md-sys-color-on-tertiary-container-alpha);
+}
+
 .tactical__pool {
   --gap: var(--space-xs);
   display: grid;
-  grid-template-columns: repeat(auto-fill, var(--size-image-sm));
-  background: var(--md-sys-color-surface-container-high-alpha);
-  min-height: calc(var(--size-image-sm) * 2 + var(--gap) * 3);
-  max-height: calc(var(--size-image-sm) * 2 + var(--gap) * 3);
+  grid-template-columns: repeat(auto-fit, var(--size-image-tactical-pool));
+  align-content: start;
+  justify-content: start;
+  background: var(--tactical__pool-bg);
+  height: calc(var(--size-image-tactical-pool) * 3 + var(--gap) * 4);
+  max-height: calc(var(--size-image-tactical-pool) * 3 + var(--gap) * 4);
   border-radius: var(--border-radius-xs);
   overflow-y: auto;
   gap: var(--gap);

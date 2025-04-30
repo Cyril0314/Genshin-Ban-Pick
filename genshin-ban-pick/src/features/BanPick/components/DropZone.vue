@@ -27,7 +27,7 @@ function handleDragStartEvent(event: DragEvent) {
   if (imageId.value && event.dataTransfer) {
     console.log(`onDragStart ${imageId.value}`)
     event?.dataTransfer?.setData('text/plain', imageId.value)
-  }  
+  }
 }
 
 function handleDropEvent(event: DragEvent) {
@@ -66,7 +66,10 @@ const isHighlighted = computed(() => {
     @drop="handleDropEvent"
     @click="handleClickEvent"
   >
-    <img v-if="imageId" :src="getWishImagePath(imageId)" />
+    <template v-if="imageId">
+      <img class="drop-zone__background" :src="getWishImagePath(imageId)" aria-hidden="true" />
+      <img class="drop-zone__image" :src="getWishImagePath(imageId)" />
+    </template>
     <span v-else class="drop-zone__label" :style="{ color: props.labelColor || '#888' }">{{
       label
     }}</span>
@@ -91,47 +94,68 @@ const isHighlighted = computed(() => {
   overflow: hidden;
 }
 
-.drop-zone--active {
-  outline: calc(var(--space-xs) / 2) solid var(--md-sys-color-secondary-container);
+.drop-zone__background {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(2);
+  filter: blur(4px) brightness(0.8);
+  opacity: 0.5;
+  z-index: 1;
+  animation: subtleMove 4s ease-in-out infinite alternate;
 }
 
-.drop-zone:hover {
-  transform: scale(1.03);
-  box-shadow: var(--box-shadow-hover);
+
+@keyframes subtleMove {
+  0%   { transform: scale(2); }
+  50%  { transform: scale(3); }
+  100% { transform: scale(2); }
 }
 
-.drop-zone img {
+.drop-zone__image {
   width: 100%;
   height: 100%;
   object-fit: cover;
   z-index: 10;
 }
 
+.drop-zone--active,
+.drop-zone.highlight.drop-zone--active {
+  outline: calc(var(--space-xs) / 2) solid var(--md-sys-color-secondary-container);
+}
+
+.drop-zone:hover {
+  transform: scale(1.05);
+  box-shadow: var(--box-shadow-hover);
+}
+
 .drop-zone.highlight {
   outline: var(--space-xs) var(--md-sys-color-secondary-container);
   background-color: var(--md-sys-color-surface-container-highest-alpha);
   box-shadow:
-    0 0 var(--space-xs) var(--md-sys-color-secondary-container),
+    0 0 var(--space-xs) var(--md-sys-color-tertiary-container),
     0 0 var(--space-sm) var(--md-sys-color-secondary-container);
   animation: highlightGlow 1.2s ease-in-out infinite;
-  transform: scale(1.08);
+  transform: scale(1.05);
 }
 
 @keyframes highlightGlow {
   0% {
-    box-shadow: 0 0 var(--space-xs) var(--md-sys-color-secondary-container);
+    box-shadow: 0 0 var(--space-lg) var(--md-sys-color-tertiary-container);
   }
   50% {
-    box-shadow: 0 0 var(--space-md) var(--md-sys-color-secondary-container);
+    box-shadow: 0 0 var(--space-sm) var(--md-sys-color-secondary-container);
   }
   100% {
-    box-shadow: 0 0 var(--space-xs) var(--md-sys-color-secondary-container);
+    box-shadow: 0 0 var(--space-lg) var(--md-sys-color-tertiary-container);
   }
 }
 
 .drop-zone__label {
   font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-regular); 
+  font-weight: var(--font-weight-regular);
   font-family: var(--font-family-tech-ui);
   text-align: center;
   pointer-events: none;

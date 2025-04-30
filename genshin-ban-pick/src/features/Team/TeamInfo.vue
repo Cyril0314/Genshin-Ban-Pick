@@ -19,16 +19,16 @@ function updateMembers(e: Event) {
     members: target.value,
   })
 }
-
 </script>
 
 <template>
-  <div class="team__info">
+  <div class="team__info" :class="`team__info--${team}`">
     <span class="team__name" :class="`team__name--${team}`">
-      {{ team === 'aether' ? 'Team Aether' : 'Team Lumine' }}
+      {{ team === 'aether' ? 'Team\nAether' : 'Team\nLumine' }}
     </span>
     <textarea
       class="team__member-input"
+      :class="`team__member-input--${team}`"
       :placeholder="`Members`"
       :data-team="team"
       :value="modelValue.members"
@@ -40,52 +40,88 @@ function updateMembers(e: Event) {
 <style scoped>
 .team__info {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   width: 100%;
-  gap: var(--space-sm);
+}
+
+.team__info--lumine {
+  flex-direction: row-reverse;
 }
 
 .team__name--aether {
   --team-name-color: var(--md-sys-color-on-secondary-container);
   --team-name-bg: var(--md-sys-color-secondary-container);
   --team-tab-hover-bg: var(--md-sys-color-secondary);
+  --text-align: left;
+  --border-top-right-radius: 0px;
+  --border-top-left-radius: var(--border-radius-xs);
+  --border-bottom-right-radius: 0px;
+  --border-bottom-left-radius: var(--border-radius-xs);
 }
 .team__name--lumine {
   --team-name-color: var(--md-sys-color-on-tertiary-container);
   --team-name-bg: var(--md-sys-color-tertiary-container);
   --team-tab-hover-bg: var(--md-sys-color-tertiary);
+  --text-align: right;
+  --border-top-right-radius: var(--border-radius-xs);
+  --border-top-left-radius: 0px;
+  --border-bottom-right-radius: var(--border-radius-xs);
+  --border-bottom-left-radius: 0px;
 }
 
 .team__name {
   display: flex;
-  align-items: center;
-  width: 100%;
+  flex: 1;
+  align-items: start;
   padding: var(--space-xs) var(--space-sm);
-  justify-content: center;
+  text-align: var(--text-align);
   font-weight: var(--font-weight-heavy);
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-md);
   font-family: var(--font-family-tech-title);
   color: var(--team-name-color);
   background-color: var(--team-name-bg);
-  border-radius: var(--border-radius-xs);
+  border-top-right-radius: var(--border-top-right-radius);
+  border-top-left-radius: var(--border-top-left-radius);
+  border-bottom-right-radius: var(--border-bottom-right-radius);
+  border-bottom-left-radius: var(--border-bottom-left-radius);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  white-space: nowrap;
+  white-space: pre-line;
+}
+
+.team__member-input--aether {
+  --team__member-input-bg: var(--md-sys-color-secondary-container-alpha);
+  --border-top-right-radius: var(--border-radius-xs);
+  --border-top-left-radius: 0px;
+  --border-bottom-right-radius: var(--border-radius-xs);
+  --border-bottom-left-radius: 0px;
+}
+.team__member-input--lumine {
+  --team__member-input-bg: var(--md-sys-color-tertiary-container-alpha);
+  --border-top-right-radius: 0px;
+  --border-top-left-radius: var(--border-radius-xs);
+  --border-bottom-right-radius: 0px;
+  --border-bottom-left-radius: var(--border-radius-xs);
 }
 
 .team__member-input {
-  background-color: var(--md-sys-color-surface-container-highest-alpha);
+  display: flex;
+  flex: 3;
+  background-color: var(--team__member-input-bg);
   color: var(--md-sys-color-on-surface);
   border: none;
-  border-radius: var(--border-radius-xs);
-  width: 100%;
-  min-height: calc(var(--font-size-sm) * var(--line-height-tight) * 4 + var(--space-xs) * 2);
+  border-top-right-radius: var(--border-top-right-radius);
+  border-top-left-radius: var(--border-top-left-radius);
+  border-bottom-right-radius: var(--border-bottom-right-radius);
+  border-bottom-left-radius: var(--border-bottom-left-radius);
+  min-height: calc(var(--font-size-sm) * var(--line-height-tightest) * 4 + var(--space-sm) * 2);
   height: auto;
   resize: none;
   font-size: var(--font-size-sm);
-  line-height: var(--line-height-tight);
+  line-height: var(--line-height-tightest);
   font-weight: var(--font-weight-bold);
   font-family: var(--font-family-body);
-  padding: var(--space-xs);
+  text-align: center;
+  padding: var(--space-sm);
   box-shadow: var(--box-shadow);
 }
 

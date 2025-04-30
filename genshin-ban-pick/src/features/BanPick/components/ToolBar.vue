@@ -27,7 +27,7 @@ function handleClickRecordButton() {
 <style scoped>
 .toolbar {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: var(--space-sm);
 }
 .toolbar__button {

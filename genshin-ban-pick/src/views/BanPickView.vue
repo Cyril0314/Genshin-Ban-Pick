@@ -79,9 +79,6 @@ function handleRandomPull({ zoneType }: { zoneType: 'utility' | 'ban' | 'pick' }
   <div>
     <div class="background-image"></div>
     <div class="layout">
-      <div class="layout__toolbar">
-        <Toolbar @reset="handleImageReset" @record="handleBanPickRecord" />
-      </div>
       <div class="layout__core">
         <ImageOptions
           :characterMap="characterMap"
@@ -99,6 +96,9 @@ function handleRandomPull({ zoneType }: { zoneType: 'utility' | 'ban' | 'pick' }
           @pull="handleRandomPull"
         />
         <div v-else class="loading">載入房間設定中...</div>
+      </div>
+      <div class="layout__toolbar">
+        <Toolbar @reset="handleImageReset" @record="handleBanPickRecord" />
       </div>
     </div>
   </div>
@@ -119,9 +119,10 @@ function handleRandomPull({ zoneType }: { zoneType: 'utility' | 'ban' | 'pick' }
 }
 
 .layout {
-  display: grid;
-  align-items: start;
-  grid-template-columns: 1fr auto 1fr;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* grid-template-columns: 1fr auto 1fr; */
   gap: var(--space-sm);
   min-height: 100vh;
   padding: var(--space-sm);
@@ -133,11 +134,11 @@ function handleRandomPull({ zoneType }: { zoneType: 'utility' | 'ban' | 'pick' }
 }
 
 .layout__core {
-  display: flex;
+  display: inline-flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
-  gap: var(--space-sm);
+  gap: var(--space-md);
 }
 
 </style>

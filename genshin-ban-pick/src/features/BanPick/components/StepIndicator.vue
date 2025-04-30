@@ -45,7 +45,11 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="step-indicator" :class="{ active }">
+  <div class="step-indicator" :class="[
+       { active },
+       localStep?.player === 'Team Aether' ? 'team-aether' : 
+       localStep?.player === 'Team Lumine' ? 'team-lumine' : ''
+     ]">
     {{ displayText }}
   </div>
 </template>
@@ -58,33 +62,44 @@ onUnmounted(() => {
   font-weight: var(--font-weight-bold);
   font-family: var(--font-family-tech-title);
   text-align: center;
-  width: calc(var(--size-dropzone) * 2 + var(--space-sm) * 1);
+  width: var(--size-step-indicator);
   padding: var(--space-sm) var(--space-xs);
   border-radius: var(--border-radius-xs);
-  box-shadow: var(--box-shadow-lg);
   backdrop-filter: var(--backdrop-filter);
   white-space: pre-line;
   transition: all 0.3s ease;
+  animation: steadyGlow 2s ease-in-out infinite alternate;
+}
+
+/* 預設沒有光 */
+.step-indicator {
+  box-shadow: none;
+}
+
+.step-indicator.team-aether {
+  --glow-color: var(--md-sys-color-secondary-container);
+}
+
+.step-indicator.team-lumine {
+  --glow-color: var(--md-sys-color-tertiary-container);
 }
 
 .step-indicator.active {
-  animation: indicatorPulse 1.2s ease-in-out 1;
+  animation: indicatorPulse 1.2s ease-in-out 1, steadyGlow 2s ease-in-out infinite alternate;
 }
 
 @keyframes indicatorPulse {
+  0% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.95; }
+}
+
+@keyframes steadyGlow {
   0% {
-    transform: scale(1);
-    opacity: 0.6;
+    box-shadow: 0 0 8px 2px var(--glow-color);
   }
-
-  50% {
-    transform: scale(1.05);
-    opacity: 1;
-  }
-
   100% {
-    transform: scale(1);
-    opacity: 0.95;
+    box-shadow: 0 0 12px 4px var(--glow-color);
   }
 }
 </style>

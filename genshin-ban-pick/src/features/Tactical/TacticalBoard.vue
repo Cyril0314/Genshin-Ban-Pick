@@ -102,14 +102,14 @@ const boardCells = computed(() => {
 }
 
 .tactical__header--team-number {
-  top: calc(var(--space-xl) + var(--space-xs));
-  right: calc(var(--space-lg) + var(--space-xs));
+  top: calc(var(--space-xl) + var(--space-md));
+  right: calc(var(--space-lg) + var(--space-lg));
   text-align: right;
 }
 
 .tactical__header--member {
-  bottom: calc(var(--space-xl) + var(--space-xs));
-  left: calc(var(--space-lg) + var(--space-xs));
+  bottom: calc(var(--space-xl) + var(--space-md));
+  left: calc(var(--space-lg) + var(--space-lg));
   text-align: left;
 }
 

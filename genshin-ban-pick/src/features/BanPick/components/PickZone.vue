@@ -47,7 +47,7 @@ function handleImageRestore({ imgId }: { imgId: string }) {
         :imageMap="props.imageMap"
         :label="`Pick ${n + 1}`"
         type="pick"
-        :labelColor="side === 'left' ? 'var(--md-sys-color-secondary)' : 'var(--md-sys-color-tertiary)'"
+        :labelColor="side === 'left' ? 'var(--md-sys-color-secondary-container)' : 'var(--md-sys-color-tertiary-container)'"
         @image-drop="handleImageDropped"
         @image-restore="handleImageRestore"
       />
@@ -60,13 +60,13 @@ function handleImageRestore({ imgId }: { imgId: string }) {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--size-drop-zone-line-space);
 }
 
 .grid__column {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--size-drop-zone-item-space);
 }
 </style>

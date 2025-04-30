@@ -59,19 +59,25 @@
 }
 
 [data-theme='dark'] { */
---md-sys-color-primary: rgb(211, 219, 255);
---md-sys-color-surface-tint: rgb(180, 197, 255);
---md-sys-color-on-primary: rgb(0, 32, 98);
---md-sys-color-primary-container: rgb(115, 141, 224);
---md-sys-color-on-primary-container: rgb(0, 0, 0);
+ /* 主色（Primary）— 亮星空藍 */
+ --md-sys-color-primary: rgb(40, 60, 120);  
+ --md-sys-color-on-primary: rgb(245, 245, 255);
+ --md-sys-color-primary-container: rgb(25, 45, 90); 
+ --md-sys-color-on-primary-container: rgb(200, 210, 240);  
+ --md-sys-color-surface-tint: rgba(120, 140, 220, 0.32);
+ --md-sys-color-on-surface-tint: rgb(255, 255, 255);
 --md-sys-color-secondary: rgb(255, 212, 175);
 --md-sys-color-on-secondary: rgb(57, 32, 3);
 --md-sys-color-secondary-container: rgb(211, 167, 127);
+--md-sys-color-secondary-container-alpha: rgb(211, 167, 127, 0.3);
 --md-sys-color-on-secondary-container: rgb(56, 30, 3);
+--md-sys-color-on-secondary-container-alpha: rgb(56, 30, 3, 0.3);
 --md-sys-color-tertiary: rgb(255, 242, 220);
 --md-sys-color-on-tertiary: rgb(63, 46, 0);
 --md-sys-color-tertiary-container: rgb(244, 211, 140);
+--md-sys-color-tertiary-container-alpha: rgb(244, 211, 140, 0.3);
 --md-sys-color-on-tertiary-container: rgb(83, 62, 3);
+--md-sys-color-on-tertiary-container-alpha: rgb(83, 62, 3, 0.3);
 --md-sys-color-error: rgb(255, 210, 204);
 --md-sys-color-on-error: rgb(84, 0, 3);
 --md-sys-color-error-container: rgb(255, 84, 73);

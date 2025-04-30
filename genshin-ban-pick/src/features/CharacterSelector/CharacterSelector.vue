@@ -210,7 +210,6 @@ function handleClickPickButton() {
 
 :deep(.vs__selected-options) {
   display: flex;
-  /* height: 100%; */
   align-items: center;
   padding: var(--space-xs);
   gap: var(--space-xs);
@@ -237,7 +236,7 @@ function handleClickPickButton() {
 .selector__remove-btn {
   cursor: pointer;
   color: var(--md-sys-color-on-primary-container);
-  padding: 0 var(--space-xs) calc(var(--space-xs) / 2) calc(var(--space-xs) / 2);
+  padding: 0 calc(var(--space-xs) / 2) calc(var(--space-xs) / 2) 0;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   transition: color 0.2s ease;
@@ -263,7 +262,7 @@ function handleClickPickButton() {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  gap: calc(var(--space-xs));
+  gap: var(--space-sm);
 }
 
 .selector__button {

@@ -39,9 +39,8 @@ function handleImageRestore({ imgId }: { imgId: string }) {
 <template>
   <div class="ban-zone__rows">
     <div class="grid__row" v-for="(row, rowIndex) in rows" :key="rowIndex">
+      <template v-for="(n, colIndex) in row" :key="n">
       <DropZone
-        v-for="n in row"
-        :key="n"
         :zoneId="`zone-ban-${n + 1}`"
         :imageMap="props.imageMap"
         :label="`Ban ${n + 1}`"
@@ -50,6 +49,11 @@ function handleImageRestore({ imgId }: { imgId: string }) {
         @image-drop="handleImageDropped"
         @image-restore="handleImageRestore"
       />
+      <div
+        v-if="(colIndex + 1) % (row.length / 2) === 0 && colIndex !== row.length - 1"
+        class="grid__spacer"
+      ></div>
+    </template>
     </div>
   </div>
 </template>
@@ -58,12 +62,18 @@ function handleImageRestore({ imgId }: { imgId: string }) {
 .ban-zone__rows {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  align-items: center;
+  gap: var(--size-drop-zone-line-space);
 }
 
 .grid__row {
   display: flex;
   flex-direction: row;
-  gap: var(--space-sm);
+  gap: var(--size-drop-zone-item-space);
+}
+
+.grid__spacer {
+  width: var(--size-ban-row-spacer);
+  height: 100%;
 }
 </style>

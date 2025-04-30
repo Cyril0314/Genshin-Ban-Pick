@@ -56,7 +56,6 @@ function handleClickEvent() {
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
 }
 
 .tactical__cell--active {

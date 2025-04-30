@@ -7,7 +7,7 @@ const currentTeam = ref<'aether' | 'lumine'>('aether')
 </script>
 
 <template>
-  <div class="tactical__board" :class="`team-${currentTeam}`">
+  <div class="tactical__board" :class="`tactical__board--${currentTeam}`">
     <div class="tactical__board-tabs">
       <button
         :class="['tactical__tab', { 'tactical__tab--active': currentTeam === 'aether' }]"
@@ -61,12 +61,12 @@ const currentTeam = ref<'aether' | 'lumine'>('aether')
   gap: var(--space-sm);
 }
 
-.team-aether {
+.tactical__board--aether {
   --team-tab-color: var(--md-sys-color-on-secondary-container);
   --team-tab-active-bg: var(--md-sys-color-secondary-container);
   --team-tab-hover-bg: var(--md-sys-color-secondary);
 }
-.team-lumine {
+.tactical__board--lumine {
   --team-tab-active-color: var(--md-sys-color-on-tertiary-container);
   --team-tab-active-bg: var(--md-sys-color-tertiary-container);
   --team-tab-hover-bg: var(--md-sys-color-tertiary);

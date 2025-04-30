@@ -13,7 +13,7 @@ export interface SelectorOption {
 }
 
 export function useSelectorOptions(characterMap: Record<string, CharacterInfo>) {
-  const characters = computed(() => Object.values(characterMap))
+  const characters = computed(() => Object.values(characterMap).filter(c => c.name.toLowerCase() !== 'traveler'))
 
   return computed<SelectorOption[]>(() => [
     {
@@ -153,8 +153,23 @@ function translateWish(wish: string) {
   )
 }
 
-const weaponOrder = ['Sword', 'Claymore', 'Polearm', 'Bow', 'Catalyst']
-const elementOrder = ['Anemo', 'Geo', 'Electro', 'Dendro', 'Hydro', 'Pyro', 'Cryo', 'None']
+const weaponOrder = [
+  'Sword', 
+  'Claymore', 
+  'Polearm', 
+  'Bow', 
+  'Catalyst'
+]
+const elementOrder = [
+  'Anemo', 
+  'Geo', 
+  'Electro', 
+  'Dendro', 
+  'Hydro', 
+  'Pyro', 
+  'Cryo', 
+  'None'
+]
 const regionOrder = [
   'Mondstadt',
   'Liyue',
@@ -174,5 +189,13 @@ const modelTypeOrder = [
   'Short Female',
   'None',
 ]
-const roleOrder = ['Main DPS', 'Sub DPS', 'Support']
-const wishOrder = ['Limited-Time Event Wish', 'Standard Wish', 'None']
+const roleOrder = [
+  'Main DPS', 
+  'Sub DPS', 
+  'Support'
+]
+const wishOrder = [
+  'Limited-Time Event Wish', 
+  'Standard Wish', 
+  'None'
+]

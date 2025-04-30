@@ -46,7 +46,7 @@ function handleImageRestore({ imgId }: { imgId: string }) {
         :imageMap="props.imageMap"
         :label="`Utility`"
         type="utility"
-        :labelColor="'var(--md-sys-color-primary)'"
+        :labelColor="'var(--md-sys-color-on-primary-container)'"
         @image-drop="handleImageDropped"
         @image-restore="handleImageRestore"
       />
@@ -59,13 +59,13 @@ function handleImageRestore({ imgId }: { imgId: string }) {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--size-drop-zone-line-space);
 }
 
 .grid__column {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--size-drop-zone-item-space);
 }
 </style>

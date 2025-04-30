@@ -102,7 +102,7 @@ function scrollToBottom() {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-bold);
   font-family: var(--font-family-sans);
-  color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary-container);
   flex: 1;
   min-width: 50px;
 }
@@ -112,7 +112,7 @@ function scrollToBottom() {
   flex-grow: 1;
   flex-direction: column;
   overflow-y: auto;
-  color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary-container);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-regular);
   font-family: var(--font-family-sans);

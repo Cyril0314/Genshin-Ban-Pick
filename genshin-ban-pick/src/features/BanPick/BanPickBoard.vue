@@ -108,18 +108,19 @@ console.log(`pickZones: ${pickZones.value.right}`)
             @filter-changed="handleSelectorFilterChanged"
             @pull="handleSelectorPull"
           />
-          
         </div>
-        <div class="layout__utility-zone">
+        <div class="layout__common-center">
           <div class="layout__step-indicator">
             <StepIndicator :step="currentStep" />
           </div>
-          <UtilityZone
-            :zones="utilityZones"
-            :imageMap="props.imageMap"
-            @image-drop="handleImageDropped"
-            @image-restore="handleImageRestore"
-          />
+          <div class="layout__utility-zone">
+            <UtilityZone
+              :zones="utilityZones"
+              :imageMap="props.imageMap"
+              @image-drop="handleImageDropped"
+              @image-restore="handleImageRestore"
+            />
+          </div>
         </div>
         <div class="layout__common-side">
           <TacticalBoardPanel />
@@ -146,8 +147,8 @@ console.log(`pickZones: ${pickZones.value.right}`)
 <style scoped>
 .layout__main {
   display: flex;
-  align-items: flex-start;
-  gap: var(--space-sm);
+  align-items: stretch;
+  gap: var(--space-md);
   justify-content: center;
 }
 
@@ -155,15 +156,17 @@ console.log(`pickZones: ${pickZones.value.right}`)
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-sm);
+  width: calc(var(--size-dropzone) * 2 + var(--size-drop-zone-line-space));
+  gap: var(--space-md);
 }
 
 .layout__center {
-  width: 100%;
+  /* width: 100%; */
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-sm);
+  flex: 1;
+  gap: var(--space-md);
 }
 
 .layout__ban-zone {
@@ -174,32 +177,38 @@ console.log(`pickZones: ${pickZones.value.right}`)
 
 .layout__common {
   width: 100%;
+  height: 100%;
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: start;
-  gap: var(--space-sm);
+  grid-template-columns: calc(var(--size-dropzone) * 3 + var(--size-drop-zone-item-space) * 2) 1fr calc(var(--size-dropzone) * 3 + var(--size-drop-zone-item-space) * 2);
+  gap: var(--size-ban-pick-common-space);
 }
 
 .layout__common-side {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: calc(var(--size-dropzone) * 3 + var(--space-sm) * 2);
-  gap: var(--space-sm);
+  justify-content: space-between;
+  /* width: calc(var(--size-dropzone) * 3 + var(--size-drop-zone-item-space) * 2); */
+  gap: var(--space-lg);
 }
 
-.layout__utility-zone {
+.layout__common-center {
   display: flex;
   flex-direction: column;
-  justify-self: center;
-  align-items: center;
-  /* align-self: center; */
-  gap: var(--space-sm);
+  gap: var(--space-lg);
 }
 
 .layout__step-indicator {
   display: flex;
+  flex-grow: 4;
   align-items: center;
+  justify-content: center;
+}
+
+.layout__utility-zone {
+  display: flex;
+  flex-grow: 5;
+  align-items: start;
   justify-content: center;
 }
 </style>
