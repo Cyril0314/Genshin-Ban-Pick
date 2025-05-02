@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import BanPickView from './views/BanPickView.vue'
 </script>
 
 <template>
@@ -16,7 +15,7 @@ import BanPickView from './views/BanPickView.vue'
   </header> -->
 
   <div id="app">
-    <BanPickView />
+    <RouterView />
   </div>
 </template>
 

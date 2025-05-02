@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import BanPickView from '../views/BanPickView.vue'
+import RegisterView from '../views/RegisterView.vue'
+import LoginView from '../views/LoginView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,6 +10,16 @@ const router = createRouter({
       path: '/',
       name: 'ban-pick',
       component: BanPickView,
+    },
+    {
+      path: '/login',
+      name: 'Login',
+      component: LoginView,
+    },
+    {
+      path: '/register',
+      name: 'Register',
+      component: RegisterView,
     },
     {
       path: '/about',
