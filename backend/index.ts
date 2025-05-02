@@ -1,10 +1,10 @@
 // backend/index.js
 
+import express from "express";
 import { setupSocketIO } from "./socketController.js";
 import characterRoutes from "./routes/characters.js";
 import roomRoutes from "./routes/room.js";
 import recordRoutes from "./routes/record.js";
-import express from "express";
 import path from "path";
 
 import http from "http";
@@ -16,7 +16,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     // origin: ["http://localhost:5173", "http://52.87.171.134"], // 允許的前端來源
-    origin: ['http://localhost:5173', 'http://52.87.171.134:3000'], // 允許的前端來源
+    origin: ["http://localhost:5173", "http://52.87.171.134:3000"], // 允許的前端來源
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -40,7 +40,7 @@ const __dirname = path.dirname(__filename);
 // );
 
 // Express 提供前端的靜態檔案 (非常重要!)
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 
 app.use(characterRoutes);
 app.use(roomRoutes);
@@ -54,4 +54,3 @@ app.get("*", (req, res) => {
 server.listen(3000, "0.0.0.0", () => {
   console.log("Server is running on http://localhost:3000");
 });
-
