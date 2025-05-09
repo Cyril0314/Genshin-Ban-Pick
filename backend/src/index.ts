@@ -1,10 +1,11 @@
 // backend/index.js
 
 import express from "express";
-import { setupSocketIO } from "./socketController.js";
-import characterRoutes from "./routes/characters.js";
-import roomRoutes from "./routes/room.js";
-import recordRoutes from "./routes/record.js";
+import type { Request, Response } from 'express';
+import { setupSocketIO } from "./socketController.ts";
+import characterRoutes from "./routes/characters.ts";
+import roomRoutes from "./routes/room.ts";
+import recordRoutes from "./routes/record.ts";
 import path from "path";
 
 import http from "http";
@@ -47,7 +48,7 @@ app.use(roomRoutes);
 app.use(recordRoutes);
 
 // 讓所有未知的 request 都回傳 index.html (支援 Vue Router history mode)
-app.get("*", (req, res) => {
+app.get("*", (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, "public/index.html"));
 });
 

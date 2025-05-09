@@ -4,18 +4,18 @@ Genshin-Ban-Pick
 ├─ .DS_Store
 ├─ README.md
 ├─ backend
-│  ├─ banPickFlow.js
+│  ├─ banPickFlow.ts
 │  ├─ character
 │  │  └─ characters.json
 │  ├─ constants
-│  │  └─ constants.js
-│  ├─ index.js
+│  │  └─ constants.ts
+│  ├─ index.ts
 │  ├─ package-lock.json
 │  ├─ package.json
 │  ├─ public
 │  │  ├─ assets
-│  │  │  ├─ AboutView-BZh50xAS.js
 │  │  │  ├─ AboutView-CSIvawM9.css
+│  │  │  ├─ AboutView-Cv_Qh5-E.js
 │  │  │  ├─ Albedo_Profile-BgKXU_oL.webp
 │  │  │  ├─ Albedo_Wish-CbQHbG_S.png
 │  │  │  ├─ Alhaitham_Profile-BVSmz8zv.webp
@@ -208,17 +208,19 @@ Genshin-Ban-Pick
 │  │  │  ├─ YunJin_Wish-BhnI0EiH.png
 │  │  │  ├─ Zhongli_Profile-BKf77nvg.webp
 │  │  │  ├─ Zhongli_Wish-JkyBplO8.png
-│  │  │  ├─ index-Djp0Lcrg.js
-│  │  │  ├─ index-KkPJNprj.css
-│  │  │  └─ wallpaper3-NvrGTpxQ.png
+│  │  │  ├─ index-8yPYeDcp.js
+│  │  │  ├─ index-BElLN-XL.css
+│  │  │  └─ wallpaper4-DFm1uiwi.jpg
 │  │  ├─ favicon.ico
 │  │  ├─ index.html
 │  │  └─ wish.png
 │  ├─ routes
-│  │  ├─ characters.js
-│  │  ├─ record.js
-│  │  └─ room.js
-│  ├─ socketController.js
+│  │  ├─ auth.js
+│  │  ├─ characters.ts
+│  │  ├─ record.ts
+│  │  └─ room.ts
+│  ├─ socketController.ts
+│  ├─ tsconfig.json
 │  └─ upload-node-modules.sh
 ├─ genshin-ban-pick
 │  ├─ .editorconfig
@@ -452,7 +454,8 @@ Genshin-Ban-Pick
 │  │  │  │  │  ├─ background.jpg
 │  │  │  │  │  ├─ wallpaper.png
 │  │  │  │  │  ├─ wallpaper2.png
-│  │  │  │  │  └─ wallpaper3.png
+│  │  │  │  │  ├─ wallpaper3.png
+│  │  │  │  │  └─ wallpaper4.jpg
 │  │  │  │  ├─ calendar
 │  │  │  │  │  ├─ Calendar_April.png
 │  │  │  │  │  ├─ Calendar_August.png
@@ -660,8 +663,11 @@ Genshin-Ban-Pick
 │  │  │  │     ├─ YunJin_Wish.png
 │  │  │  │     └─ Zhongli_Wish.png
 │  │  │  ├─ logo.svg
-│  │  │  └─ main.css
+│  │  │  ├─ main.css
+│  │  │  └─ styles
+│  │  │     └─ semantic-colors.css
 │  │  ├─ composables
+│  │  │  ├─ useAuth.ts
 │  │  │  └─ useFilteredCharacters.ts
 │  │  ├─ features
 │  │  │  ├─ BanPick
@@ -703,6 +709,7 @@ Genshin-Ban-Pick
 │  │  ├─ main.ts
 │  │  ├─ network
 │  │  │  ├─ SocketProvider.ts
+│  │  │  ├─ authService.ts
 │  │  │  ├─ characterService.ts
 │  │  │  ├─ roomService.ts
 │  │  │  ├─ socket.ts
@@ -726,7 +733,9 @@ Genshin-Ban-Pick
 │  │  ├─ utils
 │  │  │  └─ imageRegistry.ts
 │  │  └─ views
-│  │     └─ BanPickView.vue
+│  │     ├─ BanPickView.vue
+│  │     ├─ LoginView.vue
+│  │     └─ RegisterView.vue
 │  ├─ tsconfig.app.json
 │  ├─ tsconfig.json
 │  ├─ tsconfig.node.json
