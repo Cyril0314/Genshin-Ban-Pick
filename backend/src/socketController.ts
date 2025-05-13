@@ -1,4 +1,4 @@
-// backend/socketController.ts
+// backend/src/socketController.ts
 
 import { Server, Socket } from "socket.io";
 import {

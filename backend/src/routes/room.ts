@@ -1,4 +1,4 @@
-// backend/routes/room.ts
+// backend/src/routes/room.ts
 
 import express from "express";
 import type { Request, Response } from 'express';

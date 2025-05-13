@@ -1,4 +1,4 @@
-// backend/index.js
+// backend/src/index.js
 
 import express from "express";
 import type { Request, Response } from 'express';

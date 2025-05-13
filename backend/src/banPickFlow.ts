@@ -1,4 +1,4 @@
-// backend/banPickFlow.ts
+// backend/src/banPickFlow.ts
 
 import { numberOfBan, numberOfPick, totalRounds } from './constants/constants.ts'
 import { Server } from "socket.io";
