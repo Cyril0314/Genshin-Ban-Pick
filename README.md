@@ -4,18 +4,25 @@ Genshin-Ban-Pick
 ├─ .DS_Store
 ├─ README.md
 ├─ backend
-│  ├─ banPickFlow.ts
-│  ├─ character
-│  │  └─ characters.json
-│  ├─ constants
-│  │  └─ constants.ts
-│  ├─ index.ts
+│  ├─ .env.development
+│  ├─ .env.production
+│  ├─ dist
+│  │  ├─ constants
+│  │  └─ routes
 │  ├─ package-lock.json
 │  ├─ package.json
+│  ├─ prisma
+│  │  ├─ migrations
+│  │  │  ├─ 20250513081454_init
+│  │  │  │  └─ migration.sql
+│  │  │  ├─ 20250514083431_add_user_model
+│  │  │  │  └─ migration.sql
+│  │  │  └─ migration_lock.toml
+│  │  └─ schema.prisma
 │  ├─ public
 │  │  ├─ assets
 │  │  │  ├─ AboutView-CSIvawM9.css
-│  │  │  ├─ AboutView-Cv_Qh5-E.js
+│  │  │  ├─ AboutView-CgE8gDdc.js
 │  │  │  ├─ Albedo_Profile-BgKXU_oL.webp
 │  │  │  ├─ Albedo_Wish-CbQHbG_S.png
 │  │  │  ├─ Alhaitham_Profile-BVSmz8zv.webp
@@ -208,18 +215,26 @@ Genshin-Ban-Pick
 │  │  │  ├─ YunJin_Wish-BhnI0EiH.png
 │  │  │  ├─ Zhongli_Profile-BKf77nvg.webp
 │  │  │  ├─ Zhongli_Wish-JkyBplO8.png
-│  │  │  ├─ index-8yPYeDcp.js
-│  │  │  ├─ index-BElLN-XL.css
+│  │  │  ├─ index-YG7XjAM2.css
+│  │  │  ├─ index-xP9Qhh9x.js
 │  │  │  └─ wallpaper4-DFm1uiwi.jpg
 │  │  ├─ favicon.ico
 │  │  ├─ index.html
 │  │  └─ wish.png
-│  ├─ routes
-│  │  ├─ auth.js
-│  │  ├─ characters.ts
-│  │  ├─ record.ts
-│  │  └─ room.ts
-│  ├─ socketController.ts
+│  ├─ src
+│  │  ├─ banPickFlow.ts
+│  │  ├─ character
+│  │  │  └─ characters.json
+│  │  ├─ constants
+│  │  │  └─ constants.ts
+│  │  ├─ generated
+│  │  ├─ index.ts
+│  │  ├─ routes
+│  │  │  ├─ auth.ts
+│  │  │  ├─ characters.ts
+│  │  │  ├─ record.ts
+│  │  │  └─ room.ts
+│  │  └─ socketController.ts
 │  ├─ tsconfig.json
 │  └─ upload-node-modules.sh
 ├─ genshin-ban-pick
@@ -232,7 +247,7 @@ Genshin-Ban-Pick
 │  ├─ dist
 │  │  ├─ assets
 │  │  │  ├─ AboutView-CSIvawM9.css
-│  │  │  ├─ AboutView-DXKIDNrk.js
+│  │  │  ├─ AboutView-CgE8gDdc.js
 │  │  │  ├─ Albedo_Profile-BgKXU_oL.webp
 │  │  │  ├─ Albedo_Wish-CbQHbG_S.png
 │  │  │  ├─ Alhaitham_Profile-BVSmz8zv.webp
@@ -425,9 +440,9 @@ Genshin-Ban-Pick
 │  │  │  ├─ YunJin_Wish-BhnI0EiH.png
 │  │  │  ├─ Zhongli_Profile-BKf77nvg.webp
 │  │  │  ├─ Zhongli_Wish-JkyBplO8.png
-│  │  │  ├─ index-BIdEruub.css
-│  │  │  ├─ index-CTQokrHa.js
-│  │  │  └─ wallpaper3-NvrGTpxQ.png
+│  │  │  ├─ index-YG7XjAM2.css
+│  │  │  ├─ index-xP9Qhh9x.js
+│  │  │  └─ wallpaper4-DFm1uiwi.jpg
 │  │  ├─ favicon.ico
 │  │  ├─ index.html
 │  │  └─ wish.png
@@ -493,6 +508,7 @@ Genshin-Ban-Pick
 │  │  │  │  │  ├─ Diona_Profile.webp
 │  │  │  │  │  ├─ Dori_Profile.webp
 │  │  │  │  │  ├─ Emilie_Profile.webp
+│  │  │  │  │  ├─ Escoffier_Profile.webp
 │  │  │  │  │  ├─ Eula_Profile.webp
 │  │  │  │  │  ├─ Faruzan_Profile.webp
 │  │  │  │  │  ├─ Fischl_Profile.webp
@@ -503,6 +519,7 @@ Genshin-Ban-Pick
 │  │  │  │  │  ├─ Gorou_Profile.webp
 │  │  │  │  │  ├─ HuTao_Profile.webp
 │  │  │  │  │  ├─ Iansan_Profile.webp
+│  │  │  │  │  ├─ Ifa_Profile.webp
 │  │  │  │  │  ├─ Jean_Profile.webp
 │  │  │  │  │  ├─ Kachina_Profile.webp
 │  │  │  │  │  ├─ KaedeharaKazuha_Profile.webp
@@ -590,6 +607,7 @@ Genshin-Ban-Pick
 │  │  │  │     ├─ Diona_Wish.png
 │  │  │  │     ├─ Dori_Wish.png
 │  │  │  │     ├─ Emilie_Wish.png
+│  │  │  │     ├─ Escoffier_Wish.png
 │  │  │  │     ├─ Eula_Wish.png
 │  │  │  │     ├─ Faruzan_Wish.png
 │  │  │  │     ├─ Fischl_Wish.png
@@ -600,6 +618,7 @@ Genshin-Ban-Pick
 │  │  │  │     ├─ Gorou_Wish.png
 │  │  │  │     ├─ HuTao_Wish.png
 │  │  │  │     ├─ Iansan_Wish.png
+│  │  │  │     ├─ Ifa_Wish.png
 │  │  │  │     ├─ Jean_Wish.png
 │  │  │  │     ├─ Kachina_Wish.png
 │  │  │  │     ├─ KaedeharaKazuha_Wish.png

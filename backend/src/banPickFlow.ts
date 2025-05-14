@@ -16,7 +16,7 @@ export const banPickFlow: Step[] = generateBanPickFlow({
   totalRounds,
 });
 
-console.log(JSON.stringify(banPickFlow, null, 2));
+// console.log(JSON.stringify(banPickFlow, null, 2));
 
 const stepMap: Record<string, number> = {};
 

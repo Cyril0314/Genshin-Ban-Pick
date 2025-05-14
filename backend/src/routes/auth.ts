@@ -1,39 +1,58 @@
 // backend/src/routes/auth.ts
 
 import express, { Request, Response } from "express";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import db from "../db.ts";
+import { PrismaClient } from "@prisma/client";
 
 dotenv.config();
 
+const prisma = new PrismaClient();
 const router = express.Router();
 
-router.post("/auth/register", async (req: Request, res: Response) => {
+router.post("/api/auth/register", async (req: Request, res: Response) => {
+  const { account, password, nickname } = req.body;
+
+  if (!account || !password || !nickname) {
+    res.status(400).json({ message: "請填寫帳號、密碼與暱稱" });
+    return;
+  }
+
   try {
-    const { account, password, nickname } = req.body as {
-      account: string;
-      password: string;
-      nickname: string;
-    };
+    // 檢查是否已註冊
+    const existingUser = await prisma.user.findUnique({
+      where: { account },
+    });
 
-    const hash = await bcrypt.hash(password, 10);
+    if (existingUser) {
+      res.status(409).json({ message: "此帳號已被註冊" });
+      return;
+    }
 
-    const result = await db.query(
-      "INSERT INTO users (account, password_hash, nickname) VALUES ($1, $2, $3) RETURNING id",
-      [account, hash, nickname]
-    );
+    // 密碼加密
+    const passwordHash = await bcrypt.hash(password, 10);
 
+    // 建立新用戶
+    const user = await prisma.user.create({
+      data: {
+        account,
+        passwordHash,
+        nickname,
+      },
+    });
+
+    // 產生 JWT
     const token = jwt.sign(
-      { userId: result.rows[0].id },
-      process.env.JWT_SECRET as string
+      { userId: user.id },
+      process.env.JWT_SECRET as string,
+      { expiresIn: "7d" }
     );
-
-    res.json({
-      id: result.rows[0].id,
-      account,
-      nickname,
+    console.log(`token: ${token}`);
+    res.status(201).json({
+      id: user.id,
+      account: user.account,
+      nickname: user.nickname,
       token,
     });
   } catch (error) {

@@ -12,7 +12,7 @@ export async function registerUser(payload: {
   password: string
   nickname: string
 }) {
-  return api.post('/api/auth/register', payload)
+  return api.post('/auth/register', payload)
 }
 
 export async function loginUser(payload: { account: string; password: string }) {
