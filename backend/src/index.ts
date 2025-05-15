@@ -14,6 +14,14 @@ import http from "http";
 import { fileURLToPath } from "url";
 import { Server } from "socket.io";
 
+process.on('uncaughtException', (err) => {
+  console.error('[uncaughtException]', err)
+})
+
+process.on('unhandledRejection', (reason) => {
+  console.error('[unhandledRejection]', reason)
+})
+
 const app = express();
 const server = http.createServer(app);
 app.use(

@@ -2,37 +2,38 @@
 // 建立 Socket 實例
 
 import { io, type Socket } from 'socket.io-client'
+
 const baseURL = import.meta.env.VITE_SOCKET_URL
+let socketInstance: Socket | null = null
 
-export const roomId = new URLSearchParams(window.location.search).get('room') || 'default-room'
+export function initSocketConnection(): Socket {
+  const token = localStorage.getItem('auth_token')
+  let guestId = localStorage.getItem('guest_id')
 
-console.log(`baseURL ${baseURL}`)
-export const socket: Socket = io(baseURL, {
-    autoConnect: true
+  if (!token && !guestId) {
+    guestId = `guest_${Math.random().toString(36).slice(2, 8)}`
+    localStorage.setItem('guest_id', guestId)
+  }
+
+  socketInstance = io(baseURL, {
+    auth: token ? { token } : { guestId },
   })
 
-export interface ChatMessage {
-    senderName: string
-    message: string
-    timestamp?: number
-    senderId?: string
+  const roomId = new URLSearchParams(window.location.search).get('room') || 'default-room'
+
+  socketInstance.on('connect', () => {
+    console.log('[Client] Connected:', socketInstance!.id)
+    socketInstance!.emit('room.join.request', roomId)
+  })
+
+  socketInstance.on('disconnected', () => {
+    console.log('[Client] Disconnected')
+  })
+
+  return socketInstance
 }
 
-export interface ServerToClientEvents {
-    'chat.history.sync': (history: ChatMessage[]) => void
-    'chat.message.send.broadcast': (msg: ChatMessage) => void
+export function getSocketInstance(): Socket {
+  if (!socketInstance) throw new Error('Socket 未初始化')
+  return socketInstance
 }
-
-export interface ClientToServerEvents {
-    'chat.message.send.request': (msg: ChatMessage) => void
-    'room.join.request': (roomId: string) => void
-}
-
-socket.on('connect', () => {
-    console.log('[Client] Connected to server with ID:', socket.id);
-    socket.emit('room.join.request', roomId)
-})
-
-socket.on('disconnect', () => {
-    console.warn('[Client] Disconnected')
-})

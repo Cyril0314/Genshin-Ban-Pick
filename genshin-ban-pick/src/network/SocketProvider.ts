@@ -4,12 +4,10 @@
 import type { App } from 'vue'
 import { inject } from 'vue'
 import type { Socket } from 'socket.io-client'
-import { socket } from './socket'
-
 
 const SocketSymbol = Symbol('Socket')
 
-export function provideSocket(app: App) {
+export function provideSocket(app: App, socket: Socket) {
     app.provide(SocketSymbol, socket)
 }
 

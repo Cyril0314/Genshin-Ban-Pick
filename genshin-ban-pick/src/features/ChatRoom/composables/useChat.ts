@@ -1,7 +1,7 @@
 // useChat.ts
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useInjectedSocket } from '@/network/SocketProvider'
-import type { ChatMessage } from '@/network/socket'
+import type { ChatMessage } from '@/types/ChatMessage'
 
 const messages = ref<ChatMessage[]>([])
 const nickname = ref(localStorage.getItem('nickname') || prompt("輸入暱稱:") || 'Anonymous')

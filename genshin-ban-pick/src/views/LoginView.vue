@@ -4,15 +4,19 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { loginUser } from '../network/authService'
+import { useAuth } from '../composables/useAuth'
 
 const account = ref('')
 const password = ref('')
 const router = useRouter()
+const { login } = useAuth()
 
 async function handleLogin() {
   try {
-    await loginUser({ account: account.value, password: password.value })
-    router.push('/') // 登入成功後導回首頁或大廳
+    const response = await loginUser({ account: account.value, password: password.value })
+    const { id, account: userAccount, nickname, token } = response.data
+    login({ id, account: userAccount, nickname }, token)
+    router.push('/')
   } catch (error) {
     alert('登入失敗，請確認帳密')
   }

@@ -1,15 +1,14 @@
 // src/composables/useAuth.ts
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { getCurrentUser } from '@/network/authService'
 
-interface User {
+interface UserInfo {
   id: string
   account: string
   nickname: string
-  token: string
 }
-
-const user = ref<User | null>(null)
+const user = ref<UserInfo | null>(null)
 
 export function useAuth() {
   const router = useRouter()
@@ -17,26 +16,29 @@ export function useAuth() {
   const isLoggedIn = computed(() => !!user.value)
   const isGuest = computed(() => !user.value)
 
-  function login(userData: User) {
-    user.value = userData
-    localStorage.setItem('auth', JSON.stringify(userData))
+  function login(userInfo: UserInfo, token: string) {
+    user.value = { ...userInfo }
+    localStorage.setItem('auth_token', token)
   }
 
   function logout() {
     user.value = null
-    localStorage.removeItem('auth')
+    localStorage.removeItem('auth_token')
     router.push('/login')
   }
 
-  function loadFromStorage() {
-    const raw = localStorage.getItem('auth')
-    if (raw) {
-      try {
-        user.value = JSON.parse(raw)
-      } catch (e) {
-        console.error('auth load failed', e)
-        user.value = null
-      }
+  async function tryAutoLogin() {
+    const token = localStorage.getItem('auth_token')
+    console.log(`auto login token: ${token}`)
+    if (!token) return
+
+    try {
+      const response = await getCurrentUser()
+      const userInfo = response.data
+      login(userInfo, token)
+    } catch (e) {
+      console.warn('自動登入失敗', e)
+      logout()
     }
   }
 
@@ -46,6 +48,6 @@ export function useAuth() {
     isGuest,
     login,
     logout,
-    loadFromStorage,
+    tryAutoLogin
   }
 }
