@@ -6,12 +6,24 @@ import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
-import { provideSocket } from './network/SocketProvider'
 
 const app = createApp(App)
-provideSocket(app)
 
 app.use(createPinia())
 app.use(router)
 
 app.mount('#app')
+
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('auth_token')
+  const guestId = localStorage.getItem('guest_id')
+
+  const isAuthenticated = !!token || !!guestId
+
+  if (!isAuthenticated && to.path !== '/') {
+    // 若尚未選身份就導回首頁
+    return next({ path: '/' })
+  }
+
+  next() // 放行
+})
