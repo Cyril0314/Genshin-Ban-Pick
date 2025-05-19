@@ -1,6 +1,6 @@
 // useChat.ts
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useInjectedSocket } from '@/network/SocketProvider'
+import { useSocketStore } from '@/network/socket'
 import type { ChatMessage } from '@/types/ChatMessage'
 
 const messages = ref<ChatMessage[]>([])
@@ -9,7 +9,7 @@ const nickname = ref(localStorage.getItem('nickname') || prompt("輸入暱稱:")
 localStorage.setItem('nickname', nickname.value)
 
 export function useChat() {
-    const socket = useInjectedSocket()
+    const socket = useSocketStore().getSocket()
 
     function sendMessage(message: string) {
         console.log(`${message}`)

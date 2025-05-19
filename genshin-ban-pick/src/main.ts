@@ -20,9 +20,9 @@ router.beforeEach((to, from, next) => {
 
   const isAuthenticated = !!token || !!guestId
 
-  if (!isAuthenticated && to.path !== '/') {
+  if (!isAuthenticated && to.path !== '/login') {
     // 若尚未選身份就導回首頁
-    return next({ path: '/' })
+    return next({ path: '/login' })
   }
 
   next() // 放行

@@ -5,6 +5,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { loginUser } from '../network/authService'
 import { useAuth } from '../composables/useAuth'
+import { useSocketStore } from '@/network/socket'
 
 const account = ref('')
 const password = ref('')
@@ -16,12 +17,28 @@ async function handleLogin() {
     const response = await loginUser({ account: account.value, password: password.value })
     const { id, account: userAccount, nickname, token } = response.data
     login({ id, account: userAccount, nickname }, token)
+    const socketStore = useSocketStore()
+    socketStore.connect(token)
     router.push('/')
+    
   } catch (error) {
     alert('登入失敗，請確認帳密')
   }
 }
+
+function proceedAsGuest() {
+  let guestId = localStorage.getItem('guest_id')
+  if (!guestId) {
+    guestId = `guest_${Math.random().toString(36).slice(2, 8)}`
+    localStorage.setItem('guest_id', guestId)
+  }
+  const socketStore = useSocketStore()
+  socketStore.connect(undefined, guestId)
+
+  router.push('/')
+}
 </script>
+
 <template>
   <div class="auth-view">
     <h2>登入</h2>
@@ -33,6 +50,10 @@ async function handleLogin() {
     <p>
       還沒有帳號？
       <RouterLink to="/register">註冊</RouterLink>
+    </p>
+    <p>
+      不想登入？
+      <button type="button" @click="proceedAsGuest">以訪客身份繼續</button>
     </p>
   </div>
 </template>

@@ -1,6 +1,6 @@
 // src/Team/useTeamInfoSync.ts
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useInjectedSocket } from '@/network/SocketProvider'
+import { useSocketStore } from '@/network/socket'
 
 type TeamKey = 'aether' | 'lumine'
 export interface TeamInfoModel {
@@ -13,7 +13,7 @@ const teamInfoMap = ref<Record<TeamKey, TeamInfoModel>>({
 })
 
 export function useTeamInfoSync() {
-  const socket = useInjectedSocket()
+  const socket = useSocketStore().getSocket()
 
   function updateTeam(team: TeamKey, info: TeamInfoModel) {
     console.log(`updateTeam team ${team} info: ${JSON.stringify(info)}`)

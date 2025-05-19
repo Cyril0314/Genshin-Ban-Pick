@@ -2,12 +2,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import type { BanPickStep } from '@/types/RoomSetting'
-import { useInjectedSocket } from '@/network/SocketProvider'
+import { useSocketStore } from '@/network/socket'
 import { useBanPickStep } from '@/features/BanPick/composables/useBanPickStep'
 
 const localStep = ref<BanPickStep | null>(null)
 const active = ref(false)
-const socket = useInjectedSocket()
+const socket = useSocketStore().getSocket()
 const { setStep } = useBanPickStep()
 
 const displayText = computed(() => {

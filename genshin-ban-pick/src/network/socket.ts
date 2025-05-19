@@ -1,39 +1,39 @@
 // src/network/socket.ts
 // 建立 Socket 實例
 
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
 import { io, type Socket } from 'socket.io-client'
 
-const baseURL = import.meta.env.VITE_SOCKET_URL
-let socketInstance: Socket | null = null
+export const useSocketStore = defineStore('socket', () => {
+  const socket = ref<Socket | null>(null)
 
-export function initSocketConnection(): Socket {
-  const token = localStorage.getItem('auth_token')
-  let guestId = localStorage.getItem('guest_id')
+  function connect(token?: string, guestId?: string) {
+    const baseURL = import.meta.env.VITE_SOCKET_URL
 
-  if (!token && !guestId) {
-    guestId = `guest_${Math.random().toString(36).slice(2, 8)}`
-    localStorage.setItem('guest_id', guestId)
+    socket.value = io(baseURL, {
+      auth: token ? { token } : { guestId },
+    })
+
+    socket.value.on('connect', () => {
+      const roomId = new URLSearchParams(window.location.search).get('room') || 'default-room'
+      console.log('[Socket] Connected:', socket.value!.id)
+      socket.value!.emit('room.join.request', roomId)
+    })
+
+    socket.value.on('disconnect', () => {
+      console.warn('[Socket] Disconnected')
+    })
   }
 
-  socketInstance = io(baseURL, {
-    auth: token ? { token } : { guestId },
-  })
+  function getSocket(): Socket {
+    if (!socket.value) throw new Error('Socket not connected yet')
+    return socket.value as Socket
+  }
 
-  const roomId = new URLSearchParams(window.location.search).get('room') || 'default-room'
-
-  socketInstance.on('connect', () => {
-    console.log('[Client] Connected:', socketInstance!.id)
-    socketInstance!.emit('room.join.request', roomId)
-  })
-
-  socketInstance.on('disconnected', () => {
-    console.log('[Client] Disconnected')
-  })
-
-  return socketInstance
-}
-
-export function getSocketInstance(): Socket {
-  if (!socketInstance) throw new Error('Socket 未初始化')
-  return socketInstance
-}
+  return {
+    socket,
+    connect,
+    getSocket,
+  }
+})

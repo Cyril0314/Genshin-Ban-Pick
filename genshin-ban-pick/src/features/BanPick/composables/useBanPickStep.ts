@@ -1,13 +1,13 @@
 // src/features/BanPick/composables/useBanPickStep.ts
 
 import { ref, computed } from 'vue'
-import { useInjectedSocket } from '@/network/SocketProvider'
+import { useSocketStore } from '@/network/socket'
 import type { BanPickStep } from '@/types/RoomSetting'
 
 const currentStep = ref<BanPickStep | null>(null)
 
 export function useBanPickStep() {
-  const socket = useInjectedSocket()
+  const socket = useSocketStore().getSocket()
 
   function setStep(step: BanPickStep | null) {
     currentStep.value = step
