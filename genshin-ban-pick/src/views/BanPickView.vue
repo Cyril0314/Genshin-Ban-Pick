@@ -7,6 +7,7 @@ import BanPickBoard from '@/features/BanPick/BanPickBoard.vue'
 import Toolbar from '@/features/BanPick/components/ToolBar.vue'
 import { fetchCharacterMap } from '@/network/characterService'
 import { fetchRoomSetting } from '@/network/roomService'
+import { useSocketStore } from '@/network/socket'
 import { useBanPickImageSync } from '@/features/BanPick/composables/useBanPickImageSync'
 import {
   handleUtilityRandom,
@@ -16,6 +17,7 @@ import {
 import { useFilteredCharacters } from '@/composables/useFilteredCharacters'
 import type { RoomSetting } from '@/types/RoomSetting'
 
+const socketReady = ref(false)
 const characterMap = ref({})
 const roomSetting = ref<RoomSetting | null>(null)
 const currentFilters = ref({
@@ -27,6 +29,7 @@ const currentFilters = ref({
   role: [],
   wish: [],
 })
+
 const {
   imageMap,
   usedIds,
@@ -38,12 +41,24 @@ const {
 const filteredCharacterIds = useFilteredCharacters(characterMap, currentFilters)
 
 onMounted(async () => {
+  const socketStore = useSocketStore()
+  try {
+    socketStore.getSocket()
+    socketReady.value = true
+  } catch {
+    const token = localStorage.getItem('auth_token')
+    const guestId = localStorage.getItem('guest_id')
+    socketStore.connect(token ?? undefined, guestId ?? undefined)
+    socketStore.socket?.on('connect', () => {
+      socketReady.value = true
+    })
+  }
+
   try {
     characterMap.value = await fetchCharacterMap()
     roomSetting.value = await fetchRoomSetting()
-    console.log('[BanPickView] roomSetting:', roomSetting.value)
   } catch (error) {
-    console.error('[BanPickView] 無法載入角色資料:', error)
+    console.error('[BanPickView] 無法載入角色和房間資料:', error)
   }
 })
 
@@ -78,29 +93,32 @@ function handleRandomPull({ zoneType }: { zoneType: 'utility' | 'ban' | 'pick' }
 <template>
   <div>
     <div class="background-image"></div>
-    <div class="layout">
-      <div class="layout__core">
-        <ImageOptions
-          :characterMap="characterMap"
-          :usedIds="usedIds"
-          :filteredIds="filteredCharacterIds"
-        />
-        <BanPickBoard
-          v-if="roomSetting"
-          :roomSetting="roomSetting"
-          :characterMap="characterMap"
-          :imageMap="imageMap"
-          @image-drop="handleImageDropped"
-          @image-restore="handleImageRestore"
-          @filter-changed="handleFilterChanged"
-          @pull="handleRandomPull"
-        />
-        <div v-else class="loading">載入房間設定中...</div>
-      </div>
-      <div class="layout__toolbar">
-        <Toolbar @reset="handleImageReset" @record="handleBanPickRecord" />
+    <div v-if="socketReady">
+      <div class="layout">
+        <div class="layout__core">
+          <ImageOptions
+            :characterMap="characterMap"
+            :usedIds="usedIds"
+            :filteredIds="filteredCharacterIds"
+          />
+          <BanPickBoard
+            v-if="roomSetting"
+            :roomSetting="roomSetting"
+            :characterMap="characterMap"
+            :imageMap="imageMap"
+            @image-drop="handleImageDropped"
+            @image-restore="handleImageRestore"
+            @filter-changed="handleFilterChanged"
+            @pull="handleRandomPull"
+          />
+          <div v-else class="loading">載入房間設定中...</div>
+        </div>
+        <div class="layout__toolbar">
+          <Toolbar @reset="handleImageReset" @record="handleBanPickRecord" />
+        </div>
       </div>
     </div>
+    <div v-else class="loading">建立 Socket 連線中...</div>
   </div>
 </template>
 
@@ -112,9 +130,12 @@ function handleRandomPull({ zoneType }: { zoneType: 'utility' | 'ban' | 'pick' }
   z-index: -1000;
   width: 100vw;
   height: 100vh;
-  background: 
-  linear-gradient(var(--md-sys-color-surface-container-lowest-alpha), var(--md-sys-color-surface-container-lowest-alpha)),
-  url('@/assets/images/background/wallpaper4.jpg') no-repeat center center;
+  background:
+    linear-gradient(
+      var(--md-sys-color-surface-container-lowest-alpha),
+      var(--md-sys-color-surface-container-lowest-alpha)
+    ),
+    url('@/assets/images/background/wallpaper4.jpg') no-repeat center center;
   background-size: cover;
 }
 
@@ -140,5 +161,4 @@ function handleRandomPull({ zoneType }: { zoneType: 'utility' | 'ban' | 'pick' }
   justify-content: center;
   gap: var(--space-md);
 }
-
 </style>

@@ -13,7 +13,8 @@ type ImageMap = Record<string, string>
 export function useBanPickImageSync(roomSettingRef: Ref<RoomSetting | null>) {
   const imageMap = ref<ImageMap>({})
   const usedIds = computed(() => [...new Set(Object.values(imageMap.value))])
-  const socket = useSocketStore().getSocket()
+  const socketStore = useSocketStore()
+  const socketRef = ref<Socket|null>(null)
   const { isCurrentStepZone, advanceStep, resetStep } = useBanPickStep()
   let bufferedState: Record<string, string> | null = null
 
@@ -23,24 +24,58 @@ export function useBanPickImageSync(roomSettingRef: Ref<RoomSetting | null>) {
     }
   })
 
+  function registerListeners(s: Socket) {
+    s.on('image.state.sync', syncImageMapFromServer)
+    s.on('image.drop.broadcast', handleImageDropBroadcast)
+    s.on('image.restore.broadcast', handleImageRestoreBroadcast)
+    s.on('image.reset.broadcast', handleImageResetBroadcast)
+  }
+  function unregisterListeners(s: Socket) {
+    s.off('image.state.sync', syncImageMapFromServer)
+    s.off('image.drop.broadcast', handleImageDropBroadcast)
+    s.off('image.restore.broadcast', handleImageRestoreBroadcast)
+    s.off('image.reset.broadcast', handleImageResetBroadcast)
+  }
+
+  function initSocket() {
+    try {
+      const s = socketStore.getSocket()
+      socketRef.value = s
+      registerListeners(s)
+    } catch {
+      socketStore.socket?.on('connect', () => {
+        try {
+          const s = socketStore.getSocket()
+          socketRef.value = s
+          registerListeners(s)
+          // 如果之前有緩存的 state，就在連線後同步
+          if (bufferedState) {
+            syncImageMapFromServer(bufferedState)
+            bufferedState = null
+          }
+        } catch (err) {
+          console.error('[useBanPickImageSync] 無法取得 socket:', err)
+        }
+      })
+    }
+  }
+
   onMounted(() => {
-    socket.on('image.state.sync', syncImageMapFromServer)
-    socket.on('image.drop.broadcast', handleImageDropBroadcast)
-    socket.on('image.restore.broadcast', handleImageRestoreBroadcast)
-    socket.on('image.reset.broadcast', handleImageResetBroadcast)
+   initSocket()
   })
 
   onUnmounted(() => {
-    socket.off('image.state.sync', syncImageMapFromServer)
-    socket.off('image.drop.broadcast', handleImageDropBroadcast)
-    socket.off('image.restore.broadcast', handleImageRestoreBroadcast)
-    socket.off('image.reset.broadcast', handleImageResetBroadcast)
+    const s = socketRef.value
+    if (!s) return
+     unregisterListeners(s)
   })
 
   function handleImageDropped({ imgId, zoneId }: { imgId: string; zoneId: string }) {
     console.log(
       `useBanPickImageSync handleImageDropped current image map imgId ${imgId} zoneId ${zoneId}`,
     )
+    const socket = socketRef.value
+    if (!socket) return
     const previousZoneId = findZoneIdByImage(imgId)
     const displacedImgId = imageMap.value[zoneId]
 
@@ -94,6 +129,8 @@ export function useBanPickImageSync(roomSettingRef: Ref<RoomSetting | null>) {
 
   function handleImageRestore({ imgId }: { imgId: string }) {
     console.log(`useBanPickImageSync handleImageRestore current image map imgId ${imgId}`)
+    const socket = socketRef.value
+    if (!socket) return
     const zoneId = findZoneIdByImage(imgId)
     if (!zoneId) return
     removeImage(imgId, zoneId)
@@ -105,6 +142,8 @@ export function useBanPickImageSync(roomSettingRef: Ref<RoomSetting | null>) {
   }
 
   function handleImageReset() {
+    const socket = socketRef.value
+    if (!socket) return
     imageMap.value = {}
     clearTacticalBoardIfNeeded()
 
@@ -154,18 +193,24 @@ export function useBanPickImageSync(roomSettingRef: Ref<RoomSetting | null>) {
     zoneId: string
     senderId: string
   }) {
+    const socket = socketRef.value
+    if (!socket) return
     if (socket.id === senderId) return
     console.log(`[Client] image dropped received from other user imgId ${imgId} zoneId ${zoneId}`)
     placeImage(imgId, zoneId)
   }
 
   function handleImageRestoreBroadcast({ zoneId, senderId }: { zoneId: string; senderId: string }) {
+    const socket = socketRef.value
+    if (!socket) return
     if (socket.id === senderId) return
     const imgId = imageMap.value[zoneId]
     removeImage(imgId, zoneId)
   }
 
   function handleImageResetBroadcast({ senderId }: { senderId: string }) {
+    const socket = socketRef.value
+    if (!socket) return
     if (socket.id === senderId) return
     console.log(`[Client] image reset received from other user`)
 
