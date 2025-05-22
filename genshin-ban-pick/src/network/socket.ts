@@ -9,6 +9,8 @@ export const useSocketStore = defineStore('socket', () => {
   const socket = ref<Socket | null>(null)
 
   function connect(token?: string, guestId?: string) {
+    if (socket.value?.connected) return
+    
     const baseURL = import.meta.env.VITE_SOCKET_URL
 
     socket.value = io(baseURL, {

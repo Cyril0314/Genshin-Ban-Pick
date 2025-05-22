@@ -9,7 +9,7 @@ import { useAuth } from '../composables/useAuth'
 const account = ref('')
 const password = ref('')
 const router = useRouter()
-const { login } = useAuth()
+const { proceedAsGuest, login } = useAuth()
 
 async function handleLogin() {
   try {
@@ -23,13 +23,8 @@ async function handleLogin() {
   }
 }
 
-function proceedAsGuest() {
-  let guestId = localStorage.getItem('guest_id')
-  if (!guestId) {
-    guestId = `guest_${Math.random().toString(36).slice(2, 8)}`
-    localStorage.setItem('guest_id', guestId)
-  }
-
+function handleProceedAsGuest() {
+  proceedAsGuest()
   router.push('/')
 }
 </script>
@@ -48,7 +43,7 @@ function proceedAsGuest() {
     </p>
     <p>
       不想登入？
-      <button type="button" @click="proceedAsGuest">以訪客身份繼續</button>
+      <button type="button" @click="handleProceedAsGuest">以訪客身份繼續</button>
     </p>
   </div>
 </template>

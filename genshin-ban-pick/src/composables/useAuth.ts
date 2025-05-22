@@ -1,7 +1,7 @@
 // src/composables/useAuth.ts
 import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
 import { getCurrentUser } from '@/network/authService'
+import { useSocketStore } from '@/network/socket'
 
 interface UserInfo {
   id: string
@@ -9,22 +9,36 @@ interface UserInfo {
   nickname: string
 }
 const user = ref<UserInfo | null>(null)
+const guestId = ref<string | null>(localStorage.getItem('guest_id'))
 
 export function useAuth() {
-  const router = useRouter()
-
+  const socketStore = useSocketStore()
   const isLoggedIn = computed(() => !!user.value)
-  const isGuest = computed(() => !user.value)
+  const isGuest    = computed(() => !!guestId.value && !user.value)
+
+  function proceedAsGuest() {
+    if (!guestId.value) {
+      guestId.value = `guest_${Math.random().toString(36).slice(2, 8)}`
+      localStorage.setItem('guest_id', guestId.value)
+    }
+
+    socketStore.connect(undefined, guestId.value)
+  }
 
   function login(userInfo: UserInfo, token: string) {
     user.value = { ...userInfo }
     localStorage.setItem('auth_token', token)
+
+    socketStore.connect(token, undefined)
   }
 
   function logout() {
     user.value = null
+    guestId.value = null
     localStorage.removeItem('auth_token')
-    router.push('/login')
+    localStorage.removeItem('guest_id')
+
+    socketStore.socket?.disconnect()
   }
 
   async function tryAutoLogin() {
@@ -46,6 +60,7 @@ export function useAuth() {
     user,
     isLoggedIn,
     isGuest,
+    proceedAsGuest,
     login,
     logout,
     tryAutoLogin
