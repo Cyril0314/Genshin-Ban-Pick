@@ -2,10 +2,12 @@
 <script setup lang="ts">
 import { ref, nextTick, watch } from 'vue'
 import { useChat } from './composables/useChat.ts'
+import { useAuth } from '@/composables/useAuth.ts'
 
 const newMessage = ref('')
 const messagesContainer = ref<HTMLElement | null>(null)
-const { messages, nickname, sendMessage, changeNickname } = useChat()
+const { messages, sendMessage } = useChat()
+const { user, guestId, isGuest } = useAuth()
 
 watch(messages, (newMessages) => {
   scrollToBottom()
@@ -31,8 +33,10 @@ function scrollToBottom() {
 <template>
   <div class="chat__window">
     <div class="chat__header">
-      <span id="current-nickname">暱稱: {{ nickname }}</span>
-      <button @click="changeNickname">更改</button>
+      <span id="current-nickname">暱稱:
+        <template v-if="!isGuest">{{ user?.nickname }}</template>
+        <template v-else>{{ guestId }}</template></span>
+      <!-- <button @click="changeNickname">更改</button> -->
     </div>
 
     <div ref="messagesContainer" class="chat__messages">

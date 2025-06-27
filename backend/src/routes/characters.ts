@@ -1,4 +1,4 @@
-// backend/routes/characters.ts
+// backend/src/routes/characters.ts
 
 import express from "express";
 import type { Request, Response } from 'express';

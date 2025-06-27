@@ -1,51 +1,72 @@
 // src/composables/useAuth.ts
 import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { getCurrentUser } from '@/network/authService'
+import { useSocketStore } from '@/network/socket'
 
-interface User {
+interface UserInfo {
   id: string
   account: string
   nickname: string
-  token: string
 }
-
-const user = ref<User | null>(null)
+const user = ref<UserInfo | null>(null)
+const guestId = ref<string | null>(localStorage.getItem('guest_id'))
 
 export function useAuth() {
-  const router = useRouter()
-
+  const socketStore = useSocketStore()
   const isLoggedIn = computed(() => !!user.value)
-  const isGuest = computed(() => !user.value)
+  const isGuest    = computed(() => !!guestId.value && !user.value)
 
-  function login(userData: User) {
-    user.value = userData
-    localStorage.setItem('auth', JSON.stringify(userData))
+  function proceedAsGuest() {
+    if (!guestId.value) {
+      guestId.value = `guest_${Math.random().toString(36).slice(2, 8)}`
+      localStorage.setItem('guest_id', guestId.value)
+      localStorage.removeItem('auth_token')
+    }
+
+    socketStore.connect(undefined, guestId.value)
+  }
+
+  function login(userInfo: UserInfo, token: string) {
+    user.value = { ...userInfo }
+    localStorage.setItem('auth_token', token)
+    localStorage.removeItem('guest_id')
+
+    socketStore.connect(token, undefined)
   }
 
   function logout() {
     user.value = null
-    localStorage.removeItem('auth')
-    router.push('/login')
+    guestId.value = null
+    localStorage.removeItem('auth_token')
+    localStorage.removeItem('guest_id')
+
+    socketStore.socket?.disconnect()
   }
 
-  function loadFromStorage() {
-    const raw = localStorage.getItem('auth')
-    if (raw) {
-      try {
-        user.value = JSON.parse(raw)
-      } catch (e) {
-        console.error('auth load failed', e)
-        user.value = null
-      }
+  async function tryAutoLogin() {
+    const token = localStorage.getItem('auth_token')
+    console.log(`auto login token: ${token}`)
+    if (!token) return
+
+    try {
+      const response = await getCurrentUser()
+      const userInfo = response.data
+      console.log('自動登入', response)
+      login(userInfo, token)
+    } catch (e) {
+      console.warn('自動登入失敗', e)
+      logout()
     }
   }
 
   return {
     user,
+    guestId,
     isLoggedIn,
     isGuest,
+    proceedAsGuest,
     login,
     logout,
-    loadFromStorage,
+    tryAutoLogin
   }
 }

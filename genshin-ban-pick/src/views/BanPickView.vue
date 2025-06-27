@@ -16,6 +16,7 @@ import {
 import { useFilteredCharacters } from '@/composables/useFilteredCharacters'
 import type { RoomSetting } from '@/types/RoomSetting'
 
+const socketReady = ref(false)
 const characterMap = ref({})
 const roomSetting = ref<RoomSetting | null>(null)
 const currentFilters = ref({
@@ -27,6 +28,7 @@ const currentFilters = ref({
   role: [],
   wish: [],
 })
+
 const {
   imageMap,
   usedIds,
@@ -41,9 +43,8 @@ onMounted(async () => {
   try {
     characterMap.value = await fetchCharacterMap()
     roomSetting.value = await fetchRoomSetting()
-    console.log('[BanPickView] roomSetting:', roomSetting.value)
   } catch (error) {
-    console.error('[BanPickView] 無法載入角色資料:', error)
+    console.error('[BanPickView] 無法載入角色和房間資料:', error)
   }
 })
 
@@ -112,9 +113,12 @@ function handleRandomPull({ zoneType }: { zoneType: 'utility' | 'ban' | 'pick' }
   z-index: -1000;
   width: 100vw;
   height: 100vh;
-  background: 
-  linear-gradient(var(--md-sys-color-surface-container-lowest-alpha), var(--md-sys-color-surface-container-lowest-alpha)),
-  url('@/assets/images/background/wallpaper4.jpg') no-repeat center center;
+  background:
+    linear-gradient(
+      var(--md-sys-color-surface-container-lowest-alpha),
+      var(--md-sys-color-surface-container-lowest-alpha)
+    ),
+    url('@/assets/images/background/5.7.png') no-repeat center center;
   background-size: cover;
 }
 
@@ -140,5 +144,4 @@ function handleRandomPull({ zoneType }: { zoneType: 'utility' | 'ban' | 'pick' }
   justify-content: center;
   gap: var(--space-md);
 }
-
 </style>

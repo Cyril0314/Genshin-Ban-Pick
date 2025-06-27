@@ -1,4 +1,4 @@
-// backend/constants/constants.ts
+// backend/src/constants/constants.ts
 
 export const numberOfUtility = 8
 export const numberOfPick = 32

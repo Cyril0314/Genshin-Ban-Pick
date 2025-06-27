@@ -1,8 +1,10 @@
-// backend/index.js
+// backend/src/index.js
 
 import express from "express";
-import type { Request, Response } from 'express';
+import cors from "cors";
+import type { Request, Response } from "express";
 import { setupSocketIO } from "./socketController.ts";
+import authRoutes from "./routes/auth.ts";
 import characterRoutes from "./routes/characters.ts";
 import roomRoutes from "./routes/room.ts";
 import recordRoutes from "./routes/record.ts";
@@ -12,8 +14,22 @@ import http from "http";
 import { fileURLToPath } from "url";
 import { Server } from "socket.io";
 
+process.on('uncaughtException', (err) => {
+  console.error('[uncaughtException]', err)
+})
+
+process.on('unhandledRejection', (reason) => {
+  console.error('[unhandledRejection]', reason)
+})
+
 const app = express();
 const server = http.createServer(app);
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "http://52.87.171.134:3000"], // ✅ 允許來源
+    credentials: true, // ✅ 若要傳 cookie 或 token
+  })
+);
 const io = new Server(server, {
   cors: {
     // origin: ["http://localhost:5173", "http://52.87.171.134"], // 允許的前端來源
@@ -42,7 +58,9 @@ const __dirname = path.dirname(__filename);
 
 // Express 提供前端的靜態檔案 (非常重要!)
 app.use(express.static(path.resolve(__dirname, "../public")));
+app.use(express.json())
 
+app.use(authRoutes);
 app.use(characterRoutes);
 app.use(roomRoutes);
 app.use(recordRoutes);

@@ -1,37 +1,33 @@
 // useChat.ts
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useInjectedSocket } from '@/network/SocketProvider'
-import type { ChatMessage } from '@/network/socket'
+import { useSocketStore } from '@/network/socket'
+import type { ChatMessage } from '@/types/ChatMessage'
 
 const messages = ref<ChatMessage[]>([])
-const nickname = ref(localStorage.getItem('nickname') || prompt("輸入暱稱:") || 'Anonymous')
-
-localStorage.setItem('nickname', nickname.value)
 
 export function useChat() {
-    const socket = useInjectedSocket()
+    const socket = useSocketStore().getSocket()
 
     function sendMessage(message: string) {
         console.log(`${message}`)
         socket.emit('chat.message.send.request', {
-            senderName: nickname.value,
             message,
             senderId: socket.id
         })
 
         messages.value.push({
-            senderName: nickname.value,
+            senderName: `我`,
             message
         })
     }
 
-    function changeNickname() {
-        const newName = prompt('輸入暱稱:', nickname.value)
-        if (newName && newName !== nickname.value) {
-            nickname.value = newName
-            localStorage.setItem('nickname', newName)
-        }
-    }
+    // function changeNickname() {
+    //     const newName = prompt('輸入暱稱:', nickname.value)
+    //     if (newName && newName !== nickname.value) {
+    //         nickname.value = newName
+    //         localStorage.setItem('nickname', newName)
+    //     }
+    // }
 
     function handleHistory(history: ChatMessage[]) {
         messages.value = history
@@ -55,8 +51,7 @@ export function useChat() {
 
     return {
         messages,
-        nickname,
         sendMessage,
-        changeNickname
+        // changeNickname
     }
 }

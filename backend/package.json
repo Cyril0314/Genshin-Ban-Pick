@@ -6,9 +6,9 @@
   "main": "./dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node --loader ts-node/esm index.ts",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "dev": "dotenv -e .env.development -- tsx src/index.ts"
   },
   "repository": {
     "type": "git",
@@ -22,14 +22,25 @@
   },
   "homepage": "https://github.com/Cyril0314/Genshin-Ban-Pick#readme",
   "dependencies": {
+    "@prisma/client": "^6.7.0",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
     "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
     "socket.io": "^4.8.1",
     "ws": "^8.18.1"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/dotenv": "^6.1.1",
     "@types/express": "^5.0.1",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.15.3",
+    "dotenv-cli": "^8.0.0",
+    "prisma": "^6.7.0",
     "ts-node": "^10.9.2",
+    "tsx": "^4.19.4",
     "typescript": "^5.8.3"
   }
 }

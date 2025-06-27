@@ -312,6 +312,19 @@
         "wish": "Limited-Time Event Wish"
     },
     {
+        "icon": "Escoffier Icon",
+        "name": "Escoffier",
+        "rarity": "5 Stars",
+        "element": "Cryo",
+        "weapon": "Polearm",
+        "region": "Fontaine",
+        "model_type": "Medium Female",
+        "release_date": "May 07, 2025",
+        "version": "5.6",
+        "role": "Sub DPS",
+        "wish": "Limited-Time Event Wish"
+    },
+    {
         "icon": "Eula Icon",
         "name": "Eula",
         "rarity": "5 Stars",
@@ -438,6 +451,19 @@
         "model_type": "Short Female",
         "release_date": "March 26, 2025",
         "version": "5.5",
+        "role": "Support",
+        "wish": "Standard Wish"
+    },
+    {
+        "icon": "Ifa Icon",
+        "name": "Ifa",
+        "rarity": "4 Stars",
+        "element": "Anemo",
+        "weapon": "Catalyst",
+        "region": "Natlan",
+        "model_type": "Tall Male",
+        "release_date": "May 07, 2025",
+        "version": "5.6",
         "role": "Support",
         "wish": "Standard Wish"
     },

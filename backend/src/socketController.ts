@@ -1,25 +1,40 @@
-// backend/socketController.ts
+// backend/src/socketController.ts
 
 import { Server, Socket } from "socket.io";
+import { attachAuthMiddleware } from "./socket/socketAuth.ts";
+import jwt from "jsonwebtoken";
 import {
   advanceStep,
   rollbackStep,
   resetStep,
   getCurrentStep,
 } from "./banPickFlow.ts";
+import { PrismaClient } from "@prisma/client";
 
 type RoomId = string;
 type ImageMap = Record<string, string>;
 type Team = "aether" | "lumine";
 
+interface ChatItem {
+  senderName: string;
+  message: string;
+  timestamp: number;
+}
+
 export const imageState: Record<RoomId, Record<string, string>> = {};
 export const teamMembersState: Record<RoomId, Record<Team, string>> = {};
-const chatHistory: Record<RoomId, { senderName: string; message: string }[]> =
-  {};
+const chatHistory: Record<RoomId, ChatItem[]> = {};
 
 export function setupSocketIO(io: Server) {
+  attachAuthMiddleware(io);
+
   io.on("connection", (socket: Socket) => {
     console.log("User connected:", socket.id);
+
+    console.log(`[SocketIO] ${socket.id} authenticated as`, {
+      userId: socket.data.userId ?? null,
+      guestId: socket.data.guestId ?? null,
+    });
 
     socket.on("room.join.request", (roomId: string) => {
       console.log(`[Server] ${socket.id} joined room: ${roomId}`);
@@ -38,27 +53,6 @@ export function setupSocketIO(io: Server) {
     });
 
     socket.on(
-      "image.move.request",
-      ({
-        imgId,
-        zoneSelector,
-        senderId,
-      }: {
-        imgId: string;
-        zoneSelector: string;
-        senderId: string;
-      }) => {
-        const roomId = (socket as any).roomId;
-        if (!roomId) return;
-
-        imageState[roomId][imgId] = zoneSelector;
-        socket
-          .to(roomId)
-          .emit("image.move.broadcast", { imgId, zoneSelector, senderId });
-      }
-    );
-
-    socket.on(
       "image.drop.request",
       ({
         imgId,
@@ -69,6 +63,9 @@ export function setupSocketIO(io: Server) {
         zoneId: string;
         senderId: string;
       }) => {
+        const who = socket.data.userId ?? socket.data.guestId;
+        console.log(`[Socket] image.drop.request from:`, who);
+
         const roomId = (socket as any).roomId;
         if (!roomId) return;
 
@@ -145,20 +142,18 @@ export function setupSocketIO(io: Server) {
 
     socket.on(
       "chat.message.send.request",
-      ({
-        senderName,
-        message,
-        senderId,
-      }: {
-        senderName: string;
-        message: string;
-        senderId: string;
-      }) => {
+      ({ message, senderId }: { message: string; senderId: string }) => {
         const roomId = (socket as any).roomId;
         if (!roomId || !message) return;
 
+        const senderName = socket.data.nickname as string;
+
         if (!chatHistory[roomId]) chatHistory[roomId] = [];
-        chatHistory[roomId].push({ senderName, message });
+        chatHistory[roomId].push({
+          senderName,
+          message,
+          timestamp: Date.now(),
+        });
 
         io.to(roomId).emit("chat.message.send.broadcast", {
           senderName,

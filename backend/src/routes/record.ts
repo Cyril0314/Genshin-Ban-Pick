@@ -1,4 +1,4 @@
-// backend/routes/recordt.js
+// backend/src/routes/recordt.js
 
 import express from "express";
 import type { Request, Response } from "express";

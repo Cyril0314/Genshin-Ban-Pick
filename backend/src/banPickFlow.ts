@@ -1,4 +1,4 @@
-// backend/banPickFlow.ts
+// backend/src/banPickFlow.ts
 
 import { numberOfBan, numberOfPick, totalRounds } from './constants/constants.ts'
 import { Server } from "socket.io";
@@ -16,7 +16,7 @@ export const banPickFlow: Step[] = generateBanPickFlow({
   totalRounds,
 });
 
-console.log(JSON.stringify(banPickFlow, null, 2));
+// console.log(JSON.stringify(banPickFlow, null, 2));
 
 const stepMap: Record<string, number> = {};
 
