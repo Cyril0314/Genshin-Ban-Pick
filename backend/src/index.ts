@@ -22,6 +22,8 @@ process.on('unhandledRejection', (reason) => {
   console.error('[unhandledRejection]', reason)
 })
 
+console.log("[Prisma] DATABASE_URL =", process.env.DATABASE_URL);
+
 const app = express();
 const server = http.createServer(app);
 app.use(
