@@ -13,16 +13,25 @@ import path from "path";
 import http from "http";
 import { fileURLToPath } from "url";
 import { Server } from "socket.io";
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
 process.on('uncaughtException', (err) => {
   console.error('[uncaughtException]', err)
-})
+});
 
 process.on('unhandledRejection', (reason) => {
   console.error('[unhandledRejection]', reason)
-})
+});
 
-console.log("[Prisma] DATABASE_URL =", process.env.DATABASE_URL);
+(async () => {
+  console.log("[Prisma] DATABASE_URL =", process.env.DATABASE_URL);
+
+  const info = await prisma.$queryRawUnsafe<
+    { current_database: string; current_schema: string }[]
+  >(`SELECT current_database(), current_schema()`);
+  console.log("[Prisma] connected to:", info);
+})();
 
 const app = express();
 const server = http.createServer(app);
