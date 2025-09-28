@@ -79,6 +79,7 @@ function handleRandomPull({ zoneType }: { zoneType: 'utility' | 'ban' | 'pick' }
 <template>
   <div>
     <div class="background-image"></div>
+    <div class="background-overlay"></div>
     <div class="layout">
       <div class="layout__core">
         <ImageOptions
@@ -114,12 +115,28 @@ function handleRandomPull({ zoneType }: { zoneType: 'utility' | 'ban' | 'pick' }
   width: 100vw;
   height: 100vh;
   background:
-    linear-gradient(
-      var(--md-sys-color-surface-container-lowest-alpha),
-      var(--md-sys-color-surface-container-lowest-alpha)
-    ),
+    /* linear-gradient( */
+      /* var(--md-sys-color-surface-container-lowest-alpha), */
+      /* var(--md-sys-color-surface-container-lowest-alpha), */
+      /* rgba(124, 124, 124, 0.9),
+      rgba(55, 55, 55, 0.5) */
+    /* ), */
     url('@/assets/images/background/5.7.png') no-repeat center center;
   background-size: cover;
+}
+
+.background-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -999; /* 疊在圖片上方 */
+  width: 100vw;
+  height: 100vh;
+  /* background: linear-gradient(
+    rgba(31, 31, 31, 0.5),
+    rgba(127, 127, , 0.5)
+  ); */
+  backdrop-filter: blur(8px); /* 毛玻璃關鍵 */
 }
 
 .layout {

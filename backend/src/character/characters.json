@@ -1,5 +1,18 @@
 [
     {
+        "icon": "Aino Icon",
+        "name": "Aino",
+        "rarity": "4 Stars",
+        "element": "Hydro",
+        "weapon": "Claymore",
+        "region": "NodKrai",
+        "model_type": "Short Female",
+        "release_date": "September 10, 2025",
+        "version": "Luna I",
+        "role": "Support",
+        "wish": "Standard Wish"
+    },
+    {
         "icon": "Albedo Icon",
         "name": "Albedo",
         "rarity": "5 Stars",
@@ -247,6 +260,19 @@
         "wish": "Limited-Time Event Wish"
     },
     {
+        "icon": "Dahlia Icon",
+        "name": "Dahlia",
+        "rarity": "4 Stars",
+        "element": "Hydro",
+        "weapon": "Sword",
+        "region": "Mondstadt",
+        "model_type": "Medium Male",
+        "release_date": "June 18, 2025",
+        "version": "5.7",
+        "role": "Support",
+        "wish": "Standard Wish"
+    },
+    {
         "icon": "Dehya Icon",
         "name": "Dehya",
         "rarity": "5 Stars",
@@ -468,6 +494,19 @@
         "wish": "Standard Wish"
     },
     {
+        "icon": "Ineffa Icon",
+        "name": "Ineffa",
+        "rarity": "5 Stars",
+        "element": "Electro",
+        "weapon": "Polearm",
+        "region": "NodKrai",
+        "model_type": "Medium Female",
+        "release_date": "July 30, 2025",
+        "version": "5.8",
+        "role": "Sub DPS",
+        "wish": "Limited-Time Event Wish"
+    },
+    {
         "icon": "Jean Icon",
         "name": "Jean",
         "rarity": "5 Stars",
@@ -648,6 +687,19 @@
         "version": "5.3",
         "role": "Support",
         "wish": "Standard Wish"
+    },
+    {
+        "icon": "Lauma Icon",
+        "name": "Lauma",
+        "rarity": "5 Stars",
+        "element": "Dendro",
+        "weapon": "Catalyst",
+        "region": "NodKrai",
+        "model_type": "Tall Female",
+        "release_date": "September 10, 2025",
+        "version": "Luna I",
+        "role": "Support",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Layla Icon",
@@ -972,6 +1024,19 @@
         "release_date": "June 25, 2024",
         "version": "4.7",
         "role": "Support",
+        "wish": "Limited-Time Event Wish"
+    },
+    {
+        "icon": "Skirk Icon",
+        "name": "Skirk",
+        "rarity": "5 Stars",
+        "element": "Cryo",
+        "weapon": "Sword",
+        "region": "None",
+        "model_type": "Medium Female",
+        "release_date": "June 18, 2025",
+        "version": "5.7",
+        "role": "Main DPS",
         "wish": "Limited-Time Event Wish"
     },
     {

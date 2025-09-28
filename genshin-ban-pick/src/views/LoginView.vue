@@ -84,7 +84,7 @@ function handleProceedAsGuest() {
 /* 卡片風格：圓角、陰影、內邊距 */
 .login__card {
   width: 100%;
-  max-width: 360px;
+  max-width: var(--size-card-xl);
   background-color: var(--md-sys-color-surface-container-highest-alpha);
   backdrop-filter: var(--backdrop-filter);
   border-radius: var(--border-radius-md);

@@ -105,6 +105,7 @@ function translateRegion(region: string) {
       Sumeru: '須彌',
       Fontaine: '楓丹',
       Natlan: '納塔',
+      NodKrai: '挪德卡萊',
       Snezhnaya: '至冬',
       None: '無所屬',
     }[region] ?? region
@@ -177,6 +178,7 @@ const regionOrder = [
   'Sumeru',
   'Fontaine',
   'Natlan',
+  "NodKrai",
   'Snezhnaya',
   'None',
 ]

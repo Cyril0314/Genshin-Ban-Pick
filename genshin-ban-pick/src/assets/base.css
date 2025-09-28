@@ -33,6 +33,7 @@
   --border-radius-xl: calc(var(--base-size) * 2);
 
   /* 📦 元件尺寸（保持關聯，縮放一致） */
+  --size-card-xl: calc(var(--base-size) * 20);
   --size-dropzone: calc(var(--base-size) * 6);
   --size-ban-pick-common-space: var(--space-sm);
   --size-ban-row-spacer: var(--space-sm);

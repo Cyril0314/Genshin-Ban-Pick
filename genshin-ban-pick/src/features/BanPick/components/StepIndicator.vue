@@ -1,54 +1,60 @@
 <!-- src/features/BanPick/components/StepIndicator.vue -->
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import type { BanPickStep } from '@/types/RoomSetting'
 import { useSocketStore } from '@/network/socket'
 import { useBanPickStep } from '@/features/BanPick/composables/useBanPickStep'
 
-const localStep = ref<BanPickStep | null>(null)
 const active = ref(false)
 const socket = useSocketStore().getSocket()
-const { setStep } = useBanPickStep()
+const { currentStep, setStep } = useBanPickStep()
 
 const displayText = computed(() => {
-  if (!localStep.value) return '選角結束'
-  const input = `${localStep.value.zoneId}`
+  console.log(`localStep ${currentStep.value}`);
+  if (!currentStep.value) return '選角結束'
+  const input = `${currentStep.value.zoneId}`
   const output = input
   .replace(/^zone-ban-(\d+)$/, 'Ban $1')
   .replace(/^zone-pick-(\d+)$/, 'Pick $1')
   .replace(/^zone-utility-(\d+)$/, 'Utility $1')
 
-  return `輪到 ${localStep.value.player}\n選擇 ${output} 角色`
+  return `輪到 ${currentStep.value.player}\n選擇 ${output} 角色`
 })
 
-function updateStep(step: BanPickStep | null) {
-  // 給自己顯示用
-  localStep.value = step
-
-  // 更新全域 step 狀態
-  setStep(step)
-
-  // 動畫觸發
+watch(currentStep, () => {
   active.value = true
   setTimeout(() => (active.value = false), 1200)
-}
-
-onMounted(() => {
-  socket.on('step.state.sync', updateStep)
-  socket.on('step.state.broadcast', updateStep)
 })
 
-onUnmounted(() => {
-  socket.off('step.state.sync', updateStep)
-  socket.off('step.state.broadcast', updateStep)
-})
+// function updateStep(step: BanPickStep | null) {
+//   // 給自己顯示用
+//   localStep.value = step
+
+//   // 更新全域 step 狀態
+//   setStep(step)
+
+//   // 動畫觸發
+//   active.value = true
+//   setTimeout(() => (active.value = false), 1200)
+// }
+
+// onMounted(() => {
+//   localStep.value = currentStep.value
+//   socket.on('step.state.sync', updateStep)
+//   socket.on('step.state.broadcast', updateStep)
+// })
+
+// onUnmounted(() => {
+//   socket.off('step.state.sync', updateStep)
+//   socket.off('step.state.broadcast', updateStep)
+// })
 </script>
 
 <template>
   <div class="step-indicator" :class="[
        { active },
-       localStep?.player === 'Team Aether' ? 'team-aether' : 
-       localStep?.player === 'Team Lumine' ? 'team-lumine' : ''
+       currentStep?.player === 'Team Aether' ? 'team-aether' : 
+       currentStep?.player === 'Team Lumine' ? 'team-lumine' : ''
      ]">
     {{ displayText }}
   </div>

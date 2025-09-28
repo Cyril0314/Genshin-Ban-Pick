@@ -64,7 +64,8 @@ router.post("/api/auth/register", async (req: Request, res: Response) => {
 
 router.post("/api/auth/login", async (req: Request, res: Response) => {
   const { account, password } = req.body;
-
+  console.log(`account`, account);
+  console.log(`password`, password);
   if (!account || !password) {
     res.status(400).json({ message: "請輸入帳號與密碼" });
     return;
@@ -72,14 +73,14 @@ router.post("/api/auth/login", async (req: Request, res: Response) => {
 
   try {
     const user = await prisma.user.findUnique({ where: { account } });
-
+    console.log(`user`, user);
     if (!user) {
       res.status(404).json({ message: "帳號不存在" });
       return;
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
-
+    console.log(`isPasswordValid`, isPasswordValid);
     if (!isPasswordValid) {
       res.status(401).json({ message: "密碼錯誤" });
       return;
