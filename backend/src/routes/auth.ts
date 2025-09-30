@@ -12,10 +12,6 @@ const prisma = new PrismaClient();
 const router = express.Router();
 const verify = jwt.verify;
 
-
-const tables = await prisma.$queryRawUnsafe(`SELECT current_database(), current_schema()`);
-console.log("[Prisma] connected to:", tables);
-
 router.post("/api/auth/register", async (req: Request, res: Response) => {
   const { account, password, nickname } = req.body;
 
