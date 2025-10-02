@@ -2,19 +2,26 @@
 
 import express from "express";
 import cors from "cors";
-import type { Request, Response } from "express";
+import type { Request, Response, NextFunction } from "express";
 import { setupSocketIO } from "./socketController.ts";
 import authRoutes from "./routes/auth.ts";
 import characterRoutes from "./routes/characters.ts";
 import roomRoutes from "./routes/room.ts";
 import recordRoutes from "./routes/record.ts";
+import { AppError } from "./errors/AppError.ts"
 import path from "path";
 
 import http from "http";
 import { fileURLToPath } from "url";
 import { Server } from "socket.io";
 import { PrismaClient } from "@prisma/client";
+import { UserService } from "./services/UserService.ts";
+import dotenv from "dotenv";
+
+dotenv.config();
+
 const prisma = new PrismaClient();
+const userService = new UserService(prisma)
 
 process.on('uncaughtException', (err) => {
   console.error('[uncaughtException]', err)
@@ -71,10 +78,20 @@ const __dirname = path.dirname(__filename);
 app.use(express.static(path.resolve(__dirname, "../public")));
 app.use(express.json())
 
-app.use(authRoutes);
+app.use("/api/auth", authRoutes(userService));
 app.use(characterRoutes);
 app.use(roomRoutes);
 app.use(recordRoutes);
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  if (err instanceof AppError) {
+    console.error("[AppError]", err);
+    res.status(err.statusCode).json({ code: err.code, message: err.message });
+  } else {
+    console.error("[Unexpected Error]", err);
+    res.status(500).json({ code: "INTERNAL_ERROR", message: "伺服器錯誤" });
+  }
+});
 
 // 讓所有未知的 request 都回傳 index.html (支援 Vue Router history mode)
 app.get("*", (req: Request, res: Response) => {

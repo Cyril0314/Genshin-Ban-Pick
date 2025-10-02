@@ -1,10 +1,7 @@
 // backend/src/socket/socketAuth.ts
 import { Server, Socket } from "socket.io";
 import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
-
-dotenv.config();
 
 const prisma = new PrismaClient();
 

@@ -17,8 +17,8 @@ async function handleLogin() {
     const { id, account: userAccount, nickname, token } = response.data
     login({ id, account: userAccount, nickname }, token)
     router.push('/')
-  } catch (error) {
-    alert('登入失敗，請確認帳密')
+  } catch (error: any) {
+    alert(`${error.response?.data?.message || '登入失敗，請確認帳密'}`)
   }
 }
 
