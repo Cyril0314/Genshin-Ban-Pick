@@ -747,7 +747,7 @@ Genshin-Ban-Pick
 │  │  ├─ router
 │  │  │  └─ index.ts
 │  │  ├─ types
-│  │  │  ├─ CharacterInfo.ts
+│  │  │  ├─ Character.ts
 │  │  │  └─ RoomSetting.ts
 │  │  ├─ utils
 │  │  │  └─ imageRegistry.ts

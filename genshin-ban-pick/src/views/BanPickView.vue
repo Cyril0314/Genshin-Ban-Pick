@@ -16,7 +16,6 @@ import {
 import { useFilteredCharacters } from '@/composables/useFilteredCharacters'
 import type { RoomSetting } from '@/types/RoomSetting'
 
-const socketReady = ref(false)
 const characterMap = ref({})
 const roomSetting = ref<RoomSetting | null>(null)
 const currentFilters = ref({

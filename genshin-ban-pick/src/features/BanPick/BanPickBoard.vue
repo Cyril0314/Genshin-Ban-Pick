@@ -15,7 +15,7 @@ import {
   generatePickOrder,
 } from '@/features/BanPick/composables/useBanPickOrder'
 import type { RoomSetting } from '@/types/RoomSetting'
-import type { CharacterInfo } from '@/types/CharacterInfo'
+import type { Character } from '@/types/Character'
 import ChatRoom from '@/features/ChatRoom/ChatRoom.vue'
 import TacticalBoardPanel from '@/features/Tactical/TacticalBoardPanel.vue'
 import CharacterSelector from '@/features/CharacterSelector/CharacterSelector.vue'
@@ -23,7 +23,7 @@ import { useBanPickStep } from '@/features/BanPick/composables/useBanPickStep'
 
 const props = defineProps<{
   roomSetting: RoomSetting
-  characterMap: Record<string, CharacterInfo>
+  characterMap: Record<string, Character>
   imageMap: Record<string, string>
 }>()
 

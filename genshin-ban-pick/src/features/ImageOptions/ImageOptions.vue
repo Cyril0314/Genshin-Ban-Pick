@@ -1,11 +1,11 @@
 <!-- src/features/ImageOptions/ImageOptions.vue -->
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { CharacterInfo } from '@/types/CharacterInfo'
+import type { Character } from '@/types/Character'
 import { getProfileImagePath } from '@/utils/imageRegistry'
 
 const props = defineProps<{
-  characterMap: Record<string, CharacterInfo>
+  characterMap: Record<string, Character>
   usedIds: string[]
   filteredIds: string[]
 }>()
