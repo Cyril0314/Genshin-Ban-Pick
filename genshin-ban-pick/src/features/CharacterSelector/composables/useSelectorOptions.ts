@@ -14,11 +14,11 @@ export enum FilterKey {
   Wish = 'wish',
 }
 
-export interface SelectorOption<T extends string> {
+export interface SelectorOption {
   key: FilterKey
   label: string
   items: string[]
-  translateFn: (val: T) => string
+  translateFn: (val: string) => string
 }
 
 export function useSelectorOptions(characterMap: Record<string, Character>) {
@@ -31,43 +31,43 @@ export function useSelectorOptions(characterMap: Record<string, Character>) {
       key: FilterKey.Weapon,
       label: '選擇武器',
       items: uniqueByKey(characters.value, FilterKey.Weapon, weaponOrder),
-      translateFn: translateWeapon,
+      translateFn: (v: string) => translateWeapon(v as Weapon),
     },
     {
       key: FilterKey.Element,
       label: '選擇屬性',
       items: uniqueByKey(characters.value, FilterKey.Element, elementOrder),
-      translateFn: translateElement,
+      translateFn: (v: string) => translateElement(v as Element),
     },
     {
       key: FilterKey.Region,
       label: '選擇國家',
       items: uniqueByKey(characters.value, FilterKey.Region, regionOrder),
-      translateFn: translateRegion,
+      translateFn: (v: string) => translateRegion(v as Region),
     },
     {
       key: FilterKey.ModelType,
       label: '選擇體型',
       items: uniqueByKey(characters.value, FilterKey.ModelType, modelTypeOrder),
-      translateFn: translateModelType,
+      translateFn: (v: string) => translateModelType(v as ModelType),
     },
     {
       key: FilterKey.Role,
       label: '選擇功能',
       items: uniqueByKey(characters.value, FilterKey.Role, roleOrder),
-      translateFn: translateRole,
+      translateFn: (v: string) => translateRole(v as Role),
     },
     {
       key: FilterKey.Wish,
       label: '選擇祈願',
       items: uniqueByKey(characters.value, FilterKey.Wish, wishOrder),
-      translateFn: translateWish,
+      translateFn: (v: string) => translateWish(v as Wish),
     },
     {
       key: FilterKey.Rarity,
       label: '選擇星級',
       items: uniqueByKey(characters.value, FilterKey.Rarity, rarityOrder),
-      translateFn: translateRarity,
+      translateFn: (v: string) => translateRarity(v as Rarity),
     },
   ])
 }
