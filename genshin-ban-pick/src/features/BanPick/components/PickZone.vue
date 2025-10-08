@@ -24,7 +24,7 @@ function chunk<T>(arr: T[], size: number): T[][] {
 
 const columns = chunk(props.zones ?? [], 8)
 
-console.log('[PickZone] zones:', props.zones)
+// console.log('[PickZone] zones:', props.zones)
 
 function handleImageDropped({ imgId, zoneId }: { imgId: string; zoneId: string }) {
   console.log(`PickZone handleImageDropped imgId ${imgId} zoneId ${zoneId}`)

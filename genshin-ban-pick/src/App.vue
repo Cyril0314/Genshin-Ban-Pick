@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import { useAuth } from './composables/useAuth'
 import { RouterLink, RouterView } from 'vue-router'
 
-const { tryAutoLogin } = useAuth()
 onMounted(() => {
-  tryAutoLogin() 
+
 })
+
 </script>
 
 <template>

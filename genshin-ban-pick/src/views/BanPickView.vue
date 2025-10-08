@@ -37,7 +37,7 @@ onMounted(async () => {
         roomSetting.value = await fetchRoomSetting();
         const roomId = new URLSearchParams(window.location.search).get('room') || 'default-room';
         console.log(`[Client] join room ${roomId}`)
-        socket.emit('room.join.request', roomId);
+        socket.emit('room.user.join.request', roomId);
     } catch (error) {
         console.error('[BanPickView] 無法載入角色和房間資料:', error);
     }
@@ -46,7 +46,7 @@ onMounted(async () => {
 onBeforeRouteLeave(async (to, from) => {
     const roomId = new URLSearchParams(window.location.search).get('room') || 'default-room';
     console.log(`[Client] leave room ${roomId}`)
-    socket.emit('room.leave.request', roomId);
+    socket.emit('room.user.leave.request', roomId);
 })
 
 onUnmounted(() => {

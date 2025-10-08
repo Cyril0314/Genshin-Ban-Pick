@@ -23,7 +23,7 @@ function chunk<T>(arr: T[], size: number): T[][] {
 
 const columns = chunk(props.zones ?? [], 4)
 
-console.log('[UtilityZone] zones:', props.zones)
+// console.log('[UtilityZone] zones:', props.zones)
 
 function handleImageDropped({ imgId, zoneId }: { imgId: string; zoneId: string }) {
   console.log(`UtilityZone handleImageDropped imgId ${imgId} zoneId ${zoneId}`)

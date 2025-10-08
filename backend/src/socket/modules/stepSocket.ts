@@ -31,6 +31,6 @@ export function registerStepSocket(io: Server, socket: Socket) {
 }
 
 export function syncStepState(socket: Socket, roomId: RoomId) {
-    console.log("syncStepState");
-    socket.emit("step.state.sync", getCurrentStep(roomId));
+  console.log("syncStepState");
+  socket.emit("step.state.sync", getCurrentStep(roomId));
 }

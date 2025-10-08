@@ -43,8 +43,8 @@ function handleDragStartEvent(event: DragEvent, id: string) {
   --gap: var(--space-sm);
   display: grid;
   grid-template-columns: repeat(auto-fit, var(--size-image));
-  height: calc(var(--size-image) * 2.5 + var(--gap) * 2);
-  max-height: calc(var(--size-image) * 2.5 + var(--gap) * 2);
+  height: calc(var(--size-image) * 2.25 + var(--gap) * 2);
+  max-height: calc(var(--size-image) * 2.25 + var(--gap) * 2);
   /* width: calc(var(--size-dropzone) * 12 + var(--gap) * 11); */
   width: 100%;
   padding: var(--gap);

@@ -23,7 +23,7 @@ function chunk<T>(arr: T[], size: number): T[][] {
 
 const rows = chunk(props.zones ?? [], 8)
 
-console.log('[BanZone] zones:', props.zones)
+// console.log('[BanZone] zones:', props.zones)
 
 function handleImageDropped({ imgId, zoneId }: { imgId: string; zoneId: string }) {
   console.log(`BanZone handleImageDropped imgId ${imgId} zoneId ${zoneId}`)

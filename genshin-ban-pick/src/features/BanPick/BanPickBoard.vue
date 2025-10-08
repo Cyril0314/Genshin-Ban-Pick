@@ -67,12 +67,10 @@ function handleSelectorPull({ zoneType }: { zoneType: 'utility' | 'ban' | 'pick'
 }
 
 console.log('[BanPickBoard] setup start')
-console.log('props.roomSetting', props.roomSetting)
-console.log(`utilityZones: ${utilityZones.value}`)
-console.log(`banZones: ${banZones.value}`)
-console.log(`pickZones: ${pickZones.value}`)
-console.log(`pickZones: ${pickZones.value.left}`)
-console.log(`pickZones: ${pickZones.value.right}`)
+console.log('[BanPickBoard] props.roomSetting', props.roomSetting)
+console.log(`[BanPickBoard] utilityZones: ${utilityZones.value}`)
+console.log(`[BanPickBoard] banZones: ${banZones.value}`)
+console.log(`[BanPickBoard] pickZones: left ${pickZones.value.left} right ${pickZones.value.right}`)
 </script>
 
 <template>
