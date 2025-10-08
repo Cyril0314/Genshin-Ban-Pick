@@ -3,7 +3,6 @@
 import express from "express";
 import cors from "cors";
 import type { Request, Response, NextFunction } from "express";
-import { setupSocketIO } from "./socketController.ts";
 import authRoutes from "./routes/auth.ts";
 import characterRoutes from "./routes/characters.ts";
 import roomRoutes from "./routes/room.ts";
@@ -13,9 +12,9 @@ import path from "path";
 
 import http from "http";
 import { fileURLToPath } from "url";
-import { Server } from "socket.io";
 import { PrismaClient } from "@prisma/client";
 import { UserService } from "./services/UserService.ts";
+import { createSocketApp } from "./socket/index.ts"
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -48,16 +47,8 @@ app.use(
     credentials: true, // ✅ 若要傳 cookie 或 token
   })
 );
-const io = new Server(server, {
-  cors: {
-    // origin: ["http://localhost:5173", "http://52.87.171.134"], // 允許的前端來源
-    origin: ["http://localhost:5173", "http://52.87.171.134:3000"], // 允許的前端來源
-    methods: ["GET", "POST"],
-    credentials: true,
-  },
-});
 
-setupSocketIO(io);
+createSocketApp(server, prisma);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

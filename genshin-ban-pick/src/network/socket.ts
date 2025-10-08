@@ -18,9 +18,7 @@ export const useSocketStore = defineStore('socket', () => {
     })
 
     socket.value.on('connect', () => {
-      const roomId = new URLSearchParams(window.location.search).get('room') || 'default-room'
       console.log('[Socket] Connected:', socket.value!.id)
-      socket.value!.emit('room.join.request', roomId)
     })
 
     socket.value.on('disconnect', () => {
@@ -31,6 +29,10 @@ export const useSocketStore = defineStore('socket', () => {
       console.error("[Socket] connect_error:", err.message)
       // 例如跳回 /login 或顯示錯誤訊息：
       // router.push("/login")
+    })
+
+    socket.value.onAny((event, ...args) => {
+      console.log("[Socket] emit:", event, args)
     })
   }
 
