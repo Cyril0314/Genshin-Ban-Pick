@@ -7,8 +7,9 @@ import {
   numberOfBan,
   numberOfPick,
   totalRounds,
+  teams,
 } from "../constants/constants.ts";
-import { banPickFlow } from "../banPickFlow.ts";
+import { banPickSteps } from "../utils/banPickSteps.ts";
 
 const router = express.Router();
 
@@ -18,7 +19,8 @@ router.get("/api/room-setting", (req: Request, res: Response) => {
     numberOfBan,
     numberOfPick,
     totalRounds,
-    banPickFlow,
+    teams,
+    banPickSteps,
   });
 });
 

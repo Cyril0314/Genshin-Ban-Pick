@@ -1,6 +1,6 @@
-// src/types/ChatMessage.ts
+// src/types/IChatMessage.ts
 
-export interface ChatMessage {
+export interface IChatMessage {
     senderName: string
     message: string
     timestamp?: number

@@ -1,9 +1,9 @@
-// useChat.ts
+// src/features/ChatRoom/composables/useChat.ts
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useSocketStore } from '@/network/socket'
-import type { ChatMessage } from '@/types/ChatMessage'
+import type { IChatMessage } from '@/types/IChatMessage'
 
-const messages = ref<ChatMessage[]>([])
+const messages = ref<IChatMessage[]>([])
 
 export function useChat() {
     const socket = useSocketStore().getSocket()
@@ -29,11 +29,11 @@ export function useChat() {
     //     }
     // }
 
-    function handleHistory(history: ChatMessage[]) {
+    function handleHistory(history: IChatMessage[]) {
         messages.value = history
     }
 
-    function handleBroadcast(msg: ChatMessage) {
+    function handleBroadcast(msg: IChatMessage) {
         if (msg.senderId !== socket.id) {
             messages.value.push(msg)
         }

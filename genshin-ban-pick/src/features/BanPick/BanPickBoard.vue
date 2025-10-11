@@ -4,7 +4,7 @@
 import { computed } from 'vue'
 import { useTeamInfoSync } from '@/features/Team/composables/useTeamInfoSync'
 import TeamInfo from '@/features/Team/TeamInfo.vue'
-import type { TeamInfoModel } from '@/features/Team/composables/useTeamInfoSync'
+import type { ITeamInfo } from '@/types/ITeam'
 import BanZone from './components/BanZone.vue'
 import PickZone from './components/PickZone.vue'
 import UtilityZone from './components/UtilityZone.vue'
@@ -14,20 +14,21 @@ import {
   generateBanOrder,
   generatePickOrder,
 } from '@/features/BanPick/composables/useBanPickOrder'
-import type { RoomSetting } from '@/types/RoomSetting'
-import type { Character } from '@/types/Character'
+import type { IRoomSetting } from '@/types/IRoomSetting'
+import type { ICharacter } from '@/types/ICharacter'
 import ChatRoom from '@/features/ChatRoom/ChatRoom.vue'
+import RoomUserPool from '@/features/RoomUserPool/RoomUserPool.vue'
 import TacticalBoardPanel from '@/features/Tactical/TacticalBoardPanel.vue'
 import CharacterSelector from '@/features/CharacterSelector/CharacterSelector.vue'
 import { useBanPickStep } from '@/features/BanPick/composables/useBanPickStep'
 
 const props = defineProps<{
-  roomSetting: RoomSetting
-  characterMap: Record<string, Character>
+  roomSetting: IRoomSetting
+  characterMap: Record<string, ICharacter>
   imageMap: Record<string, string>
 }>()
 
-const { teamInfoMap, updateTeam } = useTeamInfoSync()
+const { teamInfoPair, setTeamMembers } = useTeamInfoSync()
 
 const emit = defineEmits<{
   (e: 'image-drop', payload: { imgId: string; zoneId: string }): void
@@ -71,15 +72,17 @@ console.log('[BanPickBoard] props.roomSetting', props.roomSetting)
 console.log(`[BanPickBoard] utilityZones: ${utilityZones.value}`)
 console.log(`[BanPickBoard] banZones: ${banZones.value}`)
 console.log(`[BanPickBoard] pickZones: left ${pickZones.value.left} right ${pickZones.value.right}`)
+
 </script>
 
 <template>
   <div class="layout__main">
     <div class="layout__side layout__side--left">
       <TeamInfo
-        team="aether"
-        v-model="teamInfoMap.aether"
-        @update:modelValue="(val: TeamInfoModel) => updateTeam('aether', val)"
+        v-if="teamInfoPair"
+        side='left'
+        v-model="teamInfoPair.left"
+        @update:modelValue="(val: ITeamInfo) => setTeamMembers(val.id, val.members)"
       />
       <PickZone
         :zones="pickZones.left"
@@ -101,6 +104,7 @@ console.log(`[BanPickBoard] pickZones: left ${pickZones.value.left} right ${pick
       <div class="layout__common">
         <div class="layout__common-side">
           <ChatRoom />
+          <RoomUserPool />
           <CharacterSelector
             :characterMap="props.characterMap"
             @filter-changed="handleSelectorFilterChanged"
@@ -109,7 +113,8 @@ console.log(`[BanPickBoard] pickZones: left ${pickZones.value.left} right ${pick
         </div>
         <div class="layout__common-center">
           <div class="layout__step-indicator">
-            <StepIndicator :step="currentStep" />
+            <StepIndicator 
+              :step="currentStep" />
           </div>
           <div class="layout__utility-zone">
             <UtilityZone
@@ -126,10 +131,11 @@ console.log(`[BanPickBoard] pickZones: left ${pickZones.value.left} right ${pick
       </div>
     </div>
     <div class="layout__side layout__side--right">
-      <TeamInfo
-        team="lumine"
-        v-model="teamInfoMap.lumine"
-        @update:modelValue="(val: TeamInfoModel) => updateTeam('lumine', val)"
+      <TeamInfo 
+        v-if="teamInfoPair"
+        side='right'
+        v-model="teamInfoPair.right"
+        @update:modelValue="(val: ITeamInfo) => setTeamMembers(val.id, val.members)"
       />
       <PickZone
         :zones="pickZones.right"

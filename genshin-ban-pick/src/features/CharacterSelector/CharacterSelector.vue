@@ -2,7 +2,7 @@
 
 <script setup lang="ts">
 import { watch } from 'vue'
-import type { Character } from '@/types/Character'
+import type { ICharacter } from '@/types/ICharacter'
 import { useSelectorOptions } from './composables/useSelectorOptions'
 import { useCharacterFilter } from './composables/useCharacterFilter'
 import 'vue-select/dist/vue-select.css'
@@ -10,7 +10,7 @@ import 'vue-select/dist/vue-select.css'
 import vSelect from 'vue-select'
 
 const props = defineProps<{
-  characterMap: Record<string, Character>
+  characterMap: Record<string, ICharacter>
 }>()
 
 const emit = defineEmits<{

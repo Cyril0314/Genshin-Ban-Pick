@@ -222,7 +222,7 @@ Genshin-Ban-Pick
 │  │  ├─ index.html
 │  │  └─ wish.png
 │  ├─ src
-│  │  ├─ banPickFlow.ts
+│  │  ├─ banPickSteps.ts
 │  │  ├─ character
 │  │  │  └─ characters.json
 │  │  ├─ constants

@@ -1,13 +1,16 @@
 // src/features/BanPick/composables/useRandomizeImage.vue
 
+/**
+ * 處理 Utility 隨機功能，利用通用的 handleActinRandom
+ */
 export function handleUtilityRandom({
   roomSetting,
-  filteredIds,
+  filteredImageIds,
   imageMap,
   handleImageDropped,
 }: {
   roomSetting: any
-  filteredIds: string[]
+  filteredImageIds: string[]
   imageMap: Record<string, string>
   handleImageDropped: ({ imgId, zoneId }: { imgId: string; zoneId: string }) => void
 }) {
@@ -18,36 +21,27 @@ export function handleUtilityRandom({
   const emptyZoneId = utilityZoneIds.find((id) => !imageMap[id])
   if (!emptyZoneId) return
 
-  const randomId = getRandomId(filteredIds, imageMap)
+  const randomId = getRandomId(filteredImageIds, imageMap)
   if (!randomId) return
 
   handleImageDropped({ imgId: randomId, zoneId: emptyZoneId })
 }
 
-// const remainingZones = utilityZoneIds.filter((id) => !imageMap[id])
-// const shuffled = [...filteredIds].sort(() => 0.5 - Math.random())
-
-// remainingZones.forEach((zoneId, i) => {
-//   const imgId = shuffled[i]
-//   if (imgId) {
-//     handleImageDropped({ imgId, zoneId })
-//   }
-// })
 /**
- * 處理 Ban 隨機功能，利用通用的 handleActionRandom
+ * 處理 Ban 隨機功能，利用通用的 handleActinRandom
  */
 export function handleBanRandom({
   roomSetting,
-  filteredIds,
+  filteredImageIds,
   imageMap,
   handleImageDropped,
 }: {
   roomSetting: any
-  filteredIds: string[]
+  filteredImageIds: string[]
   imageMap: Record<string, string>
   handleImageDropped: ({ imgId, zoneId }: { imgId: string; zoneId: string }) => void
 }) {
-  handleActionRandom({ roomSetting, filteredIds, imageMap, handleImageDropped, action: 'ban' })
+  handleActionRandom({ roomSetting, filteredImageIds, imageMap, handleImageDropped, action: 'ban' })
 }
 
 /**
@@ -55,45 +49,45 @@ export function handleBanRandom({
  */
 export function handlePickRandom({
   roomSetting,
-  filteredIds,
+  filteredImageIds,
   imageMap,
   handleImageDropped,
 }: {
   roomSetting: any
-  filteredIds: string[]
+  filteredImageIds: string[]
   imageMap: Record<string, string>
   handleImageDropped: ({ imgId, zoneId }: { imgId: string; zoneId: string }) => void
 }) {
-  handleActionRandom({ roomSetting, filteredIds, imageMap, handleImageDropped, action: 'pick' })
+  handleActionRandom({ roomSetting, filteredImageIds, imageMap, handleImageDropped, action: 'pick' })
 }
 
 function handleActionRandom({
   roomSetting,
-  filteredIds,
+  filteredImageIds,
   imageMap,
   handleImageDropped,
   action,
 }: {
   roomSetting: any
-  filteredIds: string[]
+  filteredImageIds: string[]
   imageMap: Record<string, string>
   handleImageDropped: ({ imgId, zoneId }: { imgId: string; zoneId: string }) => void
   action: 'ban' | 'pick'
 }) {
-  const step = roomSetting.banPickFlow.find(
+  const step = roomSetting.banPickSteps.find(
     (step: any) => step.action === action && !imageMap[step.zoneId],
   )
   if (!step) return
 
-  const randomId = getRandomId(filteredIds, imageMap)
+  const randomId = getRandomId(filteredImageIds, imageMap)
   if (!randomId) return
 
   handleImageDropped({ imgId: randomId, zoneId: step.zoneId })
 }
 
-function getRandomId(filteredIds: string[], imageMap: Record<string, string>): string | null {
-  const usedIds = Object.values(imageMap)
-  const availableIds = filteredIds.filter((id) => !usedIds.includes(id))
+function getRandomId(filteredImageIds: string[], imageMap: Record<string, string>): string | null {
+  const usedImageIds = Object.values(imageMap)
+  const availableIds = filteredImageIds.filter((id) => !usedImageIds.includes(id))
   if (availableIds.length === 0) {
     console.warn('[getRandomId] 沒有可選的角色（都用完了）')
     return null

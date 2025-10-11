@@ -1,39 +1,39 @@
+<!-- src/features/Tactical/TacticalBoardPanel.vue -->
+
 <script setup lang="ts">
 import { ref } from 'vue'
 import TacticalBoard from './TacticalBoard.vue'
 import TacticalPool from './TacticalPool.vue'
+import { useTeamInfoStore } from '@/stores/teamInfoStore'
+import { useTeamTheme } from '@/composables/useTeamTheme';
 
-const currentTeam = ref<'aether' | 'lumine'>('aether')
+const { teamInfoPair } = useTeamInfoStore()
+
+const currentTeamId = ref<number>(teamInfoPair?.left.id ?? 0)
+
 </script>
 
 <template>
-  <div class="tactical__board" :class="`tactical__board--${currentTeam}`">
+  <div class="tactical__board" :class="`tactical__board--${currentTeamId}`">
     <div class="tactical__board-tabs">
-      <button
-        :class="['tactical__tab', { 'tactical__tab--active': currentTeam === 'aether' }]"
-        @click="currentTeam = 'aether'"
-      >
-        Aether 隊
-      </button>
-      <button
-        :class="['tactical__tab', { 'tactical__tab--active': currentTeam === 'lumine' }]"
-        @click="currentTeam = 'lumine'"
-      >
-        Lumine 隊
+      <button v-for="team in teamInfoPair" :key="team.id" class="tactical__tab"
+        :class="{ 'tactical__tab--active': currentTeamId === team.id }" :style="useTeamTheme(team.id).themeVars.value"
+        @click="currentTeamId = team.id">
+        {{ team.name }}
       </button>
     </div>
 
     <div class="tactical__board-content">
       <div class="tactical__board-section">
-        <!-- <TacticalPool :team="currentTeam" />
-        <TacticalBoard :team="currentTeam" /> -->
-        <template v-if="currentTeam === 'aether'">
-          <TacticalPool team="aether" />
-          <TacticalBoard team="aether" />
-        </template>
-        <template v-else>
-          <TacticalPool team="lumine" />
-          <TacticalBoard team="lumine" />
+        <template v-if="teamInfoPair">
+          <template v-if="currentTeamId === teamInfoPair.left.id">
+            <TacticalPool :teamId="teamInfoPair.left.id" />
+            <TacticalBoard :teamId="teamInfoPair.left.id" />
+          </template>
+          <template v-else>
+            <TacticalPool :teamId="teamInfoPair.right.id" />
+            <TacticalBoard :teamId="teamInfoPair.right.id" />
+          </template>
         </template>
       </div>
     </div>
@@ -61,17 +61,6 @@ const currentTeam = ref<'aether' | 'lumine'>('aether')
   gap: var(--space-sm);
 }
 
-.tactical__board--aether {
-  --team-tab-color: var(--md-sys-color-on-secondary-container);
-  --team-tab-active-bg: var(--md-sys-color-secondary-container);
-  --team-tab-hover-bg: var(--md-sys-color-secondary);
-}
-.tactical__board--lumine {
-  --team-tab-active-color: var(--md-sys-color-on-tertiary-container);
-  --team-tab-active-bg: var(--md-sys-color-tertiary-container);
-  --team-tab-hover-bg: var(--md-sys-color-tertiary);
-}
-
 .tactical__tab {
   flex: 1;
   padding: var(--space-sm);
@@ -87,12 +76,12 @@ const currentTeam = ref<'aether' | 'lumine'>('aether')
 }
 
 .tactical__tab:hover {
-  background: var(--team-tab-hover-bg);
+  background: var(--team-hover);
 }
 
 .tactical__tab--active {
-  background: var(--team-tab-active-bg);
-  color: var(--team-tab-active-color);
+  background: var(--team-bg);
+  color: var(--team-on-bg);
 }
 
 .tactical__board-content {

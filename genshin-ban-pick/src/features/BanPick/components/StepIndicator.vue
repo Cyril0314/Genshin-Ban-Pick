@@ -1,24 +1,26 @@
 <!-- src/features/BanPick/components/StepIndicator.vue -->
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
-import type { BanPickStep } from '@/types/RoomSetting'
-import { useSocketStore } from '@/network/socket'
+import { ref, computed, watch } from 'vue'
 import { useBanPickStep } from '@/features/BanPick/composables/useBanPickStep'
+import { useTeamTheme } from '@/composables/useTeamTheme';
 
 const active = ref(false)
-const socket = useSocketStore().getSocket()
-const { currentStep, setStep } = useBanPickStep()
+const { currentStep } = useBanPickStep()
+
+const currentTeam = computed(() => {
+  return currentStep.value?.team
+})
 
 const displayText = computed(() => {
   console.log(`localStep ${currentStep.value}`);
   if (!currentStep.value) return '選角結束'
   const input = `${currentStep.value.zoneId}`
   const output = input
-  .replace(/^zone-ban-(\d+)$/, 'Ban $1')
-  .replace(/^zone-pick-(\d+)$/, 'Pick $1')
-  .replace(/^zone-utility-(\d+)$/, 'Utility $1')
+    .replace(/^zone-ban-(\d+)$/, 'Ban $1')
+    .replace(/^zone-pick-(\d+)$/, 'Pick $1')
+    .replace(/^zone-utility-(\d+)$/, 'Utility $1')
 
-  return `輪到 ${currentStep.value.player}\n選擇 ${output} 角色`
+  return `輪到 ${currentStep.value.team.name}\n選擇 ${output} 角色`
 })
 
 watch(currentStep, () => {
@@ -26,36 +28,11 @@ watch(currentStep, () => {
   setTimeout(() => (active.value = false), 1200)
 })
 
-// function updateStep(step: BanPickStep | null) {
-//   // 給自己顯示用
-//   localStep.value = step
-
-//   // 更新全域 step 狀態
-//   setStep(step)
-
-//   // 動畫觸發
-//   active.value = true
-//   setTimeout(() => (active.value = false), 1200)
-// }
-
-// onMounted(() => {
-//   localStep.value = currentStep.value
-//   socket.on('step.state.sync', updateStep)
-//   socket.on('step.state.broadcast', updateStep)
-// })
-
-// onUnmounted(() => {
-//   socket.off('step.state.sync', updateStep)
-//   socket.off('step.state.broadcast', updateStep)
-// })
 </script>
 
 <template>
-  <div class="step-indicator" :class="[
-       { active },
-       currentStep?.player === 'Team Aether' ? 'team-aether' : 
-       currentStep?.player === 'Team Lumine' ? 'team-lumine' : ''
-     ]">
+  <div class="step-indicator" :class="{ active }" v-if="currentTeam"
+    :style="useTeamTheme(currentTeam.id).themeVars.value">
     {{ displayText }}
   </div>
 </template>
@@ -82,30 +59,34 @@ watch(currentStep, () => {
   box-shadow: none;
 }
 
-.step-indicator.team-aether {
-  --glow-color: var(--md-sys-color-secondary-container);
-}
-
-.step-indicator.team-lumine {
-  --glow-color: var(--md-sys-color-tertiary-container);
-}
-
 .step-indicator.active {
   animation: indicatorPulse 1.2s ease-in-out 1, steadyGlow 2s ease-in-out infinite alternate;
 }
 
 @keyframes indicatorPulse {
-  0% { transform: scale(1); opacity: 0.6; }
-  50% { transform: scale(1.05); opacity: 1; }
-  100% { transform: scale(1); opacity: 0.95; }
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0.95;
+  }
 }
 
 @keyframes steadyGlow {
   0% {
-    box-shadow: 0 0 8px 2px var(--glow-color);
+    box-shadow: 0 0 8px 2px var(--team-bg);
   }
+
   100% {
-    box-shadow: 0 0 12px 4px var(--glow-color);
+    box-shadow: 0 0 12px 4px var(--team-bg);
   }
 }
 </style>

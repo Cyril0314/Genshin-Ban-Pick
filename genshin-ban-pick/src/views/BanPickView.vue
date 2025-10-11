@@ -11,13 +11,14 @@ import { fetchCharacterMap } from '@/network/characterService';
 import { fetchRoomSetting } from '@/network/roomService';
 import { useSocketStore } from '@/network/socket';
 import { useBanPickImageSync } from '@/features/BanPick/composables/useBanPickImageSync';
+import { useTeamInfoStore } from '@/stores/teamInfoStore';
 import { handleUtilityRandom, handleBanRandom, handlePickRandom } from '@/features/BanPick/composables/useRandomizeImage';
 import { useFilteredCharacters } from '@/composables/useFilteredCharacters';
-import type { RoomSetting } from '@/types/RoomSetting';
+import type { IRoomSetting } from '@/types/IRoomSetting';
 
 const socket = useSocketStore().getSocket();
 const characterMap = ref({});
-const roomSetting = ref<RoomSetting | null>(null);
+const roomSetting = ref<IRoomSetting | null>(null);
 const currentFilters = ref({
     weapon: [],
     element: [],
@@ -28,13 +29,15 @@ const currentFilters = ref({
     wish: [],
 });
 
-const { imageMap, usedIds, handleImageDropped, handleImageRestore, handleImageReset, handleBanPickRecord } = useBanPickImageSync(roomSetting);
+const { imageMap, usedImageIds, handleImageDropped, handleImageRestore, handleImageReset, handleBanPickRecord } = useBanPickImageSync(roomSetting);
 const filteredCharacterIds = useFilteredCharacters(characterMap, currentFilters);
 
 onMounted(async () => {
     try {
         characterMap.value = await fetchCharacterMap();
         roomSetting.value = await fetchRoomSetting();
+        const teamInfoStore = useTeamInfoStore();
+        teamInfoStore.initTeams(roomSetting.value.teams)
         const roomId = new URLSearchParams(window.location.search).get('room') || 'default-room';
         console.log(`[Client] join room ${roomId}`)
         socket.emit('room.user.join.request', roomId);
@@ -67,7 +70,7 @@ function handleRandomPull({ zoneType }: { zoneType: 'utility' | 'ban' | 'pick' }
 
     const ctx = {
         roomSetting: roomSetting.value,
-        filteredIds: filteredCharacterIds.value,
+        filteredImageIds: filteredCharacterIds.value,
         imageMap: imageMap.value,
         handleImageDropped,
     };
@@ -87,7 +90,7 @@ function handleRandomPull({ zoneType }: { zoneType: 'utility' | 'ban' | 'pick' }
         <div class="background-overlay"></div>
         <div class="layout">
             <div class="layout__core">
-                <ImageOptions :characterMap="characterMap" :usedIds="usedIds" :filteredIds="filteredCharacterIds" />
+                <ImageOptions :characterMap="characterMap" :usedImageIds="usedImageIds" :filteredIds="filteredCharacterIds" />
                 <BanPickBoard
                     v-if="roomSetting"
                     :roomSetting="roomSetting"

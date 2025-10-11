@@ -1,6 +1,6 @@
-// src/types/Character.ts
+// src/types/ICharacter.ts
 
-export interface Character {
+export interface ICharacter {
   icon: string
   name: string
   rarity: Rarity

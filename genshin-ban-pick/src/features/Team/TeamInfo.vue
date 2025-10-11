@@ -1,16 +1,17 @@
 <!-- src/features/Team/TeamInfo.vue -->
 <script setup lang="ts">
-const props = defineProps<{
-  team: 'aether' | 'lumine'
-  modelValue: {
-    name: string
-    members: string
-  }
+import type { ITeamInfo } from '@/types/ITeam'
+import { useTeamTheme } from '@/composables/useTeamTheme';
+
+const props = defineProps<{side: 'left' | 'right'
+  modelValue: ITeamInfo
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', val: { name: string; members: string }): void
+  (e: 'update:modelValue', val: ITeamInfo): void
 }>()
+
+const { themeVars } = useTeamTheme(props.modelValue.id)
 
 function updateMembers(e: Event) {
   const target = e.target as HTMLTextAreaElement
@@ -22,15 +23,14 @@ function updateMembers(e: Event) {
 </script>
 
 <template>
-  <div class="team__info" :class="`team__info--${team}`">
-    <span class="team__name" :class="`team__name--${team}`">
-      {{ team === 'aether' ? 'Team\nAether' : 'Team\nLumine' }}
+  <div class="team__info" :style="themeVars">
+    <span class="team__name" :class="`team__name--${side}`">
+      {{ modelValue.name }}
     </span>
     <textarea
       class="team__member-input"
-      :class="`team__member-input--${team}`"
+      :class="`team__member-input--${side}`"
       :placeholder="`Members`"
-      :data-team="team"
       :value="modelValue.members"
       @input="updateMembers"
     />
@@ -44,24 +44,18 @@ function updateMembers(e: Event) {
   width: 100%;
 }
 
-.team__info--lumine {
+.team__info--right {
   flex-direction: row-reverse;
 }
 
-.team__name--aether {
-  --team-name-color: var(--md-sys-color-on-secondary-container);
-  --team-name-bg: var(--md-sys-color-secondary-container);
-  --team-tab-hover-bg: var(--md-sys-color-secondary);
+.team__name--left {
   --text-align: left;
   --border-top-right-radius: 0px;
   --border-top-left-radius: var(--border-radius-xs);
   --border-bottom-right-radius: 0px;
   --border-bottom-left-radius: var(--border-radius-xs);
 }
-.team__name--lumine {
-  --team-name-color: var(--md-sys-color-on-tertiary-container);
-  --team-name-bg: var(--md-sys-color-tertiary-container);
-  --team-tab-hover-bg: var(--md-sys-color-tertiary);
+.team__name--right {
   --text-align: right;
   --border-top-right-radius: var(--border-radius-xs);
   --border-top-left-radius: 0px;
@@ -78,25 +72,24 @@ function updateMembers(e: Event) {
   font-weight: var(--font-weight-heavy);
   font-size: var(--font-size-md);
   font-family: var(--font-family-tech-title);
-  color: var(--team-name-color);
-  background-color: var(--team-name-bg);
+  color: var(--team-on-bg);
+  background-color: var(--team-bg);
+  box-shadow: var(--box-shadow);
   border-top-right-radius: var(--border-top-right-radius);
   border-top-left-radius: var(--border-top-left-radius);
   border-bottom-right-radius: var(--border-bottom-right-radius);
   border-bottom-left-radius: var(--border-bottom-left-radius);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   white-space: pre-line;
 }
 
-.team__member-input--aether {
-  --team__member-input-bg: var(--md-sys-color-secondary-container-alpha);
+.team__member-input--left {
   --border-top-right-radius: var(--border-radius-xs);
   --border-top-left-radius: 0px;
   --border-bottom-right-radius: var(--border-radius-xs);
   --border-bottom-left-radius: 0px;
 }
-.team__member-input--lumine {
-  --team__member-input-bg: var(--md-sys-color-tertiary-container-alpha);
+
+.team__member-input--right {
   --border-top-right-radius: 0px;
   --border-top-left-radius: var(--border-radius-xs);
   --border-bottom-right-radius: 0px;
@@ -106,7 +99,7 @@ function updateMembers(e: Event) {
 .team__member-input {
   display: flex;
   flex: 3;
-  background-color: var(--team__member-input-bg);
+  background-color: var(--team-alpha);
   color: var(--md-sys-color-on-surface);
   border: none;
   border-top-right-radius: var(--border-top-right-radius);

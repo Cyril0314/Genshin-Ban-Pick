@@ -4,9 +4,9 @@ import { computed } from 'vue'
 import { getProfileImagePath } from '@/utils/imageRegistry'
 import { useTacticalBoardSync } from './composables/useTacticalBoardSync'
 
-const props = defineProps<{ team: 'aether' | 'lumine' }>()
+const props = defineProps<{ teamId: number }>()
 
-const { cellMap, tacticalPoolImages } = useTacticalBoardSync(props.team)
+const { cellMap, tacticalPoolImages } = useTacticalBoardSync(props.teamId)
 const poolImages = computed(() =>
   tacticalPoolImages.value.filter((id) => !Object.values(cellMap.value).includes(id)),
 )
@@ -19,7 +19,7 @@ function handleDragStart(event: DragEvent, id: string) {
 
 <template>
   <div class="tactical__pool"
-  :class="`tactical__pool--${team}`">
+  :class="`tactical__pool--${teamId}`">
     <img
       v-for="id in poolImages"
       :key="id"
@@ -31,10 +31,10 @@ function handleDragStart(event: DragEvent, id: string) {
 </template>
 
 <style scoped>
-.tactical__pool--aether {
+.tactical__pool--0 {
   --tactical__pool-bg: var(--md-sys-color-on-secondary-container-alpha);
 }
-.tactical__pool--lumine {
+.tactical__pool--1 {
   --tactical__pool-bg: var(--md-sys-color-on-tertiary-container-alpha);
 }
 

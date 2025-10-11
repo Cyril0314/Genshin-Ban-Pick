@@ -1,18 +1,18 @@
 <!-- src/features/ImageOptions/ImageOptions.vue -->
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Character } from '@/types/Character'
+import type { ICharacter } from '@/types/ICharacter'
 import { getProfileImagePath } from '@/utils/imageRegistry'
 
 const props = defineProps<{
-  characterMap: Record<string, Character>
-  usedIds: string[]
+  characterMap: Record<string, ICharacter>
+  usedImageIds: string[]
   filteredIds: string[]
 }>()
 
 const availableCharacters = computed(() =>
   Object.entries(props.characterMap)
-    .filter(([id]) => !props.usedIds.includes(id))
+    .filter(([id]) => !props.usedImageIds.includes(id))
     .sort(([a], [b]) => a.localeCompare(b)),
 )
 
@@ -25,7 +25,7 @@ function handleDragStartEvent(event: DragEvent, id: string) {
 </script>
 
 <template>
-  <div class="image-options">
+  <div class="container__images">
     <img
       v-for="[id, char] in availableCharacters"
       :key="id"
@@ -39,7 +39,7 @@ function handleDragStartEvent(event: DragEvent, id: string) {
 </template>
 
 <style scoped>
-.image-options {
+.container__images {
   --gap: var(--space-sm);
   display: grid;
   grid-template-columns: repeat(auto-fit, var(--size-image));
@@ -56,13 +56,13 @@ function handleDragStartEvent(event: DragEvent, id: string) {
   background: var(--md-sys-color-surface-container-highest-alpha);
 }
 
-.image-options img {
+.container__images img {
   width: 100%;
   aspect-ratio: 1 / 1;
   cursor: grab;
 }
 
-.image-options img.dimmed {
+.container__images img.dimmed {
   opacity: 0.3;
   filter: grayscale(100%);
 }

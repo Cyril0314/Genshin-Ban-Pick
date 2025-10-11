@@ -1,8 +1,8 @@
 // src/features/CharacterSelector/composables/useSelectorOptions.ts
 
 import { computed } from 'vue'
-import type { Character } from '@/types/Character'
-import { Element, Weapon, Region, ModelType, Role, Wish, Rarity } from '@/types/Character'
+import type { ICharacter } from '@/types/ICharacter'
+import { Element, Weapon, Region, ModelType, Role, Wish, Rarity } from '@/types/ICharacter'
 
 export enum FilterKey {
   Weapon = 'weapon',
@@ -21,7 +21,7 @@ export interface SelectorOption {
   translateFn: (val: string) => string
 }
 
-export function useSelectorOptions(characterMap: Record<string, Character>) {
+export function useSelectorOptions(characterMap: Record<string, ICharacter>) {
   const characters = computed(() =>
     Object.values(characterMap).filter((c) => c.name.toLowerCase() !== 'traveler'),
   )
