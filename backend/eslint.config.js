@@ -1,29 +1,29 @@
-import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
-import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript'
-import { globalIgnores } from 'eslint/config'
+import js from "@eslint/js";
+import prettierConfig from "eslint-config-prettier";
 import importPlugin from "eslint-plugin-import";
-import pluginOxlint from 'eslint-plugin-oxlint'
-import pluginVue from 'eslint-plugin-vue'
+import * as tseslint from "typescript-eslint";
 
-// To allow more languages other than `ts` in `.vue` files, uncomment the following lines:
-// import { configureVueProject } from '@vue/eslint-config-typescript'
-// configureVueProject({ scriptLangs: ['ts', 'tsx'] })
-// More info at https://github.com/vuejs/eslint-config-typescript/#advanced-setup
-
-export default defineConfigWithVueTs(
-  {
-    name: 'app/files-to-lint',
-    files: ['**/*.{ts,mts,tsx,vue}'],
-  },
-
-  globalIgnores(['**/dist/**', '**/dist-ssr/**', '**/coverage/**']),
-
-  pluginVue.configs['flat/essential'],
-  vueTsConfigs.recommended,
-  ...pluginOxlint.configs['flat/recommended'],
-  importPlugin.flatConfigs.recommended,
-  skipFormatting,
-  {
+/** @type {import('eslint').Linter.FlatConfig[]} */
+export default [
+    {
+        ignores: ["dist/", "node_modules/", "public/", "prisma/", "eslint.config.js"], // 忽略資料夾
+    },
+    js.configs.recommended,
+    ...tseslint.configs.recommended,
+    importPlugin.flatConfigs.recommended,
+    prettierConfig,
+    {
+        // plugins: {
+        //   import: importPlugin,
+        //   prettier: prettierPlugin,
+        // },
+        languageOptions: {
+            parser: tseslint.parser,
+            parserOptions: {
+                ecmaVersion: "latest",
+                sourceType: "module",
+            },
+        },
         settings: {
             "import/resolver": {
                 node: {
@@ -67,4 +67,4 @@ export default defineConfigWithVueTs(
             "no-console": "off",
         },
     },
-)
+];

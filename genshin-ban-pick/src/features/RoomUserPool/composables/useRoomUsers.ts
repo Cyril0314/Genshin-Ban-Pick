@@ -1,6 +1,7 @@
 // src/features/RoomUserPool/composables/useRoomUsers.ts
 
 import { ref, onMounted, onUnmounted } from 'vue';
+
 import { useSocketStore } from '@/network/socket';
 
 const roomUsers = ref<IRoomUser[]>([]);

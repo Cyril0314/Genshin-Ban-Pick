@@ -1,10 +1,11 @@
 // backend/src/socket/modules/roomSocket.ts
 
 import { Server, Socket } from 'socket.io';
+
+import { syncChatState } from './chatSocket.ts';
 import { syncImageState } from './imageSocket.ts';
 import { syncStepState } from './stepSocket.ts';
 import { syncTeamState } from './teamSocket.ts';
-import { syncChatState } from './chatSocket.ts';
 
 interface RoomUser {
     id: string;

@@ -1,12 +1,9 @@
 // backend/src/banPickSteps.ts
 
-import { numberOfBan, numberOfPick, totalRounds, teams } from '../constants/constants.ts';
 import { IBanPickStep } from '../types/IBanPickStep.ts'
 import { ITeam } from '../types/ITeam.ts';
 
-export const banPickSteps: IBanPickStep[] = generateBanPickSteps(numberOfBan, numberOfPick, teams, totalRounds);
-
-function generateBanPickSteps(banCount: number, pickCount: number, teams: ITeam[], totalRounds: number): IBanPickStep[] {
+export function generateBanPickSteps(banCount: number, pickCount: number, teams: ITeam[], totalRounds: number): IBanPickStep[] {
     const flow: IBanPickStep[] = [];
 
     const frontBan = Math.ceil(banCount / totalRounds);

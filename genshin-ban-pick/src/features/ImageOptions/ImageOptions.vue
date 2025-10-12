@@ -1,7 +1,9 @@
 <!-- src/features/ImageOptions/ImageOptions.vue -->
 <script setup lang="ts">
 import { computed } from 'vue'
+
 import type { ICharacter } from '@/types/ICharacter'
+
 import { getProfileImagePath } from '@/utils/imageRegistry'
 
 const props = defineProps<{

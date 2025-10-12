@@ -47,10 +47,17 @@ export class MissingFieldsError extends AppError {
   }
 }
 
+export class DataNotFound extends AppError {
+  constructor() {
+    super(ErrorCode.DATA_NOT_FOUND, 404, "查無資料");
+  }
+}
+
 
 export enum ErrorCode {
     USER_EXISTS = "USER_EXISTS",
     USER_NOT_FOUND = "USER_NOT_FOUND",
+    DATA_NOT_FOUND = "DATA_NOT_FOUND",
     INVALID_PASSWORD = "INVALID_PASSWORD",
     INVALID_TOKEN = "INVALID_TOKEN",
     EXPIRED_TOKEN = "EXPIRED_TOKEN",

@@ -2,6 +2,7 @@
 
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+
 import type { ITeam, ITeamInfo } from '@/types/ITeam'
 
 export const useTeamInfoStore = defineStore('teamInfo', () => {
@@ -12,8 +13,8 @@ export const useTeamInfoStore = defineStore('teamInfo', () => {
         () => {
             console.log(`teams.length: ${currentTeams.value.length}`)
             if (currentTeams.value.length < 2) return
-            let firstTeam = currentTeams.value[0]
-            let secondTeam = currentTeams.value[1]
+            const firstTeam = currentTeams.value[0]
+            const secondTeam = currentTeams.value[1]
             return { left: teamInfoMap.value[firstTeam.id], right: teamInfoMap.value[secondTeam.id] }
         }
     )

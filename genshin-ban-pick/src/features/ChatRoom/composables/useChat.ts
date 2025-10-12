@@ -1,7 +1,9 @@
 // src/features/ChatRoom/composables/useChat.ts
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useSocketStore } from '@/network/socket'
+
 import type { IChatMessage } from '@/types/IChatMessage'
+
+import { useSocketStore } from '@/network/socket'
 
 const messages = ref<IChatMessage[]>([])
 

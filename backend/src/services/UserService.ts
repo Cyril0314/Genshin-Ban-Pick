@@ -1,8 +1,9 @@
 // backend/src/services/UserService.ts
 
+import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { PrismaClient } from "@prisma/client";
+
 import {
   UserExistsError,
   UserNotFoundError,
@@ -11,7 +12,7 @@ import {
   ExpiredTokenError,
 } from "../errors/AppError.ts";
 
-export class UserService {
+export default class UserService {
   constructor(private prisma: PrismaClient) {}
 
   async register(account: string, password: string, nickname: string) {

@@ -1,7 +1,9 @@
 // src/features/CharacterSelector/composables/useSelectorOptions.ts
 
 import { computed } from 'vue'
+
 import type { ICharacter } from '@/types/ICharacter'
+
 import { Element, Weapon, Region, ModelType, Role, Wish, Rarity } from '@/types/ICharacter'
 
 export enum FilterKey {
@@ -82,116 +84,116 @@ function uniqueByKey<T, K extends keyof T>(data: T[], key: K, orderArray: T[K][]
 
 function translateWeapon(weapon: Weapon) {
   return {
-    [Weapon.Sword]: '單手劍',
-    [Weapon.Claymore]: '雙手劍',
-    [Weapon.Polearm]: '長槍',
-    [Weapon.Bow]: '弓',
-    [Weapon.Catalyst]: '法器',
+    [Weapon.SWORD]: '單手劍',
+    [Weapon.CLAYMORE]: '雙手劍',
+    [Weapon.POLEARM]: '長槍',
+    [Weapon.BOW]: '弓',
+    [Weapon.CATALYST]: '法器',
   }[weapon]
 }
 
 function translateElement(element: Element) {
   return {
-    [Element.Anemo]: '風',
-    [Element.Geo]: '岩',
-    [Element.Electro]: '雷',
-    [Element.Dendro]: '草',
-    [Element.Hydro]: '水',
-    [Element.Pyro]: '火',
-    [Element.Cryo]: '冰',
-    [Element.None]: '無屬性',
+    [Element.ANEMO]: '風',
+    [Element.GEO]: '岩',
+    [Element.ELECTRO]: '雷',
+    [Element.DENDRO]: '草',
+    [Element.HYDRO]: '水',
+    [Element.PYRO]: '火',
+    [Element.CRYO]: '冰',
+    [Element.NONE]: '無屬性',
   }[element]
 }
 
 function translateRegion(region: Region) {
   return {
-    [Region.Mondstadt]: '蒙德',
-    [Region.Liyue]: '璃月',
-    [Region.Inazuma]: '稻妻',
-    [Region.Sumeru]: '須彌',
-    [Region.Fontaine]: '楓丹',
-    [Region.Natlan]: '納塔',
-    [Region.NodKrai]: '挪德卡萊',
-    [Region.Snezhnaya]: '至冬',
-    [Region.None]: '無所屬',
+    [Region.MONDSTADT]: '蒙德',
+    [Region.LIYUE]: '璃月',
+    [Region.INAZUMA]: '稻妻',
+    [Region.SUMERU]: '須彌',
+    [Region.FONTAINE]: '楓丹',
+    [Region.NATLAN]: '納塔',
+    [Region.NOD_KRAI]: '挪德卡萊',
+    [Region.SNEZHNAYA]: '至冬',
+    [Region.NONE]: '無所屬',
   }[region]
 }
 
 function translateRarity(rarity: Rarity) {
   return {
-    [Rarity.FiveStars]: '5★',
-    [Rarity.FourStars]: '4★',
+    [Rarity.FIVE_STARS]: '5★',
+    [Rarity.FOUR_STARS]: '4★',
   }[rarity]
 }
 
 function translateModelType(modelType: ModelType) {
   return {
-    [ModelType.TallMale]: '成男',
-    [ModelType.TallFemale]: '成女',
-    [ModelType.MediumMale]: '少年',
-    [ModelType.MediumFemale]: '少女',
-    [ModelType.ShortFemale]: '幼女',
-    [ModelType.None]: '旅行者',
+    [ModelType.TALL_MALE]: '成男',
+    [ModelType.TALL_FEMALE]: '成女',
+    [ModelType.MEDIUM_MALE]: '少年',
+    [ModelType.MEDIUM_FEMALE]: '少女',
+    [ModelType.SHORT_FEMALE]: '幼女',
+    [ModelType.NONE]: '旅行者',
   }[modelType]
 }
 
 function translateRole(role: Role) {
   return {
-    [Role.MainDPS]: '主C',
-    [Role.SubDPS]: '副C',
-    [Role.Support]: '輔助',
+    [Role.MAIN_DPS]: '主C',
+    [Role.SUB_DPS]: '副C',
+    [Role.SUPPORT]: '輔助',
   }[role]
 }
 
 function translateWish(wish: Wish) {
   return {
-    [Wish.LimitedTimeEvent]: '限定',
-    [Wish.Standard]: '常駐',
-    [Wish.None]: '旅行者',
+    [Wish.LIMITED_TIME_EVENT]: '限定',
+    [Wish.STANDARD]: '常駐',
+    [Wish.NONE]: '旅行者',
   }[wish]
 }
 
 const weaponOrder: Weapon[] = [
-  Weapon.Sword,
-  Weapon.Claymore,
-  Weapon.Polearm,
-  Weapon.Bow,
-  Weapon.Catalyst,
+  Weapon.SWORD,
+  Weapon.CLAYMORE,
+  Weapon.POLEARM,
+  Weapon.BOW,
+  Weapon.CATALYST,
 ]
 
 const elementOrder = [
-  Element.Anemo,
-  Element.Geo,
-  Element.Electro,
-  Element.Dendro,
-  Element.Hydro,
-  Element.Pyro,
-  Element.Cryo,
-  Element.None,
+  Element.ANEMO,
+  Element.GEO,
+  Element.ELECTRO,
+  Element.DENDRO,
+  Element.HYDRO,
+  Element.PYRO,
+  Element.CRYO,
+  Element.NONE,
 ]
 
 const regionOrder = [
-  Region.Mondstadt,
-  Region.Liyue,
-  Region.Inazuma,
-  Region.Sumeru,
-  Region.Fontaine,
-  Region.Natlan,
-  Region.NodKrai,
-  Region.Snezhnaya,
-  Region.None,
+  Region.MONDSTADT,
+  Region.LIYUE,
+  Region.INAZUMA,
+  Region.SUMERU,
+  Region.FONTAINE,
+  Region.NATLAN,
+  Region.NOD_KRAI,
+  Region.SNEZHNAYA,
+  Region.NONE,
 ]
 
-const rarityOrder = [Rarity.FiveStars, Rarity.FourStars]
+const rarityOrder = [Rarity.FIVE_STARS, Rarity.FOUR_STARS]
 
 const modelTypeOrder = [
-  ModelType.TallMale,
-  ModelType.TallFemale,
-  ModelType.MediumMale,
-  ModelType.MediumFemale,
-  ModelType.ShortFemale,
-  ModelType.None,
+  ModelType.TALL_MALE,
+  ModelType.TALL_FEMALE,
+  ModelType.MEDIUM_MALE,
+  ModelType.MEDIUM_FEMALE,
+  ModelType.SHORT_FEMALE,
+  ModelType.NONE,
 ]
 
-const roleOrder = [Role.MainDPS, Role.SubDPS, Role.Support]
-const wishOrder = [Wish.LimitedTimeEvent, Wish.Standard, Wish.None]
+const roleOrder = [Role.MAIN_DPS, Role.SUB_DPS, Role.SUPPORT]
+const wishOrder = [Wish.LIMITED_TIME_EVENT, Wish.STANDARD, Wish.NONE]

@@ -1,9 +1,11 @@
 // src/features/BanPick/composables/useBanPickStep.ts
 
 import { ref, computed } from 'vue'
-import { useSocketStore } from '@/network/socket'
+
 import type { IBanPickStep } from '@/types/IBanPickStep'
 import type { IRoomSetting } from '@/types/IRoomSetting'
+
+import { useSocketStore } from '@/network/socket'
 
 const currentStep = ref<IBanPickStep | null>(null)
 let initialized = false

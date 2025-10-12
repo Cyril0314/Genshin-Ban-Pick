@@ -15,58 +15,58 @@ export interface ICharacter {
 }
 
 export enum Rarity {
-  FourStars = "4 Stars",
-  FiveStars = "5 Stars",
+  FOUR_STARS = "4 Stars",
+  FIVE_STARS = "5 Stars",
 }
 
 export enum Element {
-  Anemo = "Anemo",
-  Geo = "Geo",
-  Electro = "Electro",
-  Dendro = "Dendro",
-  Cryo = "Cryo",
-  Hydro = "Hydro",
-  Pyro = "Pyro",
-  None = "None",
+  ANEMO = "Anemo",
+  GEO = "Geo",
+  ELECTRO = "Electro",
+  DENDRO = "Dendro",
+  HYDRO = "Hydro",
+  PYRO = "Pyro",
+  CRYO = "Cryo",
+  NONE = "None",
 }
 
 export enum Weapon {
-  Sword = "Sword",
-  Claymore = "Claymore",
-  Polearm = "Polearm",
-  Bow = "Bow",
-  Catalyst = "Catalyst",
+  SWORD = "Sword",
+  CLAYMORE = "Claymore",
+  POLEARM = "Polearm",
+  BOW = "Bow",
+  CATALYST = "Catalyst",
 }
 
 export enum Region {
-  Mondstadt = "Mondstadt",
-  Liyue = "Liyue",
-  Inazuma = "Inazuma",
-  Sumeru = "Sumeru",
-  Fontaine = "Fontaine",
-  Natlan = "Natlan",
-  Snezhnaya = "Snezhnaya",
-  NodKrai = "NodKrai",
-  None = "None",
+  MONDSTADT = "Mondstadt",
+  LIYUE = "Liyue",
+  INAZUMA = "Inazuma",
+  SUMERU = "Sumeru",
+  FONTAINE = "Fontaine",
+  NATLAN = "Natlan",
+  SNEZHNAYA = "Snezhnaya",
+  NOD_KRAI = "NodKrai",
+  NONE = "None",
 }
 
 export enum ModelType {
-  TallMale = "Tall Male",
-  TallFemale = "Tall Female",
-  MediumMale = "Medium Male",
-  MediumFemale = "Medium Female",
-  ShortFemale = "Short Female",
-  None = "None",
+  TALL_MALE = "Tall Male",
+  TALL_FEMALE = "Tall Female",
+  MEDIUM_MALE = "Medium Male",
+  MEDIUM_FEMALE = "Medium Female",
+  SHORT_FEMALE = "Short Female",
+  NONE = "None",
 }
 
 export enum Role {
-  MainDPS = "Main DPS",
-  SubDPS = "Sub DPS",
-  Support = "Support",
+  MAIN_DPS = "Main DPS",
+  SUB_DPS = "Sub DPS",
+  SUPPORT = "Support",
 }
 
 export enum Wish {
-  LimitedTimeEvent = "Limited-Time Event Wish",
-  Standard = "Standard Wish",
-  None = "None",
+  LIMITED_TIME_EVENT = "Limited-Time Event Wish",
+  STANDARD = "Standard Wish",
+  NONE = "None",
 }

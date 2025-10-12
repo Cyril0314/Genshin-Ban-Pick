@@ -1,6 +1,7 @@
 // src/composables/useTeamTheme.ts
 
 import { computed } from 'vue'
+
 import type { ITeam } from '@/types/ITeam'
 
 const themeKeyMap: Record<number, string> = { 0: "first", 1: "second" }

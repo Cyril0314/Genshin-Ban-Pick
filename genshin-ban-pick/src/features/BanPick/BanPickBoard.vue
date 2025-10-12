@@ -2,25 +2,29 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useTeamInfoSync } from '@/features/Team/composables/useTeamInfoSync'
-import TeamInfo from '@/features/Team/TeamInfo.vue'
-import type { ITeamInfo } from '@/types/ITeam'
+
 import BanZone from './components/BanZone.vue'
 import PickZone from './components/PickZone.vue'
-import UtilityZone from './components/UtilityZone.vue'
 import StepIndicator from './components/StepIndicator.vue'
+import UtilityZone from './components/UtilityZone.vue'
+
+import type { ICharacter } from '@/types/ICharacter'
+import type { IRoomSetting } from '@/types/IRoomSetting'
+import type { ITeamInfo } from '@/types/ITeam'
+import type { ZoneType } from '@/types/ZoneType'
+
 import {
   generateUtilityOrder,
   generateBanOrder,
   generatePickOrder,
 } from '@/features/BanPick/composables/useBanPickOrder'
-import type { IRoomSetting } from '@/types/IRoomSetting'
-import type { ICharacter } from '@/types/ICharacter'
+import { useBanPickStep } from '@/features/BanPick/composables/useBanPickStep'
+import CharacterSelector from '@/features/CharacterSelector/CharacterSelector.vue'
 import ChatRoom from '@/features/ChatRoom/ChatRoom.vue'
 import RoomUserPool from '@/features/RoomUserPool/RoomUserPool.vue'
 import TacticalBoardPanel from '@/features/Tactical/TacticalBoardPanel.vue'
-import CharacterSelector from '@/features/CharacterSelector/CharacterSelector.vue'
-import { useBanPickStep } from '@/features/BanPick/composables/useBanPickStep'
+import { useTeamInfoSync } from '@/features/Team/composables/useTeamInfoSync'
+import TeamInfo from '@/features/Team/TeamInfo.vue'
 
 const props = defineProps<{
   roomSetting: IRoomSetting
@@ -34,7 +38,7 @@ const emit = defineEmits<{
   (e: 'image-drop', payload: { imgId: string; zoneId: string }): void
   (e: 'image-restore', payload: { imgId: string }): void
   (e: 'filter-changed', filters: Record<string, string[]>): void
-  (e: 'pull', payload: { zoneType: 'utility' | 'ban' | 'pick' }): void
+  (e: 'pull', payload: { zoneType: ZoneType }): void
 }>()
 
 const utilityZones = computed(() => generateUtilityOrder(props.roomSetting.numberOfUtility))
@@ -63,7 +67,7 @@ function handleSelectorFilterChanged(filters: Record<string, string[]>) {
   emit('filter-changed', filters)
 }
 
-function handleSelectorPull({ zoneType }: { zoneType: 'utility' | 'ban' | 'pick' }) {
+function handleSelectorPull({ zoneType }: { zoneType: ZoneType }) {
   emit('pull', { zoneType })
 }
 

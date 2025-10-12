@@ -1,13 +1,15 @@
 import './assets/main.css'
 import '@/assets/styles/semantic-colors.css'
 
-import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import { useSocketStore } from '@/network/socket'
-import { useAuth } from '@/composables/useAuth'
+import { createApp } from 'vue'
+
 
 import App from './App.vue'
 import router from './router'
+
+import { useAuth } from '@/composables/useAuth'
+import { useSocketStore } from '@/network/socket'
 
 const app = createApp(App)
 

@@ -1,6 +1,7 @@
 <!-- src/features/Team/TeamInfo.vue -->
 <script setup lang="ts">
 import type { ITeamInfo } from '@/types/ITeam'
+
 import { useTeamTheme } from '@/composables/useTeamTheme';
 
 const props = defineProps<{side: 'left' | 'right'

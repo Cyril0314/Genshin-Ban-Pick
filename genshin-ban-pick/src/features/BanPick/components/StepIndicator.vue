@@ -1,8 +1,9 @@
 <!-- src/features/BanPick/components/StepIndicator.vue -->
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { useBanPickStep } from '@/features/BanPick/composables/useBanPickStep'
+
 import { useTeamTheme } from '@/composables/useTeamTheme';
+import { useBanPickStep } from '@/features/BanPick/composables/useBanPickStep'
 
 const active = ref(false)
 const { currentStep } = useBanPickStep()

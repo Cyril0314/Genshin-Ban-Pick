@@ -1,11 +1,13 @@
 // backend/src/socket/modules/stepSocket.ts
 
 import { Server, Socket } from "socket.io";
-import { banPickSteps } from "../../utils/banPickSteps.ts";
+
+import { createRoomSetting } from "../../factories/roomSettingFactory.ts";
 import { IBanPickStep } from '../../types/IBanPickStep.ts'
 
 type RoomId = string;
 const stepMap: Record<RoomId, number> = {};
+const banPickSteps = createRoomSetting().banPickSteps;
 
 export function registerStepSocket(io: Server, socket: Socket) {
   socket.on("step.advance.request", ({ senderId }) => {

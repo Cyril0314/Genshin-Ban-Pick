@@ -1,5 +1,6 @@
 // src/Team/useTeamInfoSync.ts
 import { onMounted, onUnmounted } from 'vue'
+
 import { useSocketStore } from '@/network/socket'
 import { useTeamInfoStore } from '@/stores/teamInfoStore'
 

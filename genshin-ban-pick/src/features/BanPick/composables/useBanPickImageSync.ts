@@ -1,12 +1,15 @@
 // src/features/BanPick/composables//useBanPickImageSync.vue
 
-import type { Ref } from 'vue'
 import { ref, watch, readonly, computed, onMounted, onUnmounted } from 'vue'
-import { useSocketStore } from '@/network/socket'
+
 import { useBanPickStep } from './useBanPickStep'
-import { useTacticalBoardSync } from '@/features/Tactical/composables/useTacticalBoardSync'
+
 import type { IRoomSetting } from '@/types/IRoomSetting'
 import type { ITeam } from '@/types/ITeam'
+import type { Ref } from 'vue'
+
+import { useTacticalBoardSync } from '@/features/Tactical/composables/useTacticalBoardSync'
+import { useSocketStore } from '@/network/socket'
 
 type ImageMap = Record<string, string>
 

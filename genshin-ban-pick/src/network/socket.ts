@@ -2,8 +2,8 @@
 // 建立 Socket 實例
 
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
 import { io, type Socket } from 'socket.io-client'
+import { ref } from 'vue'
 
 export const useSocketStore = defineStore('socket', () => {
   const socket = ref<Socket | null>(null)

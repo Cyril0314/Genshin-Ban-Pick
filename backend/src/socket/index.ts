@@ -1,10 +1,12 @@
 // backend/src/socket/index.ts
 
 import http from "http";
+
 import { PrismaClient } from "@prisma/client";
-import { setupSocketIO } from "./socketController.ts";
-import { createSocketAuth } from "./socketAuth.ts";
 import { Server } from "socket.io";
+
+import { createSocketAuth } from "./socketAuth.ts";
+import { setupSocketIO } from "./socketController.ts";
 
 export function createSocketApp(server: http.Server, prisma: PrismaClient) {
   const io = new Server(server, {

@@ -1,8 +1,10 @@
 <!-- src/features/Tactical/TacticalPool.vue -->
 <script setup lang="ts">
 import { computed } from 'vue'
-import { getProfileImagePath } from '@/utils/imageRegistry'
+
 import { useTacticalBoardSync } from './composables/useTacticalBoardSync'
+
+import { getProfileImagePath } from '@/utils/imageRegistry'
 
 const props = defineProps<{ teamId: number }>()
 

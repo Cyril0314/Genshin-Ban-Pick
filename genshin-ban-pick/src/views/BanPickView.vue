@@ -1,20 +1,22 @@
 <!-- src/views/BanPickView.vue -->
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { onBeforeRouteLeave } from 'vue-router'
-import { io, type Socket } from 'socket.io-client';
-import ImageOptions from '@/features/ImageOptions/ImageOptions.vue';
+
+import type { IRoomSetting } from '@/types/IRoomSetting';
+
+import { useFilteredCharacters } from '@/composables/useFilteredCharacters';
 import BanPickBoard from '@/features/BanPick/BanPickBoard.vue';
 import Toolbar from '@/features/BanPick/components/ToolBar.vue';
+import { useBanPickImageSync } from '@/features/BanPick/composables/useBanPickImageSync';
+import { handleUtilityRandom, handleBanRandom, handlePickRandom } from '@/features/BanPick/composables/useRandomizeImage';
+import ImageOptions from '@/features/ImageOptions/ImageOptions.vue';
 import { fetchCharacterMap } from '@/network/characterService';
 import { fetchRoomSetting } from '@/network/roomService';
 import { useSocketStore } from '@/network/socket';
-import { useBanPickImageSync } from '@/features/BanPick/composables/useBanPickImageSync';
 import { useTeamInfoStore } from '@/stores/teamInfoStore';
-import { handleUtilityRandom, handleBanRandom, handlePickRandom } from '@/features/BanPick/composables/useRandomizeImage';
-import { useFilteredCharacters } from '@/composables/useFilteredCharacters';
-import type { IRoomSetting } from '@/types/IRoomSetting';
+import { ZoneType } from '@/types/ZoneType';
 
 const socket = useSocketStore().getSocket();
 const characterMap = ref({});
@@ -60,9 +62,8 @@ function handleFilterChanged(newFilters: Record<string, string[]>) {
     Object.assign(currentFilters.value, newFilters);
 }
 
-function handleRandomPull({ zoneType }: { zoneType: 'utility' | 'ban' | 'pick' }) {
+function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
     console.log('父元件收到隨機抽選按鈕點擊事件：', zoneType);
-
     if (!roomSetting.value || filteredCharacterIds.value.length === 0) {
         console.warn('無法進行隨機抽選：房間未就緒或無符合條件的角色');
         return;
@@ -74,12 +75,16 @@ function handleRandomPull({ zoneType }: { zoneType: 'utility' | 'ban' | 'pick' }
         imageMap: imageMap.value,
         handleImageDropped,
     };
-    if (zoneType === 'pick') {
-        handlePickRandom(ctx);
-    } else if (zoneType === 'ban') {
-        handleBanRandom(ctx);
-    } else if (zoneType === 'utility') {
+    switch (zoneType) {
+      case ZoneType.UTILITY:
         handleUtilityRandom(ctx);
+        return
+      case ZoneType.BAN:
+        handleBanRandom(ctx);
+        return
+      case ZoneType.PICK:
+        handlePickRandom(ctx);
+        return
     }
 }
 </script>

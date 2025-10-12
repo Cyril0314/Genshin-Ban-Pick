@@ -1,8 +1,8 @@
 // backend/src/socket/socketAuth.ts
 
-import { Server, Socket } from "socket.io";
-import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
+import jwt from "jsonwebtoken";
+import { Server, Socket } from "socket.io";
 
 export function createSocketAuth(prisma: PrismaClient) {
   return function attachAuthMiddleware(io: Server) {

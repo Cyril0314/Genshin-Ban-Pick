@@ -1,8 +1,10 @@
 <!-- src/features/Tactical/TacticalBoard.vue -->
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import TacticalCell from './TacticalCell.vue'
+
 import { useTacticalBoardSync } from './composables/useTacticalBoardSync'
+import TacticalCell from './TacticalCell.vue'
+
 import { useTeamInfoSync } from '@/features/Team/composables/useTeamInfoSync'
 
 const rows = 4

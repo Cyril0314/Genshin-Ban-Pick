@@ -2,10 +2,12 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+
 import TacticalBoard from './TacticalBoard.vue'
 import TacticalPool from './TacticalPool.vue'
-import { useTeamInfoStore } from '@/stores/teamInfoStore'
+
 import { useTeamTheme } from '@/composables/useTeamTheme';
+import { useTeamInfoStore } from '@/stores/teamInfoStore'
 
 const { teamInfoPair } = useTeamInfoStore()
 

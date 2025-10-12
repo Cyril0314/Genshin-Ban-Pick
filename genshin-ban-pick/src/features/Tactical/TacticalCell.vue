@@ -1,6 +1,7 @@
 <!-- src/features/Tactical/TacticalCell.vue -->
 <script setup lang="ts">
 import { ref } from 'vue'
+
 import { getProfileImagePath } from '@/utils/imageRegistry'
 
 const props = defineProps<{

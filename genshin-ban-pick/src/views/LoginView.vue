@@ -3,8 +3,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { loginUser } from '../network/authService'
+
 import { useAuth } from '../composables/useAuth'
+import { loginUser } from '../network/authService'
 
 const account = ref('')
 const password = ref('')

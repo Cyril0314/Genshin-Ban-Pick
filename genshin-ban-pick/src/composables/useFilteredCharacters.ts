@@ -1,7 +1,8 @@
 // src/composables/useFilteredCharacters.ts
 import { computed, unref } from 'vue'
-import type { Ref } from 'vue'
+
 import type { ICharacter } from '@/types/ICharacter'
+import type { Ref } from 'vue'
 
 type FilterKey = keyof ICharacter
 

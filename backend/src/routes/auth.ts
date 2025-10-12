@@ -1,19 +1,20 @@
 // backend/src/routes/auth.ts
 
 import express, { Request, Response } from "express";
-import { asyncHandler } from "../utils/asyncHandler.ts";
-import { UserService } from "../services/UserService.ts";
+
 import {
   MissingFieldsError,
   UserNotFoundError,
   InvalidTokenError,
 } from "../errors/AppError.ts";
+import UserService from "../services/UserService.ts";
+import { asyncHandler } from "../utils/asyncHandler.ts";
 
 export default function authRoutes(userService: UserService) {
   const router = express.Router();
 
   router.post(
-    "/register",
+    "/auth/register",
     asyncHandler(async (req: Request, res: Response) => {
       const { account, password, nickname } = req.body;
       if (!account || !password || !nickname) {
@@ -32,7 +33,7 @@ export default function authRoutes(userService: UserService) {
   );
 
   router.post(
-    "/login",
+    "/auth/login",
     asyncHandler(async (req: Request, res: Response) => {
       const { account, password } = req.body;
       if (!account || !password) {
@@ -51,7 +52,7 @@ export default function authRoutes(userService: UserService) {
   );
 
   router.get(
-    "/me",
+    "/auth/me",
     asyncHandler(async (req: Request, res: Response) => {
       const authHeader = req.headers.authorization;
 

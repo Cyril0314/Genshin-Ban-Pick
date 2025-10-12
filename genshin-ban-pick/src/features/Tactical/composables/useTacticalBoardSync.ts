@@ -1,6 +1,7 @@
 // src/features/TacticalBoard/useTacticalBoardSync.ts
-import type { ITeam } from '@/types/ITeam'
 import { ref } from 'vue'
+
+import type { ITeam } from '@/types/ITeam'
 
 type TacticalMap = Record<string, string>
 
