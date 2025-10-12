@@ -2,38 +2,43 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useTeamInfoSync } from '@/features/Team/composables/useTeamInfoSync'
-import TeamInfo from '@/features/Team/TeamInfo.vue'
-import type { TeamInfoModel } from '@/features/Team/composables/useTeamInfoSync'
+
 import BanZone from './components/BanZone.vue'
 import PickZone from './components/PickZone.vue'
-import UtilityZone from './components/UtilityZone.vue'
 import StepIndicator from './components/StepIndicator.vue'
+import UtilityZone from './components/UtilityZone.vue'
+
+import type { ICharacter } from '@/types/ICharacter'
+import type { IRoomSetting } from '@/types/IRoomSetting'
+import type { ITeamInfo } from '@/types/ITeam'
+import type { ZoneType } from '@/types/ZoneType'
+
 import {
   generateUtilityOrder,
   generateBanOrder,
   generatePickOrder,
 } from '@/features/BanPick/composables/useBanPickOrder'
-import type { RoomSetting } from '@/types/RoomSetting'
-import type { CharacterInfo } from '@/types/CharacterInfo'
-import ChatRoom from '@/features/ChatRoom/ChatRoom.vue'
-import TacticalBoardPanel from '@/features/Tactical/TacticalBoardPanel.vue'
-import CharacterSelector from '@/features/CharacterSelector/CharacterSelector.vue'
 import { useBanPickStep } from '@/features/BanPick/composables/useBanPickStep'
+import CharacterSelector from '@/features/CharacterSelector/CharacterSelector.vue'
+import ChatRoom from '@/features/ChatRoom/ChatRoom.vue'
+import RoomUserPool from '@/features/RoomUserPool/RoomUserPool.vue'
+import TacticalBoardPanel from '@/features/Tactical/TacticalBoardPanel.vue'
+import { useTeamInfoSync } from '@/features/Team/composables/useTeamInfoSync'
+import TeamInfo from '@/features/Team/TeamInfo.vue'
 
 const props = defineProps<{
-  roomSetting: RoomSetting
-  characterMap: Record<string, CharacterInfo>
+  roomSetting: IRoomSetting
+  characterMap: Record<string, ICharacter>
   imageMap: Record<string, string>
 }>()
 
-const { teamInfoMap, updateTeam } = useTeamInfoSync()
+const { teamInfoPair, setTeamMembers } = useTeamInfoSync()
 
 const emit = defineEmits<{
   (e: 'image-drop', payload: { imgId: string; zoneId: string }): void
   (e: 'image-restore', payload: { imgId: string }): void
   (e: 'filter-changed', filters: Record<string, string[]>): void
-  (e: 'pull', payload: { zoneType: 'utility' | 'ban' | 'pick' }): void
+  (e: 'pull', payload: { zoneType: ZoneType }): void
 }>()
 
 const utilityZones = computed(() => generateUtilityOrder(props.roomSetting.numberOfUtility))
@@ -62,26 +67,26 @@ function handleSelectorFilterChanged(filters: Record<string, string[]>) {
   emit('filter-changed', filters)
 }
 
-function handleSelectorPull({ zoneType }: { zoneType: 'utility' | 'ban' | 'pick' }) {
+function handleSelectorPull({ zoneType }: { zoneType: ZoneType }) {
   emit('pull', { zoneType })
 }
 
 console.log('[BanPickBoard] setup start')
-console.log('props.roomSetting', props.roomSetting)
-console.log(`utilityZones: ${utilityZones.value}`)
-console.log(`banZones: ${banZones.value}`)
-console.log(`pickZones: ${pickZones.value}`)
-console.log(`pickZones: ${pickZones.value.left}`)
-console.log(`pickZones: ${pickZones.value.right}`)
+console.log('[BanPickBoard] props.roomSetting', props.roomSetting)
+console.log(`[BanPickBoard] utilityZones: ${utilityZones.value}`)
+console.log(`[BanPickBoard] banZones: ${banZones.value}`)
+console.log(`[BanPickBoard] pickZones: left ${pickZones.value.left} right ${pickZones.value.right}`)
+
 </script>
 
 <template>
   <div class="layout__main">
     <div class="layout__side layout__side--left">
       <TeamInfo
-        team="aether"
-        v-model="teamInfoMap.aether"
-        @update:modelValue="(val: TeamInfoModel) => updateTeam('aether', val)"
+        v-if="teamInfoPair"
+        side='left'
+        v-model="teamInfoPair.left"
+        @update:modelValue="(val: ITeamInfo) => setTeamMembers(val.id, val.members)"
       />
       <PickZone
         :zones="pickZones.left"
@@ -103,6 +108,7 @@ console.log(`pickZones: ${pickZones.value.right}`)
       <div class="layout__common">
         <div class="layout__common-side">
           <ChatRoom />
+          <RoomUserPool />
           <CharacterSelector
             :characterMap="props.characterMap"
             @filter-changed="handleSelectorFilterChanged"
@@ -111,7 +117,8 @@ console.log(`pickZones: ${pickZones.value.right}`)
         </div>
         <div class="layout__common-center">
           <div class="layout__step-indicator">
-            <StepIndicator :step="currentStep" />
+            <StepIndicator 
+              :step="currentStep" />
           </div>
           <div class="layout__utility-zone">
             <UtilityZone
@@ -128,10 +135,11 @@ console.log(`pickZones: ${pickZones.value.right}`)
       </div>
     </div>
     <div class="layout__side layout__side--right">
-      <TeamInfo
-        team="lumine"
-        v-model="teamInfoMap.lumine"
-        @update:modelValue="(val: TeamInfoModel) => updateTeam('lumine', val)"
+      <TeamInfo 
+        v-if="teamInfoPair"
+        side='right'
+        v-model="teamInfoPair.right"
+        @update:modelValue="(val: ITeamInfo) => setTeamMembers(val.id, val.members)"
       />
       <PickZone
         :zones="pickZones.right"

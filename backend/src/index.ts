@@ -1,38 +1,33 @@
 // backend/src/index.js
 
-import express from "express";
+import http from "http";
+import path from "path";
+import { fileURLToPath } from "url";
+
+import { PrismaClient } from "@prisma/client";
 import cors from "cors";
-import type { Request, Response } from "express";
-import { setupSocketIO } from "./socketController.ts";
+import dotenv from "dotenv";
+import express from "express";
+
+import { errorHandler } from "./middlewares/errorHandler.ts"
 import authRoutes from "./routes/auth.ts";
 import characterRoutes from "./routes/characters.ts";
 import roomRoutes from "./routes/room.ts";
-import recordRoutes from "./routes/record.ts";
-import path from "path";
+import CharacterService from "./services/CharacterService.ts";
+import RoomService from "./services/RoomService.ts";
+import UserService from "./services/UserService.ts";
+import { createSocketApp } from "./socket/index.ts"
 
-import http from "http";
-import { fileURLToPath } from "url";
-import { Server } from "socket.io";
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import type { Request, Response } from "express";
 
-process.on('uncaughtException', (err) => {
-  console.error('[uncaughtException]', err)
-});
+// ---------------------------------------------------------
+// 🧩 4. 環境變數設定
+// ---------------------------------------------------------
+dotenv.config();
 
-process.on('unhandledRejection', (reason) => {
-  console.error('[unhandledRejection]', reason)
-});
-
-(async () => {
-  console.log("[Prisma] DATABASE_URL =", process.env.DATABASE_URL);
-
-  const info = await prisma.$queryRawUnsafe<
-    { current_database: string; current_schema: string }[]
-  >(`SELECT current_database(), current_schema()`);
-  console.log("[Prisma] connected to:", info);
-})();
-
+// ---------------------------------------------------------
+// 🧩 5. 應用程式初始化
+// ---------------------------------------------------------
 const app = express();
 const server = http.createServer(app);
 app.use(
@@ -41,16 +36,6 @@ app.use(
     credentials: true, // ✅ 若要傳 cookie 或 token
   })
 );
-const io = new Server(server, {
-  cors: {
-    // origin: ["http://localhost:5173", "http://52.87.171.134"], // 允許的前端來源
-    origin: ["http://localhost:5173", "http://52.87.171.134:3000"], // 允許的前端來源
-    methods: ["GET", "POST"],
-    credentials: true,
-  },
-});
-
-setupSocketIO(io);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -71,16 +56,60 @@ const __dirname = path.dirname(__filename);
 app.use(express.static(path.resolve(__dirname, "../public")));
 app.use(express.json())
 
-app.use(authRoutes);
-app.use(characterRoutes);
-app.use(roomRoutes);
-app.use(recordRoutes);
+// ---------------------------------------------------------
+// 🧩 6. Service 實例化
+// ---------------------------------------------------------
+const prisma = new PrismaClient();
+const userService = new UserService(prisma);
+const roomService = new RoomService();
+const characterService = new CharacterService();
+
+// ---------------------------------------------------------
+// 🧩 7. Routes 註冊
+// ---------------------------------------------------------
+app.use("/api", authRoutes(userService));
+app.use("/api", roomRoutes(roomService));
+app.use("/api", characterRoutes(characterService));
+
+app.use("/api", authRoutes(userService));
+app.use("/api", characterRoutes(characterService));
+app.use("/api", roomRoutes(roomService));
+
+// ---------------------------------------------------------
+// 🧩 8. Socket 初始化
+// ---------------------------------------------------------
+createSocketApp(server, prisma);
+
+(async () => {
+  console.log("[Prisma] DATABASE_URL =", process.env.DATABASE_URL);
+
+  const info = await prisma.$queryRawUnsafe<
+    { current_database: string; current_schema: string }[]
+  >(`SELECT current_database(), current_schema()`);
+  console.log("[Prisma] connected to:", info);
+})();
+
+// ---------------------------------------------------------
+// 🧩 9. Error Handler (一定要最後)
+// ---------------------------------------------------------
+app.use(errorHandler);
 
 // 讓所有未知的 request 都回傳 index.html (支援 Vue Router history mode)
 app.get("*", (req: Request, res: Response) => {
   res.sendFile(path.resolve(__dirname, "../public/index.html"));
 });
 
+process.on('uncaughtException', (err) => {
+  console.error('[uncaughtException]', err)
+});
+
+process.on('unhandledRejection', (reason) => {
+  console.error('[unhandledRejection]', reason)
+});
+
+// ---------------------------------------------------------
+// 🧩 10. Server 啟動
+// ---------------------------------------------------------
 server.listen(3000, "0.0.0.0", () => {
   console.log("Server is running on http://localhost:3000");
 });

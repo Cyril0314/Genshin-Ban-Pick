@@ -1,12 +1,13 @@
 // src/composables/useFilteredCharacters.ts
 import { computed, unref } from 'vue'
-import type { Ref } from 'vue'
-import type { CharacterInfo } from '@/types/CharacterInfo'
 
-type FilterKey = keyof CharacterInfo
+import type { ICharacter } from '@/types/ICharacter'
+import type { Ref } from 'vue'
+
+type FilterKey = keyof ICharacter
 
 export function useFilteredCharacters(
-  characterMap: Ref<Record<string, CharacterInfo>> | Record<string, CharacterInfo>,
+  characterMap: Ref<Record<string, ICharacter>> | Record<string, ICharacter>,
   filters: Ref<Record<string, string[]>> | Record<string, string[]>,
 ) {
   return computed(() => {

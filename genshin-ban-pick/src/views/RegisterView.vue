@@ -2,9 +2,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import axios from 'axios'
-import { registerUser } from '../network/authService'
 import { useRouter } from 'vue-router'
+
+import { registerUser } from '../network/authService'
+
 
 const router = useRouter()
 

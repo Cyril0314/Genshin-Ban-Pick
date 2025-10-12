@@ -222,7 +222,7 @@ Genshin-Ban-Pick
 │  │  ├─ index.html
 │  │  └─ wish.png
 │  ├─ src
-│  │  ├─ banPickFlow.ts
+│  │  ├─ banPickSteps.ts
 │  │  ├─ character
 │  │  │  └─ characters.json
 │  │  ├─ constants
@@ -747,7 +747,7 @@ Genshin-Ban-Pick
 │  │  ├─ router
 │  │  │  └─ index.ts
 │  │  ├─ types
-│  │  │  ├─ CharacterInfo.ts
+│  │  │  ├─ Character.ts
 │  │  │  └─ RoomSetting.ts
 │  │  ├─ utils
 │  │  │  └─ imageRegistry.ts

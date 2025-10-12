@@ -2,20 +2,25 @@
 
 <script setup lang="ts">
 import { watch } from 'vue'
-import type { CharacterInfo } from '@/types/CharacterInfo'
-import { useSelectorOptions } from './composables/useSelectorOptions'
+
 import { useCharacterFilter } from './composables/useCharacterFilter'
+import { useSelectorOptions } from './composables/useSelectorOptions'
+
+import type { ICharacter } from '@/types/ICharacter'
+
+import { ZoneType } from '@/types/ZoneType'
+
 import 'vue-select/dist/vue-select.css'
 // @ts-ignore
 import vSelect from 'vue-select'
 
 const props = defineProps<{
-  characterMap: Record<string, CharacterInfo>
+  characterMap: Record<string, ICharacter>
 }>()
 
 const emit = defineEmits<{
   (e: 'filter-changed', filters: Record<string, string[]>): void
-  (e: 'pull', payload: { zoneType: 'utility' | 'ban' | 'pick' }): void
+  (e: 'pull', payload: { zoneType: ZoneType }): void
 }>()
 
 const selectorsData = useSelectorOptions(props.characterMap)
@@ -45,17 +50,17 @@ watch(
 
 function handleClickUtilityButton() {
   console.log('Selector utility clicked')
-  emit('pull', { zoneType: 'utility' })
+  emit('pull', { zoneType: ZoneType.UTILITY })
 }
 
 function handleClickBanButton() {
   console.log('Selector ban clicked')
-  emit('pull', { zoneType: 'ban' })
+  emit('pull', { zoneType: ZoneType.BAN })
 }
 
 function handleClickPickButton() {
   console.log('Selector pick clicked')
-  emit('pull', { zoneType: 'pick' })
+  emit('pull', { zoneType: ZoneType.PICK })
 }
 </script>
 

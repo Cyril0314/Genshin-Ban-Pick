@@ -1,25 +1,25 @@
 // backend/src/routes/room.ts
 
 import express from "express";
+
+import RoomService from "../services/RoomService.ts";
+import { asyncHandler } from "../utils/asyncHandler.ts";
+
 import type { Request, Response } from 'express';
-import {
-  numberOfUtility,
-  numberOfBan,
-  numberOfPick,
-  totalRounds,
-} from "../constants/constants.ts";
-import { banPickFlow } from "../banPickFlow.ts";
 
-const router = express.Router();
+export default function roomRoutes(roomService: RoomService) {
+  const router = express.Router();
 
-router.get("/api/room-setting", (req: Request, res: Response) => {
-  res.json({
-    numberOfUtility,
-    numberOfBan,
-    numberOfPick,
-    totalRounds,
-    banPickFlow,
-  });
-});
+  router.get("/room/setting", asyncHandler(async (req: Request, res: Response) => {
+    const roomSetting = roomService.getRoomSetting();
+    res.json(roomSetting);
+  }));
 
-export default router;
+  router.post("/room/record", asyncHandler(async (req: Request, res: Response) => {
+    // console.log(`imageState ${JSON.stringify(imageState, null, 2)}`);
+    // console.log(`teamMembersState ${JSON.stringify(teamMembersState, null, 2)}`);
+    res.status(200).send("Record received");
+  }));
+
+  return router;
+}

@@ -1,9 +1,20 @@
 // src/features/CharacterSelector/composables/useSelectorOptions.ts
 
 import { computed } from 'vue'
-import type { CharacterInfo } from '@/types/CharacterInfo'
 
-export type FilterKey = 'weapon' | 'element' | 'region' | 'rarity' | 'model_type' | 'role' | 'wish'
+import type { ICharacter } from '@/types/ICharacter'
+
+import { Element, Weapon, Region, ModelType, Role, Wish, Rarity } from '@/types/ICharacter'
+
+export enum FilterKey {
+  Weapon = 'weapon',
+  Element = 'element',
+  Region = 'region',
+  Rarity = 'rarity',
+  ModelType = 'model_type',
+  Role = 'role',
+  Wish = 'wish',
+}
 
 export interface SelectorOption {
   key: FilterKey
@@ -12,192 +23,177 @@ export interface SelectorOption {
   translateFn: (val: string) => string
 }
 
-export function useSelectorOptions(characterMap: Record<string, CharacterInfo>) {
-  const characters = computed(() => Object.values(characterMap).filter(c => c.name.toLowerCase() !== 'traveler'))
+export function useSelectorOptions(characterMap: Record<string, ICharacter>) {
+  const characters = computed(() =>
+    Object.values(characterMap).filter((c) => c.name.toLowerCase() !== 'traveler'),
+  )
 
-  return computed<SelectorOption[]>(() => [
+  return computed(() => [
     {
-      key: 'weapon',
+      key: FilterKey.Weapon,
       label: '選擇武器',
-      items: uniqueByKey(characters.value, 'weapon', weaponOrder),
-      translateFn: translateWeapon,
+      items: uniqueByKey(characters.value, FilterKey.Weapon, weaponOrder),
+      translateFn: (v: string) => translateWeapon(v as Weapon),
     },
     {
-      key: 'element',
+      key: FilterKey.Element,
       label: '選擇屬性',
-      items: uniqueByKey(characters.value, 'element', elementOrder),
-      translateFn: translateElement,
+      items: uniqueByKey(characters.value, FilterKey.Element, elementOrder),
+      translateFn: (v: string) => translateElement(v as Element),
     },
     {
-      key: 'region',
+      key: FilterKey.Region,
       label: '選擇國家',
-      items: uniqueByKey(characters.value, 'region', regionOrder),
-      translateFn: translateRegion,
+      items: uniqueByKey(characters.value, FilterKey.Region, regionOrder),
+      translateFn: (v: string) => translateRegion(v as Region),
     },
     {
-      key: 'model_type',
+      key: FilterKey.ModelType,
       label: '選擇體型',
-      items: uniqueByKey(characters.value, 'model_type', modelTypeOrder),
-      translateFn: translateModelType,
+      items: uniqueByKey(characters.value, FilterKey.ModelType, modelTypeOrder),
+      translateFn: (v: string) => translateModelType(v as ModelType),
     },
     {
-      key: 'role',
+      key: FilterKey.Role,
       label: '選擇功能',
-      items: uniqueByKey(characters.value, 'role', roleOrder),
-      translateFn: translateRole,
+      items: uniqueByKey(characters.value, FilterKey.Role, roleOrder),
+      translateFn: (v: string) => translateRole(v as Role),
     },
     {
-      key: 'wish',
+      key: FilterKey.Wish,
       label: '選擇祈願',
-      items: uniqueByKey(characters.value, 'wish', wishOrder),
-      translateFn: translateWish,
+      items: uniqueByKey(characters.value, FilterKey.Wish, wishOrder),
+      translateFn: (v: string) => translateWish(v as Wish),
     },
     {
-      key: 'rarity',
+      key: FilterKey.Rarity,
       label: '選擇星級',
-      items: uniqueByKey(characters.value, 'rarity', rarityOrder),
-      translateFn: translateRarity,
+      items: uniqueByKey(characters.value, FilterKey.Rarity, rarityOrder),
+      translateFn: (v: string) => translateRarity(v as Rarity),
     },
   ])
 }
 
-function uniqueByKey<T>(data: T[], key: keyof T, orderArray: string[] = []): string[] {
-  const uniqueSet = new Set(data.map((item) => item[key] as string))
-  if (orderArray.length === 0) return [...uniqueSet].sort()
-  return orderArray.filter((item) => uniqueSet.has(item))
+function uniqueByKey<T, K extends keyof T>(data: T[], key: K, orderArray: T[K][]): T[K][] {
+  const uniqueSet = new Set(data.map((item) => item[key]))
+  if (orderArray.length === 0) return [...uniqueSet]
+  return orderArray.filter((item) => uniqueSet.has(item)) // 一個指定順序的陣列
 }
 
 // --- Translate & Order ---
 
-function translateWeapon(weapon: string) {
-  return (
-    {
-      Sword: '單手劍',
-      Claymore: '雙手劍',
-      Polearm: '長槍',
-      Bow: '弓',
-      Catalyst: '法器',
-    }[weapon] ?? weapon
-  )
+function translateWeapon(weapon: Weapon) {
+  return {
+    [Weapon.SWORD]: '單手劍',
+    [Weapon.CLAYMORE]: '雙手劍',
+    [Weapon.POLEARM]: '長槍',
+    [Weapon.BOW]: '弓',
+    [Weapon.CATALYST]: '法器',
+  }[weapon]
 }
 
-function translateElement(elelment: string) {
-  return (
-    {
-      Anemo: '風',
-      Geo: '岩',
-      Electro: '雷',
-      Dendro: '草',
-      Hydro: '水',
-      Pyro: '火',
-      Cryo: '冰',
-      None: '無屬性',
-    }[elelment] ?? elelment
-  )
+function translateElement(element: Element) {
+  return {
+    [Element.ANEMO]: '風',
+    [Element.GEO]: '岩',
+    [Element.ELECTRO]: '雷',
+    [Element.DENDRO]: '草',
+    [Element.HYDRO]: '水',
+    [Element.PYRO]: '火',
+    [Element.CRYO]: '冰',
+    [Element.NONE]: '無屬性',
+  }[element]
 }
 
-function translateRegion(region: string) {
-  return (
-    {
-      Mondstadt: '蒙德',
-      Liyue: '璃月',
-      Inazuma: '稻妻',
-      Sumeru: '須彌',
-      Fontaine: '楓丹',
-      Natlan: '納塔',
-      NodKrai: '挪德卡萊',
-      Snezhnaya: '至冬',
-      None: '無所屬',
-    }[region] ?? region
-  )
+function translateRegion(region: Region) {
+  return {
+    [Region.MONDSTADT]: '蒙德',
+    [Region.LIYUE]: '璃月',
+    [Region.INAZUMA]: '稻妻',
+    [Region.SUMERU]: '須彌',
+    [Region.FONTAINE]: '楓丹',
+    [Region.NATLAN]: '納塔',
+    [Region.NOD_KRAI]: '挪德卡萊',
+    [Region.SNEZHNAYA]: '至冬',
+    [Region.NONE]: '無所屬',
+  }[region]
 }
 
-function translateRarity(rarity: string) {
-  return (
-    {
-      '5 Stars': '5★',
-      '4 Stars': '4★',
-    }[rarity] ?? rarity
-  )
+function translateRarity(rarity: Rarity) {
+  return {
+    [Rarity.FIVE_STARS]: '5★',
+    [Rarity.FOUR_STARS]: '4★',
+  }[rarity]
 }
 
-function translateModelType(modelType: string) {
-  return (
-    {
-      'Tall Male': '成男',
-      'Tall Female': '成女',
-      'Medium Male': '少年',
-      'Medium Female': '少女',
-      'Short Female': '幼女',
-      None: '旅行者',
-    }[modelType] ?? modelType
-  )
+function translateModelType(modelType: ModelType) {
+  return {
+    [ModelType.TALL_MALE]: '成男',
+    [ModelType.TALL_FEMALE]: '成女',
+    [ModelType.MEDIUM_MALE]: '少年',
+    [ModelType.MEDIUM_FEMALE]: '少女',
+    [ModelType.SHORT_FEMALE]: '幼女',
+    [ModelType.NONE]: '旅行者',
+  }[modelType]
 }
 
-function translateRole(role: string) {
-  return (
-    {
-      'Main DPS': '主C',
-      'Sub DPS': '副C',
-      Support: '輔助',
-    }[role] ?? role
-  )
+function translateRole(role: Role) {
+  return {
+    [Role.MAIN_DPS]: '主C',
+    [Role.SUB_DPS]: '副C',
+    [Role.SUPPORT]: '輔助',
+  }[role]
 }
 
-function translateWish(wish: string) {
-  return (
-    {
-      'Limited-Time Event Wish': '限定',
-      'Standard Wish': '常駐',
-      None: '旅行者',
-    }[wish] ?? wish
-  )
+function translateWish(wish: Wish) {
+  return {
+    [Wish.LIMITED_TIME_EVENT]: '限定',
+    [Wish.STANDARD]: '常駐',
+    [Wish.NONE]: '旅行者',
+  }[wish]
 }
 
-const weaponOrder = [
-  'Sword', 
-  'Claymore', 
-  'Polearm', 
-  'Bow', 
-  'Catalyst'
+const weaponOrder: Weapon[] = [
+  Weapon.SWORD,
+  Weapon.CLAYMORE,
+  Weapon.POLEARM,
+  Weapon.BOW,
+  Weapon.CATALYST,
 ]
+
 const elementOrder = [
-  'Anemo', 
-  'Geo', 
-  'Electro', 
-  'Dendro', 
-  'Hydro', 
-  'Pyro', 
-  'Cryo', 
-  'None'
+  Element.ANEMO,
+  Element.GEO,
+  Element.ELECTRO,
+  Element.DENDRO,
+  Element.HYDRO,
+  Element.PYRO,
+  Element.CRYO,
+  Element.NONE,
 ]
+
 const regionOrder = [
-  'Mondstadt',
-  'Liyue',
-  'Inazuma',
-  'Sumeru',
-  'Fontaine',
-  'Natlan',
-  "NodKrai",
-  'Snezhnaya',
-  'None',
+  Region.MONDSTADT,
+  Region.LIYUE,
+  Region.INAZUMA,
+  Region.SUMERU,
+  Region.FONTAINE,
+  Region.NATLAN,
+  Region.NOD_KRAI,
+  Region.SNEZHNAYA,
+  Region.NONE,
 ]
-const rarityOrder = ['5 Stars', '4 Stars']
+
+const rarityOrder = [Rarity.FIVE_STARS, Rarity.FOUR_STARS]
+
 const modelTypeOrder = [
-  'Tall Male',
-  'Tall Female',
-  'Medium Male',
-  'Medium Female',
-  'Short Female',
-  'None',
+  ModelType.TALL_MALE,
+  ModelType.TALL_FEMALE,
+  ModelType.MEDIUM_MALE,
+  ModelType.MEDIUM_FEMALE,
+  ModelType.SHORT_FEMALE,
+  ModelType.NONE,
 ]
-const roleOrder = [
-  'Main DPS', 
-  'Sub DPS', 
-  'Support'
-]
-const wishOrder = [
-  'Limited-Time Event Wish', 
-  'Standard Wish', 
-  'None'
-]
+
+const roleOrder = [Role.MAIN_DPS, Role.SUB_DPS, Role.SUPPORT]
+const wishOrder = [Wish.LIMITED_TIME_EVENT, Wish.STANDARD, Wish.NONE]

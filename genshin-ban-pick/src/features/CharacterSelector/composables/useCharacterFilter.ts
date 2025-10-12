@@ -1,6 +1,7 @@
 // src/features/CharacterSelector/composables/useCharacterFilter.ts
 
 import { reactive, watch } from 'vue'
+
 import type { FilterKey } from './useSelectorOptions'
 
 export function useCharacterFilter(emit: (filters: Record<FilterKey, string[]>) => void) {

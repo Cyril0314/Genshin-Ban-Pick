@@ -1,8 +1,9 @@
 <!-- src/features/BanPick/components/DropZone.vue -->
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { getWishImagePath } from '@/utils/imageRegistry'
+
 import { useBanPickStep } from '@/features/BanPick/composables/useBanPickStep'
+import { getWishImagePath } from '@/utils/imageRegistry'
 
 const props = defineProps<{
   zoneId: string

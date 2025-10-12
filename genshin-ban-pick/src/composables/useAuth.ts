@@ -1,5 +1,6 @@
 // src/composables/useAuth.ts
 import { ref, computed } from 'vue'
+
 import { getCurrentUser } from '@/network/authService'
 import { useSocketStore } from '@/network/socket'
 
@@ -17,6 +18,7 @@ export function useAuth() {
   const isGuest    = computed(() => !!guestId.value && !user.value)
 
   function proceedAsGuest() {
+    console.log(`proceedAsGuest ${guestId.value}`);
     if (!guestId.value) {
       guestId.value = `guest_${Math.random().toString(36).slice(2, 8)}`
       localStorage.setItem('guest_id', guestId.value)
@@ -27,6 +29,7 @@ export function useAuth() {
   }
 
   function login(userInfo: UserInfo, token: string) {
+    console.log(`login user ${userInfo}`);
     user.value = { ...userInfo }
     localStorage.setItem('auth_token', token)
     localStorage.removeItem('guest_id')
@@ -35,6 +38,7 @@ export function useAuth() {
   }
 
   function logout() {
+    console.log(`logout user ${user.value}`);
     user.value = null
     guestId.value = null
     localStorage.removeItem('auth_token')
@@ -46,16 +50,21 @@ export function useAuth() {
   async function tryAutoLogin() {
     const token = localStorage.getItem('auth_token')
     console.log(`auto login token: ${token}`)
-    if (!token) return
-
+    if (!token) {
+      console.warn('自動登入失敗 token 不存在')
+      return false
+    }
+    
     try {
       const response = await getCurrentUser()
       const userInfo = response.data
       console.log('自動登入', response)
       login(userInfo, token)
+      return true
     } catch (e) {
       console.warn('自動登入失敗', e)
       logout()
+      return false
     }
   }
 

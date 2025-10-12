@@ -1,15 +1,17 @@
 // src/features/TacticalBoard/useTacticalBoardSync.ts
 import { ref } from 'vue'
 
+import type { ITeam } from '@/types/ITeam'
+
 type TacticalMap = Record<string, string>
 
-const boardPools: Record<string, ReturnType<typeof createTeamBoard>> = {}
+const boardPools: Record<number, ReturnType<typeof createTeamBoard>> = {}
 
-export function useTacticalBoardSync(team: 'aether' | 'lumine') {
-  if (!boardPools[team]) {
-    boardPools[team] = createTeamBoard()
+export function useTacticalBoardSync(teamId: number) {
+  if (!boardPools[teamId]) {
+    boardPools[teamId] = createTeamBoard()
   }
-  return boardPools[team]
+  return boardPools[teamId]
 }
 
 function createTeamBoard() {

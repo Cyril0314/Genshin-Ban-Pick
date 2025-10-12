@@ -1,20 +1,34 @@
 import './assets/main.css'
 import '@/assets/styles/semantic-colors.css'
 
-import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import { useSocketStore } from '@/network/socket'
+import { createApp } from 'vue'
+
 
 import App from './App.vue'
 import router from './router'
+
+import { useAuth } from '@/composables/useAuth'
+import { useSocketStore } from '@/network/socket'
 
 const app = createApp(App)
 
 app.use(createPinia())
 app.use(router)
 
-app.mount('#app')
 const socketStore = useSocketStore()
+const auth = useAuth()
+
+auth.tryAutoLogin().then(success => {
+  console.log('[Main] tryAutoLogin result:', success)
+
+  if (!success) {
+    console.log('[Main] redirect to /login')
+    router.replace('/login')
+  }
+
+  app.mount('#app')
+})
 
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('auth_token')
@@ -22,27 +36,19 @@ router.beforeEach((to, from, next) => {
   const isAuth = !!token || !!guestId
 
   const publicPages = ['/login', '/register']
+  const isPublic = publicPages.includes(to.path)
 
-  // 1. 未認證又要進入受保護頁面 → 先斷線（若有），再導回 /login
-  if (!isAuth && !publicPages.includes(to.path)) {
-    socketStore.socket?.disconnect()
+  // 未認證又要進入受保護頁面 → 先斷線（若有），再導回 /login
+  if (!isAuth && !isPublic) {
+    console.log('[Router] disconnect because user is not authenticated')
+    auth.logout()
     return next({ path: '/login' })
   }
 
-  // 2. 已認證進入任意頁面（除了 login） → 如果還沒 connect，就立刻 connect
-  if (isAuth && to.path === '/') {
-    if (!socketStore.socket?.connected) {
-      socketStore.connect(token ?? undefined, guestId ?? undefined)
-      socketStore.socket!.once('connect', () => {
-        next()
-      })
-      return
-    }
-  }
-
-  // 3. 進入 login 頁面 → 如果已 connect，先 disconnect，再放行
-  if (publicPages.includes(to.path) && socketStore.socket?.connected) {
-    socketStore.socket.disconnect()
+  // 進入公開頁面 → 如果已 connect，先 disconnect，再放行
+  if (isPublic && socketStore.socket?.connected) {
+    console.log('[Router] logout on public page')
+    auth.logout()
   }
 
   next()

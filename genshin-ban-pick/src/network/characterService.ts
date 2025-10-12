@@ -1,12 +1,12 @@
 // src/network/characterService.ts
 
-import type { CharacterInfo } from '@/types/CharacterInfo'
+import type { ICharacter } from '@/types/ICharacter'
 
-export async function fetchCharacterMap(): Promise<Record<string, CharacterInfo>> {
+export async function fetchCharacterMap(): Promise<Record<string, ICharacter>> {
     const response = await fetch('/api/characters')
     const characters = await response.json()
 
-    const map: Record<string, CharacterInfo> = {}
+    const map: Record<string, ICharacter> = {}
     characters.forEach((char: any) => {
         map[char.name] = char
     })

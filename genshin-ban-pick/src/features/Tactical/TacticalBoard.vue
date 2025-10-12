@@ -1,19 +1,21 @@
 <!-- src/features/Tactical/TacticalBoard.vue -->
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import TacticalCell from './TacticalCell.vue'
+
 import { useTacticalBoardSync } from './composables/useTacticalBoardSync'
+import TacticalCell from './TacticalCell.vue'
+
 import { useTeamInfoSync } from '@/features/Team/composables/useTeamInfoSync'
 
 const rows = 4
 const cols = 5
-const props = defineProps<{ team: 'aether' | 'lumine' }>()
+const props = defineProps<{ teamId: number }>()
 
-const { cellMap, handleCellDrop, handleCellClear } = useTacticalBoardSync(props.team)
+const { cellMap, handleCellDrop, handleCellClear } = useTacticalBoardSync(props.teamId)
 const { teamInfoMap } = useTeamInfoSync()
 
 const teamInfo = computed(() =>
-  props.team === 'aether' ? teamInfoMap.value.aether : teamInfoMap.value.lumine,
+  teamInfoMap[props.teamId]
 )
 
 const memberCells = computed(() => {
@@ -38,24 +40,15 @@ const boardCells = computed(() => {
       <span class="tactical__header tactical__header--member">成員</span>
       <span class="tactical__header tactical__header--team-number">隊伍</span>
     </div>
-    <div
-      v-for="(member, index) in memberCells"
-      :key="index"
-      class="tactical__cell tactical__cell--member"
-    >
+    <div v-for="(member, index) in memberCells" :key="index" class="tactical__cell tactical__cell--member">
       {{ member }}
     </div>
     <template v-for="cell in boardCells" :key="cell.zoneId">
       <div v-if="cell.col === 0" class="tactical__cell tactical__cell--team-number">
         {{ cell.row + 1 }}
       </div>
-      <TacticalCell
-        v-else
-        :zoneId="cell.zoneId"
-        :imageId="cellMap[cell.zoneId]"
-        @drop="handleCellDrop"
-        @clear="handleCellClear"
-      />
+      <TacticalCell v-else :zoneId="cell.zoneId" :imageId="cellMap[cell.zoneId]" @drop="handleCellDrop"
+        @clear="handleCellClear" />
     </template>
   </div>
 </template>

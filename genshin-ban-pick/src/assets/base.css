@@ -75,6 +75,17 @@
   --backdrop-filter: blur(4px);
   --background-overlay: var(--md-sys-color-shadow-alpha);
 
+  /* ===== Aether ===== */
+  --team-first-bg: var(--md-sys-color-secondary-container);
+  --team-first-on-bg: var(--md-sys-color-on-secondary-container);
+  --team-first-hover: var(--md-sys-color-secondary);
+  --team-first-alpha: var(--md-sys-color-secondary-container-alpha);
+
+  /* ===== Lumine ===== */
+  --team-second-bg: var(--md-sys-color-tertiary-container);
+  --team-second-on-bg: var(--md-sys-color-on-tertiary-container);
+  --team-second-hover: var(--md-sys-color-tertiary);
+  --team-second-alpha: var(--md-sys-color-tertiary-container-alpha);
 }
 
 html {

@@ -3,8 +3,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { loginUser } from '../network/authService'
+
 import { useAuth } from '../composables/useAuth'
+import { loginUser } from '../network/authService'
 
 const account = ref('')
 const password = ref('')
@@ -17,8 +18,8 @@ async function handleLogin() {
     const { id, account: userAccount, nickname, token } = response.data
     login({ id, account: userAccount, nickname }, token)
     router.push('/')
-  } catch (error) {
-    alert('登入失敗，請確認帳密')
+  } catch (error: any) {
+    alert(`${error.response?.data?.message || '登入失敗，請確認帳密'}`)
   }
 }
 

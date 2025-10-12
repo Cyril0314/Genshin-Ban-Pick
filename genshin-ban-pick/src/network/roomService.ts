@@ -1,8 +1,8 @@
 // src/network/roomService.ts
-import type { RoomSetting } from '@/types/RoomSetting'
+import type { IRoomSetting } from '@/types/IRoomSetting'
 
-export async function fetchRoomSetting(): Promise<RoomSetting> {
-    const response = await fetch('/api/room-setting')
+export async function fetchRoomSetting(): Promise<IRoomSetting> {
+    const response = await fetch('/api/room/setting')
     const roomSetting = await response.json()
     return roomSetting
 }

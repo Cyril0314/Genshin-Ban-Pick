@@ -1,18 +1,21 @@
 // src/features/BanPick/composables//useBanPickImageSync.vue
 
-import type { Ref } from 'vue'
 import { ref, watch, readonly, computed, onMounted, onUnmounted } from 'vue'
-import { useSocketStore } from '@/network/socket'
+
 import { useBanPickStep } from './useBanPickStep'
+
+import type { IRoomSetting } from '@/types/IRoomSetting'
+import type { ITeam } from '@/types/ITeam'
+import type { Ref } from 'vue'
+
 import { useTacticalBoardSync } from '@/features/Tactical/composables/useTacticalBoardSync'
-import type { RoomSetting } from '@/types/RoomSetting'
-import type { Socket } from 'socket.io-client'
+import { useSocketStore } from '@/network/socket'
 
 type ImageMap = Record<string, string>
 
-export function useBanPickImageSync(roomSettingRef: Ref<RoomSetting | null>) {
+export function useBanPickImageSync(roomSettingRef: Ref<IRoomSetting | null>) {
   const imageMap = ref<ImageMap>({})
-  const usedIds = computed(() => [...new Set(Object.values(imageMap.value))])
+  const usedImageIds = computed(() => [...new Set(Object.values(imageMap.value))])
   const socket = useSocketStore().getSocket()
   const { isCurrentStepZone, advanceStep, resetStep } = useBanPickStep()
   let bufferedState: Record<string, string> | null = null
@@ -203,46 +206,49 @@ export function useBanPickImageSync(roomSettingRef: Ref<RoomSetting | null>) {
 
   // --- Tactical Board ---
 
-  function getTeamFromZone(zoneId: string): 'aether' | 'lumine' | null {
-    const banPickFlow = roomSettingRef.value?.banPickFlow
-    const match = banPickFlow?.find((f) => f.zoneId === zoneId && f.action === 'pick')
-    console.log(`player ${match?.player}`)
-    return match?.player === 'Team Aether'
-      ? 'aether'
-      : match?.player === 'Team Lumine'
-        ? 'lumine'
-        : null
+  function getTeamFromZone(zoneId: string): ITeam | undefined {
+    const banPickSteps = roomSettingRef.value?.banPickSteps
+    const match = banPickSteps?.find((f) => f.zoneId === zoneId && f.action === 'pick')
+    return match?.team
   }
 
   function cloneToTacticalPoolIfNeeded(imgId: string, zoneId: string) {
     if (zoneId.includes('pick')) {
       const team = getTeamFromZone(zoneId)
-      console.log(`team ${team}`)
-      if (team) useTacticalBoardSync(team).addToPool(imgId)
+      if (team) useTacticalBoardSync(team.id).addToPool(imgId)
     } else if (zoneId.includes('utility')) {
-      useTacticalBoardSync('aether').addToPool(imgId)
-      useTacticalBoardSync('lumine').addToPool(imgId)
+      if (roomSettingRef.value?.teams) {
+        for (const team of roomSettingRef.value.teams) {
+          useTacticalBoardSync(team.id).addToPool(imgId)
+        }
+      }
     }
   }
 
   function removeFromTacticalBoardIfNeeded(imgId: string, zoneId: string) {
     if (zoneId.includes('pick')) {
       const team = getTeamFromZone(zoneId)
-      if (team) useTacticalBoardSync(team).removeFromBoard(imgId)
+      if (team) useTacticalBoardSync(team.id).removeFromBoard(imgId)
     } else {
-      useTacticalBoardSync('aether').removeFromBoard(imgId)
-      useTacticalBoardSync('lumine').removeFromBoard(imgId)
+      if (roomSettingRef.value?.teams) {
+        for (const team of roomSettingRef.value.teams) {
+          useTacticalBoardSync(team.id).removeFromBoard(imgId)
+        }
+      }
     }
   }
 
   function clearTacticalBoardIfNeeded() {
-    useTacticalBoardSync('aether').clearBoard()
-    useTacticalBoardSync('lumine').clearBoard()
+    if (roomSettingRef.value?.teams) {
+      for (const team of roomSettingRef.value.teams) {
+        useTacticalBoardSync(team.id).clearBoard()
+      }
+    }
   }
 
   return {
     imageMap: readonly(imageMap),
-    usedIds,
+    usedImageIds,
     handleImageDropped,
     handleImageRestore,
     handleImageReset,
