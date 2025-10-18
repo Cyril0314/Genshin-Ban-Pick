@@ -2,27 +2,40 @@
 
 import { Server, Socket } from "socket.io";
 
+import { logger } from '../../utils/logger.ts';
 import { createRoomSetting } from "../../factories/roomSettingFactory.ts";
 import { IBanPickStep } from '../../types/IBanPickStep.ts'
 
+enum SocketEvent {
+    STEP_ADVANCE_REQUEST = 'step.advance.request',
+    STEP_ROLLBACK_REQUEST = 'step.rollback.request',
+    STEP_RESET_REQUEST = 'step.reset.request',
+    STEP_UPDATE_BROADCAST = 'step.update.broadcast',
+
+    STEP_STATE_SYNC = 'step.state.sync',
+}
+
 type RoomId = string;
-const stepMap: Record<RoomId, number> = {};
+const stepState: Record<RoomId, number> = {};
 const banPickSteps = createRoomSetting().banPickSteps;
 
 export function registerStepSocket(io: Server, socket: Socket) {
-  socket.on("step.advance.request", ({ senderId }) => {
+  socket.on(`${SocketEvent.STEP_ADVANCE_REQUEST}`, ({ senderId }) => {
+    logger.info(`Sent ${SocketEvent.STEP_ADVANCE_REQUEST} senderId: ${senderId}`);
     const roomId = (socket as any).roomId;
     if (!roomId) return;
     advanceStep(io, roomId);
   });
 
-  socket.on("step.rollback.request", ({ senderId }) => {
+  socket.on(`${SocketEvent.STEP_ROLLBACK_REQUEST}`, ({ senderId }) => {
+    logger.info(`Sent ${SocketEvent.STEP_ROLLBACK_REQUEST} senderId: ${senderId}`);
     const roomId = (socket as any).roomId;
     if (!roomId) return;
     rollbackStep(io, roomId);
   });
 
-  socket.on("step.reset.request", ({ senderId }) => {
+  socket.on(`${SocketEvent.STEP_RESET_REQUEST}`, ({ senderId }) => {
+    logger.info(`Sent ${SocketEvent.STEP_RESET_REQUEST} senderId: ${senderId}`);
     const roomId = (socket as any).roomId;
     if (!roomId) return;
     resetStep(io, roomId);
@@ -30,32 +43,33 @@ export function registerStepSocket(io: Server, socket: Socket) {
 }
 
 export function syncStepState(socket: Socket, roomId: RoomId) {
-  console.log("syncStepState");
-  socket.emit("step.state.sync", getCurrentStep(roomId));
+  const step = getCurrentStep(roomId);
+  socket.emit(`${SocketEvent.STEP_STATE_SYNC}`, step);
+  logger.info(`Sent ${SocketEvent.STEP_STATE_SYNC} step: ${step}`);
 }
 
 function getCurrentStep(roomId: RoomId): IBanPickStep | null {
-  const index = stepMap[roomId] || 0;
+  const index = stepState[roomId] || 0;
   return banPickSteps[index] || null;
 }
 
 function advanceStep(io: Server, roomId: RoomId): void {
-  stepMap[roomId] = (stepMap[roomId] || 0) + 1;
+  stepState[roomId] = (stepState[roomId] || 0) + 1;
   const step = getCurrentStep(roomId);
-  io.to(roomId).emit('step.state.broadcast', step);
-  console.log(`[Server] emit step.state.broadcast to roomId: ${roomId} step: ${JSON.stringify(step, null, 2)}`);
+  io.to(roomId).emit(`${SocketEvent.STEP_UPDATE_BROADCAST}`, step);
+  logger.info(`Sent ${SocketEvent.STEP_UPDATE_BROADCAST} step: ${step}`);
 }
 
 function rollbackStep(io: Server, roomId: RoomId): void {
-  stepMap[roomId] = (stepMap[roomId] || 0) - 1;
+  stepState[roomId] = (stepState[roomId] || 0) - 1;
   const step = getCurrentStep(roomId);
-  io.to(roomId).emit('step.state.broadcast', step);
-  console.log(`[Server] emit step.state.broadcast to roomId: ${roomId} step: ${JSON.stringify(step, null, 2)}`);
+  io.to(roomId).emit(`${SocketEvent.STEP_UPDATE_BROADCAST}`, step);
+  logger.info(`Sent ${SocketEvent.STEP_UPDATE_BROADCAST} step: ${step}`);
 }
 
 function resetStep(io: Server, roomId: RoomId): void {
-  stepMap[roomId] = 0;
+  stepState[roomId] = 0;
   const step = getCurrentStep(roomId);
-  io.to(roomId).emit('step.state.broadcast', step);
-  console.log(`[Server] emit step.state.broadcast to roomId: ${roomId} step: ${JSON.stringify(step, null, 2)}`);
+  io.to(roomId).emit(`${SocketEvent.STEP_UPDATE_BROADCAST}`, step);
+  logger.info(`Sent ${SocketEvent.STEP_UPDATE_BROADCAST} step: ${step}`);
 }

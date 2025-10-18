@@ -10,7 +10,6 @@ import UtilityZone from './components/UtilityZone.vue'
 
 import type { ICharacter } from '@/types/ICharacter'
 import type { IRoomSetting } from '@/types/IRoomSetting'
-import type { ITeamInfo } from '@/types/ITeam'
 import type { ZoneType } from '@/types/ZoneType'
 
 import {
@@ -32,7 +31,7 @@ const props = defineProps<{
   imageMap: Record<string, string>
 }>()
 
-const { teamInfoPair, setTeamMembers } = useTeamInfoSync()
+const { teamInfoPair } = useTeamInfoSync()
 
 const emit = defineEmits<{
   (e: 'image-drop', payload: { imgId: string; zoneId: string }): void
@@ -83,10 +82,9 @@ console.log(`[BanPickBoard] pickZones: left ${pickZones.value.left} right ${pick
   <div class="layout__main">
     <div class="layout__side layout__side--left">
       <TeamInfo
-        v-if="teamInfoPair"
         side='left'
-        v-model="teamInfoPair.left"
-        @update:modelValue="(val: ITeamInfo) => setTeamMembers(val.id, val.members)"
+        v-if="teamInfoPair"
+        :teamId="teamInfoPair.left.id"
       />
       <PickZone
         :zones="pickZones.left"
@@ -136,10 +134,9 @@ console.log(`[BanPickBoard] pickZones: left ${pickZones.value.left} right ${pick
     </div>
     <div class="layout__side layout__side--right">
       <TeamInfo 
-        v-if="teamInfoPair"
         side='right'
-        v-model="teamInfoPair.right"
-        @update:modelValue="(val: ITeamInfo) => setTeamMembers(val.id, val.members)"
+        v-if="teamInfoPair"
+        :teamId="teamInfoPair.right.id"
       />
       <PickZone
         :zones="pickZones.right"

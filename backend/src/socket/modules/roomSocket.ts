@@ -3,23 +3,37 @@
 import { Server, Socket } from 'socket.io';
 
 import { syncChatState } from './chatSocket.ts';
-import { syncImageState } from './imageSocket.ts';
+import { syncBoardState } from './boardSocket.ts';
 import { syncStepState } from './stepSocket.ts';
 import { syncTeamState } from './teamSocket.ts';
+import { logger } from '../../utils/logger.ts';
 
-interface RoomUser {
+enum SocketEvent {
+    ROOM_USER_JOIN_REQUEST = 'room.user.join.request',
+    ROOM_USER_JOIN_BROADCAST = 'room.user.join.broadcast',
+
+    ROOM_USER_LEAVE_REQUEST = 'room.user.leave.request',
+    ROOM_USER_LEAVE_BROADCAST = 'room.user.leave.broadcast',
+
+    ROOM_USERS_UPDATE_BROADCAST = 'room.users.update.broadcast',
+    ROOM_USERS_STATE_SYNC = 'room.users.state.sync',
+}
+
+interface IRoomUser {
     id: string;
     identityKey: string;
     nickname: string;
     timestamp: number;
-    team: 'aether' | 'lumine' | null;
+    teamId?: number;
 }
 
-const roomUsersState: Record<string, RoomUser[]> = {};
+type RoomId = string;
+
+const roomUsersState: Record<RoomId, IRoomUser[]> = {};
 
 export function registerRoomSocket(io: Server, socket: Socket) {
-    socket.on('room.user.join.request', (roomId: string) => {
-        console.log(`[Server] ${socket.id} joined room: ${roomId}`);
+    socket.on(SocketEvent.ROOM_USER_JOIN_REQUEST, (roomId: RoomId) => {
+        logger.info(`Received ${SocketEvent.ROOM_USER_JOIN_REQUEST} ${socket.id} roomId: ${roomId}`);
         socket.join(roomId);
         (socket as any).roomId = roomId;
 
@@ -43,25 +57,25 @@ export function registerRoomSocket(io: Server, socket: Socket) {
             // 使用者重連，更新 socketId & timestamp
             roomUsersState[roomId][existingIndex].id = socket.id;
             roomUsersState[roomId][existingIndex].timestamp = Date.now();
-            console.log(`[Room] ${nickname} reconnected to room ${roomId}`);
+            logger.info(`${nickname} reconnected to room ${roomId}`);
         } else {
             // 新使用者加入
             roomUsersState[roomId].push(roomUser);
-            console.log(`[Room] ${nickname} joined room ${roomId}`);
-            socket.to(roomId).emit('room.user.join.broadcast', roomUser);
+            socket.to(roomId).emit(SocketEvent.ROOM_USER_JOIN_BROADCAST, roomUser);
+            logger.info(`Sent ${SocketEvent.ROOM_USER_JOIN_BROADCAST} joinedUser: ${JSON.stringify(roomUser, null, 2)}`);
         }
 
-        io.to(roomId).emit('room.users.update.broadcast', roomUsersState[roomId]);
+        updateRoomUsers(io, roomId);
 
-        syncImageState(socket, roomId);
+        syncBoardState(socket, roomId);
         syncStepState(socket, roomId);
         syncTeamState(socket, roomId);
         syncChatState(socket, roomId);
     });
 
-    socket.on('room.user.leave.request', (roomId: string) => {
+    socket.on(SocketEvent.ROOM_USER_LEAVE_REQUEST, (roomId: RoomId) => {
+        logger.info(`Received ${SocketEvent.ROOM_USER_LEAVE_REQUEST} ${socket.id} roomId: ${roomId}`);
         socket.leave(roomId);
-        console.log(`[Socket] ${socket.id} left ${roomId}`);
 
         const identityKey = socket.data.identityKey;
 
@@ -73,10 +87,27 @@ export function registerRoomSocket(io: Server, socket: Socket) {
         delete (socket as any).roomId;
 
         if (leavingUser) {
-            console.log(`${JSON.stringify(leavingUser)}`);
-            io.to(roomId).emit('room.user.leave.broadcast', leavingUser);
+            socket.to(roomId).emit(SocketEvent.ROOM_USER_LEAVE_BROADCAST, leavingUser);
+            logger.info(`Sent ${SocketEvent.ROOM_USER_LEAVE_BROADCAST} leavingUser: ${JSON.stringify(leavingUser, null, 2)}`);
         }
 
-        io.to(roomId).emit('room.users.update.broadcast', roomUsersState[roomId]);
+        updateRoomUsers(io, roomId);
     });
+
+    function updateRoomUsers(io: Server, roomId: RoomId) {
+        const roomUsers = roomUsersState[roomId] || [];
+        io.to(roomId).emit(SocketEvent.ROOM_USERS_UPDATE_BROADCAST, roomUsers);
+        logger.info(`Sent ${SocketEvent.ROOM_USERS_UPDATE_BROADCAST} roomUsers: ${JSON.stringify(roomUsers, null, 2)}`);
+    }
+
+    function syncRoomState(socket: Socket, roomId: RoomId) {
+        const roomUsers = roomUsersState[roomId] || [];
+        socket.emit(SocketEvent.ROOM_USERS_STATE_SYNC, roomUsers);
+        logger.info(`Sent ${SocketEvent.ROOM_USERS_STATE_SYNC} roomUsers: ${JSON.stringify(roomUsers, null, 2)}`);
+    }
 }
+
+// 調用	                        A 是否收到	B 是否收到	C 是否收到	備註
+// socket.emit(...)	               ✅     	 ❌	       ❌	 僅自己收到
+// socket.to(roomId).emit(...)	   ❌	     ✅	       ✅	 除自己外所有人
+// io.to(roomId).emit(...)	       ✅	     ✅	       ✅	 全房間都收到

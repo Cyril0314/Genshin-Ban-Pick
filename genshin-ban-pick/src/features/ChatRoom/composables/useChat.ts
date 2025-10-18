@@ -5,6 +5,13 @@ import type { IChatMessage } from '@/types/IChatMessage'
 
 import { useSocketStore } from '@/network/socket'
 
+enum SocketEvent {
+    CHAT_MESSAGE_SEND_REQUEST = 'chat.message.send.request',
+    CHAT_MESSAGE_SEND_BROADCAST = 'chat.message.send.broadcast',
+
+    CHAT_MESSAGES_STATE_SYNC = 'chat.messages.state.sync',
+}
+
 const messages = ref<IChatMessage[]>([])
 
 export function useChat() {
@@ -12,7 +19,7 @@ export function useChat() {
 
     function sendMessage(message: string) {
         console.log(`${message}`)
-        socket.emit('chat.message.send.request', {
+        socket.emit(`${SocketEvent.CHAT_MESSAGE_SEND_REQUEST}`, {
             message,
             senderId: socket.id
         })
@@ -42,13 +49,13 @@ export function useChat() {
     }
 
     onMounted(() => {
-        socket.on('chat.history.sync', handleHistory)
-        socket.on('chat.message.send.broadcast', handleBroadcast)
+        socket.on(`${SocketEvent.CHAT_MESSAGES_STATE_SYNC}`, handleHistory)
+        socket.on(`${SocketEvent.CHAT_MESSAGE_SEND_BROADCAST}`, handleBroadcast)
     })
 
     onUnmounted(() => {
-        socket.off('chat.history.sync', handleHistory)
-        socket.off('chat.message.send.broadcast', handleBroadcast)
+        socket.off(`${SocketEvent.CHAT_MESSAGES_STATE_SYNC}`, handleHistory)
+        socket.off(`${SocketEvent.CHAT_MESSAGE_SEND_BROADCAST}`, handleBroadcast)
     })
 
     return {

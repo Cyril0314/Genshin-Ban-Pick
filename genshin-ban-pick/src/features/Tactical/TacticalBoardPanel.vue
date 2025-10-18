@@ -18,10 +18,10 @@ const currentTeamId = ref<number>(teamInfoPair?.left.id ?? 0)
 <template>
   <div class="tactical__board" :class="`tactical__board--${currentTeamId}`">
     <div class="tactical__board-tabs">
-      <button v-for="team in teamInfoPair" :key="team.id" class="tactical__tab"
-        :class="{ 'tactical__tab--active': currentTeamId === team.id }" :style="useTeamTheme(team.id).themeVars.value"
-        @click="currentTeamId = team.id">
-        {{ team.name }}
+      <button v-for="teamInfo in teamInfoPair" :key="teamInfo.id" class="tactical__tab"
+        :class="{ 'tactical__tab--active': currentTeamId === teamInfo.id }" :style="useTeamTheme(teamInfo.id).themeVars.value"
+        @click="currentTeamId = teamInfo.id">
+        {{ teamInfo.name }}
       </button>
     </div>
 

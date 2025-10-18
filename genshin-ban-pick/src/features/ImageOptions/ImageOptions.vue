@@ -5,6 +5,7 @@ import { computed } from 'vue'
 import type { ICharacter } from '@/types/ICharacter'
 
 import { getProfileImagePath } from '@/utils/imageRegistry'
+import { DragTypes } from '@/constants/customMIMETypes'
 
 const props = defineProps<{
   characterMap: Record<string, ICharacter>
@@ -22,7 +23,7 @@ const isFilitered = (id: string) => props.filteredIds.includes(id)
 
 function handleDragStartEvent(event: DragEvent, id: string) {
   console.log(`onDragStart ${id}`)
-  event?.dataTransfer?.setData('text/plain', id)
+  event?.dataTransfer?.setData(DragTypes.CharacterImage, id)
 }
 </script>
 
@@ -45,8 +46,8 @@ function handleDragStartEvent(event: DragEvent, id: string) {
   --gap: var(--space-sm);
   display: grid;
   grid-template-columns: repeat(auto-fit, var(--size-image));
-  height: calc(var(--size-image) * 2.25 + var(--gap) * 2);
-  max-height: calc(var(--size-image) * 2.25 + var(--gap) * 2);
+  height: calc(var(--size-image) * 2.25 + var(--gap) * 2); /* 維持最小高度 */
+  max-height: calc(var(--size-image) * 2.25 + var(--gap) * 2); /* 維持最大高度 */
   /* width: calc(var(--size-dropzone) * 12 + var(--gap) * 11); */
   width: 100%;
   padding: var(--gap);

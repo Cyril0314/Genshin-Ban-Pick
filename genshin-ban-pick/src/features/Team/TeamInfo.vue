@@ -1,39 +1,61 @@
 <!-- src/features/Team/TeamInfo.vue -->
 <script setup lang="ts">
-import type { ITeamInfo } from '@/types/ITeam'
+import { computed } from 'vue'
 
 import { useTeamTheme } from '@/composables/useTeamTheme';
+import { useTeamInfoSync } from '@/features/Team/composables/useTeamInfoSync'
+import { DragTypes } from '@/constants/customMIMETypes';
 
-const props = defineProps<{side: 'left' | 'right'
-  modelValue: ITeamInfo
+const props = defineProps<{
+  side: 'left' | 'right'
+  teamId: number
 }>()
 
-const emit = defineEmits<{
-  (e: 'update:modelValue', val: ITeamInfo): void
-}>()
+const { teamInfoPair, teamMembersMap, setTeamMembers } = useTeamInfoSync()
 
-const { themeVars } = useTeamTheme(props.modelValue.id)
+const teamInfo = computed(() => teamInfoPair![props.side] )
+
+const teamMembers = computed(() =>
+  teamMembersMap[props.teamId]
+)
+
+const { themeVars } = useTeamTheme(props.teamId)
 
 function updateMembers(e: Event) {
   const target = e.target as HTMLTextAreaElement
-  emit('update:modelValue', {
-    ...props.modelValue,
-    members: target.value,
-  })
+  console.log(`updateMembers: ${target.value}`)
+  setTeamMembers(props.teamId, target.value)
 }
+
+function handleDropEvent(event: DragEvent) {
+  event.preventDefault()
+  // isOver.value = false
+  const nickName = event.dataTransfer?.getData(DragTypes.RoomUser)
+  console.log(`nickName ${nickName}`);
+  if (!nickName) return;
+  const newMembers = [teamMembers.value, nickName]
+    .filter(Boolean)
+    .join('\n')
+    .replace(/\n{2,}/g, '\n')
+
+    setTeamMembers(props.teamId, newMembers)
+}
+
 </script>
 
 <template>
-  <div class="team__info" :style="themeVars">
+  <div class="team__info" :style="themeVars" :class="`team__info--${side}`">
     <span class="team__name" :class="`team__name--${side}`">
-      {{ modelValue.name }}
+      {{ teamInfo.name }}
     </span>
     <textarea
       class="team__member-input"
       :class="`team__member-input--${side}`"
       :placeholder="`Members`"
-      :value="modelValue.members"
+      :value="teamMembers"
       @input="updateMembers"
+      @dragover.prevent
+      @drop="handleDropEvent"
     />
   </div>
 </template>

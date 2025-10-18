@@ -5,6 +5,7 @@ import { computed } from 'vue'
 import { useTacticalBoardSync } from './composables/useTacticalBoardSync'
 
 import { getProfileImagePath } from '@/utils/imageRegistry'
+import { DragTypes } from '@/constants/customMIMETypes';
 
 const props = defineProps<{ teamId: number }>()
 
@@ -15,7 +16,7 @@ const poolImages = computed(() =>
 
 function handleDragStart(event: DragEvent, id: string) {
     console.log(`onDragStart ${id}`)
-    event?.dataTransfer?.setData('text/plain', id)
+    event?.dataTransfer?.setData(DragTypes.CharacterImage, id)
 }
 </script>
 
@@ -47,8 +48,8 @@ function handleDragStart(event: DragEvent, id: string) {
   align-content: start;
   justify-content: start;
   background: var(--tactical__pool-bg);
-  height: calc(var(--size-image-tactical-pool) * 3 + var(--gap) * 4);
-  max-height: calc(var(--size-image-tactical-pool) * 3 + var(--gap) * 4);
+  height: calc(var(--size-image-tactical-pool) * 3 + var(--gap) * 4); /* 維持最小高度 */
+  max-height: calc(var(--size-image-tactical-pool) * 3 + var(--gap) * 4); /* 維持最大高度 */
   border-radius: var(--border-radius-xs);
   overflow-y: auto;
   gap: var(--gap);

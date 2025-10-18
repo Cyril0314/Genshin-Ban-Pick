@@ -390,6 +390,19 @@
         "wish": "Standard Wish"
     },
     {
+        "icon": "Flins Icon",
+        "name": "Flins",
+        "rarity": "5 Stars",
+        "element": "Electro",
+        "weapon": "Polearm",
+        "region": "NodKrai",
+        "model_type": "Tall Male",
+        "release_date": "September 30, 2025",
+        "version": "Luna I",
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
+    },
+    {
         "icon": "Freminet Icon",
         "name": "Freminet",
         "rarity": "4 Stars",

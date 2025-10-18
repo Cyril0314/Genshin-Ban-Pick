@@ -2,8 +2,10 @@
 import { onMounted } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
 
-onMounted(() => {
+import { log } from '@/utils/logger'
 
+onMounted(() => {
+  log.info('aaaa')
 })
 
 </script>
