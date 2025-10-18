@@ -4,8 +4,6 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import { onBeforeRouteLeave } from 'vue-router'
 
-import type { IRoomSetting } from '@/types/IRoomSetting';
-
 import { useFilteredCharacters } from '@/composables/useFilteredCharacters';
 import BanPickBoard from '@/features/BanPick/BanPickBoard.vue';
 import Toolbar from '@/features/BanPick/components/ToolBar.vue';
@@ -17,6 +15,9 @@ import { fetchRoomSetting } from '@/network/roomService';
 import { useSocketStore } from '@/network/socket';
 import { useTeamInfoStore } from '@/stores/teamInfoStore';
 import { ZoneType } from '@/types/ZoneType';
+import { useRoomUsers } from '@/features/RoomUserPool/composables/useRoomUsers';
+
+import type { IRoomSetting } from '@/types/IRoomSetting';
 
 const socket = useSocketStore().getSocket();
 const characterMap = ref({});
@@ -34,15 +35,17 @@ const currentFilters = ref({
 const { imageMap, usedImageIds, handleImageDropped, handleImageRestore, handleImageReset, handleBanPickRecord } = useBanPickImageSync(roomSetting);
 const filteredCharacterIds = useFilteredCharacters(characterMap, currentFilters);
 
+const { joinRoom, leaveRoom } = useRoomUsers()
+
 onMounted(async () => {
+    console.log('[BanPickBoard] mounted')
     try {
         characterMap.value = await fetchCharacterMap();
         roomSetting.value = await fetchRoomSetting();
         const teamInfoStore = useTeamInfoStore();
         teamInfoStore.initTeams(roomSetting.value.teams)
         const roomId = new URLSearchParams(window.location.search).get('room') || 'default-room';
-        console.log(`[Client] join room ${roomId}`)
-        socket.emit('room.user.join.request', roomId);
+        joinRoom(roomId)
     } catch (error) {
         console.error('[BanPickView] 無法載入角色和房間資料:', error);
     }
@@ -50,12 +53,11 @@ onMounted(async () => {
 
 onBeforeRouteLeave(async (to, from) => {
     const roomId = new URLSearchParams(window.location.search).get('room') || 'default-room';
-    console.log(`[Client] leave room ${roomId}`)
-    socket.emit('room.user.leave.request', roomId);
+    leaveRoom(roomId)
 })
 
 onUnmounted(() => {
-    
+
 });
 
 function handleFilterChanged(newFilters: Record<string, string[]>) {
@@ -76,15 +78,15 @@ function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
         handleImageDropped,
     };
     switch (zoneType) {
-      case ZoneType.UTILITY:
-        handleUtilityRandom(ctx);
-        return
-      case ZoneType.BAN:
-        handleBanRandom(ctx);
-        return
-      case ZoneType.PICK:
-        handlePickRandom(ctx);
-        return
+        case ZoneType.UTILITY:
+            handleUtilityRandom(ctx);
+            return
+        case ZoneType.BAN:
+            handleBanRandom(ctx);
+            return
+        case ZoneType.PICK:
+            handlePickRandom(ctx);
+            return
     }
 }
 </script>
@@ -95,17 +97,11 @@ function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
         <div class="background-overlay"></div>
         <div class="layout">
             <div class="layout__core">
-                <ImageOptions :characterMap="characterMap" :usedImageIds="usedImageIds" :filteredIds="filteredCharacterIds" />
-                <BanPickBoard
-                    v-if="roomSetting"
-                    :roomSetting="roomSetting"
-                    :characterMap="characterMap"
-                    :imageMap="imageMap"
-                    @image-drop="handleImageDropped"
-                    @image-restore="handleImageRestore"
-                    @filter-changed="handleFilterChanged"
-                    @pull="handleRandomPull"
-                />
+                <ImageOptions :characterMap="characterMap" :usedImageIds="usedImageIds"
+                    :filteredIds="filteredCharacterIds" />
+                <BanPickBoard v-if="roomSetting" :roomSetting="roomSetting" :characterMap="characterMap"
+                    :imageMap="imageMap" @image-drop="handleImageDropped" @image-restore="handleImageRestore"
+                    @filter-changed="handleFilterChanged" @pull="handleRandomPull" />
                 <div v-else class="loading">載入房間設定中...</div>
             </div>
             <div class="layout__toolbar">
@@ -124,13 +120,13 @@ function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
     width: 100vw;
     height: 100vh;
     background:
-    /* linear-gradient( */
-      /* var(--md-sys-color-surface-container-lowest-alpha), */
-      /* var(--md-sys-color-surface-container-lowest-alpha), */
-      /* rgba(124, 124, 124, 0.9),
+        /* linear-gradient( */
+        /* var(--md-sys-color-surface-container-lowest-alpha), */
+        /* var(--md-sys-color-surface-container-lowest-alpha), */
+        /* rgba(124, 124, 124, 0.9),
       rgba(55, 55, 55, 0.5) */
-    /* ), */ url('@/assets/images/background/5.7.png')
-        no-repeat center center;
+        /* ), */
+        url('@/assets/images/background/5.7.png') no-repeat center center;
     background-size: cover;
 }
 
@@ -138,14 +134,16 @@ function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: -999; /* 疊在圖片上方 */
+    z-index: -999;
+    /* 疊在圖片上方 */
     width: 100vw;
     height: 100vh;
     /* background: linear-gradient(
     rgba(31, 31, 31, 0.5),
     rgba(127, 127, , 0.5)
   ); */
-    backdrop-filter: blur(8px); /* 毛玻璃關鍵 */
+    backdrop-filter: blur(8px);
+    /* 毛玻璃關鍵 */
 }
 
 .layout {
@@ -154,7 +152,7 @@ function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
     align-items: center;
     /* grid-template-columns: 1fr auto 1fr; */
     gap: var(--space-sm);
-    min-height: 100vh;
+    max-height: 100vh;
     padding: var(--space-sm);
 }
 
@@ -167,6 +165,7 @@ function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
     display: inline-flex;
     flex-direction: column;
     align-items: stretch;
+    /* 預設值，將內容元素撐開至 flexbox 大小 */
     justify-content: center;
     gap: var(--space-md);
 }

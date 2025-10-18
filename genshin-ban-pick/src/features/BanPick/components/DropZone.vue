@@ -4,6 +4,7 @@ import { ref, computed } from 'vue'
 
 import { useBanPickStep } from '@/features/BanPick/composables/useBanPickStep'
 import { getWishImagePath } from '@/utils/imageRegistry'
+import { DragTypes } from '@/constants/customMIMETypes'
 
 const props = defineProps<{
   zoneId: string
@@ -27,14 +28,14 @@ const { currentStep } = useBanPickStep()
 function handleDragStartEvent(event: DragEvent) {
   if (imageId.value && event.dataTransfer) {
     console.log(`onDragStart ${imageId.value}`)
-    event?.dataTransfer?.setData('text/plain', imageId.value)
+    event?.dataTransfer?.setData(DragTypes.CharacterImage, imageId.value)
   }
 }
 
 function handleDropEvent(event: DragEvent) {
   event.preventDefault()
   isOver.value = false
-  const imgId = event.dataTransfer?.getData('text/plain')
+  const imgId = event.dataTransfer?.getData(DragTypes.CharacterImage)
   if (imgId) {
     console.log(`DropZone onDrop imgId ${imgId} zoneId ${props.zoneId}`)
     emit('image-drop', { imgId, zoneId: props.zoneId })

@@ -5,8 +5,4 @@ export interface ITeam {
     name: string;
 }
 
-export interface ITeamInfo {
-  id: number
-  name: string
-  members: string
-}
+export type TeamMembersMap = Record<number, string>;

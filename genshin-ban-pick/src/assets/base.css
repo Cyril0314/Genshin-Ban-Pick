@@ -43,9 +43,13 @@
   --size-tool-button: calc(var(--base-size) * 2.5);
   --size-image: calc(var(--base-size) * 2.75);
   --size-image-tactical-pool: calc(var(--base-size) * 2.5);
-  --size-char-room: calc(var(--base-size) * 12);
+  --size-chat-room: calc(var(--base-size) * 12);
   --size-tactical-cell: calc(var(--base-size) * 2.75);
   --size-selector-height: calc(var(--base-size) * 2.25);
+
+  --size-room-user-pool: calc(var(--base-size) * 4);
+  --size-room-user-width: calc(var(--base-size) * 6);
+  --size-room-user-height: calc(var(--base-size) * 1.5);
 
   /* 📏 行高與字重  */
   --line-height-tightest: 1;

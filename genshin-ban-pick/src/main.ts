@@ -1,9 +1,10 @@
+// src/main.ts
+
 import './assets/main.css'
 import '@/assets/styles/semantic-colors.css'
 
 import { createPinia } from 'pinia'
 import { createApp } from 'vue'
-
 
 import App from './App.vue'
 import router from './router'

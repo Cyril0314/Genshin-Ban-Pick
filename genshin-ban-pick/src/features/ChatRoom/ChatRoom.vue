@@ -13,7 +13,7 @@ const { user, guestId, isGuest } = useAuth()
 
 watch(messages, (newMessages) => {
   scrollToBottom()
-})
+}, { deep: true })
 
 function handleSend() {
   if (newMessage.value.trim()) {
@@ -48,13 +48,7 @@ function scrollToBottom() {
     </div>
 
     <div class="chat__footer">
-      <input
-        v-model="newMessage"
-        @keydown.enter="handleSend"
-        type="text"
-        placeholder="哈囉今天過得好嗎"
-        id="chat-input"
-      />
+      <input v-model="newMessage" @keydown.enter="handleSend" type="text" placeholder="哈囉今天過得好嗎" id="chat-input" />
       <button @click="handleSend">傳送</button>
     </div>
   </div>
@@ -65,7 +59,7 @@ function scrollToBottom() {
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: var(--size-char-room);
+  height: var(--size-chat-room);
   padding: calc(var(--space-sm));
   gap: var(--space-xs);
   border-radius: var(--border-radius-xs);

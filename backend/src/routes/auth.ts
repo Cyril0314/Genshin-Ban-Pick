@@ -22,7 +22,6 @@ export default function authRoutes(userService: UserService) {
       }
       const user = await userService.register(account, password, nickname);
       const token = userService.sign(user.id);
-      console.log(`token: ${token}`);
       res.status(201).json({
         id: user.id,
         account: user.account,

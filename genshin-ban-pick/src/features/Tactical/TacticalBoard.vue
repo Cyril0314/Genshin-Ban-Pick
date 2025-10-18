@@ -1,6 +1,6 @@
 <!-- src/features/Tactical/TacticalBoard.vue -->
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 
 import { useTacticalBoardSync } from './composables/useTacticalBoardSync'
 import TacticalCell from './TacticalCell.vue'
@@ -12,15 +12,16 @@ const cols = 5
 const props = defineProps<{ teamId: number }>()
 
 const { cellMap, handleCellDrop, handleCellClear } = useTacticalBoardSync(props.teamId)
-const { teamInfoMap } = useTeamInfoSync()
 
-const teamInfo = computed(() =>
-  teamInfoMap[props.teamId]
+const { teamMembersMap } = useTeamInfoSync()
+
+const teamMembers = computed(() =>
+  teamMembersMap[props.teamId]
 )
 
 const memberCells = computed(() => {
   // 如果成員不足 4 個，補空字串
-  const members = teamInfo.value.members.split('\n')
+  const members = teamMembers.value.split('\n')
   return Array.from({ length: 4 }, (_, i) => members[i] || '')
 })
 

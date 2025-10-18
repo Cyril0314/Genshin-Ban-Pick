@@ -180,14 +180,14 @@ function handleProceedAsGuest() {
 }
 
 .redirect__link {
-  color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-secondary);
   text-decoration: none;
   font-weight: var(--font-weight-medium);
   transition: color 0.2s ease;
 }
 
 .redirect__link:hover {
-  color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-secondary-container);
 }
 
 /* 訪客按鈕風格 */

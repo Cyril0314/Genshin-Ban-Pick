@@ -3,6 +3,7 @@
 import { ref } from 'vue'
 
 import { getProfileImagePath } from '@/utils/imageRegistry'
+import { DragTypes } from '@/constants/customMIMETypes'
 
 const props = defineProps<{
   zoneId: string
@@ -19,14 +20,14 @@ const isOver = ref(false)
 function handleDragStartEvent(event: DragEvent) {
   if (props.imageId && event.dataTransfer) {
     console.log(`onDragStart ${props.imageId}`)
-    event?.dataTransfer?.setData('text/plain', props.imageId)
+    event?.dataTransfer?.setData(DragTypes.CharacterImage, props.imageId)
   }  
 }
 
 function handleDropEvent(event: DragEvent) {
   event.preventDefault()
   isOver.value = false
-  const imgId = event.dataTransfer?.getData('text/plain')
+  const imgId = event.dataTransfer?.getData(DragTypes.CharacterImage)
   if (!imgId || props.imageId) return
   emit('drop', { zoneId: props.zoneId, imgId })
 }

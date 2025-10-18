@@ -4,11 +4,17 @@ import { onMounted, onUnmounted } from 'vue'
 import { useSocketStore } from '@/network/socket'
 import { useTeamInfoStore } from '@/stores/teamInfoStore'
 
+import type { TeamMembersMap } from '@/types/ITeam'
+
 export function useTeamInfoSync() {
   const socket = useSocketStore().getSocket()
   const teamInfoStore = useTeamInfoStore()
+  const { teamInfoPair, teamMembersMap } = teamInfoStore
+
+  console.log('[Sync] store instance id', teamInfoStore.$id)
 
   function setTeamMembers(teamId: number, members: string) {
+    console.log(`setTeamMembers: teamId ${teamId} members ${members}`)
     teamInfoStore.setTeamMembers(teamId, members)
 
     socket.emit('team.members.update.request', {
@@ -18,8 +24,9 @@ export function useTeamInfoSync() {
     })
   }
 
-  function syncTeamMembersMapFromServer(teamInfoMap: Record<number, string>) {
-    teamInfoStore.setTeamInfoMap(teamInfoMap)
+  function syncTeamMembersMapFromServer(teamMembersMap: TeamMembersMap) {
+    console.log(`${JSON.stringify(teamMembersMap)}`)
+    teamInfoStore.setTeamMembersMap(teamMembersMap)
   }
 
   function handleTeamMembersUpdateBroadcast({
@@ -32,7 +39,7 @@ export function useTeamInfoSync() {
     senderId: string
   }) {
     if (socket.id === senderId) return
-    console.log(`[Client] team members updated from other user teamId ${teamId} content ${members}`)
+    console.log(`[Client] team members updated from other user teamId ${teamId} members ${members}`)
     teamInfoStore.setTeamMembers(teamId, members)
   }
 
@@ -47,8 +54,8 @@ export function useTeamInfoSync() {
   })
 
   return {
-    teamInfoPair: teamInfoStore.teamInfoPair,
-    teamInfoMap: teamInfoStore.teamInfoMap,
+    teamInfoPair,
+    teamMembersMap,
     setTeamMembers
   }
 }

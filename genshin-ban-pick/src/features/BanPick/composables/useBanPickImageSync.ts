@@ -11,7 +11,20 @@ import type { Ref } from 'vue'
 import { useTacticalBoardSync } from '@/features/Tactical/composables/useTacticalBoardSync'
 import { useSocketStore } from '@/network/socket'
 
-type ImageMap = Record<string, string>
+enum SocketEvent {
+    BOARD_IMAGE_DROP_REQUEST = 'board.image.drop.request',
+    BOARD_IMAGE_DROP_BROADCAST = 'board.image.drop.broadcast',
+
+    BOARD_IMAGE_RESTORE_REQUEST = 'board.image.restore.request',
+    BOARD_IMAGE_RESTORE_BROADCAST = 'board.image.restore.broadcast',
+
+    BOARD_IMAGES_RESET_REQUEST = 'board.images.reset.request',
+    BOARD_IMAGES_RESET_BROADCAST = 'board.images.reset.broadcast',
+
+    BOARD_IMAGES_STATE_SYNC = 'board.images.state.sync',
+}
+
+type ImageMap = Record<string, string>;
 
 export function useBanPickImageSync(roomSettingRef: Ref<IRoomSetting | null>) {
   const imageMap = ref<ImageMap>({})
@@ -27,17 +40,17 @@ export function useBanPickImageSync(roomSettingRef: Ref<IRoomSetting | null>) {
   })
 
   onMounted(() => {
-    socket.on('image.state.sync', syncImageMapFromServer)
-    socket.on('image.drop.broadcast', handleImageDropBroadcast)
-    socket.on('image.restore.broadcast', handleImageRestoreBroadcast)
-    socket.on('image.reset.broadcast', handleImageResetBroadcast)
+    socket.on(`${SocketEvent.BOARD_IMAGES_STATE_SYNC}`, syncImageMapFromServer)
+    socket.on(`${SocketEvent.BOARD_IMAGE_DROP_BROADCAST}`, handleImageDropBroadcast)
+    socket.on(`${SocketEvent.BOARD_IMAGE_RESTORE_BROADCAST}`, handleImageRestoreBroadcast)
+    socket.on(`${SocketEvent.BOARD_IMAGES_RESET_BROADCAST}`, handleImageResetBroadcast)
   })
 
   onUnmounted(() => {
-    socket.off('image.state.sync', syncImageMapFromServer)
-    socket.off('image.drop.broadcast', handleImageDropBroadcast)
-    socket.off('image.restore.broadcast', handleImageRestoreBroadcast)
-    socket.off('image.reset.broadcast', handleImageResetBroadcast)
+    socket.off(`${SocketEvent.BOARD_IMAGES_STATE_SYNC}`, syncImageMapFromServer)
+    socket.off(`${SocketEvent.BOARD_IMAGE_DROP_BROADCAST}`, handleImageDropBroadcast)
+    socket.off(`${SocketEvent.BOARD_IMAGE_RESTORE_BROADCAST}`, handleImageRestoreBroadcast)
+    socket.off(`${SocketEvent.BOARD_IMAGES_RESET_BROADCAST}`, handleImageResetBroadcast)
   })
 
   function handleImageDropped({ imgId, zoneId }: { imgId: string; zoneId: string }) {
@@ -49,20 +62,20 @@ export function useBanPickImageSync(roomSettingRef: Ref<IRoomSetting | null>) {
 
     if (displacedImgId && previousZoneId && previousZoneId !== zoneId) {
       swapImages(imgId, displacedImgId, zoneId, previousZoneId)
-      socket.emit('image.restore.request', {
+      socket.emit(`${SocketEvent.BOARD_IMAGE_RESTORE_REQUEST}`, {
         zoneId: previousZoneId,
         senderId: socket.id,
       })
-      socket.emit('image.restore.request', {
+      socket.emit(`${SocketEvent.BOARD_IMAGE_RESTORE_REQUEST}`, {
         zoneId,
         senderId: socket.id,
       })
-      socket.emit('image.drop.request', {
+      socket.emit(`${SocketEvent.BOARD_IMAGE_DROP_REQUEST}`, {
         imgId,
         zoneId,
         senderId: socket.id,
       })
-      socket.emit('image.drop.request', {
+      socket.emit(`${SocketEvent.BOARD_IMAGE_DROP_REQUEST}`, {
         imgId: displacedImgId,
         zoneId: previousZoneId,
         senderId: socket.id,
@@ -70,20 +83,20 @@ export function useBanPickImageSync(roomSettingRef: Ref<IRoomSetting | null>) {
     } else {
       if (previousZoneId) {
         removeImage(imgId, previousZoneId)
-        socket.emit('image.restore.request', {
+        socket.emit(`${SocketEvent.BOARD_IMAGE_RESTORE_REQUEST}`, {
           zoneId: previousZoneId,
           senderId: socket.id,
         })
       } else if (displacedImgId) {
         removeImage(displacedImgId, zoneId)
-        socket.emit('image.restore.request', {
+        socket.emit(`${SocketEvent.BOARD_IMAGE_RESTORE_REQUEST}`, {
           zoneId,
           senderId: socket.id,
         })
       }
       placeImage(imgId, zoneId)
 
-      socket.emit('image.drop.request', {
+      socket.emit(`${SocketEvent.BOARD_IMAGE_DROP_REQUEST}`, {
         imgId,
         zoneId,
         senderId: socket.id,
@@ -100,21 +113,21 @@ export function useBanPickImageSync(roomSettingRef: Ref<IRoomSetting | null>) {
     const zoneId = findZoneIdByImage(imgId)
     if (!zoneId) return
     removeImage(imgId, zoneId)
-    socket.emit('image.restore.request', {
+    socket.emit(`${SocketEvent.BOARD_IMAGE_RESTORE_REQUEST}`, {
       zoneId,
       senderId: socket.id,
     })
-    console.log('[Client] Sent image.restore.request:', zoneId)
+    console.log('[Client] Sent board.image.restore.request:', zoneId)
   }
 
   function handleImageReset() {
     imageMap.value = {}
     clearTacticalBoardIfNeeded()
 
-    socket.emit('image.reset.request', {
+    socket.emit(`${SocketEvent.BOARD_IMAGES_RESET_REQUEST}`, {
       senderId: socket.id,
     })
-    console.log('[Client] Sent image.reset.request:')
+    console.log('[Client] Sent board.images.reset.request:')
     resetStep()
   }
 

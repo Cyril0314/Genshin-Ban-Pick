@@ -17,7 +17,7 @@ export function useBanPickStep() {
     socket.on('step.state.sync', (step: IBanPickStep | null) => {
       currentStep.value = step
     })
-    socket.on('step.state.broadcast', (step: IBanPickStep | null) => {
+    socket.on('step.update.broadcast', (step: IBanPickStep | null) => {
       currentStep.value = step
     })
     initialized = true
