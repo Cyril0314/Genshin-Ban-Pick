@@ -3,73 +3,56 @@
 import { Server, Socket } from "socket.io";
 
 import { logger } from '../../utils/logger.ts';
-import { createRoomSetting } from "../../factories/roomSettingFactory.ts";
-import { IBanPickStep } from '../../types/IBanPickStep.ts'
+import { RoomStateManager } from "../managers/RoomStateManager.ts";
 
 enum SocketEvent {
-    STEP_ADVANCE_REQUEST = 'step.advance.request',
-    STEP_ROLLBACK_REQUEST = 'step.rollback.request',
-    STEP_RESET_REQUEST = 'step.reset.request',
-    STEP_UPDATE_BROADCAST = 'step.update.broadcast',
+  STEP_ADVANCE_REQUEST = 'step.advance.request',
+  STEP_ROLLBACK_REQUEST = 'step.rollback.request',
+  STEP_RESET_REQUEST = 'step.reset.request',
 
-    STEP_STATE_SYNC = 'step.state.sync',
+  STEP_STATE_SYNC_SELF = 'step.state.sync.self',
+  STEP_STATE_SYNC_ALL = 'step.state.sync.all',
 }
 
 type RoomId = string;
-const stepState: Record<RoomId, number> = {};
-const banPickSteps = createRoomSetting().banPickSteps;
 
-export function registerStepSocket(io: Server, socket: Socket) {
-  socket.on(`${SocketEvent.STEP_ADVANCE_REQUEST}`, ({ senderId }) => {
-    logger.info(`Sent ${SocketEvent.STEP_ADVANCE_REQUEST} senderId: ${senderId}`);
+export function registerStepSocket(io: Server, socket: Socket, roomStateManager: RoomStateManager) {
+  socket.on(`${SocketEvent.STEP_ADVANCE_REQUEST}`, () => {
+    logger.info(`Sent ${SocketEvent.STEP_ADVANCE_REQUEST}`);
     const roomId = (socket as any).roomId;
     if (!roomId) return;
-    advanceStep(io, roomId);
+
+    const roomState = roomStateManager.ensure(roomId);
+    roomState.stepIndex = roomState.stepIndex + 1;
+    io.to(roomId).emit(`${SocketEvent.STEP_STATE_SYNC_ALL}`, roomState.stepIndex);
+    logger.info(`Sent ${SocketEvent.STEP_STATE_SYNC_ALL} stepIndex: ${roomState.stepIndex}`);
   });
 
-  socket.on(`${SocketEvent.STEP_ROLLBACK_REQUEST}`, ({ senderId }) => {
-    logger.info(`Sent ${SocketEvent.STEP_ROLLBACK_REQUEST} senderId: ${senderId}`);
+  socket.on(`${SocketEvent.STEP_ROLLBACK_REQUEST}`, () => {
+    logger.info(`Sent ${SocketEvent.STEP_ROLLBACK_REQUEST}`);
     const roomId = (socket as any).roomId;
     if (!roomId) return;
-    rollbackStep(io, roomId);
+
+    const roomState = roomStateManager.ensure(roomId);
+    roomState.stepIndex = roomState.stepIndex - 1;
+    io.to(roomId).emit(`${SocketEvent.STEP_STATE_SYNC_ALL}`, roomState.stepIndex);
+    logger.info(`Sent ${SocketEvent.STEP_STATE_SYNC_ALL} stepIndex: ${roomState.stepIndex}`);
   });
 
-  socket.on(`${SocketEvent.STEP_RESET_REQUEST}`, ({ senderId }) => {
-    logger.info(`Sent ${SocketEvent.STEP_RESET_REQUEST} senderId: ${senderId}`);
+  socket.on(`${SocketEvent.STEP_RESET_REQUEST}`, () => {
+    logger.info(`Sent ${SocketEvent.STEP_RESET_REQUEST}`);
     const roomId = (socket as any).roomId;
     if (!roomId) return;
-    resetStep(io, roomId);
+
+    const roomState = roomStateManager.ensure(roomId);
+    roomState.stepIndex = 0;
+    io.to(roomId).emit(`${SocketEvent.STEP_STATE_SYNC_ALL}`, roomState.stepIndex);
+    logger.info(`Sent ${SocketEvent.STEP_STATE_SYNC_ALL} stepIndex: ${roomState.stepIndex}`);
   });
 }
 
-export function syncStepState(socket: Socket, roomId: RoomId) {
-  const step = getCurrentStep(roomId);
-  socket.emit(`${SocketEvent.STEP_STATE_SYNC}`, step);
-  logger.info(`Sent ${SocketEvent.STEP_STATE_SYNC} step: ${step}`);
-}
-
-function getCurrentStep(roomId: RoomId): IBanPickStep | null {
-  const index = stepState[roomId] || 0;
-  return banPickSteps[index] || null;
-}
-
-function advanceStep(io: Server, roomId: RoomId): void {
-  stepState[roomId] = (stepState[roomId] || 0) + 1;
-  const step = getCurrentStep(roomId);
-  io.to(roomId).emit(`${SocketEvent.STEP_UPDATE_BROADCAST}`, step);
-  logger.info(`Sent ${SocketEvent.STEP_UPDATE_BROADCAST} step: ${step}`);
-}
-
-function rollbackStep(io: Server, roomId: RoomId): void {
-  stepState[roomId] = (stepState[roomId] || 0) - 1;
-  const step = getCurrentStep(roomId);
-  io.to(roomId).emit(`${SocketEvent.STEP_UPDATE_BROADCAST}`, step);
-  logger.info(`Sent ${SocketEvent.STEP_UPDATE_BROADCAST} step: ${step}`);
-}
-
-function resetStep(io: Server, roomId: RoomId): void {
-  stepState[roomId] = 0;
-  const step = getCurrentStep(roomId);
-  io.to(roomId).emit(`${SocketEvent.STEP_UPDATE_BROADCAST}`, step);
-  logger.info(`Sent ${SocketEvent.STEP_UPDATE_BROADCAST} step: ${step}`);
+export function syncStepState(socket: Socket, roomId: RoomId, roomStateManager: RoomStateManager) {
+  const stepIndex = roomStateManager.getStepIndex(roomId)
+  socket.emit(`${SocketEvent.STEP_STATE_SYNC_SELF}`, stepIndex);
+  logger.info(`Sent ${SocketEvent.STEP_STATE_SYNC_SELF} stepIndex: ${stepIndex}`);
 }

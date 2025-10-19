@@ -4,6 +4,7 @@ import { Server, Socket } from "socket.io";
 
 
 import { logger } from '../utils/logger.ts';
+import { RoomStateManager } from "./managers/RoomStateManager.ts";
 import { registerChatSocket } from "./modules/chatSocket.ts";
 import { registerBoardSocket } from "./modules/boardSocket.ts";
 import { registerRoomSocket } from "./modules/roomSocket.ts";
@@ -17,10 +18,12 @@ export function setupSocketIO(io: Server) {
       guestId: socket.data.guestId ?? null,
     });
 
-    registerRoomSocket(io, socket);
-    registerBoardSocket(io, socket);
-    registerStepSocket(io, socket);
-    registerTeamSocket(io, socket);
-    registerChatSocket(io, socket);
+    const roomStateManager = new RoomStateManager()
+
+    registerRoomSocket(io, socket, roomStateManager);
+    registerBoardSocket(io, socket, roomStateManager);
+    registerStepSocket(io, socket, roomStateManager);
+    registerTeamSocket(io, socket, roomStateManager);
+    registerChatSocket(io, socket, roomStateManager);
   })
 }

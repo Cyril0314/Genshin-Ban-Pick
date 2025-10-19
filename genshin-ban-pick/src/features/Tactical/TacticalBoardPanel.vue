@@ -7,11 +7,12 @@ import TacticalBoard from './TacticalBoard.vue'
 import TacticalPool from './TacticalPool.vue'
 
 import { useTeamTheme } from '@/composables/useTeamTheme';
-import { useTeamInfoStore } from '@/stores/teamInfoStore'
 
-const { teamInfoPair } = useTeamInfoStore()
+type teamInfo = { id: number; name: string, members: string }
 
-const currentTeamId = ref<number>(teamInfoPair?.left.id ?? 0)
+const props = defineProps<{ teamInfoPair: { left: teamInfo; right:teamInfo } }>()
+
+const currentTeamId = ref<number>(props.teamInfoPair.left.id)
 
 </script>
 
@@ -19,8 +20,8 @@ const currentTeamId = ref<number>(teamInfoPair?.left.id ?? 0)
   <div class="tactical__board" :class="`tactical__board--${currentTeamId}`">
     <div class="tactical__board-tabs">
       <button v-for="teamInfo in teamInfoPair" :key="teamInfo.id" class="tactical__tab"
-        :class="{ 'tactical__tab--active': currentTeamId === teamInfo.id }" :style="useTeamTheme(teamInfo.id).themeVars.value"
-        @click="currentTeamId = teamInfo.id">
+        :class="{ 'tactical__tab--active': currentTeamId === teamInfo.id }"
+        :style="useTeamTheme(teamInfo.id).themeVars.value" @click="currentTeamId = teamInfo.id">
         {{ teamInfo.name }}
       </button>
     </div>
@@ -30,11 +31,11 @@ const currentTeamId = ref<number>(teamInfoPair?.left.id ?? 0)
         <template v-if="teamInfoPair">
           <template v-if="currentTeamId === teamInfoPair.left.id">
             <TacticalPool :teamId="teamInfoPair.left.id" />
-            <TacticalBoard :teamId="teamInfoPair.left.id" />
+            <TacticalBoard :teamId="teamInfoPair.left.id" :teamMembers="teamInfoPair.left.members" />
           </template>
           <template v-else>
             <TacticalPool :teamId="teamInfoPair.right.id" />
-            <TacticalBoard :teamId="teamInfoPair.right.id" />
+            <TacticalBoard :teamId="teamInfoPair.right.id" :teamMembers="teamInfoPair.right.members" />
           </template>
         </template>
       </div>

@@ -5,7 +5,7 @@ import DropZone from './DropZone.vue'
 
 const props = defineProps<{
   zones?: number[]
-  imageMap: Record<string, string>
+  boardImageMap: Record<string, string>
 }>()
 
 const emit = defineEmits<{
@@ -43,7 +43,7 @@ function handleImageRestore({ imgId }: { imgId: string }) {
         v-for="n in col"
         :key="n"
         :zoneId="`zone-utility-${n + 1}`"
-        :imageMap="props.imageMap"
+        :boardImageMap="props.boardImageMap"
         :label="`Utility`"
         type="utility"
         :labelColor="'var(--md-sys-color-on-primary-container)'"

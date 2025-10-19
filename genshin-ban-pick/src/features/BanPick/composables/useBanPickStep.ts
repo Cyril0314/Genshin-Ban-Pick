@@ -1,52 +1,54 @@
 // src/features/BanPick/composables/useBanPickStep.ts
 
-import { ref, computed } from 'vue'
-
-import type { IBanPickStep } from '@/types/IBanPickStep'
-import type { IRoomSetting } from '@/types/IRoomSetting'
+import { storeToRefs } from 'pinia'
+import { onMounted, onUnmounted } from 'vue'
 
 import { useSocketStore } from '@/network/socket'
+import { useBanPickStepStore } from '@/stores/banPickStepStore'
+enum SocketEvent {
+  STEP_ADVANCE_REQUEST = 'step.advance.request',
+  STEP_ROLLBACK_REQUEST = 'step.rollback.request',
+  STEP_RESET_REQUEST = 'step.reset.request',
 
-const currentStep = ref<IBanPickStep | null>(null)
-let initialized = false
+  STEP_STATE_SYNC_SELF = 'step.state.sync.self',
+  STEP_STATE_SYNC_ALL = 'step.state.sync.all',
+}
 
 export function useBanPickStep() {
   const socket = useSocketStore().getSocket()
-
-    if (!initialized) {
-    socket.on('step.state.sync', (step: IBanPickStep | null) => {
-      currentStep.value = step
-    })
-    socket.on('step.update.broadcast', (step: IBanPickStep | null) => {
-      currentStep.value = step
-    })
-    initialized = true
-  }
-
-  function setStep(step: IBanPickStep | null) {
-    currentStep.value = step
-  }
-
-  function isCurrentStepZone(zoneId: string) {
-    return zoneId === currentStep.value?.zoneId
-  }
+  const banPickStepStore = useBanPickStepStore()
+  const { banPickSteps } = storeToRefs(banPickStepStore)
+  const { setStepIndex, isCurrentStepZone } = banPickStepStore
 
   function advanceStep() {
-    socket.emit('step.advance.request', { senderId: socket.id })
+    socket.emit(`${SocketEvent.STEP_ADVANCE_REQUEST}`)
   }
 
   function rollbackStep() {
-    socket.emit('step.rollback.request', { senderId: socket.id })
+    socket.emit(`${SocketEvent.STEP_ROLLBACK_REQUEST}`)
   }
 
   function resetStep() {
-    socket.emit('step.reset.request', { senderId: socket.id })
+    socket.emit(`${SocketEvent.STEP_RESET_REQUEST}`)
   }
 
+  function handleStepStateSync(newStepIndex: number) {
+    setStepIndex(newStepIndex)
+  }
+
+  onMounted(() => {
+    socket.on(`${SocketEvent.STEP_STATE_SYNC_SELF}`, handleStepStateSync)
+    socket.on(`${SocketEvent.STEP_STATE_SYNC_ALL}`, handleStepStateSync)
+  })
+
+  onUnmounted(() => {
+    socket.off(`${SocketEvent.STEP_STATE_SYNC_SELF}`)
+    socket.off(`${SocketEvent.STEP_STATE_SYNC_ALL}`)
+  })
+
   return {
-    currentStep,
+    banPickSteps,
     isCurrentStepZone,
-    setStep,
     advanceStep,
     rollbackStep,
     resetStep,

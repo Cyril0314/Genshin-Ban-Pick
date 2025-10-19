@@ -13,11 +13,8 @@ const props = defineProps<{
 
 const { teamInfoPair, teamMembersMap, setTeamMembers } = useTeamInfoSync()
 
-const teamInfo = computed(() => teamInfoPair![props.side] )
-
-const teamMembers = computed(() =>
-  teamMembersMap[props.teamId]
-)
+const teamInfo = computed(() => teamInfoPair.value![props.side])
+const teamMembers = computed(() => teamMembersMap.value[props.teamId])
 
 const { themeVars } = useTeamTheme(props.teamId)
 

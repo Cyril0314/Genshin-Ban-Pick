@@ -7,19 +7,18 @@ import { onBeforeRouteLeave } from 'vue-router'
 import { useFilteredCharacters } from '@/composables/useFilteredCharacters';
 import BanPickBoard from '@/features/BanPick/BanPickBoard.vue';
 import Toolbar from '@/features/BanPick/components/ToolBar.vue';
-import { useBanPickImageSync } from '@/features/BanPick/composables/useBanPickImageSync';
+import { useBoardSync } from '@/features/BanPick/composables/useBoardSync';
 import { handleUtilityRandom, handleBanRandom, handlePickRandom } from '@/features/BanPick/composables/useRandomizeImage';
 import ImageOptions from '@/features/ImageOptions/ImageOptions.vue';
 import { fetchCharacterMap } from '@/network/characterService';
 import { fetchRoomSetting } from '@/network/roomService';
-import { useSocketStore } from '@/network/socket';
 import { useTeamInfoStore } from '@/stores/teamInfoStore';
+import { useBanPickStepStore } from '@/stores/banPickStepStore';
 import { ZoneType } from '@/types/ZoneType';
 import { useRoomUsers } from '@/features/RoomUserPool/composables/useRoomUsers';
 
 import type { IRoomSetting } from '@/types/IRoomSetting';
 
-const socket = useSocketStore().getSocket();
 const characterMap = ref({});
 const roomSetting = ref<IRoomSetting | null>(null);
 const currentFilters = ref({
@@ -32,7 +31,7 @@ const currentFilters = ref({
     wish: [],
 });
 
-const { imageMap, usedImageIds, handleImageDropped, handleImageRestore, handleImageReset, handleBanPickRecord } = useBanPickImageSync(roomSetting);
+const { boardImageMap, usedImageIds, handleBoardImageDrop, handleBoardImageRestore, handleBoardImageReset, handleBanPickRecord } = useBoardSync();
 const filteredCharacterIds = useFilteredCharacters(characterMap, currentFilters);
 
 const { joinRoom, leaveRoom } = useRoomUsers()
@@ -43,7 +42,9 @@ onMounted(async () => {
         characterMap.value = await fetchCharacterMap();
         roomSetting.value = await fetchRoomSetting();
         const teamInfoStore = useTeamInfoStore();
-        teamInfoStore.initTeams(roomSetting.value.teams)
+        teamInfoStore.initTeams(roomSetting.value.teams);
+        const banPickStepStore = useBanPickStepStore();
+        banPickStepStore.initBanPickSteps(roomSetting.value.banPickSteps);
         const roomId = new URLSearchParams(window.location.search).get('room') || 'default-room';
         joinRoom(roomId)
     } catch (error) {
@@ -74,8 +75,8 @@ function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
     const ctx = {
         roomSetting: roomSetting.value,
         filteredImageIds: filteredCharacterIds.value,
-        imageMap: imageMap.value,
-        handleImageDropped,
+        boardImageMap: boardImageMap.value,
+        handleBoardImageDrop,
     };
     switch (zoneType) {
         case ZoneType.UTILITY:
@@ -100,12 +101,13 @@ function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
                 <ImageOptions :characterMap="characterMap" :usedImageIds="usedImageIds"
                     :filteredIds="filteredCharacterIds" />
                 <BanPickBoard v-if="roomSetting" :roomSetting="roomSetting" :characterMap="characterMap"
-                    :imageMap="imageMap" @image-drop="handleImageDropped" @image-restore="handleImageRestore"
-                    @filter-changed="handleFilterChanged" @pull="handleRandomPull" />
+                    :boardImageMap="boardImageMap" @image-drop="handleBoardImageDrop"
+                    @image-restore="handleBoardImageRestore" @filter-changed="handleFilterChanged"
+                    @pull="handleRandomPull" />
                 <div v-else class="loading">載入房間設定中...</div>
             </div>
             <div class="layout__toolbar">
-                <Toolbar @reset="handleImageReset" @record="handleBanPickRecord" />
+                <Toolbar @reset="handleBoardImageReset" @record="handleBanPickRecord" />
             </div>
         </div>
     </div>

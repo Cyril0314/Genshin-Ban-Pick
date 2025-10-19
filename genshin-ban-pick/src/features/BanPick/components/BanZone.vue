@@ -5,7 +5,7 @@ import DropZone from './DropZone.vue'
 
 const props = defineProps<{
   zones?: number[]
-  imageMap: Record<string, string>
+  boardImageMap: Record<string, string>
 }>()
 
 const emit = defineEmits<{
@@ -42,7 +42,7 @@ function handleImageRestore({ imgId }: { imgId: string }) {
       <template v-for="(n, colIndex) in row" :key="n">
       <DropZone
         :zoneId="`zone-ban-${n + 1}`"
-        :imageMap="props.imageMap"
+        :boardImageMap="props.boardImageMap"
         :label="`Ban ${n + 1}`"
         type="ban"
         :labelColor="'var(--md-sys-color-error)'"

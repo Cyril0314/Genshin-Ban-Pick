@@ -9,7 +9,7 @@ enum SocketEvent {
     CHAT_MESSAGE_SEND_REQUEST = 'chat.message.send.request',
     CHAT_MESSAGE_SEND_BROADCAST = 'chat.message.send.broadcast',
 
-    CHAT_MESSAGES_STATE_SYNC = 'chat.messages.state.sync',
+    CHAT_MESSAGES_STATE_SYNC_SELF = 'chat.messages.state.sync.self',
 }
 
 const messages = ref<IChatMessage[]>([])
@@ -20,8 +20,7 @@ export function useChat() {
     function sendMessage(message: string) {
         console.log(`${message}`)
         socket.emit(`${SocketEvent.CHAT_MESSAGE_SEND_REQUEST}`, {
-            message,
-            senderId: socket.id
+            message
         })
 
         messages.value.push({
@@ -38,24 +37,22 @@ export function useChat() {
     //     }
     // }
 
-    function handleHistory(history: IChatMessage[]) {
+    function handleChatMessagesStateSync(history: IChatMessage[]) {
         messages.value = history
     }
 
-    function handleBroadcast(msg: IChatMessage) {
-        if (msg.senderId !== socket.id) {
-            messages.value.push(msg)
-        }
+    function handleChatMessageSendBroadcast(msg: IChatMessage) {
+        messages.value.push(msg)
     }
 
     onMounted(() => {
-        socket.on(`${SocketEvent.CHAT_MESSAGES_STATE_SYNC}`, handleHistory)
-        socket.on(`${SocketEvent.CHAT_MESSAGE_SEND_BROADCAST}`, handleBroadcast)
+        socket.on(`${SocketEvent.CHAT_MESSAGES_STATE_SYNC_SELF}`, handleChatMessagesStateSync)
+        socket.on(`${SocketEvent.CHAT_MESSAGE_SEND_BROADCAST}`, handleChatMessageSendBroadcast)
     })
 
     onUnmounted(() => {
-        socket.off(`${SocketEvent.CHAT_MESSAGES_STATE_SYNC}`, handleHistory)
-        socket.off(`${SocketEvent.CHAT_MESSAGE_SEND_BROADCAST}`, handleBroadcast)
+        socket.off(`${SocketEvent.CHAT_MESSAGES_STATE_SYNC_SELF}`)
+        socket.off(`${SocketEvent.CHAT_MESSAGE_SEND_BROADCAST}`)
     })
 
     return {

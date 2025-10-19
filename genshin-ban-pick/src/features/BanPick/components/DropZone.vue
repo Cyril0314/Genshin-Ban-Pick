@@ -1,14 +1,15 @@
 <!-- src/features/BanPick/components/DropZone.vue -->
 <script setup lang="ts">
+
 import { ref, computed } from 'vue'
 
-import { useBanPickStep } from '@/features/BanPick/composables/useBanPickStep'
+import { useBanPickStepStore } from '@/stores/banPickStepStore';
 import { getWishImagePath } from '@/utils/imageRegistry'
 import { DragTypes } from '@/constants/customMIMETypes'
 
 const props = defineProps<{
   zoneId: string
-  imageMap: Record<string, string>
+  boardImageMap: Record<string, string>
   label?: string
   type?: 'pick' | 'ban' | 'utility'
   labelColor?: string
@@ -21,9 +22,9 @@ const emit = defineEmits<{
 
 const isOver = ref(false)
 
-const imageId = computed(() => props.imageMap[props.zoneId])
+const imageId = computed(() => props.boardImageMap[props.zoneId])
 
-const { currentStep } = useBanPickStep()
+const { isCurrentStepZone } = useBanPickStepStore()
 
 function handleDragStartEvent(event: DragEvent) {
   if (imageId.value && event.dataTransfer) {
@@ -51,7 +52,7 @@ function handleClickEvent(event: MouseEvent) {
 }
 
 const isHighlighted = computed(() => {
-  return props.zoneId === currentStep.value?.zoneId
+  return isCurrentStepZone(props.zoneId)
 })
 </script>
 

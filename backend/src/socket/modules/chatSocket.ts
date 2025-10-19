@@ -3,47 +3,36 @@
 import { Server, Socket } from "socket.io";
 
 import { logger } from '../../utils/logger.ts';
+import { RoomStateManager } from "../managers/RoomStateManager.ts";
 
 enum SocketEvent {
     CHAT_MESSAGE_SEND_REQUEST = 'chat.message.send.request',
     CHAT_MESSAGE_SEND_BROADCAST = 'chat.message.send.broadcast',
 
-    CHAT_MESSAGES_STATE_SYNC = 'chat.messages.state.sync',
+    CHAT_MESSAGES_STATE_SYNC_SELF = 'chat.messages.state.sync.self',
 }
 
-interface IChatItem {
-  senderName: string;
-  message: string;
-  timestamp: number;
-}
-type RoomId = string;
-
-export const chatMessagesState: Record<RoomId, IChatItem[]> = {};
-
-export function registerChatSocket(io: Server, socket: Socket) {
+export function registerChatSocket(io: Server, socket: Socket, roomStateManager: RoomStateManager) {
   socket.on(
     `${SocketEvent.CHAT_MESSAGE_SEND_REQUEST}`,
-    ({ message, senderId }: { message: string; senderId: string }) => {
-      logger.info(`Received ${SocketEvent.CHAT_MESSAGE_SEND_REQUEST} message: ${message} senderId: ${senderId}`);
+    ({ message }: { message: string }) => {
+      logger.info(`Received ${SocketEvent.CHAT_MESSAGE_SEND_REQUEST} message: ${message}`);
       const roomId = (socket as any).roomId;
       if (!roomId || !message) return;
 
+      const roomState = roomStateManager.ensure(roomId);
       const senderName = socket.data.nickname as string;
-      chatMessagesState[roomId] ||= [];
       const newMsg = { senderName, message, timestamp: Date.now() };
-      chatMessagesState[roomId].push(newMsg);
+      roomState.chatMessages.push(newMsg);
 
-      socket.to(roomId).emit(`${SocketEvent.CHAT_MESSAGE_SEND_BROADCAST}`, {
-        ...newMsg,
-        senderId,
-      });
-      logger.info(`Sent ${SocketEvent.CHAT_MESSAGE_SEND_BROADCAST} newMsg: ${newMsg} senderId: ${senderId}`);
+      socket.to(roomId).emit(`${SocketEvent.CHAT_MESSAGE_SEND_BROADCAST}`, newMsg);
+      logger.info(`Sent ${SocketEvent.CHAT_MESSAGE_SEND_BROADCAST} newMsg: ${newMsg}`);
     }
   );
 }
 
-export function syncChatState(socket: Socket, roomId: RoomId) {
-    const chatMessages = chatMessagesState[roomId] || []
-    socket.emit(`${SocketEvent.CHAT_MESSAGES_STATE_SYNC}`, chatMessages);
-    logger.info(`Sent ${SocketEvent.CHAT_MESSAGES_STATE_SYNC} chatMessages: ${JSON.stringify(chatMessages, null, 2)}`);
+export function syncChatState(socket: Socket, roomId: string, roomStateManager: RoomStateManager) {
+    const chatMessages = roomStateManager.getChatMessages(roomId);
+    socket.emit(`${SocketEvent.CHAT_MESSAGES_STATE_SYNC_SELF}`, chatMessages);
+    logger.info(`Sent ${SocketEvent.CHAT_MESSAGES_STATE_SYNC_SELF} chatMessages: ${JSON.stringify(chatMessages, null, 2)}`);
 }

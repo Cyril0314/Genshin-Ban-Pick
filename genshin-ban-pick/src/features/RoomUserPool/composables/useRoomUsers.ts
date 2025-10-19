@@ -11,8 +11,7 @@ enum SocketEvent {
     ROOM_USER_LEAVE_REQUEST = 'room.user.leave.request',
     ROOM_USER_LEAVE_BROADCAST = 'room.user.leave.broadcast',
 
-    ROOM_USERS_UPDATE_BROADCAST = 'room.users.update.broadcast',
-    ROOM_USERS_STATE_SYNC = 'room.users.state.sync',
+    ROOM_USERS_STATE_SYNC_ALL = 'room.users.state.sync.all',
 }
 
 interface IRoomUser {
@@ -37,31 +36,31 @@ export function useRoomUsers() {
         socket.emit(`${SocketEvent.ROOM_USER_LEAVE_REQUEST}`, roomId);
     }
 
-    function handleUserJoined(roomUser: IRoomUser) {
+    function handleUserJoinBroadcast(roomUser: IRoomUser) {
         console.log(`handleUserJoined roomUser: ${JSON.stringify(roomUser)}`);
     }
 
-    function handleUserLeft(roomUser: IRoomUser) {
+    function handleUserLeaveBroadcast(roomUser: IRoomUser) {
         console.log(`handleUserLeft roomUser: ${JSON.stringify(roomUser)}`);
     }
 
-    function handleUsersUpdated(newRoomUsers: IRoomUser[]) {
-        console.log(`handleUsersUpdated roomUsers: ${JSON.stringify(newRoomUsers)}`);
+    function handleUsersStateSync(newRoomUsers: IRoomUser[]) {
+        console.log(`handleUsersStateSynced roomUsers: ${JSON.stringify(newRoomUsers)}`);
 
         roomUsers.value = newRoomUsers;
     }
 
     onMounted(() => {
         console.log('[RoomUserPool] mounted, now listening...')
-        socket.on(`${SocketEvent.ROOM_USER_JOIN_BROADCAST}`, handleUserJoined);
-        socket.on(`${SocketEvent.ROOM_USER_LEAVE_BROADCAST}`, handleUserLeft);
-        socket.on(`${SocketEvent.ROOM_USERS_UPDATE_BROADCAST}`, handleUsersUpdated);
+        socket.on(`${SocketEvent.ROOM_USER_JOIN_BROADCAST}`, handleUserJoinBroadcast);
+        socket.on(`${SocketEvent.ROOM_USER_LEAVE_BROADCAST}`, handleUserLeaveBroadcast);
+        socket.on(`${SocketEvent.ROOM_USERS_STATE_SYNC_ALL}`, handleUsersStateSync);
     });
 
     onUnmounted(() => {
-        socket.off(`${SocketEvent.ROOM_USER_JOIN_BROADCAST}`, handleUserJoined);
-        socket.off(`${SocketEvent.ROOM_USER_LEAVE_BROADCAST}`, handleUserLeft);
-        socket.off(`${SocketEvent.ROOM_USERS_UPDATE_BROADCAST}`, handleUsersUpdated);
+        socket.off(`${SocketEvent.ROOM_USER_JOIN_BROADCAST}`);
+        socket.off(`${SocketEvent.ROOM_USER_LEAVE_BROADCAST}`);
+        socket.off(`${SocketEvent.ROOM_USERS_STATE_SYNC_ALL}`);
     });
 
     return {

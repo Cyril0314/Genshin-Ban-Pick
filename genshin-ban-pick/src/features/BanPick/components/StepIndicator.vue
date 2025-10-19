@@ -1,19 +1,22 @@
 <!-- src/features/BanPick/components/StepIndicator.vue -->
 <script setup lang="ts">
+
+import { storeToRefs, } from 'pinia';
 import { ref, computed, watch } from 'vue'
 
 import { useTeamTheme } from '@/composables/useTeamTheme';
-import { useBanPickStep } from '@/features/BanPick/composables/useBanPickStep'
+import { useBanPickStepStore } from '@/stores/banPickStepStore';
 
 const active = ref(false)
-const { currentStep } = useBanPickStep()
+const banPickStepStore = useBanPickStepStore()
+const { currentStep } = storeToRefs(banPickStepStore)
 
 const currentTeam = computed(() => {
   return currentStep.value?.team
 })
 
 const displayText = computed(() => {
-  console.log(`localStep ${currentStep.value}`);
+  console.log(`localStep ${JSON.stringify(currentStep.value)}`);
   if (!currentStep.value) return '選角結束'
   const input = `${currentStep.value.zoneId}`
   const output = input
@@ -21,10 +24,10 @@ const displayText = computed(() => {
     .replace(/^zone-pick-(\d+)$/, 'Pick $1')
     .replace(/^zone-utility-(\d+)$/, 'Utility $1')
 
-  return `輪到 ${currentStep.value.team.name}\n選擇 ${output} 角色`
+  return `輪到 ${currentTeam.value?.name}\n選擇 ${output} 角色`
 })
 
-watch(currentStep, () => {
+watch(currentTeam, () => {
   active.value = true
   setTimeout(() => (active.value = false), 1200)
 })
@@ -32,8 +35,8 @@ watch(currentStep, () => {
 </script>
 
 <template>
-  <div class="step-indicator" :class="{ active }" v-if="currentTeam"
-    :style="useTeamTheme(currentTeam.id).themeVars.value">
+  <div class="step-indicator" :class="{ active }"
+    :style="useTeamTheme(currentTeam?.id ?? 0).themeVars.value">
     {{ displayText }}
   </div>
 </template>

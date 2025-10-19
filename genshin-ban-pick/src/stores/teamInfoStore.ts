@@ -1,7 +1,7 @@
 // src/stores/teamInfoStore.ts
 
 import { defineStore } from 'pinia';
-import { ref, computed, toRaw, reactive, watch } from 'vue';
+import { ref, computed, toRaw, watch } from 'vue';
 
 import type { ITeam, TeamMembersMap } from '@/types/ITeam';
 
@@ -46,7 +46,6 @@ export const useTeamInfoStore = defineStore('teamInfo', () => {
 
     function setTeamMembers(teamId: number, members: string) {
         console.log(`[DEBUG] setTeamMembers teamId ${teamId} members ${members}`);
-        // teamMembersMap.value[teamId] = members;
         teamMembersMap.value[teamId] = members;
         console.log('after setTeamMembers', toRaw(teamMembersMap));
     }
@@ -55,9 +54,7 @@ export const useTeamInfoStore = defineStore('teamInfo', () => {
         console.log('[DEBUG] setTeamMembersMap');
         for (const [id, members] of Object.entries(newTeamMembersMap)) {
             const teamId = Number(id);
-            if (teamMembersMap.value[teamId]) {
-                teamMembersMap.value[teamId] = members;
-            }
+            teamMembersMap.value[teamId] = members;
         }
     }
 
@@ -65,5 +62,5 @@ export const useTeamInfoStore = defineStore('teamInfo', () => {
         teamMembersMap.value = {}
     }
 
-    return { teamInfoPair, teamMembersMap, initTeams, setTeamMembers, setTeamMembersMap, reset };
+    return { currentTeams, teamInfoPair, teamMembersMap, initTeams, setTeamMembers, setTeamMembersMap, reset };
 });

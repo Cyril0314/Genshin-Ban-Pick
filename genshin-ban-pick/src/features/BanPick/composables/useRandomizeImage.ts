@@ -6,25 +6,25 @@
 export function handleUtilityRandom({
   roomSetting,
   filteredImageIds,
-  imageMap,
-  handleImageDropped,
+  boardImageMap,
+  handleBoardImageDrop,
 }: {
   roomSetting: any
   filteredImageIds: string[]
-  imageMap: Record<string, string>
-  handleImageDropped: ({ imgId, zoneId }: { imgId: string; zoneId: string }) => void
+  boardImageMap: Record<string, string>
+  handleBoardImageDrop: ({ imgId, zoneId }: { imgId: string; zoneId: string }) => void
 }) {
   const utilityZoneIds = Array.from(
     { length: roomSetting.numberOfUtility },
     (_, i) => `zone-utility-${i + 1}`,
   )
-  const emptyZoneId = utilityZoneIds.find((id) => !imageMap[id])
+  const emptyZoneId = utilityZoneIds.find((id) => !boardImageMap[id])
   if (!emptyZoneId) return
 
-  const randomId = getRandomId(filteredImageIds, imageMap)
+  const randomId = getRandomId(filteredImageIds, boardImageMap)
   if (!randomId) return
 
-  handleImageDropped({ imgId: randomId, zoneId: emptyZoneId })
+  handleBoardImageDrop({ imgId: randomId, zoneId: emptyZoneId })
 }
 
 /**
@@ -33,15 +33,15 @@ export function handleUtilityRandom({
 export function handleBanRandom({
   roomSetting,
   filteredImageIds,
-  imageMap,
-  handleImageDropped,
+  boardImageMap,
+  handleBoardImageDrop,
 }: {
   roomSetting: any
   filteredImageIds: string[]
-  imageMap: Record<string, string>
-  handleImageDropped: ({ imgId, zoneId }: { imgId: string; zoneId: string }) => void
+  boardImageMap: Record<string, string>
+  handleBoardImageDrop: ({ imgId, zoneId }: { imgId: string; zoneId: string }) => void
 }) {
-  handleActionRandom({ roomSetting, filteredImageIds, imageMap, handleImageDropped, action: 'ban' })
+  handleActionRandom({ roomSetting, filteredImageIds, boardImageMap, handleBoardImageDrop, action: 'ban' })
 }
 
 /**
@@ -50,43 +50,43 @@ export function handleBanRandom({
 export function handlePickRandom({
   roomSetting,
   filteredImageIds,
-  imageMap,
-  handleImageDropped,
+  boardImageMap,
+  handleBoardImageDrop,
 }: {
   roomSetting: any
   filteredImageIds: string[]
-  imageMap: Record<string, string>
-  handleImageDropped: ({ imgId, zoneId }: { imgId: string; zoneId: string }) => void
+  boardImageMap: Record<string, string>
+  handleBoardImageDrop: ({ imgId, zoneId }: { imgId: string; zoneId: string }) => void
 }) {
-  handleActionRandom({ roomSetting, filteredImageIds, imageMap, handleImageDropped, action: 'pick' })
+  handleActionRandom({ roomSetting, filteredImageIds, boardImageMap, handleBoardImageDrop, action: 'pick' })
 }
 
 function handleActionRandom({
   roomSetting,
   filteredImageIds,
-  imageMap,
-  handleImageDropped,
+  boardImageMap,
+  handleBoardImageDrop,
   action,
 }: {
   roomSetting: any
   filteredImageIds: string[]
-  imageMap: Record<string, string>
-  handleImageDropped: ({ imgId, zoneId }: { imgId: string; zoneId: string }) => void
+  boardImageMap: Record<string, string>
+  handleBoardImageDrop: ({ imgId, zoneId }: { imgId: string; zoneId: string }) => void
   action: 'ban' | 'pick'
 }) {
   const step = roomSetting.banPickSteps.find(
-    (step: any) => step.action === action && !imageMap[step.zoneId],
+    (step: any) => step.action === action && !boardImageMap[step.zoneId],
   )
   if (!step) return
 
-  const randomId = getRandomId(filteredImageIds, imageMap)
+  const randomId = getRandomId(filteredImageIds, boardImageMap)
   if (!randomId) return
 
-  handleImageDropped({ imgId: randomId, zoneId: step.zoneId })
+  handleBoardImageDrop({ imgId: randomId, zoneId: step.zoneId })
 }
 
-function getRandomId(filteredImageIds: string[], imageMap: Record<string, string>): string | null {
-  const usedImageIds = Object.values(imageMap)
+function getRandomId(filteredImageIds: string[], boardImageMap: Record<string, string>): string | null {
+  const usedImageIds = Object.values(boardImageMap)
   const availableIds = filteredImageIds.filter((id) => !usedImageIds.includes(id))
   if (availableIds.length === 0) {
     console.warn('[getRandomId] 沒有可選的角色（都用完了）')

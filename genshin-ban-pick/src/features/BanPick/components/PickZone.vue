@@ -6,7 +6,7 @@ import DropZone from './DropZone.vue'
 const props = defineProps<{
   zones?: number[]
   side: 'left' | 'right'
-  imageMap: Record<string, string>
+  boardImageMap: Record<string, string>
 }>()
 
 const emit = defineEmits<{
@@ -44,7 +44,7 @@ function handleImageRestore({ imgId }: { imgId: string }) {
         v-for="n in col"
         :key="n"
         :zoneId="`zone-pick-${n + 1}`"
-        :imageMap="props.imageMap"
+        :boardImageMap="props.boardImageMap"
         :label="`Pick ${n + 1}`"
         type="pick"
         :labelColor="side === 'left' ? 'var(--md-sys-color-secondary-container)' : 'var(--md-sys-color-tertiary-container)'"

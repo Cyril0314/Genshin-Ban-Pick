@@ -17,7 +17,6 @@ import {
   generateBanOrder,
   generatePickOrder,
 } from '@/features/BanPick/composables/useBanPickOrder'
-import { useBanPickStep } from '@/features/BanPick/composables/useBanPickStep'
 import CharacterSelector from '@/features/CharacterSelector/CharacterSelector.vue'
 import ChatRoom from '@/features/ChatRoom/ChatRoom.vue'
 import RoomUserPool from '@/features/RoomUserPool/RoomUserPool.vue'
@@ -28,7 +27,7 @@ import TeamInfo from '@/features/Team/TeamInfo.vue'
 const props = defineProps<{
   roomSetting: IRoomSetting
   characterMap: Record<string, ICharacter>
-  imageMap: Record<string, string>
+  boardImageMap: Record<string, string>
 }>()
 
 const { teamInfoPair } = useTeamInfoSync()
@@ -49,8 +48,6 @@ const banZones = computed(() =>
 const pickZones = computed(() =>
   generatePickOrder(props.roomSetting.numberOfPick, props.roomSetting.totalRounds),
 )
-
-const { currentStep } = useBanPickStep()
 
 function handleImageDropped({ imgId, zoneId }: { imgId: string; zoneId: string }) {
   console.log(`BanPickBoard handleImageDropped imgId ${imgId} zoneId ${zoneId}`)
@@ -81,70 +78,40 @@ console.log(`[BanPickBoard] pickZones: left ${pickZones.value.left} right ${pick
 <template>
   <div class="layout__main">
     <div class="layout__side layout__side--left">
-      <TeamInfo
-        side='left'
-        v-if="teamInfoPair"
-        :teamId="teamInfoPair.left.id"
-      />
-      <PickZone
-        :zones="pickZones.left"
-        side="left"
-        :imageMap="props.imageMap"
-        @image-drop="handleImageDropped"
-        @image-restore="handleImageRestore"
-      />
+      <TeamInfo side='left' v-if="teamInfoPair" :teamId="teamInfoPair.left.id" />
+      <PickZone :zones="pickZones.left" side="left" :boardImageMap="props.boardImageMap"
+        @image-drop="handleImageDropped" @image-restore="handleImageRestore" />
     </div>
     <div class="layout__center">
       <div class="layout__ban-zone">
-        <BanZone
-          :zones="banZones"
-          :imageMap="props.imageMap"
-          @image-drop="handleImageDropped"
-          @image-restore="handleImageRestore"
-        />
+        <BanZone :zones="banZones" :boardImageMap="props.boardImageMap" @image-drop="handleImageDropped"
+          @image-restore="handleImageRestore" />
       </div>
       <div class="layout__common">
         <div class="layout__common-side">
           <ChatRoom />
           <RoomUserPool />
-          <CharacterSelector
-            :characterMap="props.characterMap"
-            @filter-changed="handleSelectorFilterChanged"
-            @pull="handleSelectorPull"
-          />
+          <CharacterSelector :characterMap="props.characterMap" @filter-changed="handleSelectorFilterChanged"
+            @pull="handleSelectorPull" />
         </div>
         <div class="layout__common-center">
           <div class="layout__step-indicator">
-            <StepIndicator 
-              :step="currentStep" />
+            <StepIndicator />
           </div>
           <div class="layout__utility-zone">
-            <UtilityZone
-              :zones="utilityZones"
-              :imageMap="props.imageMap"
-              @image-drop="handleImageDropped"
-              @image-restore="handleImageRestore"
-            />
+            <UtilityZone :zones="utilityZones" :boardImageMap="props.boardImageMap" @image-drop="handleImageDropped"
+              @image-restore="handleImageRestore" />
           </div>
         </div>
         <div class="layout__common-side">
-          <TacticalBoardPanel />
+          <TacticalBoardPanel v-if="teamInfoPair" :teamInfoPair="teamInfoPair" />
         </div>
       </div>
     </div>
     <div class="layout__side layout__side--right">
-      <TeamInfo 
-        side='right'
-        v-if="teamInfoPair"
-        :teamId="teamInfoPair.right.id"
-      />
-      <PickZone
-        :zones="pickZones.right"
-        side="right"
-        :imageMap="props.imageMap"
-        @image-drop="handleImageDropped"
-        @image-restore="handleImageRestore"
-      />
+      <TeamInfo side='right' v-if="teamInfoPair" :teamId="teamInfoPair.right.id" />
+      <PickZone :zones="pickZones.right" side="right" :boardImageMap="props.boardImageMap"
+        @image-drop="handleImageDropped" @image-restore="handleImageRestore" />
     </div>
   </div>
 </template>
