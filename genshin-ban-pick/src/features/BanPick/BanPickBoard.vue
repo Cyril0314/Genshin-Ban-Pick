@@ -10,13 +10,8 @@ import UtilityZone from './components/UtilityZone.vue'
 
 import type { ICharacter } from '@/types/ICharacter'
 import type { IRoomSetting } from '@/types/IRoomSetting'
-import type { IZoneImageEntry, ZoneType } from '@/types/IZone'
+import type { ZoneType } from '@/types/IZone'
 
-import {
-  generateUtilityOrder,
-  generateBanOrder,
-  generatePickOrder,
-} from '@/features/BanPick/composables/useBanPickOrder'
 import CharacterSelector from '@/features/CharacterSelector/CharacterSelector.vue'
 import ChatRoom from '@/features/ChatRoom/ChatRoom.vue'
 import RoomUserPool from '@/features/RoomUserPool/RoomUserPool.vue'
@@ -27,36 +22,29 @@ import TeamInfo from '@/features/Team/TeamInfo.vue'
 const props = defineProps<{
   roomSetting: IRoomSetting
   characterMap: Record<string, ICharacter>
-  boardImageMap: Record<string, IZoneImageEntry>
+  boardImageMap: Record<number, string>
 }>()
 
 const { teamInfoPair } = useTeamInfoSync()
 
 const emit = defineEmits<{
-  (e: 'image-drop', payload: { zoneImageEntry: IZoneImageEntry; zoneKey: string }): void
-  (e: 'image-restore', payload: { zoneKey: string }): void
+  (e: 'image-drop', payload: { imgId: string; zoneId: number }): void
+  (e: 'image-restore', payload: { zoneId: number }): void
   (e: 'filter-changed', filters: Record<string, string[]>): void
   (e: 'pull', payload: { zoneType: ZoneType }): void
 }>()
 
-const utilityZones = computed(() => generateUtilityOrder(props.roomSetting.numberOfUtility))
+const maxPerRow = 8
+const maxPerColumn = 8
 
-const banZones = computed(() =>
-  generateBanOrder(props.roomSetting.numberOfBan, 8, props.roomSetting.totalRounds),
-)
-
-const pickZones = computed(() =>
-  generatePickOrder(props.roomSetting.numberOfPick, props.roomSetting.totalRounds),
-)
-
-function handleImageDropped({ zoneImageEntry, zoneKey }: { zoneImageEntry: IZoneImageEntry; zoneKey: string }) {
-  console.log(`BanPickBoard handleImageDropped zoneImageEntry ${zoneImageEntry} zoneKey ${zoneKey}`)
-  emit('image-drop', { zoneImageEntry, zoneKey })
+function handleImageDropped({ imgId, zoneId }: { imgId: string; zoneId: number }) {
+  console.log(`BanPickBoard handleImageDropped imgId ${imgId} zoneKey ${zoneId}`)
+  emit('image-drop', { imgId, zoneId })
 }
 
-function handleImageRestore({ zoneKey }: { zoneKey: string }) {
-  console.log(`BanPickBoard handleImageRestore zoneKey ${zoneKey}`)
-  emit('image-restore', { zoneKey })
+function handleImageRestore({ zoneId }: { zoneId: number }) {
+  console.log(`BanPickBoard handleImageRestore zoneId ${zoneId}`)
+  emit('image-restore', { zoneId })
 }
 
 function handleSelectorFilterChanged(filters: Record<string, string[]>) {
@@ -69,9 +57,6 @@ function handleSelectorPull({ zoneType }: { zoneType: ZoneType }) {
 
 console.log('[BanPickBoard] setup start')
 console.log('[BanPickBoard] props.roomSetting', props.roomSetting)
-console.log(`[BanPickBoard] utilityZones: ${utilityZones.value}`)
-console.log(`[BanPickBoard] banZones: ${banZones.value}`)
-console.log(`[BanPickBoard] pickZones: left ${pickZones.value.left} right ${pickZones.value.right}`)
 
 </script>
 
@@ -79,12 +64,12 @@ console.log(`[BanPickBoard] pickZones: left ${pickZones.value.left} right ${pick
   <div class="layout__main">
     <div class="layout__side layout__side--left">
       <TeamInfo side='left' v-if="teamInfoPair" :teamId="teamInfoPair.left.id" />
-      <PickZone :zones="pickZones.left" side="left" :boardImageMap="props.boardImageMap"
+      <PickZone :zones="props.roomSetting.zoneSchema.leftPickZones" :maxPerColumn="maxPerColumn" side="left" :boardImageMap="props.boardImageMap"
         @image-drop="handleImageDropped" @image-restore="handleImageRestore" />
     </div>
     <div class="layout__center">
       <div class="layout__ban-zone">
-        <BanZone :zones="banZones" :boardImageMap="props.boardImageMap" @image-drop="handleImageDropped"
+        <BanZone :zones="props.roomSetting.zoneSchema.banZones" :maxPerRow="maxPerRow" :boardImageMap="props.boardImageMap" @image-drop="handleImageDropped"
           @image-restore="handleImageRestore" />
       </div>
       <div class="layout__common">
@@ -99,7 +84,7 @@ console.log(`[BanPickBoard] pickZones: left ${pickZones.value.left} right ${pick
             <StepIndicator />
           </div>
           <div class="layout__utility-zone">
-            <UtilityZone :zones="utilityZones" :boardImageMap="props.boardImageMap" @image-drop="handleImageDropped"
+            <UtilityZone :zones="props.roomSetting.zoneSchema.utilityZones" :boardImageMap="props.boardImageMap" @image-drop="handleImageDropped"
               @image-restore="handleImageRestore" />
           </div>
         </div>
@@ -110,7 +95,7 @@ console.log(`[BanPickBoard] pickZones: left ${pickZones.value.left} right ${pick
     </div>
     <div class="layout__side layout__side--right">
       <TeamInfo side='right' v-if="teamInfoPair" :teamId="teamInfoPair.right.id" />
-      <PickZone :zones="pickZones.right" side="right" :boardImageMap="props.boardImageMap"
+      <PickZone :zones="props.roomSetting.zoneSchema.rightPickZones" :maxPerColumn="maxPerColumn" side="right" :boardImageMap="props.boardImageMap"
         @image-drop="handleImageDropped" @image-restore="handleImageRestore" />
     </div>
   </div>

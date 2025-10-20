@@ -1,17 +1,16 @@
 // backend/src/factories/roomSettingFactory.ts
 
-import { numberOfUtility, numberOfBan, numberOfPick, totalRounds, teams } from "../constants/constants.js";
-import { generateBanPickSteps } from "../utils/banPickSteps.js";
+import { numberOfUtility, numberOfBan, numberOfPick, totalRounds, teams } from "../constants/constants.ts";
+import { createZoneSchema } from "../utils/zoneSchema.ts";
+import { generateBanPickSteps } from "../utils/banPickSteps.ts";
 
 export function createRoomSetting() {
-    const banPickSteps = generateBanPickSteps(numberOfBan, numberOfPick, teams, totalRounds);
+    const zoneSchema = createZoneSchema(numberOfUtility, numberOfBan, numberOfPick, totalRounds)
+    const banPickSteps = generateBanPickSteps(zoneSchema.banZones, zoneSchema.leftPickZones, zoneSchema.rightPickZones, totalRounds, teams);
 
     return {
-        numberOfUtility,
-        numberOfBan,
-        numberOfPick,
-        totalRounds,
-        teams,
+        zoneSchema,
         banPickSteps,
+        teams,
     };
 }

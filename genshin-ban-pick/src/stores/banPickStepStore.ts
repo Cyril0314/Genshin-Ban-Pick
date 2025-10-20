@@ -4,7 +4,6 @@ import { defineStore } from 'pinia';
 import { ref, computed, watch } from 'vue';
 
 import type { IBanPickStep } from '@/types/IBanPickStep';
-import type { IZone } from '@/types/IZone';
 
 export const useBanPickStepStore = defineStore('banPickStep', () => {
     const banPickSteps = ref<IBanPickStep[]>([]);
@@ -34,12 +33,10 @@ export const useBanPickStepStore = defineStore('banPickStep', () => {
         stepIndex.value = index
     }
 
-    function isCurrentStepZone(zone: IZone) {
-        const currentZone = currentStep.value?.zone
-        if (!currentZone) return false;
-        const isEqual = zone.id === currentZone.id && zone.zoneType === currentZone.zoneType
-        console.log(`isEqual ${isEqual}`)
-        return isEqual
+    function isCurrentStepZone(zoneId: number) {
+        const currentZoneId = currentStep.value?.zoneId
+        if (!currentZoneId) return false;
+        return currentZoneId === zoneId
     }
 
     return { banPickSteps, currentStep, initBanPickSteps, setStepIndex, isCurrentStepZone };

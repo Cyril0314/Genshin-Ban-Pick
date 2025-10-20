@@ -14,6 +14,7 @@ import { fetchCharacterMap } from '@/network/characterService';
 import { fetchRoomSetting } from '@/network/roomService';
 import { useTeamInfoStore } from '@/stores/teamInfoStore';
 import { useBanPickStepStore } from '@/stores/banPickStepStore';
+import { useBoardImageStore } from '@/stores/boardImageStore';
 import { ZoneType } from '@/types/IZone';
 import { useRoomUsers } from '@/features/RoomUserPool/composables/useRoomUsers';
 
@@ -41,6 +42,8 @@ onMounted(async () => {
     try {
         characterMap.value = await fetchCharacterMap();
         roomSetting.value = await fetchRoomSetting();
+        const boardImageStore = useBoardImageStore()
+        boardImageStore.initZoneMetaTable(roomSetting.value.zoneSchema.zoneMetaTable)
         const teamInfoStore = useTeamInfoStore();
         teamInfoStore.initTeams(roomSetting.value.teams);
         const banPickStepStore = useBanPickStepStore();

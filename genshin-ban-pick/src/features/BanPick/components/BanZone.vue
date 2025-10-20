@@ -2,18 +2,18 @@
 
 <script setup lang="ts">
 import DropZone from './DropZone.vue'
-import { ZoneType } from '@/types/IZone';
 
-import type { IZone, IZoneImageEntry } from '@/types/IZone';
+import type { IZone } from '@/types/IZone';
 
 const props = defineProps<{
-  zones?: number[]
-  boardImageMap: Record<string, IZoneImageEntry>
+  zones: IZone[]
+  maxPerRow: number
+  boardImageMap: Record<number, string>
 }>()
 
 const emit = defineEmits<{
-  (e: 'image-drop', payload: { zoneImageEntry: IZoneImageEntry; zoneKey: string }): void
-  (e: 'image-restore', payload: { zoneKey: string }): void
+  (e: 'image-drop', payload: { imgId: string; zoneId: number }): void
+  (e: 'image-restore', payload: { zoneId: number }): void
 }>()
 
 function chunk<T>(arr: T[], size: number): T[][] {
@@ -24,33 +24,29 @@ function chunk<T>(arr: T[], size: number): T[][] {
   return result
 }
 
-const rows = chunk(props.zones ?? [], 8)
-
-function buildZone(id: number): IZone {
-  return { id: id, zoneType: ZoneType.BAN }
-}
+const rows = chunk(props.zones ?? [], props.maxPerRow)
 
 // console.log('[BanZone] zones:', props.zones)
 
-function handleImageDropped({ zoneImageEntry, zoneKey }: { zoneImageEntry: IZoneImageEntry; zoneKey: string }) {
-  console.log(`BanZone handleImageDropped zoneImageEntry ${zoneImageEntry} zoneKey ${zoneKey}`)
-  emit('image-drop', { zoneImageEntry, zoneKey })
+function handleImageDropped({ imgId, zoneId }: { imgId: string; zoneId: number }) {
+  console.log(`BanZone handleImageDropped imgId ${imgId} zoneId ${zoneId}`)
+  emit('image-drop', { imgId, zoneId })
 }
 
-function handleImageRestore({ zoneKey }: { zoneKey: string }) {
-  console.log(`BanZone handleImageRestore zoneImageEntry ${zoneKey}`)
-  emit('image-restore', { zoneKey })
+function handleImageRestore({ zoneId }: { zoneId: number }) {
+  console.log(`BanZone handleImageRestore zoneId ${zoneId}`)
+  emit('image-restore', { zoneId })
 }
 </script>
 
 <template>
   <div class="ban-zone__rows">
     <div class="grid__row" v-for="(row, rowIndex) in rows" :key="rowIndex">
-      <template v-for="(n, colIndex) in row" :key="n">
+      <template v-for="(zone, colIndex) in row" :key="zone">
       <DropZone
-        :zone="buildZone(n + 1)"
+        :zone="zone"
         :boardImageMap="props.boardImageMap"
-        :label="`Ban ${n + 1}`"
+        :label="`Ban ${zone.order + 1}`"
         :labelColor="'var(--md-sys-color-error)'"
         @image-drop="handleImageDropped"
         @image-restore="handleImageRestore"

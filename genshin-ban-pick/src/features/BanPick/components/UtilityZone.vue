@@ -2,18 +2,17 @@
  
 <script setup lang="ts">
 import DropZone from './DropZone.vue'
-import { ZoneType } from '@/types/IZone';
 
-import type { IZone, IZoneImageEntry } from '@/types/IZone';
+import type { IZone } from '@/types/IZone';
 
 const props = defineProps<{
-  zones?: number[]
-  boardImageMap: Record<string, IZoneImageEntry>
+  zones: IZone[]
+  boardImageMap: Record<number, string>
 }>()
 
 const emit = defineEmits<{
-  (e: 'image-drop', payload: { zoneImageEntry: IZoneImageEntry; zoneKey: string }): void
-  (e: 'image-restore', payload: { zoneKey: string }): void
+  (e: 'image-drop', payload: { imgId: string; zoneId: number }): void
+  (e: 'image-restore', payload: { zoneId: number }): void
 }>()
 
 function chunk<T>(arr: T[], size: number): T[][] {
@@ -26,20 +25,16 @@ function chunk<T>(arr: T[], size: number): T[][] {
 
 const columns = chunk(props.zones ?? [], 4)
 
-function buildZone(id: number): IZone {
-  return { id: id, zoneType: ZoneType.UTILITY }
-}
-
 // console.log('[UtilityZone] zones:', props.zones)
 
-function handleImageDropped({ zoneImageEntry, zoneKey }: { zoneImageEntry: IZoneImageEntry; zoneKey: string }) {
-  console.log(`UtilityZone handleImageDropped zoneImageEntry ${zoneImageEntry} zoneKey ${zoneKey}`)
-  emit('image-drop', { zoneImageEntry, zoneKey })
+function handleImageDropped({ imgId, zoneId }: { imgId: string; zoneId: number }) {
+  console.log(`UtilityZone handleImageDropped imgId ${imgId} zoneId ${zoneId}`)
+  emit('image-drop', { imgId, zoneId })
 }
 
-function handleImageRestore({ zoneKey }: { zoneKey: string }) {
-  console.log(`UtilityZone handleImageRestore zoneImageEntry ${zoneKey}`)
-  emit('image-restore', { zoneKey })
+function handleImageRestore({ zoneId }: { zoneId: number }) {
+  console.log(`UtilityZone handleImageRestore zoneId ${zoneId}`)
+  emit('image-restore', { zoneId })
 }
 </script>
 
@@ -47,9 +42,8 @@ function handleImageRestore({ zoneKey }: { zoneKey: string }) {
   <div class="utility-zone__columns">
     <div class="grid__column grid__column--center" v-for="(col, index) in columns" :key="index">
       <DropZone
-        v-for="n in col"
-        :key="n"
-        :zone="buildZone(n + 1)"
+        v-for="zone in col"
+        :zone="zone"
         :boardImageMap="props.boardImageMap"
         :label="`Utility`"
         :labelColor="'var(--md-sys-color-on-primary-container)'"

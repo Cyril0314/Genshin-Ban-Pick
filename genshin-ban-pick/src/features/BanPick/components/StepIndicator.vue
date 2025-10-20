@@ -4,31 +4,37 @@ import { storeToRefs } from 'pinia';
 import { ref, computed, watch } from 'vue';
 
 import { useTeamTheme } from '@/composables/useTeamTheme';
+import { useBoardImageStore } from '@/stores/boardImageStore';
+import { useTeamInfoStore } from '@/stores/teamInfoStore';
 import { useBanPickStepStore } from '@/stores/banPickStepStore';
 import { ZoneType } from '@/types/IZone';
 
 const active = ref(false);
 const banPickStepStore = useBanPickStepStore();
 const { currentStep } = storeToRefs(banPickStepStore);
+const boardImageStore = useBoardImageStore();
+const { zoneMetaTable } = storeToRefs(boardImageStore);
+const teamInfoStore = useTeamInfoStore();
+const { currentTeams } = storeToRefs(teamInfoStore);
 
 const currentTeam = computed(() => {
-    return currentStep.value?.team;
+    return currentTeams.value.find((team) => team.id == currentStep.value?.teamId)
 });
 
 const displayText = computed(() => {
     console.log(`localStep ${JSON.stringify(currentStep.value)}`);
     if (!currentStep.value) return '選角結束';
-    const currentZone = currentStep.value.zone
+    const currentZone = zoneMetaTable.value[currentStep.value.zoneId]
     let currentZoneName: string
-    switch (currentZone.zoneType) {
+    switch (currentZone.type) {
       case ZoneType.BAN:
-        currentZoneName = `Ban ${currentZone.id}`
+        currentZoneName = `Ban ${currentZone.order + 1}`
         break
       case ZoneType.PICK:
-        currentZoneName = `Pick ${currentZone.id}`
+        currentZoneName = `Pick ${currentZone.order + 1}`
         break
       case ZoneType.UTILITY:
-        currentZoneName = `Utility ${currentZone.id}`
+        currentZoneName = `Utility ${currentZone.order + 1}`
         break
     }
     return `輪到 ${currentTeam.value?.name}\n選擇 ${currentZoneName} 角色`;

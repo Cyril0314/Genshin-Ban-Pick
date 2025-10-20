@@ -2,19 +2,19 @@
 
 <script setup lang="ts">
 import DropZone from './DropZone.vue'
-import { ZoneType } from '@/types/IZone';
 
-import type { IZone, IZoneImageEntry } from '@/types/IZone';
+import type { IZone } from '@/types/IZone';
 
 const props = defineProps<{
-  zones?: number[]
+  zones: IZone[]
   side: 'left' | 'right'
-  boardImageMap: Record<string, IZoneImageEntry>
+  maxPerColumn: number
+  boardImageMap: Record<number, string>
 }>()
 
 const emit = defineEmits<{
-  (e: 'image-drop', payload: { zoneImageEntry: IZoneImageEntry; zoneKey: string }): void
-  (e: 'image-restore', payload: { zoneKey: string }): void
+  (e: 'image-drop', payload: { imgId: string; zoneId: number }): void
+  (e: 'image-restore', payload: { zoneId: number }): void
 }>()
 
 function chunk<T>(arr: T[], size: number): T[][] {
@@ -25,22 +25,18 @@ function chunk<T>(arr: T[], size: number): T[][] {
   return result
 }
 
-const columns = chunk(props.zones ?? [], 8)
-
-function buildZone(id: number): IZone {
-  return { id: id, zoneType: ZoneType.PICK }
-}
+const columns = chunk(props.zones ?? [], props.maxPerColumn)
 
 // console.log('[PickZone] zones:', props.zones)
 
-function handleImageDropped({ zoneImageEntry, zoneKey }: { zoneImageEntry: IZoneImageEntry; zoneKey: string }) {
-  console.log(`PickZone handleImageDropped zoneImageEntry ${zoneImageEntry} zoneKey ${zoneKey}`)
-  emit('image-drop', { zoneImageEntry, zoneKey })
+function handleImageDropped({ imgId, zoneId }: { imgId: string; zoneId: number }) {
+  console.log(`PickZone handleImageDropped imgId ${imgId} zoneId ${zoneId}`)
+  emit('image-drop', { imgId, zoneId })
 }
 
-function handleImageRestore({ zoneKey }: { zoneKey: string }) {
-  console.log(`PickZone handleImageRestore zoneKey ${zoneKey}`)
-  emit('image-restore', { zoneKey })
+function handleImageRestore({ zoneId }: { zoneId: number }) {
+  console.log(`PickZone handleImageRestore zoneId ${zoneId}`)
+  emit('image-restore', { zoneId })
 }
 </script>
 
@@ -48,11 +44,10 @@ function handleImageRestore({ zoneKey }: { zoneKey: string }) {
   <div :class="['pick-zone__columns', `pick-zone__columns--${props.side}`]">
     <div class="grid__column grid__column--side" v-for="(col, index) in columns" :key="index">
       <DropZone
-        v-for="n in col"
-        :key="n"
-        :zone="buildZone(n + 1)"
+        v-for="zone in col"
+        :zone="zone"
         :boardImageMap="props.boardImageMap"
-        :label="`Pick ${n + 1}`"
+        :label="`Pick ${zone.order + 1}`"
         :labelColor="side === 'left' ? 'var(--md-sys-color-secondary-container)' : 'var(--md-sys-color-tertiary-container)'"
         @image-drop="handleImageDropped"
         @image-restore="handleImageRestore"

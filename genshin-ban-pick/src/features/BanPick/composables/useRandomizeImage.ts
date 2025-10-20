@@ -1,7 +1,8 @@
 // src/features/BanPick/composables/useRandomizeImage.vue
 
 import type { IBanPickStep } from "@/types/IBanPickStep";
-import { getZoneKey, ZoneType, type IZoneImageEntry } from "@/types/IZone";
+import type { IRoomSetting } from "@/types/IRoomSetting";
+import { ZoneType } from "@/types/IZone";
 
 /**
  * 處理 Utility 隨機功能，利用通用的 handleActinRandom
@@ -12,23 +13,18 @@ export function handleUtilityRandom({
   boardImageMap,
   handleBoardImageDrop,
 }: {
-  roomSetting: any
+  roomSetting: IRoomSetting
   filteredImageIds: string[]
-  boardImageMap: Record<string, IZoneImageEntry>
-  handleBoardImageDrop: ({ zoneImageEntry, zoneKey }: { zoneImageEntry: IZoneImageEntry; zoneKey: string }) => void
+  boardImageMap: Record<number, string>
+  handleBoardImageDrop: ({ imgId, zoneId }: { imgId: string; zoneId: number }) => void
 }) {
-  const utilityZones = Array.from(
-    { length: roomSetting.numberOfUtility },
-    (_, i) => {  return { id: i + 1, zoneType: ZoneType.UTILITY } },
-  )
-  const emptyZone = utilityZones.find((zone) => !boardImageMap[getZoneKey(zone)])
+  const utilityZones = roomSetting.zoneSchema.utilityZones
+  const emptyZone = utilityZones.find((zone) => !boardImageMap[zone.id])
   if (!emptyZone) return
 
   const randomId = getRandomId(filteredImageIds, boardImageMap)
   if (!randomId) return
-  const zoneKey = getZoneKey(emptyZone)
-  const zoneImageEntry = { zone: emptyZone, imgId: randomId }
-  handleBoardImageDrop({ zoneImageEntry, zoneKey })
+  handleBoardImageDrop({ imgId: randomId, zoneId: emptyZone.id })
 }
 
 /**
@@ -40,10 +36,10 @@ export function handleBanRandom({
   boardImageMap,
   handleBoardImageDrop,
 }: {
-  roomSetting: any
+  roomSetting: IRoomSetting
   filteredImageIds: string[]
-  boardImageMap: Record<string, IZoneImageEntry>
-  handleBoardImageDrop: ({ zoneImageEntry, zoneKey }: { zoneImageEntry: IZoneImageEntry; zoneKey: string }) => void
+  boardImageMap: Record<number, string>
+  handleBoardImageDrop: ({ imgId, zoneId }: { imgId: string; zoneId: number }) => void
 }) {
   handleActionRandom({ roomSetting, filteredImageIds, boardImageMap, handleBoardImageDrop, action: 'ban' })
 }
@@ -57,10 +53,10 @@ export function handlePickRandom({
   boardImageMap,
   handleBoardImageDrop,
 }: {
-  roomSetting: any
+  roomSetting: IRoomSetting
   filteredImageIds: string[]
-  boardImageMap: Record<string, IZoneImageEntry>
-  handleBoardImageDrop: ({ zoneImageEntry, zoneKey }: { zoneImageEntry: IZoneImageEntry; zoneKey: string }) => void
+  boardImageMap: Record<number, string>
+  handleBoardImageDrop: ({ imgId, zoneId }: { imgId: string; zoneId: number }) => void
 }) {
   handleActionRandom({ roomSetting, filteredImageIds, boardImageMap, handleBoardImageDrop, action: 'pick' })
 }
@@ -72,26 +68,27 @@ function handleActionRandom({
   handleBoardImageDrop,
   action,
 }: {
-  roomSetting: any
+  roomSetting: IRoomSetting
   filteredImageIds: string[]
-  boardImageMap: Record<string, IZoneImageEntry>
-  handleBoardImageDrop: ({ zoneImageEntry, zoneKey }: { zoneImageEntry: IZoneImageEntry; zoneKey: string }) => void
+  boardImageMap: Record<number, string>
+  handleBoardImageDrop: ({ imgId, zoneId }: { imgId: string; zoneId: number }) => void
   action: 'ban' | 'pick'
 }) {
-  const step = roomSetting.banPickSteps.find( 
-    (step: IBanPickStep) => step.zone.zoneType === action && !boardImageMap[getZoneKey(step.zone)],
+  const step = roomSetting.banPickSteps.find(
+    (step: IBanPickStep) => {
+      const zone = roomSetting.zoneSchema.zoneMetaTable[step.zoneId]
+      return zone.type === action && !boardImageMap[step.zoneId]
+    }
   )
   if (!step) return
 
   const randomId = getRandomId(filteredImageIds, boardImageMap)
   if (!randomId) return
-  const zoneKey = getZoneKey(step.zone)
-  const zoneImageEntry = { zone: step.zone, imgId: randomId }
-  handleBoardImageDrop({ zoneImageEntry, zoneKey })
+  handleBoardImageDrop({ imgId: randomId, zoneId: step.zoneId })
 }
 
-function getRandomId(filteredImageIds: string[], boardImageMap: Record<string, IZoneImageEntry>): string | null {
-  const usedImageIds = [...new Set(Object.values(boardImageMap).map(entry => entry.imgId))]
+function getRandomId(filteredImageIds: string[], boardImageMap: Record<number, string>): string | null {
+  const usedImageIds = [...new Set(Object.values(boardImageMap).map(imgId => imgId))]
   const availableIds = filteredImageIds.filter((id) => !usedImageIds.includes(id))
   if (availableIds.length === 0) {
     console.warn('[getRandomId] 沒有可選的角色（都用完了）')
