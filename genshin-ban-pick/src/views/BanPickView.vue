@@ -14,7 +14,7 @@ import { fetchCharacterMap } from '@/network/characterService';
 import { fetchRoomSetting } from '@/network/roomService';
 import { useTeamInfoStore } from '@/stores/teamInfoStore';
 import { useBanPickStepStore } from '@/stores/banPickStepStore';
-import { ZoneType } from '@/types/ZoneType';
+import { ZoneType } from '@/types/IZone';
 import { useRoomUsers } from '@/features/RoomUserPool/composables/useRoomUsers';
 
 import type { IRoomSetting } from '@/types/IRoomSetting';
@@ -81,13 +81,13 @@ function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
     switch (zoneType) {
         case ZoneType.UTILITY:
             handleUtilityRandom(ctx);
-            return
+            break
         case ZoneType.BAN:
             handleBanRandom(ctx);
-            return
+            break
         case ZoneType.PICK:
             handlePickRandom(ctx);
-            return
+            break
     }
 }
 </script>

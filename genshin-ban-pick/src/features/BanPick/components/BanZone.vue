@@ -2,15 +2,18 @@
 
 <script setup lang="ts">
 import DropZone from './DropZone.vue'
+import { ZoneType } from '@/types/IZone';
+
+import type { IZone, IZoneImageEntry } from '@/types/IZone';
 
 const props = defineProps<{
   zones?: number[]
-  boardImageMap: Record<string, string>
+  boardImageMap: Record<string, IZoneImageEntry>
 }>()
 
 const emit = defineEmits<{
-  (e: 'image-drop', payload: { imgId: string; zoneId: string }): void
-  (e: 'image-restore', payload: { imgId: string }): void
+  (e: 'image-drop', payload: { zoneImageEntry: IZoneImageEntry; zoneKey: string }): void
+  (e: 'image-restore', payload: { zoneKey: string }): void
 }>()
 
 function chunk<T>(arr: T[], size: number): T[][] {
@@ -23,16 +26,20 @@ function chunk<T>(arr: T[], size: number): T[][] {
 
 const rows = chunk(props.zones ?? [], 8)
 
-// console.log('[BanZone] zones:', props.zones)
-
-function handleImageDropped({ imgId, zoneId }: { imgId: string; zoneId: string }) {
-  console.log(`BanZone handleImageDropped imgId ${imgId} zoneId ${zoneId}`)
-  emit('image-drop', { imgId, zoneId })
+function buildZone(id: number): IZone {
+  return { id: id, zoneType: ZoneType.BAN }
 }
 
-function handleImageRestore({ imgId }: { imgId: string }) {
-  console.log(`BanZone handleImageRestore imgId ${imgId}`)
-  emit('image-restore', { imgId })
+// console.log('[BanZone] zones:', props.zones)
+
+function handleImageDropped({ zoneImageEntry, zoneKey }: { zoneImageEntry: IZoneImageEntry; zoneKey: string }) {
+  console.log(`BanZone handleImageDropped zoneImageEntry ${zoneImageEntry} zoneKey ${zoneKey}`)
+  emit('image-drop', { zoneImageEntry, zoneKey })
+}
+
+function handleImageRestore({ zoneKey }: { zoneKey: string }) {
+  console.log(`BanZone handleImageRestore zoneImageEntry ${zoneKey}`)
+  emit('image-restore', { zoneKey })
 }
 </script>
 
@@ -41,10 +48,9 @@ function handleImageRestore({ imgId }: { imgId: string }) {
     <div class="grid__row" v-for="(row, rowIndex) in rows" :key="rowIndex">
       <template v-for="(n, colIndex) in row" :key="n">
       <DropZone
-        :zoneId="`zone-ban-${n + 1}`"
+        :zone="buildZone(n + 1)"
         :boardImageMap="props.boardImageMap"
         :label="`Ban ${n + 1}`"
-        type="ban"
         :labelColor="'var(--md-sys-color-error)'"
         @image-drop="handleImageDropped"
         @image-restore="handleImageRestore"

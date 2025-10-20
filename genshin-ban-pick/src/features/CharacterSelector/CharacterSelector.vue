@@ -8,7 +8,7 @@ import { useSelectorOptions } from './composables/useSelectorOptions'
 
 import type { ICharacter } from '@/types/ICharacter'
 
-import { ZoneType } from '@/types/ZoneType'
+import { ZoneType } from '@/types/IZone'
 
 import 'vue-select/dist/vue-select.css'
 // @ts-ignore

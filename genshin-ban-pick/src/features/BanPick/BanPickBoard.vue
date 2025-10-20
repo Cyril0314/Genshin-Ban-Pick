@@ -10,7 +10,7 @@ import UtilityZone from './components/UtilityZone.vue'
 
 import type { ICharacter } from '@/types/ICharacter'
 import type { IRoomSetting } from '@/types/IRoomSetting'
-import type { ZoneType } from '@/types/ZoneType'
+import type { IZoneImageEntry, ZoneType } from '@/types/IZone'
 
 import {
   generateUtilityOrder,
@@ -27,14 +27,14 @@ import TeamInfo from '@/features/Team/TeamInfo.vue'
 const props = defineProps<{
   roomSetting: IRoomSetting
   characterMap: Record<string, ICharacter>
-  boardImageMap: Record<string, string>
+  boardImageMap: Record<string, IZoneImageEntry>
 }>()
 
 const { teamInfoPair } = useTeamInfoSync()
 
 const emit = defineEmits<{
-  (e: 'image-drop', payload: { imgId: string; zoneId: string }): void
-  (e: 'image-restore', payload: { imgId: string }): void
+  (e: 'image-drop', payload: { zoneImageEntry: IZoneImageEntry; zoneKey: string }): void
+  (e: 'image-restore', payload: { zoneKey: string }): void
   (e: 'filter-changed', filters: Record<string, string[]>): void
   (e: 'pull', payload: { zoneType: ZoneType }): void
 }>()
@@ -49,14 +49,14 @@ const pickZones = computed(() =>
   generatePickOrder(props.roomSetting.numberOfPick, props.roomSetting.totalRounds),
 )
 
-function handleImageDropped({ imgId, zoneId }: { imgId: string; zoneId: string }) {
-  console.log(`BanPickBoard handleImageDropped imgId ${imgId} zoneId ${zoneId}`)
-  emit('image-drop', { imgId, zoneId })
+function handleImageDropped({ zoneImageEntry, zoneKey }: { zoneImageEntry: IZoneImageEntry; zoneKey: string }) {
+  console.log(`BanPickBoard handleImageDropped zoneImageEntry ${zoneImageEntry} zoneKey ${zoneKey}`)
+  emit('image-drop', { zoneImageEntry, zoneKey })
 }
 
-function handleImageRestore({ imgId }: { imgId: string }) {
-  console.log(`BanPickBoard handleImageRestore imgId ${imgId}`)
-  emit('image-restore', { imgId })
+function handleImageRestore({ zoneKey }: { zoneKey: string }) {
+  console.log(`BanPickBoard handleImageRestore zoneKey ${zoneKey}`)
+  emit('image-restore', { zoneKey })
 }
 
 function handleSelectorFilterChanged(filters: Record<string, string[]>) {

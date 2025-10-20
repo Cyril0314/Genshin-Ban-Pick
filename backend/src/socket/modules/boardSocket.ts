@@ -4,6 +4,7 @@ import { Server, Socket } from 'socket.io';
 
 import { logger } from '../../utils/logger.ts';
 import { RoomStateManager } from '../managers/RoomStateManager.ts';
+import { IZoneImageEntry } from '../../types/IZone.ts';
 
 enum SocketEvent {
     BOARD_IMAGE_DROP_REQUEST = 'board.image.drop.request',
@@ -19,8 +20,8 @@ enum SocketEvent {
 }
 
 export function registerBoardSocket(io: Server, socket: Socket, roomStateManager: RoomStateManager) {
-    socket.on(`${SocketEvent.BOARD_IMAGE_DROP_REQUEST}`, ({ imgId, zoneId }: { imgId: string; zoneId: string }) => {
-        logger.info(`Received ${SocketEvent.BOARD_IMAGE_DROP_REQUEST} imgId: ${imgId} zoneId: ${zoneId}`);
+    socket.on(`${SocketEvent.BOARD_IMAGE_DROP_REQUEST}`, ({ zoneImageEntry, zoneKey }: { zoneImageEntry: IZoneImageEntry; zoneKey: string }) => {
+        logger.info(`Received ${SocketEvent.BOARD_IMAGE_DROP_REQUEST} zoneImageEntry: ${JSON.stringify(zoneImageEntry, null, 2)} zoneKey: ${zoneKey}`);
         const roomId = (socket as any).roomId;
         if (!roomId) return;
 
@@ -28,20 +29,20 @@ export function registerBoardSocket(io: Server, socket: Socket, roomStateManager
         console.log(`[Socket] image.drop.request from:`, who);
 
         const roomState = roomStateManager.ensure(roomId)
-        roomState.boardImageMap[zoneId] = imgId;
-        socket.to(roomId).emit(`${SocketEvent.BOARD_IMAGE_DROP_BROADCAST}`, { imgId, zoneId });
-        logger.info(`Sent ${SocketEvent.BOARD_IMAGE_DROP_BROADCAST} imgId: ${imgId} zoneId: ${zoneId}`);
+        roomState.boardImageMap[zoneKey] = zoneImageEntry;
+        socket.to(roomId).emit(`${SocketEvent.BOARD_IMAGE_DROP_BROADCAST}`, { zoneImageEntry, zoneKey });
+        logger.info(`Sent ${SocketEvent.BOARD_IMAGE_DROP_BROADCAST} zoneImageEntry: ${JSON.stringify(zoneImageEntry, null, 2)} zoneKey: ${zoneKey}`);
     });
 
-    socket.on(`${SocketEvent.BOARD_IMAGE_RESTORE_REQUEST}`, ({ zoneId }: { zoneId: string }) => {
-        logger.info(`Received ${SocketEvent.BOARD_IMAGE_RESTORE_REQUEST} zoneId: ${zoneId}`);
+    socket.on(`${SocketEvent.BOARD_IMAGE_RESTORE_REQUEST}`, ({ zoneKey }: { zoneKey: string }) => {
+        logger.info(`Received ${SocketEvent.BOARD_IMAGE_RESTORE_REQUEST} zoneKey: ${zoneKey}`);
         const roomId = (socket as any).roomId;
         if (!roomId) return;
 
         const roomState = roomStateManager.ensure(roomId);
-        delete roomState.boardImageMap[zoneId];
-        socket.to(roomId).emit(`${SocketEvent.BOARD_IMAGE_RESTORE_BROADCAST}`, { zoneId });
-        logger.info(`Sent ${SocketEvent.BOARD_IMAGE_RESTORE_BROADCAST} zoneId: ${zoneId}`);
+        delete roomState.boardImageMap[zoneKey];
+        socket.to(roomId).emit(`${SocketEvent.BOARD_IMAGE_RESTORE_BROADCAST}`, { zoneKey });
+        logger.info(`Sent ${SocketEvent.BOARD_IMAGE_RESTORE_BROADCAST} zone: ${zoneKey}`);
     });
 
     socket.on(`${SocketEvent.BOARD_IMAGE_MAP_RESET_REQUEST}`, () => {

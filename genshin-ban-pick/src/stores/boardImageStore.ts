@@ -3,31 +3,35 @@
 import { defineStore, } from 'pinia';
 import { ref, computed, watch, } from 'vue';
 
-type BoardImageMap = Record<string, string>;
+import type { IZone, IZoneImageEntry } from '@/types/IZone';
+
+type BoardImageMap = Record<string, IZoneImageEntry>;
 
 export const useBoardImageStore = defineStore('boardImage', () => {
     const boardImageMap = ref<BoardImageMap>({})
 
-    const usedImageIds = computed(() => [...new Set(Object.values(boardImageMap.value))])
+    const usedImageIds = computed(() => [...new Set(Object.values(boardImageMap.value).map(entry => entry.imgId))])
 
     function setBoardImageMap(newBoardImageMap: BoardImageMap) {
         boardImageMap.value = { ...newBoardImageMap }
     }
 
-    function placeBoardImage(imgId: string, zoneId: string) {
-        boardImageMap.value[zoneId] = imgId
+    function placeBoardImage(zoneImageEntry: IZoneImageEntry, zoneKey: string) {
+        boardImageMap.value[zoneKey] = zoneImageEntry
     }
 
-    function removeBoardImage(zoneId: string) {
-        delete boardImageMap.value[zoneId]
+    function removeBoardImage(zoneKey: string) {
+        delete boardImageMap.value[zoneKey]
     }
 
     function resetBoardImageMap() {
         boardImageMap.value = {}
     }
 
-    function findZoneIdByImageId(imgId: string): string | undefined {
-        return Object.entries(boardImageMap.value).find(([, id]) => id === imgId)?.[0]
+    function findZoneImageEntryByImageId(imgId: string) {
+        const value = Object.entries(boardImageMap.value).find(([, entry]) => entry.imgId === imgId)
+        if (!value) return null;
+        return value[1] as IZoneImageEntry
     }
 
     return {
@@ -37,6 +41,6 @@ export const useBoardImageStore = defineStore('boardImage', () => {
         placeBoardImage,
         removeBoardImage,
         resetBoardImageMap,
-        findZoneIdByImageId
+        findZoneImageEntryByImageId
     }
 })

@@ -2,6 +2,7 @@
 
 import { IBanPickStep } from '../types/IBanPickStep.ts'
 import { ITeam } from '../types/ITeam.ts';
+import { ZoneType } from '../types/IZone.ts';
 
 export function generateBanPickSteps(banCount: number, pickCount: number, teams: ITeam[], totalRounds: number): IBanPickStep[] {
     const flow: IBanPickStep[] = [];
@@ -12,36 +13,39 @@ export function generateBanPickSteps(banCount: number, pickCount: number, teams:
     const halfPick = Math.floor(pickCount / totalRounds);
     const restPick = pickCount - halfPick;
 
+    const firstTeam = teams[0]
+    const secondTeam = teams[1]
+
     flow.push(
         ...generateAlternateBanFlow(
             1,
             frontBan,
-            teams[1],
-            teams[0],
+            secondTeam,
+            firstTeam,
         )
     );
     flow.push(
         ...generateSnakePickFlow(
             1,
             halfPick,
-            teams[0],
-            teams[1],
+            firstTeam,
+            secondTeam,
         )
     );
     flow.push(
         ...generateAlternateBanFlow(
             frontBan + 1,
             backBan,
-            teams[0],
-            teams[1],
+            firstTeam,
+            secondTeam,
         )
     );
     flow.push(
         ...generateSnakePickFlow(
             halfPick + 1,
             restPick,
-            teams[1],
-            teams[0],
+            secondTeam,
+            firstTeam,
         )
     );
 
@@ -53,8 +57,7 @@ function generateAlternateBanFlow(startIndex: number, banCount: number, firstTea
 
     return Array.from({ length: banCount }, (_, i) => ({
         team: teams[i % 2],
-        zoneId: `zone-ban-${startIndex + i}`,
-        action: 'ban',
+        zone: { id: startIndex + i, zoneType: ZoneType.BAN }
     }));
 }
 
@@ -67,23 +70,19 @@ function generateSnakePickFlow(startIndex: number, pickCount: number, firstTeam:
     for (let i = 0; i < pairRounds; i++) {
         picks.push({
             team: teams[0],
-            zoneId: `zone-pick-${current++}`,
-            action: 'pick',
+            zone: { id: current++, zoneType: ZoneType.PICK }
         });
         picks.push({
             team: teams[1],
-            zoneId: `zone-pick-${current++}`,
-            action: 'pick',
+            zone: { id: current++, zoneType: ZoneType.PICK }
         });
         picks.push({
             team: teams[1],
-            zoneId: `zone-pick-${current++}`,
-            action: 'pick',
+            zone: { id: current++, zoneType: ZoneType.PICK }
         });
         picks.push({
             team: teams[0],
-            zoneId: `zone-pick-${current++}`,
-            action: 'pick',
+            zone: { id: current++, zoneType: ZoneType.PICK }
         });
     }
 

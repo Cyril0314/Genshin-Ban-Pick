@@ -7,22 +7,23 @@ import { useBanPickStepStore } from '@/stores/banPickStepStore';
 import { getWishImagePath } from '@/utils/imageRegistry'
 import { DragTypes } from '@/constants/customMIMETypes'
 
+import { getZoneKey, type IZone, type IZoneImageEntry } from '@/types/IZone';
+
 const props = defineProps<{
-  zoneId: string
-  boardImageMap: Record<string, string>
+  zone: IZone
+  boardImageMap: Record<string, IZoneImageEntry>
   label?: string
-  type?: 'pick' | 'ban' | 'utility'
   labelColor?: string
 }>()
 
 const emit = defineEmits<{
-  (e: 'image-drop', payload: { imgId: string; zoneId: string }): void
-  (e: 'image-restore', payload: { imgId: string }): void
+  (e: 'image-drop', payload: { zoneImageEntry: IZoneImageEntry; zoneKey: string }): void
+  (e: 'image-restore', payload: { zoneKey: string }): void
 }>()
 
 const isOver = ref(false)
 
-const imageId = computed(() => props.boardImageMap[props.zoneId])
+const imageId = computed(() => props.boardImageMap[getZoneKey(props.zone)]?.imgId ?? '')
 
 const { isCurrentStepZone } = useBanPickStepStore()
 
@@ -38,8 +39,10 @@ function handleDropEvent(event: DragEvent) {
   isOver.value = false
   const imgId = event.dataTransfer?.getData(DragTypes.CharacterImage)
   if (imgId) {
-    console.log(`DropZone onDrop imgId ${imgId} zoneId ${props.zoneId}`)
-    emit('image-drop', { imgId, zoneId: props.zoneId })
+    const zoneKey = getZoneKey(props.zone)
+    const zoneImageEntry = { zone: props.zone, imgId: imgId }
+    console.log(`DropZone onDrop imgId ${imgId} zoneKey ${zoneKey}`)
+    emit('image-drop', { zoneImageEntry, zoneKey: zoneKey })
   }
 }
 
@@ -47,12 +50,13 @@ function handleClickEvent(event: MouseEvent) {
   const target = event.target as HTMLElement
   if (target.tagName === 'IMG' && imageId) {
     console.log(`DropZone onClick imgId ${imageId.value}`)
-    emit('image-restore', { imgId: imageId.value })
+    const zoneKey = getZoneKey(props.zone)
+    emit('image-restore', { zoneKey })
   }
 }
 
 const isHighlighted = computed(() => {
-  return isCurrentStepZone(props.zoneId)
+  return isCurrentStepZone(props.zone)
 })
 </script>
 
@@ -60,7 +64,7 @@ const isHighlighted = computed(() => {
   <div
     class="drop-zone"
     :class="[
-      'drop-zone--' + (type || 'default'),
+      'drop-zone--' + (props.zone.zoneType || 'default'),
       { 'drop-zone--active': isOver, highlight: isHighlighted },
     ]"
     @dragover.prevent="isOver = true"
