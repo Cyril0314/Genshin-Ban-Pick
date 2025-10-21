@@ -1,14 +1,13 @@
 <!-- src/views/BanPickView.vue -->
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, shallowRef, onMounted, onUnmounted } from 'vue';
 import { onBeforeRouteLeave } from 'vue-router'
 
-import { useFilteredCharacters } from '@/composables/useFilteredCharacters';
 import BanPickBoard from '@/features/BanPick/BanPickBoard.vue';
 import Toolbar from '@/features/BanPick/components/ToolBar.vue';
 import { useBoardSync } from '@/features/BanPick/composables/useBoardSync';
-import { handleUtilityRandom, handleBanRandom, handlePickRandom } from '@/features/BanPick/composables/useRandomizeImage';
+import { useRandomPull } from '@/features/BanPick/composables/useRandomPull';
 import ImageOptions from '@/features/ImageOptions/ImageOptions.vue';
 import { fetchCharacterMap } from '@/network/characterService';
 import { fetchRoomSetting } from '@/network/roomService';
@@ -18,80 +17,69 @@ import { useBoardImageStore } from '@/stores/boardImageStore';
 import { ZoneType } from '@/types/IZone';
 import { useRoomUsers } from '@/features/RoomUserPool/composables/useRoomUsers';
 
-import type { IRoomSetting } from '@/types/IRoomSetting';
+import type { IRoomSetting } from '@/types/IRoomSetting';import type { ICharacter } from '@/types/ICharacter';
+;
 
-const characterMap = ref({});
-const roomSetting = ref<IRoomSetting | null>(null);
-const currentFilters = ref({
-    weapon: [],
-    element: [],
-    region: [],
-    rarity: [],
-    model_type: [],
-    role: [],
-    wish: [],
-});
+const characterMap = shallowRef<Record<string, ICharacter> | null>(null);
+const roomSetting = shallowRef<IRoomSetting | null>(null);
+
+const filteredCharacterIds = ref<string[] | null>(null)
 
 const { boardImageMap, usedImageIds, handleBoardImageDrop, handleBoardImageRestore, handleBoardImageReset, handleBanPickRecord } = useBoardSync();
-const filteredCharacterIds = useFilteredCharacters(characterMap, currentFilters);
-
+const { randomPull } = useRandomPull()
 const { joinRoom, leaveRoom } = useRoomUsers()
 
 onMounted(async () => {
-    console.debug('[BANPICKBOARD] onMounted')
+    console.debug('[BANPICK BOARD] On mounted')
     try {
         characterMap.value = await fetchCharacterMap();
         roomSetting.value = await fetchRoomSetting();
+        filteredCharacterIds.value = Object.keys(characterMap.value).map((id) => id)
         const boardImageStore = useBoardImageStore()
         boardImageStore.initZoneMetaTable(roomSetting.value.zoneSchema.zoneMetaTable)
         const teamInfoStore = useTeamInfoStore();
         teamInfoStore.initTeams(roomSetting.value.teams);
         const banPickStepStore = useBanPickStepStore();
         banPickStepStore.initBanPickSteps(roomSetting.value.banPickSteps);
-        const roomId = new URLSearchParams(window.location.search).get('room') || 'default-room';
+        const roomId = getRoomId();
         joinRoom(roomId)
     } catch (error) {
-        console.error('[BanPickView] 無法載入角色和房間資料:', error);
+        console.error('[BANPICK BOARD] Fetched character and room setting failed:', error);
     }
 });
 
 onBeforeRouteLeave(async (to, from) => {
-    const roomId = new URLSearchParams(window.location.search).get('room') || 'default-room';
+    console.debug('[BANPICK BOARD] On before route leave')
+    const roomId = getRoomId();
     leaveRoom(roomId)
 })
 
 onUnmounted(() => {
-
+    console.debug('[BANPICK BOARD] On unmounted')
 });
 
-function handleFilterChanged(newFilters: Record<string, string[]>) {
-    Object.assign(currentFilters.value, newFilters);
+function getRoomId(): string {
+    const roomId = new URLSearchParams(window.location.search).get('room') || 'default-room';
+    return roomId
+}
+
+function handleFilterChanged(newIds: string[]) {
+    console.debug(`[BANPICK BOARD] Handle filiter changed:`, newIds)
+    filteredCharacterIds.value = newIds
 }
 
 function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
-    console.log('父元件收到隨機抽選按鈕點擊事件：', zoneType);
-    if (!roomSetting.value || filteredCharacterIds.value.length === 0) {
-        console.warn('無法進行隨機抽選：房間未就緒或無符合條件的角色');
+    console.debug(`[BANPICK BOARD] Handle ${zoneType} random pull zoneType`)
+    if (!roomSetting.value || !filteredCharacterIds.value || filteredCharacterIds.value.length === 0) {
+        console.warn(`[BANPICK BOARD] Room is not ready or do not filiter any character`)
         return;
     }
-
-    const ctx = {
-        roomSetting: roomSetting.value,
-        filteredImageIds: filteredCharacterIds.value,
-        boardImageMap: boardImageMap.value,
-        handleBoardImageDrop,
-    };
-    switch (zoneType) {
-        case ZoneType.UTILITY:
-            handleUtilityRandom(ctx);
-            break
-        case ZoneType.BAN:
-            handleBanRandom(ctx);
-            break
-        case ZoneType.PICK:
-            handlePickRandom(ctx);
-            break
-    }
+    const result = randomPull(zoneType, roomSetting.value, boardImageMap.value, filteredCharacterIds.value)
+    if (!result) {
+        console.warn(`[BANPICK BOARD] Random pull does not get any result`)
+        return
+    } 
+    handleBoardImageDrop(result)
 }
 </script>
 
@@ -101,9 +89,9 @@ function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
         <div class="background-overlay"></div>
         <div class="layout">
             <div class="layout__core">
-                <ImageOptions :characterMap="characterMap" :usedImageIds="usedImageIds"
+                <ImageOptions v-if="characterMap" :characterMap="characterMap" :usedImageIds="usedImageIds"
                     :filteredIds="filteredCharacterIds" />
-                <BanPickBoard v-if="roomSetting" :roomSetting="roomSetting" :characterMap="characterMap"
+                <BanPickBoard v-if="roomSetting&&characterMap" :roomSetting="roomSetting" :characterMap="characterMap"
                     :boardImageMap="boardImageMap" @image-drop="handleBoardImageDrop"
                     @image-restore="handleBoardImageRestore" @filter-changed="handleFilterChanged"
                     @pull="handleRandomPull" />

@@ -18,7 +18,7 @@ export function useAuth() {
   const isGuest    = computed(() => !!guestId.value && !user.value)
 
   function proceedAsGuest() {
-    console.info(`[AUTH] Proceed as guest ${guestId.value}`);
+    console.info(`[AUTH] Proceed as guestId:`, guestId);
     if (!guestId.value) {
       guestId.value = `guest_${Math.random().toString(36).slice(2, 8)}`
       localStorage.setItem('guest_id', guestId.value)
@@ -29,7 +29,7 @@ export function useAuth() {
   }
 
   function login(userInfo: UserInfo, token: string) {
-    console.info(`[AUTH] Login ${JSON.stringify(userInfo)}`);
+    console.info(`[AUTH] Login userInfo:`, userInfo);
     user.value = { ...userInfo }
     localStorage.setItem('auth_token', token)
     localStorage.removeItem('guest_id')
@@ -38,7 +38,7 @@ export function useAuth() {
   }
 
   function logout() {
-    console.info(`[AUTH] Logout ${JSON.stringify(user)}`);
+    console.info(`[AUTH] Logout ${JSON.stringify(user.value)}`);
     user.value = null
     guestId.value = null
     localStorage.removeItem('auth_token')
@@ -57,11 +57,11 @@ export function useAuth() {
     try {
       const response = await getCurrentUser()
       const userInfo = response.data
-      console.info(`[AUTH] Auto login success, ${userInfo}`)
+      console.info(`[AUTH] Auto login success userInfo:`, userInfo)
       login(userInfo, token)
       return true
     } catch (error) {
-      console.error(`[AUTH] Auto login failed, ${error}`)
+      console.error(`[AUTH] Auto login failed error:`, error)
       logout()
       return false
     }

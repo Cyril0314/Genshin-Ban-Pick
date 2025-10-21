@@ -3,7 +3,7 @@ import { onMounted } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
 
 onMounted(() => {
-  console.info('[APP] On Mounted')
+  console.info('[APP] On mounted')
 })
 
 </script>

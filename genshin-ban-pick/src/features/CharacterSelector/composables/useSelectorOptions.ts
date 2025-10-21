@@ -1,77 +1,63 @@
 // src/features/CharacterSelector/composables/useSelectorOptions.ts
-
-import { computed } from 'vue'
-
-import type { ICharacter } from '@/types/ICharacter'
-
 import { Element, Weapon, Region, ModelType, Role, Wish, Rarity } from '@/types/ICharacter'
 
-export enum FilterKey {
-  Weapon = 'weapon',
-  Element = 'element',
-  Region = 'region',
-  Rarity = 'rarity',
-  ModelType = 'model_type',
-  Role = 'role',
-  Wish = 'wish',
-}
+import { CharacterFilterKey } from '@/types/CharacterFilterKey'
+import type { ICharacter } from '@/types/ICharacter'
 
 export interface SelectorOption {
-  key: FilterKey
+  key: CharacterFilterKey
   label: string
   items: string[]
   translateFn: (val: string) => string
 }
 
 export function useSelectorOptions(characterMap: Record<string, ICharacter>) {
-  const characters = computed(() =>
-    Object.values(characterMap).filter((c) => c.name.toLowerCase() !== 'traveler'),
-  )
+  const characters = Object.values(characterMap).filter((c) => c.name.toLowerCase() !== 'traveler')
 
-  return computed(() => [
+  return [
     {
-      key: FilterKey.Weapon,
+      key: CharacterFilterKey.Weapon,
       label: '選擇武器',
-      items: uniqueByKey(characters.value, FilterKey.Weapon, weaponOrder),
+      items: uniqueByKey(characters, CharacterFilterKey.Weapon, weaponOrder),
       translateFn: (v: string) => translateWeapon(v as Weapon),
     },
     {
-      key: FilterKey.Element,
+      key: CharacterFilterKey.Element,
       label: '選擇屬性',
-      items: uniqueByKey(characters.value, FilterKey.Element, elementOrder),
+      items: uniqueByKey(characters, CharacterFilterKey.Element, elementOrder),
       translateFn: (v: string) => translateElement(v as Element),
     },
     {
-      key: FilterKey.Region,
+      key: CharacterFilterKey.Region,
       label: '選擇國家',
-      items: uniqueByKey(characters.value, FilterKey.Region, regionOrder),
+      items: uniqueByKey(characters, CharacterFilterKey.Region, regionOrder),
       translateFn: (v: string) => translateRegion(v as Region),
     },
     {
-      key: FilterKey.ModelType,
+      key: CharacterFilterKey.ModelType,
       label: '選擇體型',
-      items: uniqueByKey(characters.value, FilterKey.ModelType, modelTypeOrder),
+      items: uniqueByKey(characters, CharacterFilterKey.ModelType, modelTypeOrder),
       translateFn: (v: string) => translateModelType(v as ModelType),
     },
     {
-      key: FilterKey.Role,
+      key: CharacterFilterKey.Role,
       label: '選擇功能',
-      items: uniqueByKey(characters.value, FilterKey.Role, roleOrder),
+      items: uniqueByKey(characters, CharacterFilterKey.Role, roleOrder),
       translateFn: (v: string) => translateRole(v as Role),
     },
     {
-      key: FilterKey.Wish,
+      key: CharacterFilterKey.Wish,
       label: '選擇祈願',
-      items: uniqueByKey(characters.value, FilterKey.Wish, wishOrder),
+      items: uniqueByKey(characters, CharacterFilterKey.Wish, wishOrder),
       translateFn: (v: string) => translateWish(v as Wish),
     },
     {
-      key: FilterKey.Rarity,
+      key: CharacterFilterKey.Rarity,
       label: '選擇星級',
-      items: uniqueByKey(characters.value, FilterKey.Rarity, rarityOrder),
+      items: uniqueByKey(characters, CharacterFilterKey.Rarity, rarityOrder),
       translateFn: (v: string) => translateRarity(v as Rarity),
     },
-  ])
+  ]
 }
 
 function uniqueByKey<T, K extends keyof T>(data: T[], key: K, orderArray: T[K][]): T[K][] {

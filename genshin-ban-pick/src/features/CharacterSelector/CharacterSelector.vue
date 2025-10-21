@@ -1,10 +1,10 @@
 <!-- src/features/CharacterSelector/CharacterSelector.vue -->
 
 <script setup lang="ts">
-import { watch } from 'vue'
+import { reactive, watch } from 'vue'
 
-import { useCharacterFilter } from './composables/useCharacterFilter'
 import { useSelectorOptions } from './composables/useSelectorOptions'
+import { useFilteredCharacters } from '@/features/CharacterSelector/composables/useFilteredCharacters'
 
 import type { ICharacter } from '@/types/ICharacter'
 
@@ -13,86 +13,79 @@ import { ZoneType } from '@/types/IZone'
 import 'vue-select/dist/vue-select.css'
 // @ts-ignore
 import vSelect from 'vue-select'
+import type { CharacterFilterKey } from '@/types/CharacterFilterKey'
 
 const props = defineProps<{
   characterMap: Record<string, ICharacter>
 }>()
 
 const emit = defineEmits<{
-  (e: 'filter-changed', filters: Record<string, string[]>): void
+  (e: 'filter-changed', filteredCharacterIds: string[]): void
   (e: 'pull', payload: { zoneType: ZoneType }): void
 }>()
 
-const selectorsData = useSelectorOptions(props.characterMap)
-const { localFilters } = useCharacterFilter((filters) => emit('filter-changed', filters))
+const selectorOptions = useSelectorOptions(props.characterMap)
+const characterFilter = reactive<Record<CharacterFilterKey, string[]>>({
+  weapon: [],
+  element: [],
+  region: [],
+  rarity: [],
+  modelType: [],
+  role: [],
+  wish: [],
+})
+const filteredCharacterIds = useFilteredCharacters(props.characterMap, characterFilter);
 
-watch(
-  localFilters,
-  () => {
-    for (const filter of selectorsData.value) {
-      const key = filter.key
-      const selected = localFilters[key]
-      const items = filter.items
-      const hasAll = selected.includes('All')
+watch(filteredCharacterIds, ids => emit('filter-changed', ids))
 
-      // ✅ 點到 'All' → 改成全選（排除 'All' 本身）
-      if (hasAll && selected.length < items.length + 1) {
-        localFilters[key] = [...items]
-      }
+watch(characterFilter, () => normalizeAllSelection(characterFilter, selectorOptions), { deep: true })
 
-      if (hasAll && selected.length === items.length + 1) {
-        localFilters[key] = []
-      }
+function normalizeAllSelection(
+  filter: Record<CharacterFilterKey, string[]>,
+  options: ReturnType<typeof useSelectorOptions>
+) {
+  for (const selectorOption of options) {
+    const key = selectorOption.key
+    const selected = filter[key]
+    const items = selectorOption.items
+    const hasAll = selected.includes('All')
+
+    if (hasAll && selected.length < items.length + 1) {
+      console.debug(`[CHARACTER SELECTOR] ${key} selector selected all`)
+      filter[key] = [...items]
     }
-  },
-  { deep: true },
-)
-
-function handleClickUtilityButton() {
-  console.log('Selector utility clicked')
-  emit('pull', { zoneType: ZoneType.UTILITY })
+    if (hasAll && selected.length === items.length + 1) {
+      console.debug(`[CHARACTER SELECTOR] ${key} selector unselected all`)
+      filter[key] = []
+    }
+  }
 }
 
-function handleClickBanButton() {
-  console.log('Selector ban clicked')
-  emit('pull', { zoneType: ZoneType.BAN })
-}
-
-function handleClickPickButton() {
-  console.log('Selector pick clicked')
-  emit('pull', { zoneType: ZoneType.PICK })
+function handleClick(type: ZoneType) {
+  console.debug(`[CHARACTER SELECTOR] Selector ${type} clicked`)
+  emit('pull', { zoneType: type })
 }
 </script>
 
 <template>
   <div class="container__selector">
-    <div class="selector__row" v-for="filter in selectorsData" :key="filter.key">
+    <div class="selector__row" v-for="selectorOption in selectorOptions" :key="selectorOption.key">
       <!-- <label class="selector__label">{{ filter.label }}：</label> -->
-      <v-select
-        class="selector__select"
-        :options="['All', ...filter.items]"
-        :reduce="(val: string) => val"
-        :multiple="true"
-        :placeholder="`${filter.label}`"
-        :get-option-label="(val: string) => (val === 'All' ? '所有' : filter.translateFn(val))"
-        v-model="localFilters[filter.key]"
-      >
-          <template #open-indicator="{ attributes }">
-            <span class="selector__open-indicator" v-bind="attributes">▲</span>
-          </template>
+      <v-select class="selector__select" :options="['All', ...selectorOption.items]" :reduce="(val: string) => val"
+        :multiple="true" :placeholder="`${selectorOption.label}`" :get-option-label="(val: string) => val === 'All' ? '所有' : selectorOption.translateFn(val)
+          " v-model="characterFilter[selectorOption.key]">
+        <template #open-indicator="{ attributes }">
+          <span class="selector__open-indicator" v-bind="attributes">▲</span>
+        </template>
         <template #option="{ label }">
           <div class="selector__option">
-            <span>{{ filter.translateFn(label) }}</span>
+            <span>{{ label === 'All' ? '所有' : selectorOption.translateFn(label) }}</span>
           </div>
         </template>
         <template #selected-option-container="{ option, deselect, multiple, disabled }">
           <div class="selector__selected-option">
-            <span class="selector__selected-option-label">{{ filter.translateFn(option.label) }}</span>
-            <span
-              v-if="!disabled"
-              class="selector__remove-btn"
-              @click.stop="deselect(option.label)"
-            >
+            <span class="selector__selected-option-label">{{ selectorOption.translateFn(option.label) }}</span>
+            <span v-if="!disabled" class="selector__remove-btn" @click.stop="deselect(option.label)">
               ×
             </span>
           </div>
@@ -100,13 +93,13 @@ function handleClickPickButton() {
       </v-select>
     </div>
     <div class="selector__toolbar">
-      <button class="selector__button selector__button--utility" @click="handleClickUtilityButton">
+      <button class="selector__button selector__button--utility" @click="handleClick(ZoneType.UTILITY)">
         Utility
       </button>
-      <button class="selector__button selector__button--ban" @click="handleClickBanButton">
+      <button class="selector__button selector__button--ban" @click="handleClick(ZoneType.BAN)">
         Ban
       </button>
-      <button class="selector__button selector__button--pick" @click="handleClickPickButton">
+      <button class="selector__button selector__button--pick" @click="handleClick(ZoneType.PICK)">
         Pick
       </button>
     </div>

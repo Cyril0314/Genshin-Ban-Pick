@@ -10,7 +10,7 @@ export const useSocketStore = defineStore('socket', () => {
     const socket = ref<Socket | null>(null);
 
     function connect(token?: string, guestId?: string) {
-        console.info(`[SOCKET] Connecting: token ${token} or guestId ${guestId}`);
+        console.info(`[SOCKET] Connecting`);
         if (socket.value?.connected) {
             console.warn(`[SOCKET] Has Connected`);
             return;

@@ -10,7 +10,7 @@ import { DragTypes } from '@/constants/customMIMETypes'
 const props = defineProps<{
   characterMap: Record<string, ICharacter>
   usedImageIds: string[]
-  filteredIds: string[]
+  filteredIds: string[] | null
 }>()
 
 const availableCharacters = computed(() =>
@@ -19,7 +19,7 @@ const availableCharacters = computed(() =>
     .sort(([a], [b]) => a.localeCompare(b)),
 )
 
-const isFilitered = (id: string) => props.filteredIds.includes(id)
+const isFilitered = (id: string) => props.filteredIds?.includes(id) ?? true
 
 function handleDragStartEvent(event: DragEvent, id: string) {
   console.log(`onDragStart ${id}`)

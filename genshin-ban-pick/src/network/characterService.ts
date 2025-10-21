@@ -1,5 +1,7 @@
 // src/network/characterService.ts
 
+import { fromRawCharacter } from '@/types/ICharacter'
+
 import type { ICharacter } from '@/types/ICharacter'
 
 export async function fetchCharacterMap(): Promise<Record<string, ICharacter>> {
@@ -8,8 +10,7 @@ export async function fetchCharacterMap(): Promise<Record<string, ICharacter>> {
 
     const map: Record<string, ICharacter> = {}
     characters.forEach((char: any) => {
-        map[char.name] = char
+        map[char.name] = fromRawCharacter(char)
     })
-
     return map
 }

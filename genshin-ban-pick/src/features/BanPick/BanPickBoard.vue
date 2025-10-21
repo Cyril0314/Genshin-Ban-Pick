@@ -1,7 +1,7 @@
 <!-- src/features/BanPick/BanPickBoard.vue -->
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { } from 'vue'
 
 import BanZone from './components/BanZone.vue'
 import PickZone from './components/PickZone.vue'
@@ -30,7 +30,7 @@ const { teamInfoPair } = useTeamInfoSync()
 const emit = defineEmits<{
   (e: 'image-drop', payload: { imgId: string; zoneId: number }): void
   (e: 'image-restore', payload: { zoneId: number }): void
-  (e: 'filter-changed', filters: Record<string, string[]>): void
+  (e: 'filter-changed', filteredCharacterIds: string[]): void
   (e: 'pull', payload: { zoneType: ZoneType }): void
 }>()
 
@@ -47,8 +47,8 @@ function handleImageRestore({ zoneId }: { zoneId: number }) {
   emit('image-restore', { zoneId })
 }
 
-function handleSelectorFilterChanged(filters: Record<string, string[]>) {
-  emit('filter-changed', filters)
+function handleSelectorFilterChanged(filteredCharacterIds: string[]) {
+  emit('filter-changed', filteredCharacterIds)
 }
 
 function handleSelectorPull({ zoneType }: { zoneType: ZoneType }) {
