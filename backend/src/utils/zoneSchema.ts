@@ -6,21 +6,21 @@ export function createZoneSchema(utilityCount: number, banCount: number, pickCou
     var id = 0
     const utilityOrders = generateUtilityOrder(utilityCount)
     const utilityZones: IZone[] = utilityOrders.map((order) => { return { id: id++, type: ZoneType.UTILITY, order: order}})
-    console.log(`utilityZones ${JSON.stringify(utilityZones, null, 2)}`)
+    // console.log(`utilityZones ${JSON.stringify(utilityZones, null, 2)}`)
 
     const banOrders = generateBanOrder(banCount, 8, totalRounds)
     const banZones: IZone[] = banOrders.map((order) => { return { id: id++, type: ZoneType.BAN, order: order}})
-    console.log(`banZones ${JSON.stringify(banZones, null, 2)}`)
+    // console.log(`banZones ${JSON.stringify(banZones, null, 2)}`)
 
     const pickOrders = generatePickOrder(pickCount, totalRounds) 
     const leftPickZones: IZone[] = pickOrders.left.map((order) => { return { id: id++, type: ZoneType.PICK, order: order}})
     const rightPickZones: IZone[] = pickOrders.right.map((order) => { return { id: id++, type: ZoneType.PICK, order: order}})
-    console.log(`leftPickZones ${JSON.stringify(leftPickZones, null, 2)}`)
-    console.log(`rightPickZones ${JSON.stringify(rightPickZones, null, 2)}`)
+    // console.log(`leftPickZones ${JSON.stringify(leftPickZones, null, 2)}`)
+    // console.log(`rightPickZones ${JSON.stringify(rightPickZones, null, 2)}`)
 
     const zones: IZone[] = [...utilityZones, ...banZones, ... leftPickZones, ...rightPickZones]
     const zoneMetaTable: Record<string, IZone> = Object.fromEntries(zones.map(zone => [zone.id, zone]))
-    console.log(`zoneMetaTable ${JSON.stringify(zoneMetaTable, null, 2)}`)
+    // console.log(`zoneMetaTable ${JSON.stringify(zoneMetaTable, null, 2)}`)
 
     return {
         zoneMetaTable,

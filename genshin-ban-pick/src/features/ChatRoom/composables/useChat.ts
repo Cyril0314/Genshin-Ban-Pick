@@ -3,7 +3,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 
 import type { IChatMessage } from '@/types/IChatMessage'
 
-import { useSocketStore } from '@/network/socket'
+import { useSocketStore } from '@/stores/socketStore'
 
 enum SocketEvent {
     CHAT_MESSAGE_SEND_REQUEST = 'chat.message.send.request',

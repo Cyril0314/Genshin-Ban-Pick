@@ -38,7 +38,7 @@ const filteredCharacterIds = useFilteredCharacters(characterMap, currentFilters)
 const { joinRoom, leaveRoom } = useRoomUsers()
 
 onMounted(async () => {
-    console.log('[BanPickBoard] mounted')
+    console.debug('[BANPICKBOARD] onMounted')
     try {
         characterMap.value = await fetchCharacterMap();
         roomSetting.value = await fetchRoomSetting();

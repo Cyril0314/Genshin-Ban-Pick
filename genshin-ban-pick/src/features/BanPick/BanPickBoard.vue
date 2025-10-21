@@ -38,7 +38,7 @@ const maxPerRow = 8
 const maxPerColumn = 8
 
 function handleImageDropped({ imgId, zoneId }: { imgId: string; zoneId: number }) {
-  console.log(`BanPickBoard handleImageDropped imgId ${imgId} zoneKey ${zoneId}`)
+  console.log(`BanPickBoard handleImageDropped imgId ${imgId} zoneId ${zoneId}`)
   emit('image-drop', { imgId, zoneId })
 }
 

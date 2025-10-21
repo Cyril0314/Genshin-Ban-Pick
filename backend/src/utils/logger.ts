@@ -10,38 +10,39 @@ const LOG_LEVELS: Record<LogLevel, number> = {
 };
 
 // 環境等級控制（可用環境變數調整）
-const CURRENT_LEVEL = process.env.VITE_LOG_LEVEL || 'debug';
+const CURRENT_LEVEL = process.env.LOG_LEVEL || 'debug';
 
 function shouldLog(level: LogLevel) {
     return LOG_LEVELS[level] >= LOG_LEVELS[CURRENT_LEVEL as LogLevel];
 }
 
-function getCallerScope(): string {
-    const stack = new Error().stack?.split('\n') ?? [];
-    const line = stack[3] || stack[2];
-    const match = line.match(/\/src\/(.+?):\d+:\d+/);
-    return match ? match[1].replace(/\//g, ':') : 'unknown';
+interface LogEntry {
+    timestamp: string;
+    level: LogLevel;
+    scope: string;
+    message: string;
+    context?: Record<string, any>;
 }
 
-export const logger = {
+export function createLogger(scope: string) {
+
+return {
     debug: (...args: any[]) => {
         if (!shouldLog('debug')) return;
-        const scope = getCallerScope();
         console.debug(`%c[DEBUG][${scope}]`, 'color:#93c5fd;font-weight:bold;', ...args);
     },
     info: (...args: any[]) => {
         if (!shouldLog('info')) return;
-        const scope = getCallerScope();
         console.info(`%c[INFO][${scope}]`, 'color:#34d399;font-weight:bold;', ...args);
     },
     warn: (...args: any[]) => {
         if (!shouldLog('warn')) return;
-        const scope = getCallerScope();
         console.warn(`%c[WARN][${scope}]`, 'color:#fbbf24;font-weight:bold;', ...args);
     },
     error: (...args: any[]) => {
         if (!shouldLog('error')) return;
-        const scope = getCallerScope();
         console.error(`%c[ERROR][${scope}]`, 'color:#f87171;font-weight:bold;', ...args);
     },
 };
+}
+

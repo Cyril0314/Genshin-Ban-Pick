@@ -2,7 +2,7 @@
 
 import { ref, onMounted, onUnmounted } from 'vue';
 
-import { useSocketStore } from '@/network/socket';
+import { useSocketStore } from '@/stores/socketStore';
 
 enum SocketEvent {
     ROOM_USER_JOIN_REQUEST = 'room.user.join.request',

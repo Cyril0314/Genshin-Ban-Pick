@@ -2,8 +2,10 @@
 
 import { Server, Socket } from "socket.io";
 
-import { logger } from '../../utils/logger.ts';
+import { createLogger } from '../../utils/logger.ts';
 import { RoomStateManager } from "../managers/RoomStateManager.ts";
+
+const logger = createLogger('CHAT SOCKET')
 
 enum SocketEvent {
     CHAT_MESSAGE_SEND_REQUEST = 'chat.message.send.request',

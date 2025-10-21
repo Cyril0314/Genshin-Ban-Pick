@@ -2,8 +2,10 @@
 
 import { Server, Socket } from 'socket.io';
 
-import { logger } from '../../utils/logger.ts';
+import { createLogger } from '../../utils/logger.ts';
 import { RoomStateManager } from '../managers/RoomStateManager.ts';
+
+const logger = createLogger('BOARD SOCKET')
 
 enum SocketEvent {
     BOARD_IMAGE_DROP_REQUEST = 'board.image.drop.request',
@@ -19,18 +21,18 @@ enum SocketEvent {
 }
 
 export function registerBoardSocket(io: Server, socket: Socket, roomStateManager: RoomStateManager) {
-    socket.on(`${SocketEvent.BOARD_IMAGE_DROP_REQUEST}`, ({ imageId, zoneId }: { imageId: string; zoneId: number }) => {
-        logger.info(`Received ${SocketEvent.BOARD_IMAGE_DROP_REQUEST} imageId: ${imageId} zoneId: ${zoneId}`);
+    socket.on(`${SocketEvent.BOARD_IMAGE_DROP_REQUEST}`, ({ imgId, zoneId }: { imgId: string; zoneId: number }) => {
+        logger.info(`Received ${SocketEvent.BOARD_IMAGE_DROP_REQUEST} imgId: ${imgId} zoneId: ${zoneId}`);
         const roomId = (socket as any).roomId;
         if (!roomId) return;
 
         const who = socket.data.userId ?? socket.data.guestId;
-        console.log(`[Socket] image.drop.request from:`, who);
+        // console.log(`[Socket] image.drop.request from:`, who);
 
         const roomState = roomStateManager.ensure(roomId)
-        roomState.boardImageMap[zoneId] = imageId;
-        socket.to(roomId).emit(`${SocketEvent.BOARD_IMAGE_DROP_BROADCAST}`, { imageId, zoneId });
-        logger.info(`Sent ${SocketEvent.BOARD_IMAGE_DROP_BROADCAST} imageId: ${imageId} zoneId: ${zoneId}`);
+        roomState.boardImageMap[zoneId] = imgId;
+        socket.to(roomId).emit(`${SocketEvent.BOARD_IMAGE_DROP_BROADCAST}`, { imgId, zoneId });
+        logger.info(`Sent ${SocketEvent.BOARD_IMAGE_DROP_BROADCAST} imgId: ${imgId} zoneId: ${zoneId}`);
     });
 
     socket.on(`${SocketEvent.BOARD_IMAGE_RESTORE_REQUEST}`, ({ zoneId }: { zoneId: number }) => {

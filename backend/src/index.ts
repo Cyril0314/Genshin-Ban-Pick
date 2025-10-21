@@ -9,7 +9,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 
-import { logger } from './utils/logger.ts';
+import { createLogger } from './utils/logger.ts';
 import { errorHandler } from './middlewares/errorHandler.ts';
 import authRoutes from './routes/auth.ts';
 import characterRoutes from './routes/characters.ts';
@@ -20,6 +20,8 @@ import UserService from './services/UserService.ts';
 import { createSocketApp } from './socket/index.ts';
 
 import type { Request, Response } from 'express';
+
+const logger = createLogger('INDEX')
 
 // ---------------------------------------------------------
 // 🧩 4. 環境變數設定

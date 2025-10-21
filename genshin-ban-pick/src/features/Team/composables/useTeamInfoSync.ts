@@ -2,7 +2,7 @@
 import { storeToRefs } from 'pinia';
 import { onMounted, onUnmounted } from 'vue'
 
-import { useSocketStore } from '@/network/socket'
+import { useSocketStore } from '@/stores/socketStore'
 import { useTeamInfoStore } from '@/stores/teamInfoStore'
 
 import type { TeamMembersMap } from '@/types/ITeam'

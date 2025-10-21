@@ -34,8 +34,9 @@ export const useBoardImageStore = defineStore('boardImage', () => {
 
     function findZoneIdByImageId(imgId: string) {
         const value = Object.entries(boardImageMap.value).find(([, f]) => f === imgId)
+        console.log(`${value}`)
         if (!value) return null;
-        return Number(value[1])
+        return Number(value[0])
     }
 
     return {

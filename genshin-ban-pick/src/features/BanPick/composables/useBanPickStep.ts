@@ -3,7 +3,7 @@
 import { storeToRefs } from 'pinia'
 import { onMounted, onUnmounted } from 'vue'
 
-import { useSocketStore } from '@/network/socket'
+import { useSocketStore } from '@/stores/socketStore'
 import { useBanPickStepStore } from '@/stores/banPickStepStore'
 enum SocketEvent {
   STEP_ADVANCE_REQUEST = 'step.advance.request',
