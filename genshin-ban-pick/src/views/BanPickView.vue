@@ -30,7 +30,7 @@ const { randomPull } = useRandomPull()
 const { joinRoom, leaveRoom } = useRoomUsers()
 
 onMounted(async () => {
-    console.debug('[BANPICK BOARD] On mounted')
+    console.debug('[BAN PICK BOARD] On mounted')
     try {
         characterMap.value = await fetchCharacterMap();
         roomSetting.value = await fetchRoomSetting();
@@ -44,40 +44,40 @@ onMounted(async () => {
         const roomId = getRoomId();
         joinRoom(roomId)
     } catch (error) {
-        console.error('[BANPICK BOARD] Fetched character and room setting failed:', error);
+        console.error('[BAN PICK BOARD] Fetched character and room setting failed:', error);
     }
 });
 
 onBeforeRouteLeave(async (to, from) => {
-    console.debug('[BANPICK BOARD] On before route leave')
+    console.debug('[BAN PICK BOARD] On before route leave')
     const roomId = getRoomId();
     leaveRoom(roomId)
 })
 
 onUnmounted(() => {
-    console.debug('[BANPICK BOARD] On unmounted')
+    console.debug('[BAN PICK BOARD] On unmounted')
 });
 
 function getRoomId(): string {
     const roomId = new URLSearchParams(window.location.search).get('room') || 'default-room';
-    console.debug('[BANPICK BOARD] Get roomId', roomId)
+    console.debug('[BAN PICK BOARD] Get roomId', roomId)
     return roomId
 }
 
 function handleFilterChanged(newIds: string[]) {
-    console.debug(`[BANPICK BOARD] Handle filiter changed:`, newIds)
+    console.debug(`[BAN PICK BOARD] Handle filiter changed:`, newIds)
     filteredCharacterIds.value = newIds
 }
 
 function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
-    console.debug(`[BANPICK BOARD] Handle ${zoneType} random pull zoneType`)
+    console.debug(`[BAN PICK BOARD] Handle ${zoneType} random pull zoneType`)
     if (!roomSetting.value || !filteredCharacterIds.value || filteredCharacterIds.value.length === 0) {
-        console.warn(`[BANPICK BOARD] Room is not ready or do not filiter any character`)
+        console.warn(`[BAN PICK BOARD] Room is not ready or do not filiter any character`)
         return;
     }
     const result = randomPull(zoneType, roomSetting.value, boardImageMap.value, filteredCharacterIds.value)
     if (!result) {
-        console.warn(`[BANPICK BOARD] Random pull does not get any result`)
+        console.warn(`[BAN PICK BOARD] Random pull does not get any result`)
         return
     } 
     handleBoardImageDrop(result)

@@ -3,7 +3,7 @@
 import { readonly, onMounted, onUnmounted } from 'vue';
 import { storeToRefs } from 'pinia';
 
-import { useBanPickStep } from './useBanPickStep';
+import { useBanPickStepSync } from './useBanPickStepSync';
 import { useTacticalBoardSync } from '@/features/Tactical/composables/useTacticalBoardSync';
 import { useSocketStore } from '@/stores/socketStore';
 import { useBoardImageStore } from '@/stores/boardImageStore';
@@ -29,10 +29,10 @@ export function useBoardSync() {
     const { zoneMetaTable, boardImageMap, usedImageIds } = storeToRefs(boardImageStore);
     const { setBoardImageMap, placeBoardImage, removeBoardImage, resetBoardImageMap, findZoneIdByImageId } = boardImageStore;
 
-    const { banPickSteps, isCurrentStepZone, advanceStep, resetStep } = useBanPickStep();
+    const { currentStep, banPickSteps, advanceStep, resetStep } = useBanPickStepSync();
 
     const teamInfoStore = useTeamInfoStore();
-    const { currentTeams } = storeToRefs(teamInfoStore);
+    const { teams } = storeToRefs(teamInfoStore);
 
     onMounted(() => {
         socket.on(`${SocketEvent.BOARD_IMAGE_MAP_STATE_SYNC}`, handleBoradImageMapSync);
@@ -72,7 +72,7 @@ export function useBoardSync() {
 
             socket.emit(`${SocketEvent.BOARD_IMAGE_DROP_REQUEST}`, { imgId, zoneId });
 
-            if (isCurrentStepZone(zoneId)) {
+            if (currentStep.value?.zoneId === zoneId) {
                 advanceStep();
             }
         }
@@ -177,7 +177,7 @@ export function useBoardSync() {
         const zone = zoneMetaTable.value[zoneId];
         switch (zone.type) {
             case ZoneType.UTILITY:
-                for (const team of currentTeams.value) {
+                for (const team of teams.value) {
                     useTacticalBoardSync(team.id).addToPool(imgId);
                 }
                 break;
@@ -202,7 +202,7 @@ export function useBoardSync() {
                 }
                 break;
             default:
-                for (const team of currentTeams.value) {
+                for (const team of teams.value) {
                     console.log(`teamId ${team.id}`);
                     useTacticalBoardSync(team.id).removeFromBoard(imgId);
                 }
@@ -211,7 +211,7 @@ export function useBoardSync() {
     }
 
     function clearTacticalBoardIfNeeded() {
-        for (const team of currentTeams.value) {
+        for (const team of teams.value) {
             useTacticalBoardSync(team.id).clearBoard();
         }
     }

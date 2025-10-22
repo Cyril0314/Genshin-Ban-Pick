@@ -20,19 +20,19 @@ export function useTeamInfoSync() {
   const { teamInfoPair, teamMembersMap } = storeToRefs(teamInfoStore)
 
   function setTeamMembers(teamId: number, members: string) {
-    console.log(`setTeamMembers: teamId ${teamId} members ${members}`)
+    console.debug(`[TEAM INFO SYNC] Sent team members update request`, teamId, members);
     teamInfoStore.setTeamMembers(teamId, members)
 
     socket.emit(`${SocketEvent.TEAM_MEMBERS_UPDATE_REQUEST}`, { teamId, members })
   }
 
   function handleTeamMembersMapStateSync(teamMembersMap: TeamMembersMap) {
-    console.log(`${JSON.stringify(teamMembersMap)}`)
+    console.debug(`[TEAM INFO SYNC] Handle team members map state sync`, teamMembersMap);
     teamInfoStore.setTeamMembersMap(teamMembersMap)
   }
 
   function handleTeamMembersUpdateBroadcast({ teamId, members }: { teamId: number; members: string }) {
-    console.log(`[Client] team members updated from other user teamId ${teamId} members ${members}`)
+    console.debug(`[TEAM INFO SYNC] Handle team members update broadcast`, teamId, members);
     teamInfoStore.setTeamMembers(teamId, members)
   }
 

@@ -15,10 +15,10 @@ const { currentStep } = storeToRefs(banPickStepStore);
 const boardImageStore = useBoardImageStore();
 const { zoneMetaTable } = storeToRefs(boardImageStore);
 const teamInfoStore = useTeamInfoStore();
-const { currentTeams } = storeToRefs(teamInfoStore);
+const { teams } = storeToRefs(teamInfoStore);
 
 const currentTeam = computed(() => {
-    return currentTeams.value.find((team) => team.id == currentStep.value?.teamId)
+    return teams.value.find((team) => team.id == currentStep.value?.teamId)
 });
 
 const displayText = computed(() => {

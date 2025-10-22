@@ -1,41 +1,54 @@
 // src/stores/boardImageStore.ts
 
 import { defineStore, } from 'pinia';
-import { ref, computed, watch, } from 'vue';
+import { ref, computed, watch, shallowRef} from 'vue';
 
 import type { IZone } from '@/types/IZone';
 
 type BoardImageMap = Record<number, string>;
 
 export const useBoardImageStore = defineStore('boardImage', () => {
-    const zoneMetaTable = ref<Record<number, IZone>>({})
+    const zoneMetaTable = shallowRef<Record<number, IZone>>({})
     const boardImageMap = ref<BoardImageMap>({})
     const usedImageIds = computed(() => [...new Set(Object.values(boardImageMap.value).map(imgId => imgId))])
 
-    function initZoneMetaTable(table: Record<number, IZone>) {
-        zoneMetaTable.value = { ...table }
+    watch(usedImageIds, (usedImageIds) => {
+        console.debug('[BOARD IMAGE STORE] Watch used image ids', usedImageIds)
+    }, { immediate: true })
+
+    function initZoneMetaTable(newZoneMetaTable: Record<number, IZone>) {
+        console.debug('[BOARD IMAGE STORE] Init zone meta table', newZoneMetaTable)
+        zoneMetaTable.value = newZoneMetaTable
     }
 
     function setBoardImageMap(newBoardImageMap: BoardImageMap) {
+        console.debug('[BOARD IMAGE STORE] Set board image map', newBoardImageMap)
         boardImageMap.value = { ...newBoardImageMap }
     }
 
     function placeBoardImage(imageId: string, zoneId: number) {
+        console.debug('[BOARD IMAGE STORE] Place board image', imageId, zoneId)
         boardImageMap.value[zoneId] = imageId
     }
 
     function removeBoardImage(zoneId: number) {
+        console.debug('[BOARD IMAGE STORE] Remove board image', zoneId)
         delete boardImageMap.value[zoneId]
     }
 
     function resetBoardImageMap() {
+        console.debug('[BOARD IMAGE STORE] Reset board image map')
         boardImageMap.value = {}
     }
 
     function findZoneIdByImageId(imgId: string): number | null {
         const value = Object.entries(boardImageMap.value).find(([, f]) => f === imgId)
         console.log(`${value}`)
-        if (!value) return null;
+        if (!value) {
+            console.debug('[BOARD IMAGE STORE] Reset board image map')
+            return null
+        }
+        console.debug('[BOARD IMAGE STORE] Find zone id by image id', value[0], imgId)
         return Number(value[0])
     }
 

@@ -8,6 +8,7 @@ import { getWishImagePath } from '@/utils/imageRegistry'
 import { DragTypes } from '@/constants/customMIMETypes'
 
 import type { IZone } from '@/types/IZone';
+import { storeToRefs } from 'pinia';
 
 const props = defineProps<{
   zone: IZone
@@ -25,7 +26,8 @@ const isOver = ref(false)
 
 const imageId = computed(() => props.boardImageMap[props.zone.id] ?? '')
 
-const { isCurrentStepZone } = useBanPickStepStore()
+const banPickStepStore = useBanPickStepStore()
+const { currentStep } = storeToRefs(banPickStepStore)
 
 function handleDragStartEvent(event: DragEvent) {
   if (imageId.value && event.dataTransfer) {
@@ -52,7 +54,7 @@ function handleClickEvent(event: MouseEvent) {
 }
 
 const isHighlighted = computed(() => {
-  return isCurrentStepZone(props.zone.id)
+  return props.zone.id === currentStep.value?.zoneId
 })
 </script>
 
