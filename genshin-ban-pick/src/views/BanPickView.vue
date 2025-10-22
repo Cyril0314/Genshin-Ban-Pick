@@ -60,6 +60,7 @@ onUnmounted(() => {
 
 function getRoomId(): string {
     const roomId = new URLSearchParams(window.location.search).get('room') || 'default-room';
+    console.debug('[BANPICK BOARD] Get roomId', roomId)
     return roomId
 }
 
