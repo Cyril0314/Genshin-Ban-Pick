@@ -18,36 +18,34 @@ const teamInfoStore = useTeamInfoStore();
 const { teams } = storeToRefs(teamInfoStore);
 
 const currentTeam = computed(() => {
-    return teams.value.find((team) => team.id == currentStep.value?.teamId)
+    return teams.value.find((team) => team.id === currentStep.value?.teamId);
 });
 
 const displayText = computed(() => {
-    console.log(`localStep ${JSON.stringify(currentStep.value)}`);
-    if (!currentStep.value) return '選角結束';
-    const currentZone = zoneMetaTable.value[currentStep.value.zoneId]
-    let currentZoneName: string
+    if (!currentStep.value || !currentTeam.value) return '選角結束';
+    const currentZone = zoneMetaTable.value[currentStep.value.zoneId];
+    let currentZoneName: string;
     switch (currentZone.type) {
-      case ZoneType.BAN:
-        currentZoneName = `Ban ${currentZone.order + 1}`
-        break
-      case ZoneType.PICK:
-        currentZoneName = `Pick ${currentZone.order + 1}`
-        break
-      case ZoneType.UTILITY:
-        currentZoneName = `Utility ${currentZone.order + 1}`
-        break
+        case ZoneType.BAN:
+            currentZoneName = `Ban ${currentZone.order + 1}`;
+            break;
+        case ZoneType.PICK:
+            currentZoneName = `Pick ${currentZone.order + 1}`;
+            break;
+        case ZoneType.UTILITY:
+            currentZoneName = `Utility ${currentZone.order + 1}`;
+            break;
     }
-    return `輪到 ${currentTeam.value?.name}\n選擇 ${currentZoneName} 角色`;
+    return `輪到 ${currentTeam.value.name}\n選擇 ${currentZoneName} 角色`;
 });
 
 watch(currentTeam, () => {
     active.value = true;
-    setTimeout(() => (active.value = false), 1200);
 });
 </script>
 
 <template>
-    <div class="step-indicator" :class="{ active }" :style="useTeamTheme(currentTeam?.id ?? 0).themeVars.value">
+    <div class="step-indicator" :class="{ active }" :style="useTeamTheme(currentTeam?.id ?? 0).themeVars.value" @animationend="active = false">
         {{ displayText }}
     </div>
 </template>
@@ -99,11 +97,13 @@ watch(currentTeam, () => {
 
 @keyframes steadyGlow {
     0% {
-        box-shadow: 0 0 8px 2px var(--team-bg);
+        box-shadow: 0 0 4px 1px var(--team-bg, rgba(255, 255, 255, 0.3));
     }
-
+    50% {
+        box-shadow: 0 0 10px 3px var(--team-bg, rgba(255, 255, 255, 0.5));
+    }
     100% {
-        box-shadow: 0 0 12px 4px var(--team-bg);
+        box-shadow: 0 0 6px 2px var(--team-bg, rgba(255, 255, 255, 0.4));
     }
 }
 </style>

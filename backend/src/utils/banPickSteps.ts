@@ -106,3 +106,88 @@ function generateSnakePickFlow(startIndex: number, zoneMatrix: [IZone[], IZone[]
 
     return picks;
 }
+
+export function generateBanPickSteps2(banZones: IZone[], leftPickZones: IZone[], rightPickZones: IZone[], totalRounds: number, teams: ITeam[]): IBanPickStep[] {
+    const flow: IBanPickStep[] = [];
+
+    const halfBan = Math.ceil(banZones.length / totalRounds);
+
+    const frontTeam = teams[0]
+    const backTeam = teams[1]
+
+    const orderedBanZones = [...banZones].sort((a, b) => a.order - b.order)
+    const frontBanZones = orderedBanZones.slice(0, halfBan)
+    const backBanZones = orderedBanZones.slice(halfBan, banZones.length)
+
+    const halfLeftPick = Math.ceil(leftPickZones.length / totalRounds);
+    const frontLeftPickZones = [...leftPickZones].slice(0, halfLeftPick)
+    const backLeftPickZones = [...leftPickZones].slice(halfLeftPick, leftPickZones.length)
+
+
+    const halfRightPick = Math.ceil(rightPickZones.length / totalRounds);
+    const frontRightPickZones = [...rightPickZones].slice(0, halfRightPick)
+    const backRightPickZones = [...rightPickZones].slice(halfRightPick, rightPickZones.length)
+
+    const frontPickZones = [...frontLeftPickZones, ...frontRightPickZones].sort((a, b) => a.order - b.order)
+    const backPickZones = [...backLeftPickZones, ...backRightPickZones].sort((a, b) => a.order - b.order)
+
+    var index: number = 0
+
+    flow.push(
+        ...generateAlternateBanFlow2(
+            index,
+            frontBanZones,
+            [backTeam, frontTeam],
+        )
+    );
+
+    index = index + frontBanZones.length
+
+    flow.push(
+        ...generateSnakePickFlow2(
+            index,
+            frontPickZones,
+            [frontTeam, backTeam],
+        )
+    );
+
+    index = index + frontLeftPickZones.length + frontRightPickZones.length
+
+    flow.push(
+        ...generateAlternateBanFlow2(
+            index,
+            backBanZones,
+            [frontTeam, backTeam],
+        )
+    );
+
+    index = index + backBanZones.length
+
+    flow.push(
+        ...generateSnakePickFlow2(
+            index,
+            backPickZones,
+            [backTeam, frontTeam],
+        )
+    );
+
+    // console.log(`flow ${JSON.stringify(flow, null, 2)}`)
+    return flow;
+}
+
+
+function generateAlternateBanFlow2(startIndex: number, banZones: IZone[], teams: ITeam[]): IBanPickStep[] {
+    return Array.from({ length: banZones.length }, (_, i) => ({
+        index: startIndex + i,
+        teamId: teams[i % 2].id,
+        zoneId: banZones[i].id
+    }));
+}
+
+function generateSnakePickFlow2(startIndex: number, pickZones: IZone[], teams: ITeam[]): IBanPickStep[] {
+    return Array.from({ length: pickZones.length }, (_, i) => ({
+        index: startIndex + i,
+        teamId: teams[i % 2].id,
+        zoneId: pickZones[i].id
+    }));
+}

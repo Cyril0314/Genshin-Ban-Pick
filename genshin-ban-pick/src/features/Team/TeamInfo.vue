@@ -27,7 +27,7 @@ function updateMembers(e: Event) {
 function handleDropEvent(event: DragEvent) {
   event.preventDefault()
   // isOver.value = false
-  const nickName = event.dataTransfer?.getData(DragTypes.RoomUser)
+  const nickName = event.dataTransfer?.getData(DragTypes.ROOM_USER)
   console.log(`nickName ${nickName}`);
   if (!nickName) return;
   const newMembers = [teamMembers.value, nickName]

@@ -32,14 +32,14 @@ const { currentStep } = storeToRefs(banPickStepStore)
 function handleDragStartEvent(event: DragEvent) {
   if (imageId.value && event.dataTransfer) {
     console.log(`onDragStart ${imageId.value}`)
-    event?.dataTransfer?.setData(DragTypes.CharacterImage, imageId.value)
+    event?.dataTransfer?.setData(DragTypes.CHARACTER_IMAGE, imageId.value)
   }
 }
 
 function handleDropEvent(event: DragEvent) {
   event.preventDefault()
   isOver.value = false
-  const imgId = event.dataTransfer?.getData(DragTypes.CharacterImage)
+  const imgId = event.dataTransfer?.getData(DragTypes.CHARACTER_IMAGE)
   if (imgId) {
     emit('image-drop', { imgId, zoneId: props.zone.id })
   }

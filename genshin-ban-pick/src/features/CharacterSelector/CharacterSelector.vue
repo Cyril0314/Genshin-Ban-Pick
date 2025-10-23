@@ -24,8 +24,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    (e: 'filter-changed', filteredCharacterIds: string[]): void;
-    (e: 'pull', payload: { zoneType: ZoneType }): void;
+    (e: 'filter-change', filteredCharacterIds: string[]): void;
+    (e: 'random-button-click', payload: { zoneType: ZoneType }): void;
 }>();
 
 const selectorOptions = useSelectorOptions(props.characterMap);
@@ -40,7 +40,7 @@ const characterFilter = reactive<Record<CharacterFilterKey, string[]>>({
 });
 const filteredCharacterIds = useFilteredCharacters(props.characterMap, characterFilter);
 
-watch(filteredCharacterIds, (ids) => emit('filter-changed', ids));
+watch(filteredCharacterIds, (ids) => emit('filter-change', ids));
 
 watch(characterFilter, () => normalizeAllSelection(characterFilter, selectorOptions), { deep: true });
 
@@ -66,9 +66,9 @@ function normalizeAllSelection(filter: Record<CharacterFilterKey, string[]>, opt
     }
 }
 
-function handleClick(type: ZoneType) {
-    console.debug(`[CHARACTER SELECTOR] Button ${type} clicked`);
-    emit('pull', { zoneType: type });
+function handleRandomButtonClick(zoneType: ZoneType) {
+    console.debug(`[CHARACTER SELECTOR] Handle random button click`, zoneType);
+    emit('random-button-click', { zoneType: zoneType });
 }
 </script>
 
@@ -102,9 +102,9 @@ function handleClick(type: ZoneType) {
             </v-select>
         </div>
         <div class="selector__toolbar">
-            <button class="selector__button selector__button--utility" @click="handleClick(ZoneType.UTILITY)">Utility</button>
-            <button class="selector__button selector__button--ban" @click="handleClick(ZoneType.BAN)">Ban</button>
-            <button class="selector__button selector__button--pick" @click="handleClick(ZoneType.PICK)">Pick</button>
+            <button class="selector__button selector__button--utility" @click="handleRandomButtonClick(ZoneType.UTILITY)">Utility</button>
+            <button class="selector__button selector__button--ban" @click="handleRandomButtonClick(ZoneType.BAN)">Ban</button>
+            <button class="selector__button selector__button--pick" @click="handleRandomButtonClick(ZoneType.PICK)">Pick</button>
         </div>
     </div>
 </template>

@@ -16,7 +16,7 @@ const poolImages = computed(() =>
 
 function handleDragStart(event: DragEvent, id: string) {
     console.log(`onDragStart ${id}`)
-    event?.dataTransfer?.setData(DragTypes.CharacterImage, id)
+    event?.dataTransfer?.setData(DragTypes.CHARACTER_IMAGE, id)
 }
 </script>
 

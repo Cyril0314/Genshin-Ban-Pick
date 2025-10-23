@@ -37,11 +37,13 @@ export function useTeamInfoSync() {
   }
 
   onMounted(() => {
+    console.debug('[TEAM INFO SYNC] On mounted')
     socket.on(`${SocketEvent.TEAM_MEMBERS_MAP_STATE_SYNC_SELF}`, handleTeamMembersMapStateSync)
     socket.on(`${SocketEvent.TEAM_MEMBERS_UPDATE_BROADCAST}`, handleTeamMembersUpdateBroadcast)
   })
 
   onUnmounted(() => {
+    console.debug('[TEAM INFO SYNC] On unmounted')
     socket.off(`${SocketEvent.TEAM_MEMBERS_MAP_STATE_SYNC_SELF}`)
     socket.off(`${SocketEvent.TEAM_MEMBERS_UPDATE_BROADCAST}`)
   })

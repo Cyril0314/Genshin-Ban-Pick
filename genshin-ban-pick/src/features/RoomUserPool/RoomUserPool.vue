@@ -8,7 +8,7 @@ const { roomUsers } = useRoomUsers();
 
 function handleDragStartEvent(event: DragEvent, nickname: string) {
   console.log(`onDragStart ${nickname}`)
-  event?.dataTransfer?.setData(DragTypes.RoomUser, nickname)
+  event?.dataTransfer?.setData(DragTypes.ROOM_USER, nickname)
 }
 </script>
 

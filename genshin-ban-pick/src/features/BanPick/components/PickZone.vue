@@ -1,73 +1,82 @@
 <!-- src/features/BanPick/components/PickZone.vue -->
 
 <script setup lang="ts">
-import DropZone from './DropZone.vue'
+import DropZone from './DropZone.vue';
 
 import type { IZone } from '@/types/IZone';
 
 const props = defineProps<{
-  zones: IZone[]
-  side: 'left' | 'right'
-  maxPerColumn: number
-  boardImageMap: Record<number, string>
-}>()
+    zones: IZone[];
+    side: 'left' | 'right';
+    maxPerColumn: number;
+    boardImageMap: Record<number, string>;
+}>();
 
 const emit = defineEmits<{
-  (e: 'image-drop', payload: { imgId: string; zoneId: number }): void
-  (e: 'image-restore', payload: { zoneId: number }): void
-}>()
+    (e: 'image-drop', payload: { imgId: string; zoneId: number }): void;
+    (e: 'image-restore', payload: { zoneId: number }): void;
+}>();
 
 function chunk<T>(arr: T[], size: number): T[][] {
-  const result = []
-  for (let i = 0; i < arr.length; i += size) {
-    result.push(arr.slice(i, i + size))
-  }
-  return result
+    const result = [];
+    for (let i = 0; i < arr.length; i += size) {
+        result.push(arr.slice(i, i + size));
+    }
+    return result;
 }
 
-const columns = chunk(props.zones ?? [], props.maxPerColumn)
+const zoneMatrix = chunk(props.zones ?? [], props.maxPerColumn);
 
 // console.log('[PickZone] zones:', props.zones)
 
-function handleImageDropped({ imgId, zoneId }: { imgId: string; zoneId: number }) {
-  console.log(`PickZone handleImageDropped imgId ${imgId} zoneId ${zoneId}`)
-  emit('image-drop', { imgId, zoneId })
+function handleImageDrop({ imgId, zoneId }: { imgId: string; zoneId: number }) {
+    console.log(`PickZone handleImageDrop imgId ${imgId} zoneId ${zoneId}`);
+    emit('image-drop', { imgId, zoneId });
 }
 
 function handleImageRestore({ zoneId }: { zoneId: number }) {
-  console.log(`PickZone handleImageRestore zoneId ${zoneId}`)
-  emit('image-restore', { zoneId })
+    console.log(`PickZone handleImageRestore zoneId ${zoneId}`);
+    emit('image-restore', { zoneId });
 }
 </script>
 
 <template>
-  <div :class="['pick-zone__columns', `pick-zone__columns--${props.side}`]">
-    <div class="grid__column grid__column--side" v-for="(col, index) in columns" :key="index">
-      <DropZone
-        v-for="zone in col"
-        :zone="zone"
-        :boardImageMap="props.boardImageMap"
-        :label="`Pick ${zone.order + 1}`"
-        :labelColor="side === 'left' ? 'var(--md-sys-color-secondary-container)' : 'var(--md-sys-color-tertiary-container)'"
-        @image-drop="handleImageDropped"
-        @image-restore="handleImageRestore"
-      />
+    <div :class="['pick-zone__columns', `pick-zone__columns--${props.side}`]">
+        <div class="grid__column grid__column--side" v-for="(zones, columnIndex) in zoneMatrix" :key="columnIndex">
+            <template v-for="(zone, rowIndex) in zones" :key="rowIndex">
+                <DropZone
+                    :zone="zone"
+                    :boardImageMap="props.boardImageMap"
+                    :label="`Pick ${zone.order + 1}`"
+                    :labelColor="side === 'left' ? 'var(--md-sys-color-secondary-container)' : 'var(--md-sys-color-tertiary-container)'"
+                    @image-drop="handleImageDrop"
+                    @image-restore="handleImageRestore"
+                />
+            </template>
+        </div>
     </div>
-  </div>
 </template>
 
 <style scoped>
+.pick-zone__columns--left {
+    --flex-direction: row;
+}
+
+.pick-zone__columns--right {
+    --flex-direction: row-reverse;
+}
+
 .pick-zone__columns {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: var(--size-drop-zone-line-space);
+    display: flex;
+    flex-direction: var(--flex-direction);
+    align-items: center;
+    gap: var(--size-drop-zone-line-space);
 }
 
 .grid__column {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--size-drop-zone-item-space);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--size-drop-zone-item-space);
 }
 </style>

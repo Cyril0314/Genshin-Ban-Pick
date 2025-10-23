@@ -20,14 +20,14 @@ const isOver = ref(false)
 function handleDragStartEvent(event: DragEvent) {
   if (props.imageId && event.dataTransfer) {
     console.log(`onDragStart ${props.imageId}`)
-    event?.dataTransfer?.setData(DragTypes.CharacterImage, props.imageId)
+    event?.dataTransfer?.setData(DragTypes.CHARACTER_IMAGE, props.imageId)
   }  
 }
 
 function handleDropEvent(event: DragEvent) {
   event.preventDefault()
   isOver.value = false
-  const imgId = event.dataTransfer?.getData(DragTypes.CharacterImage)
+  const imgId = event.dataTransfer?.getData(DragTypes.CHARACTER_IMAGE)
   if (!imgId || props.imageId) return
   emit('drop', { zoneId: props.zoneId, imgId })
 }

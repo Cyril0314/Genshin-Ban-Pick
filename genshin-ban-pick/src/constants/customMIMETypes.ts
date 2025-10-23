@@ -1,6 +1,6 @@
 // src/constants/customMIMETypes.ts
 
 export const DragTypes = {
-     CharacterImage: 'application/x-character-image',
-     RoomUser: 'application/x-room-user'
+     CHARACTER_IMAGE: 'application/x-character-image',
+     ROOM_USER: 'application/x-room-user'
 }
