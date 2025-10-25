@@ -1,4 +1,4 @@
-<!-- src/features/BanPick/components/PickZone.vue -->
+<!-- src/features/BanPick/components/BanZones.vue -->
 
 <script setup lang="ts">
 import DropZone from './DropZone.vue';
@@ -7,8 +7,7 @@ import type { IZone } from '@/types/IZone';
 
 const props = defineProps<{
     zones: IZone[];
-    side: 'left' | 'right';
-    maxPerColumn: number;
+    maxPerRow: number;
     boardImageMap: Record<number, string>;
 }>();
 
@@ -25,58 +24,55 @@ function chunk<T>(arr: T[], size: number): T[][] {
     return result;
 }
 
-const zoneMatrix = chunk(props.zones ?? [], props.maxPerColumn);
+const zoneMatrix = chunk(props.zones ?? [], props.maxPerRow);
 
-// console.log('[PickZone] zones:', props.zones)
+// console.log('[BanZone] zones:', props.zones)
 
 function handleImageDrop({ imgId, zoneId }: { imgId: string; zoneId: number }) {
-    console.log(`PickZone handleImageDrop imgId ${imgId} zoneId ${zoneId}`);
+    console.debug(`[BAN ZONES] Handle image drop`, imgId, zoneId);
     emit('image-drop', { imgId, zoneId });
 }
 
 function handleImageRestore({ zoneId }: { zoneId: number }) {
-    console.log(`PickZone handleImageRestore zoneId ${zoneId}`);
+    console.debug(`[BAN ZONES] Handle image restore`, zoneId);
     emit('image-restore', { zoneId });
 }
 </script>
 
 <template>
-    <div :class="['pick-zone__columns', `pick-zone__columns--${props.side}`]">
-        <div class="grid__column grid__column--side" v-for="(zones, columnIndex) in zoneMatrix" :key="columnIndex">
-            <template v-for="(zone, rowIndex) in zones" :key="rowIndex">
+    <div class="ban-zone__rows">
+        <div class="grid__row" v-for="(zones, rowIndex) in zoneMatrix" :key="rowIndex">
+            <template v-for="(zone, colIndex) in zones" :key="zone.id">
                 <DropZone
                     :zone="zone"
                     :boardImageMap="props.boardImageMap"
-                    :label="`Pick ${zone.order + 1}`"
-                    :labelColor="side === 'left' ? 'var(--md-sys-color-secondary-container)' : 'var(--md-sys-color-tertiary-container)'"
+                    :label="`Ban ${zone.order + 1}`"
+                    :labelColor="'var(--md-sys-color-error)'"
                     @image-drop="handleImageDrop"
                     @image-restore="handleImageRestore"
                 />
+                <div v-if="(colIndex + 1) % (zones.length / 2) === 0 && colIndex !== zones.length - 1" class="grid__spacer"></div>
             </template>
         </div>
     </div>
 </template>
 
 <style scoped>
-.pick-zone__columns--left {
-    --flex-direction: row;
-}
-
-.pick-zone__columns--right {
-    --flex-direction: row-reverse;
-}
-
-.pick-zone__columns {
+.ban-zone__rows {
     display: flex;
-    flex-direction: var(--flex-direction);
+    flex-direction: column;
     align-items: center;
     gap: var(--size-drop-zone-line-space);
 }
 
-.grid__column {
+.grid__row {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-direction: row;
     gap: var(--size-drop-zone-item-space);
+}
+
+.grid__spacer {
+    width: var(--size-ban-row-spacer);
+    height: 100%;
 }
 </style>

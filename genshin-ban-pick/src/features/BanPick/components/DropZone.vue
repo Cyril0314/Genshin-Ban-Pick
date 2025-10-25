@@ -30,13 +30,14 @@ const banPickStepStore = useBanPickStepStore()
 const { currentStep } = storeToRefs(banPickStepStore)
 
 function handleDragStartEvent(event: DragEvent) {
+  console.debug(`[DROP ZONE] Handle drag start event`);
   if (imageId.value && event.dataTransfer) {
-    console.log(`onDragStart ${imageId.value}`)
     event?.dataTransfer?.setData(DragTypes.CHARACTER_IMAGE, imageId.value)
   }
 }
 
 function handleDropEvent(event: DragEvent) {
+  console.debug(`[DROP ZONE] Handle drop event`);
   event.preventDefault()
   isOver.value = false
   const imgId = event.dataTransfer?.getData(DragTypes.CHARACTER_IMAGE)
@@ -46,31 +47,22 @@ function handleDropEvent(event: DragEvent) {
 }
 
 function handleClickEvent(event: MouseEvent) {
+  console.debug(`[DROP ZONE] Handle click event`, props.zone);
   const target = event.target as HTMLElement
   if (target.tagName === 'IMG' && imageId) {
-    console.log(`DropZone onClick imgId ${imageId.value}`)
     emit('image-restore', { zoneId: props.zone.id })
   }
 }
 
-const isHighlighted = computed(() => {
-  return props.zone.id === currentStep.value?.zoneId
-})
+const isHighlighted = computed(() => props.zone.id === currentStep.value?.zoneId)
 </script>
 
 <template>
-  <div
-    class="drop-zone"
-    :class="[
-      'drop-zone--' + (props.zone.type || 'default'),
-      { 'drop-zone--active': isOver, highlight: isHighlighted },
-    ]"
-    @dragover.prevent="isOver = true"
-    @dragleave="isOver = false"
-    @dragstart="handleDragStartEvent"
-    @drop="handleDropEvent"
-    @click="handleClickEvent"
-  >
+  <div class="drop-zone" :class="[
+    'drop-zone--' + (props.zone.type || 'default'),
+    { 'drop-zone--active': isOver, highlight: isHighlighted },
+  ]" @dragover.prevent="isOver = true" @dragleave="isOver = false" @dragstart="handleDragStartEvent"
+    @drop="handleDropEvent" @click="handleClickEvent">
     <template v-if="imageId">
       <img class="drop-zone__background" :src="getWishImagePath(imageId)" aria-hidden="true" />
       <img class="drop-zone__image" :src="getWishImagePath(imageId)" />
@@ -114,9 +106,17 @@ const isHighlighted = computed(() => {
 
 
 @keyframes subtleMove {
-  0%   { transform: scale(2); }
-  50%  { transform: scale(3); }
-  100% { transform: scale(2); }
+  0% {
+    transform: scale(2);
+  }
+
+  50% {
+    transform: scale(3);
+  }
+
+  100% {
+    transform: scale(2);
+  }
 }
 
 .drop-zone__image {
@@ -150,9 +150,11 @@ const isHighlighted = computed(() => {
   0% {
     box-shadow: 0 0 var(--space-lg) var(--md-sys-color-tertiary-container);
   }
+
   50% {
     box-shadow: 0 0 var(--space-sm) var(--md-sys-color-secondary-container);
   }
+
   100% {
     box-shadow: 0 0 var(--space-lg) var(--md-sys-color-tertiary-container);
   }

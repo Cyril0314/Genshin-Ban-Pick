@@ -8,9 +8,12 @@ export interface IRoomSetting {
     zoneSchema: {
         zoneMetaTable: Record<number, IZone>,
         utilityZones: IZone[],
+        maxNumberOfUtilityPerColumn: number,
         banZones: IZone[],
+        maxNumberOfBanPerRow: number,
         leftPickZones: IZone[],
         rightPickZones: IZone[]
+        maxNumberOfPickPerColumn: number,
     },
     banPickSteps: IBanPickStep[],
     teams: ITeam[]

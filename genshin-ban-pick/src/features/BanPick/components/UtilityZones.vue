@@ -1,4 +1,4 @@
-<!-- src/features/BanPick/components/BanZone.vue -->
+<!-- src/features/BanPick/components/UtilityZone.vue -->
 
 <script setup lang="ts">
 import DropZone from './DropZone.vue';
@@ -7,7 +7,7 @@ import type { IZone } from '@/types/IZone';
 
 const props = defineProps<{
     zones: IZone[];
-    maxPerRow: number;
+    maxPerColumn: number;
     boardImageMap: Record<number, string>;
 }>();
 
@@ -24,55 +24,50 @@ function chunk<T>(arr: T[], size: number): T[][] {
     return result;
 }
 
-const zoneMatrix = chunk(props.zones ?? [], props.maxPerRow);
+const zoneMatrix = chunk(props.zones ?? [], props.maxPerColumn);
 
-// console.log('[BanZone] zones:', props.zones)
+// console.log('[UtilityZone] zones:', props.zones)
 
 function handleImageDrop({ imgId, zoneId }: { imgId: string; zoneId: number }) {
-    console.log(`BanZone handleImageDrop imgId ${imgId} zoneId ${zoneId}`);
+    console.debug(`[UTILITY ZONES] Handle image drop`, imgId, zoneId);
     emit('image-drop', { imgId, zoneId });
 }
 
 function handleImageRestore({ zoneId }: { zoneId: number }) {
-    console.log(`BanZone handleImageRestore zoneId ${zoneId}`);
+    console.debug(`[UTILITY ZONES] Handle image restore`, zoneId);
     emit('image-restore', { zoneId });
 }
 </script>
 
 <template>
-    <div class="ban-zone__rows">
-        <div class="grid__row" v-for="(zones, rowIndex) in zoneMatrix" :key="rowIndex">
-            <template v-for="(zone, colIndex) in zones" :key="zone.id">
+    <div class="utility-zone__columns">
+        <div class="grid__column grid__column--center" v-for="(zones, columnIndex) in zoneMatrix" :key="columnIndex">
+            <template v-for="(zone, rowIndex) in zones" :key="rowIndex">
                 <DropZone
                     :zone="zone"
                     :boardImageMap="props.boardImageMap"
-                    :label="`Ban ${zone.order + 1}`"
-                    :labelColor="'var(--md-sys-color-error)'"
+                    :label="`Utility`"
+                    :labelColor="'var(--md-sys-color-on-primary-container)'"
                     @image-drop="handleImageDrop"
                     @image-restore="handleImageRestore"
                 />
-                <div v-if="(colIndex + 1) % (zones.length / 2) === 0 && colIndex !== zones.length - 1" class="grid__spacer"></div>
             </template>
         </div>
     </div>
 </template>
 
 <style scoped>
-.ban-zone__rows {
+.utility-zone__columns {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     gap: var(--size-drop-zone-line-space);
 }
 
-.grid__row {
+.grid__column {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    align-items: center;
     gap: var(--size-drop-zone-item-space);
-}
-
-.grid__spacer {
-    width: var(--size-ban-row-spacer);
-    height: 100%;
 }
 </style>

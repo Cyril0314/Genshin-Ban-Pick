@@ -3,10 +3,10 @@
 <script setup lang="ts">
 import {} from 'vue';
 
-import BanZone from './components/BanZone.vue';
-import PickZone from './components/PickZone.vue';
+import BanZones from './components/BanZones.vue';
+import PickZones from './components/PickZones.vue';
 import StepIndicator from './components/StepIndicator.vue';
-import UtilityZone from './components/UtilityZone.vue';
+import UtilityZones from './components/UtilityZones.vue';
 
 import type { ICharacter } from '@/types/ICharacter';
 import type { IRoomSetting } from '@/types/IRoomSetting';
@@ -34,9 +34,6 @@ const emit = defineEmits<{
     (e: 'random-button-click', payload: { zoneType: ZoneType }): void;
 }>();
 
-const maxPerRow = 8;
-const maxPerColumn = 8;
-
 function handleImageDrop({ imgId, zoneId }: { imgId: string; zoneId: number }) {
     console.debug(`[BAN PICK BOARD] Handle image drop`, { imgId, zoneId });
     emit('image-drop', { imgId, zoneId });
@@ -62,9 +59,9 @@ function handleRandomButtonClick({ zoneType }: { zoneType: ZoneType }) {
     <div class="layout__main">
         <div class="layout__side layout__side--left">
             <TeamInfo side="left" v-if="teamInfoPair" :teamId="teamInfoPair.left.id" />
-            <PickZone
+            <PickZones
                 :zones="props.roomSetting.zoneSchema.leftPickZones"
-                :maxPerColumn="maxPerColumn"
+                :maxPerColumn="props.roomSetting.zoneSchema.maxNumberOfPickPerColumn"
                 side="left"
                 :boardImageMap="props.boardImageMap"
                 @image-drop="handleImageDrop"
@@ -73,9 +70,9 @@ function handleRandomButtonClick({ zoneType }: { zoneType: ZoneType }) {
         </div>
         <div class="layout__center">
             <div class="layout__ban-zone">
-                <BanZone
+                <BanZones
                     :zones="props.roomSetting.zoneSchema.banZones"
-                    :maxPerRow="maxPerRow"
+                    :maxPerRow="props.roomSetting.zoneSchema.maxNumberOfBanPerRow"
                     :boardImageMap="props.boardImageMap"
                     @image-drop="handleImageDrop"
                     @image-restore="handleImageRestore"
@@ -96,8 +93,9 @@ function handleRandomButtonClick({ zoneType }: { zoneType: ZoneType }) {
                         <StepIndicator />
                     </div>
                     <div class="layout__utility-zone">
-                        <UtilityZone
+                        <UtilityZones
                             :zones="props.roomSetting.zoneSchema.utilityZones"
+                            :maxPerColumn="props.roomSetting.zoneSchema.maxNumberOfUtilityPerColumn"
                             :boardImageMap="props.boardImageMap"
                             @image-drop="handleImageDrop"
                             @image-restore="handleImageRestore"
@@ -111,9 +109,9 @@ function handleRandomButtonClick({ zoneType }: { zoneType: ZoneType }) {
         </div>
         <div class="layout__side layout__side--right">
             <TeamInfo side="right" v-if="teamInfoPair" :teamId="teamInfoPair.right.id" />
-            <PickZone
+            <PickZones
                 :zones="props.roomSetting.zoneSchema.rightPickZones"
-                :maxPerColumn="maxPerColumn"
+                :maxPerColumn="props.roomSetting.zoneSchema.maxNumberOfPickPerColumn"
                 side="right"
                 :boardImageMap="props.boardImageMap"
                 @image-drop="handleImageDrop"

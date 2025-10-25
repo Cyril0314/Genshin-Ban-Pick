@@ -4,9 +4,9 @@ import {
     numberOfUtility,
     numberOfBan,
     numberOfPick,
-    maxPerUtilityColumn,
-    maxPerBanRow,
-    maxPerPickColumn,
+    maxNumberOfUtilityPerColumn,
+    maxNumberOfBanPerRow,
+    maxNumberOfPickPerColumn,
     totalRounds,
     teams,
 } from '../constants/constants.ts';
@@ -16,11 +16,11 @@ import { generateBanPickSteps } from '../utils/banPickSteps.ts';
 export function createRoomSetting() {
     const zoneSchema = createZoneSchema({
         numberOfUtility,
-        maxPerUtilityColumn,
+        maxNumberOfUtilityPerColumn,
         numberOfBan,
-        maxPerBanRow,
+        maxNumberOfBanPerRow,
         numberOfPick,
-        maxPerPickColumn,
+        maxNumberOfPickPerColumn,
         totalRounds,
     });
     const banPickSteps = generateBanPickSteps(zoneSchema.banZones, zoneSchema.leftPickZones, zoneSchema.rightPickZones, totalRounds, teams);

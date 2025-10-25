@@ -1,4 +1,4 @@
-<!-- src/features/BanPick/components/UtilityZone.vue -->
+<!-- src/features/BanPick/components/PickZone.vue -->
 
 <script setup lang="ts">
 import DropZone from './DropZone.vue';
@@ -7,6 +7,8 @@ import type { IZone } from '@/types/IZone';
 
 const props = defineProps<{
     zones: IZone[];
+    side: 'left' | 'right';
+    maxPerColumn: number;
     boardImageMap: Record<number, string>;
 }>();
 
@@ -23,43 +25,46 @@ function chunk<T>(arr: T[], size: number): T[][] {
     return result;
 }
 
-const zoneMatrix = chunk(props.zones ?? [], 4);
+const zoneMatrix = chunk(props.zones ?? [], props.maxPerColumn);
 
-// console.log('[UtilityZone] zones:', props.zones)
+// console.log('[PickZone] zones:', props.zones)
 
 function handleImageDrop({ imgId, zoneId }: { imgId: string; zoneId: number }) {
-    console.log(`UtilityZone handleImageDrop imgId ${imgId} zoneId ${zoneId}`);
+    console.debug(`[PICK ZONES] Handle image drop`, imgId, zoneId);
     emit('image-drop', { imgId, zoneId });
 }
 
 function handleImageRestore({ zoneId }: { zoneId: number }) {
-    console.log(`UtilityZone handleImageRestore zoneId ${zoneId}`);
+    console.debug(`[PICK ZONES] Handle image restore`, zoneId);
     emit('image-restore', { zoneId });
 }
 </script>
 
 <template>
-    <div class="utility-zone__columns">
-        <div class="grid__column grid__column--center" v-for="(zones, columnIndex) in zoneMatrix" :key="columnIndex">
+    <div :class="['pick-zone__columns', `pick-zone__columns--${props.side}`]">
+        <div class="grid__column grid__column--side" v-for="(zones, columnIndex) in zoneMatrix" :key="columnIndex">
             <template v-for="(zone, rowIndex) in zones" :key="rowIndex">
-                <DropZone
-                    :zone="zone"
-                    :boardImageMap="props.boardImageMap"
-                    :label="`Utility`"
-                    :labelColor="'var(--md-sys-color-on-primary-container)'"
-                    @image-drop="handleImageDrop"
-                    @image-restore="handleImageRestore"
-                />
+                <DropZone :zone="zone" :boardImageMap="props.boardImageMap" :label="`Pick ${zone.order + 1}`"
+                    :labelColor="side === 'left' ? 'var(--md-sys-color-secondary-container)' : 'var(--md-sys-color-tertiary-container)'"
+                    @image-drop="handleImageDrop" @image-restore="handleImageRestore" />
             </template>
         </div>
     </div>
 </template>
 
 <style scoped>
-.utility-zone__columns {
+.pick-zone__columns--left {
+    --flex-direction: row;
+}
+
+.pick-zone__columns--right {
+    --flex-direction: row-reverse;
+}
+
+.pick-zone__columns {
     display: flex;
-    flex-direction: row;
-    align-items: center;
+    flex-direction: var(--flex-direction);
+    align-items: start;
     gap: var(--size-drop-zone-line-space);
 }
 

@@ -4,19 +4,19 @@ import { IZone, ZoneType } from '../types/IZone.ts';
 
 export function createZoneSchema({
     numberOfUtility,
-    maxPerUtilityColumn,
+    maxNumberOfUtilityPerColumn,
     numberOfBan,
-    maxPerBanRow,
+    maxNumberOfBanPerRow,
     numberOfPick,
-    maxPerPickColumn,
+    maxNumberOfPickPerColumn,
     totalRounds,
 }: {
     numberOfUtility: number;
-    maxPerUtilityColumn: number;
+    maxNumberOfUtilityPerColumn: number;
     numberOfBan: number;
-    maxPerBanRow: number;
+    maxNumberOfBanPerRow: number;
     numberOfPick: number;
-    maxPerPickColumn: number;
+    maxNumberOfPickPerColumn: number;
     totalRounds: number;
 }) {
     var id = 0;
@@ -26,7 +26,7 @@ export function createZoneSchema({
     });
     // console.log(`utilityZones ${JSON.stringify(utilityZones, null, 2)}`)
 
-    const banOrders = generateBanOrder(numberOfBan, maxPerBanRow, totalRounds);
+    const banOrders = generateBanOrder(numberOfBan, maxNumberOfBanPerRow, totalRounds);
     const banZones: IZone[] = banOrders.map((order) => {
         return { id: id++, type: ZoneType.BAN, order: order };
     });
@@ -49,9 +49,12 @@ export function createZoneSchema({
     return {
         zoneMetaTable,
         utilityZones,
+        maxNumberOfUtilityPerColumn,
         banZones,
+        maxNumberOfBanPerRow,
         leftPickZones,
         rightPickZones,
+        maxNumberOfPickPerColumn,
     };
 }
 
@@ -60,14 +63,15 @@ function generateUtilityOrder(num: number): number[] {
 }
 
 function generateBanOrder(num: number, maxPerRow: number, totalRounds: number): number[] {
-    const roundOffset = num / totalRounds;
+    const banPerRound = num / totalRounds;
     const rows = Math.ceil(num / maxPerRow);
     const matrix: number[][] = Array.from({ length: rows }, () => []);
 
     const shouldUnshift = (i: number) => {
-        const isFirstHalf = i < roundOffset;
+        const roundIndex = Math.floor(i / banPerRound);
+        const isOddRound = roundIndex % 2 === 1;
         const isOdd = i % 2 === 1;
-        return (isFirstHalf && isOdd) || (!isFirstHalf && !isOdd);
+        return (!isOddRound && isOdd) || (isOddRound && !isOdd);
     };
 
     let row = 0;
@@ -85,73 +89,26 @@ function generateBanOrder(num: number, maxPerRow: number, totalRounds: number): 
     return matrix.flat();
 }
 
-
-// function generatePickOrder2(num: number, maxPerPickColumn: number, totalRounds: number): { left: number[]; right: number[] } {
-//     const offset = num / totalRounds;
-//     const columns = Math.ceil(num / maxPerPickColumn);
-//     const matrix: number[][] = Array.from({ length: columns }, () => []);
-
-//     const teamCount = 2
-//     const perTeamColumn = columns / teamCount
-
-    
-//     // var offensive: number[] = [];
-//     // let defensive: number[] = [1, 2, 5, 6, 9, 10, 13, 14];
-
-//     let column
-
-//     // for (let i = 0; i < offset; i++) {
-//         for (let j = 0; j < num / teamCount; j += teamCount) {
-//             // 0 2 4 6 8 10 12 14
-//             if (j < offset) {
-//                 matrix[0].push(j)
-//                 matrix[0 + teamCount].push(j + 1)
-//             } else {
-
-//             }
-            
-//         }
-//     // }
-
-    
-//     // const matrix: number[][] = [[], [], [], []];
-
-//     offensive.forEach((p) => {
-//         matrix[0].push(p);
-//         matrix[2].push(offset + p);
-//     });
-//     defensive.forEach((p) => {
-//         matrix[1].push(offset + p);
-//         matrix[3].push(p);
-//     });
-
-//     const flat = matrix.flat();
-
-//     return {
-//         left: flat.slice(0, num / 2),
-//         right: flat.slice(num / 2),
-//     };
-// }
-
 function generatePickOrder(num: number, totalRounds: number): { left: number[]; right: number[] } {
-    const offset = num / totalRounds;
-    const offensive: number[] = [0, 3, 4, 7, 8, 11, 12, 15];
-    const defensive: number[] = [1, 2, 5, 6, 9, 10, 13, 14];
-    const matrix: number[][] = [[], [], [], []];
+    const picksPerRound = num / totalRounds;
 
-    offensive.forEach((p) => {
-        matrix[0].push(p);
-        matrix[3].push(offset + p);
-    });
-    defensive.forEach((p) => {
-        matrix[1].push(offset + p);
-        matrix[2].push(p);
-    });
+    const left: number[] = [];
+    const right: number[] = [];
 
-    const flat = matrix.flat();
+    for (let i = 0; i < num; i++) {
+        const roundIndex = Math.floor(i / picksPerRound);
+        const mod = i % 4;
+        const isOddRound = roundIndex % 2 === 1;
 
-    return {
-        left: flat.slice(0, num / 2),
-        right: flat.slice(num / 2),
-    };
+        if (!isOddRound) {
+            // 偶數回合：A B B A
+            if (mod === 0 || mod === 3) left.push(i);
+            else right.push(i);
+        } else {
+            // 奇數回合：B A A B
+            if (mod === 0 || mod === 3) right.push(i);
+            else left.push(i);
+        }
+    }
+    return { left, right }
 }
