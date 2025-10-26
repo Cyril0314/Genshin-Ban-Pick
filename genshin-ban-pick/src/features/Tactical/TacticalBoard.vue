@@ -2,14 +2,19 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-import { useTacticalBoardSync } from './composables/useTacticalBoardSync'
 import TacticalCell from './TacticalCell.vue'
+import { useTaticalBoardStore } from '@/stores/tacticalBoardStore'
+import { storeToRefs } from 'pinia'
 
 const rows = 4
 const cols = 5
 const props = defineProps<{ teamId: number, teamMembers: string }>()
 
-const { cellMap, handleCellDrop, handleCellClear } = useTacticalBoardSync(props.teamId)
+const taticalBoardStore = useTaticalBoardStore()
+const { teamTaticalBoardPanelMap } = storeToRefs(taticalBoardStore)
+const { placeCellImage, removeCellImage } = taticalBoardStore
+
+const taticalBoardPanel = computed(() => (teamTaticalBoardPanelMap.value[props.teamId]))
 
 const memberCells = computed(() => {
   // 如果成員不足 4 個，補空字串
@@ -22,9 +27,21 @@ const boardCells = computed(() => {
     // 將 i 轉換成 row 與 col（0-indexed）
     const row = Math.floor(i / cols)
     const col = i % cols
-    return { row, col, zoneId: `cell-${i + 1}` }
+    return { row, col, id: `cell-${i + 1}` }
   })
 })
+
+const imageId = (cellId: string) => (taticalBoardPanel.value.cellImageMap[cellId] ?? null)
+
+function handleImageDrop({ cellId, imgId }: { cellId: string; imgId: string }) {
+  console.debug(`[TATICAL BOARD] Handle image drop`, imgId, cellId);
+  placeCellImage(props.teamId, cellId, imgId)
+}
+
+function handleImageRestore({ cellId }: { cellId: string }) {
+  console.debug(`[TATICAL BOARD] Handle image restore`, cellId);
+  removeCellImage(props.teamId, cellId)
+}
 </script>
 
 <template>
@@ -36,12 +53,12 @@ const boardCells = computed(() => {
     <div v-for="(member, index) in memberCells" :key="index" class="tactical__cell tactical__cell--member">
       {{ member }}
     </div>
-    <template v-for="cell in boardCells" :key="cell.zoneId">
+    <template v-for="cell in boardCells" :key="cell.id">
       <div v-if="cell.col === 0" class="tactical__cell tactical__cell--team-number">
         {{ cell.row + 1 }}
       </div>
-      <TacticalCell v-else :zoneId="cell.zoneId" :imageId="cellMap[cell.zoneId]" @drop="handleCellDrop"
-        @clear="handleCellClear" />
+      <TacticalCell v-else :cellId="cell.id" :imageId="imageId(cell.id)"
+        @image-drop="handleImageDrop" @image-restore="handleImageRestore" />
     </template>
   </div>
 </template>

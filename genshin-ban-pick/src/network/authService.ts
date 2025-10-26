@@ -1,5 +1,7 @@
 import axios from 'axios'
 
+import { TokenNotFound } from '@/errors/AppError'
+
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
   withCredentials: true, // 如果後端需要帶 cookie
@@ -10,7 +12,7 @@ api.interceptors.request.use((config) => {
   if (token && config.headers?.set) {
     config.headers?.set?.('Authorization', `Bearer ${token}`)
   } else {
-    console.log(`Nil Token`)
+    console.error(`[AUTH SERVICE] Token is nil`)
   }
   return config
 })
@@ -31,6 +33,6 @@ export async function loginUser(payload: { account: string; password: string }) 
 
 export async function getCurrentUser() {
   const token = localStorage.getItem('auth_token')
-  if (!token) throw new Error('No token')
+  if (!token) throw new TokenNotFound()
   return api.get('/auth/me')
 }

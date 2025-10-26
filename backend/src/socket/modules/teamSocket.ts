@@ -2,8 +2,10 @@
 
 import { Server, Socket } from "socket.io";
 
-import { logger } from '../../utils/logger.ts';
+import { createLogger } from '../../utils/logger.ts';
 import { RoomStateManager } from "../managers/RoomStateManager.ts";
+
+const logger = createLogger('TEAM SOCKET')
 
 enum SocketEvent {
     TEAM_MEMBERS_UPDATE_REQUEST = 'team.members.update.request',

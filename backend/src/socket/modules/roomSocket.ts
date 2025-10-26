@@ -6,8 +6,10 @@ import { syncChatState } from './chatSocket.ts';
 import { syncBoardState } from './boardSocket.ts';
 import { syncStepState } from './stepSocket.ts';
 import { syncTeamState } from './teamSocket.ts';
-import { logger } from '../../utils/logger.ts';
+import { createLogger } from '../../utils/logger.ts';
 import { RoomStateManager } from '../managers/RoomStateManager.ts';
+
+const logger = createLogger('ROOM SOCKET')
 
 enum SocketEvent {
     ROOM_USER_JOIN_REQUEST = 'room.user.join.request',

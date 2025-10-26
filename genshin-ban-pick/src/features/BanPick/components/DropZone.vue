@@ -7,68 +7,62 @@ import { useBanPickStepStore } from '@/stores/banPickStepStore';
 import { getWishImagePath } from '@/utils/imageRegistry'
 import { DragTypes } from '@/constants/customMIMETypes'
 
+import type { IZone } from '@/types/IZone';
+import { storeToRefs } from 'pinia';
+
 const props = defineProps<{
-  zoneId: string
-  boardImageMap: Record<string, string>
+  zone: IZone
+  boardImageMap: Record<number, string>
   label?: string
-  type?: 'pick' | 'ban' | 'utility'
   labelColor?: string
 }>()
 
 const emit = defineEmits<{
-  (e: 'image-drop', payload: { imgId: string; zoneId: string }): void
-  (e: 'image-restore', payload: { imgId: string }): void
+  (e: 'image-drop', payload: { imgId: string; zoneId: number }): void
+  (e: 'image-restore', payload: { zoneId: number }): void
 }>()
 
 const isOver = ref(false)
 
-const imageId = computed(() => props.boardImageMap[props.zoneId])
+const imageId = computed(() => props.boardImageMap[props.zone.id] ?? '')
 
-const { isCurrentStepZone } = useBanPickStepStore()
+const banPickStepStore = useBanPickStepStore()
+const { currentStep } = storeToRefs(banPickStepStore)
 
 function handleDragStartEvent(event: DragEvent) {
+  console.debug(`[DROP ZONE] Handle drag start event`);
   if (imageId.value && event.dataTransfer) {
-    console.log(`onDragStart ${imageId.value}`)
-    event?.dataTransfer?.setData(DragTypes.CharacterImage, imageId.value)
+    event?.dataTransfer?.setData(DragTypes.CHARACTER_IMAGE, imageId.value)
   }
 }
 
 function handleDropEvent(event: DragEvent) {
+  console.debug(`[DROP ZONE] Handle drop event`);
   event.preventDefault()
   isOver.value = false
-  const imgId = event.dataTransfer?.getData(DragTypes.CharacterImage)
+  const imgId = event.dataTransfer?.getData(DragTypes.CHARACTER_IMAGE)
   if (imgId) {
-    console.log(`DropZone onDrop imgId ${imgId} zoneId ${props.zoneId}`)
-    emit('image-drop', { imgId, zoneId: props.zoneId })
+    emit('image-drop', { imgId, zoneId: props.zone.id })
   }
 }
 
 function handleClickEvent(event: MouseEvent) {
+  console.debug(`[DROP ZONE] Handle click event`, props.zone);
   const target = event.target as HTMLElement
   if (target.tagName === 'IMG' && imageId) {
-    console.log(`DropZone onClick imgId ${imageId.value}`)
-    emit('image-restore', { imgId: imageId.value })
+    emit('image-restore', { zoneId: props.zone.id })
   }
 }
 
-const isHighlighted = computed(() => {
-  return isCurrentStepZone(props.zoneId)
-})
+const isHighlighted = computed(() => props.zone.id === currentStep.value?.zoneId)
 </script>
 
 <template>
-  <div
-    class="drop-zone"
-    :class="[
-      'drop-zone--' + (type || 'default'),
-      { 'drop-zone--active': isOver, highlight: isHighlighted },
-    ]"
-    @dragover.prevent="isOver = true"
-    @dragleave="isOver = false"
-    @dragstart="handleDragStartEvent"
-    @drop="handleDropEvent"
-    @click="handleClickEvent"
-  >
+  <div class="drop-zone" :class="[
+    'drop-zone--' + (props.zone.type || 'default'),
+    { 'drop-zone--active': isOver, highlight: isHighlighted },
+  ]" @dragover.prevent="isOver = true" @dragleave="isOver = false" @dragstart="handleDragStartEvent"
+    @drop="handleDropEvent" @click="handleClickEvent">
     <template v-if="imageId">
       <img class="drop-zone__background" :src="getWishImagePath(imageId)" aria-hidden="true" />
       <img class="drop-zone__image" :src="getWishImagePath(imageId)" />
@@ -112,9 +106,17 @@ const isHighlighted = computed(() => {
 
 
 @keyframes subtleMove {
-  0%   { transform: scale(2); }
-  50%  { transform: scale(3); }
-  100% { transform: scale(2); }
+  0% {
+    transform: scale(2);
+  }
+
+  50% {
+    transform: scale(3);
+  }
+
+  100% {
+    transform: scale(2);
+  }
 }
 
 .drop-zone__image {
@@ -148,9 +150,11 @@ const isHighlighted = computed(() => {
   0% {
     box-shadow: 0 0 var(--space-lg) var(--md-sys-color-tertiary-container);
   }
+
   50% {
     box-shadow: 0 0 var(--space-sm) var(--md-sys-color-secondary-container);
   }
+
   100% {
     box-shadow: 0 0 var(--space-lg) var(--md-sys-color-tertiary-container);
   }

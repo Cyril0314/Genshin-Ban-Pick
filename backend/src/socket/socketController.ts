@@ -3,13 +3,15 @@
 import { Server, Socket } from "socket.io";
 
 
-import { logger } from '../utils/logger.ts';
+import { createLogger } from '../utils/logger.ts';
 import { RoomStateManager } from "./managers/RoomStateManager.ts";
 import { registerChatSocket } from "./modules/chatSocket.ts";
 import { registerBoardSocket } from "./modules/boardSocket.ts";
 import { registerRoomSocket } from "./modules/roomSocket.ts";
 import { registerStepSocket } from "./modules/stepSocket.ts";
 import { registerTeamSocket } from "./modules/teamSocket.ts";
+
+const logger = createLogger("SOCKET CONTROLLER");
 
 export function setupSocketIO(io: Server) {
   io.on("connection", (socket: Socket) => {

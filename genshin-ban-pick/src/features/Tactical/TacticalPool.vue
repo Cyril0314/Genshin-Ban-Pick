@@ -1,35 +1,25 @@
 <!-- src/features/Tactical/TacticalPool.vue -->
 <script setup lang="ts">
-import { computed } from 'vue'
-
-import { useTacticalBoardSync } from './composables/useTacticalBoardSync'
 
 import { getProfileImagePath } from '@/utils/imageRegistry'
 import { DragTypes } from '@/constants/customMIMETypes';
+import { useTaticalBoardStore } from '@/stores/tacticalBoardStore';
 
 const props = defineProps<{ teamId: number }>()
 
-const { cellMap, tacticalPoolImages } = useTacticalBoardSync(props.teamId)
-const poolImages = computed(() =>
-  tacticalPoolImages.value.filter((id) => !Object.values(cellMap.value).includes(id)),
-)
+const taticalBoardStore = useTaticalBoardStore()
+const { displayPoolImageIds } = taticalBoardStore
 
-function handleDragStart(event: DragEvent, id: string) {
-    console.log(`onDragStart ${id}`)
-    event?.dataTransfer?.setData(DragTypes.CharacterImage, id)
+function handleDragStartEvent(event: DragEvent, id: string) {
+  console.debug(`[TATICAL POOL] Handle drag start event`, id);
+  event?.dataTransfer?.setData(DragTypes.CHARACTER_IMAGE, id)
 }
 </script>
 
 <template>
-  <div class="tactical__pool"
-  :class="`tactical__pool--${teamId}`">
-    <img
-      v-for="id in poolImages"
-      :key="id"
-      :src="getProfileImagePath(id)"
-      draggable="true"
-      @dragstart="handleDragStart($event, id)"
-    />
+  <div class="tactical__pool" :class="`tactical__pool--${props.teamId}`">
+    <img v-for="id in displayPoolImageIds(teamId).value" :key="id" :src="getProfileImagePath(id)" draggable="true"
+      @dragstart="handleDragStartEvent($event, id)" />
   </div>
 </template>
 
@@ -37,6 +27,7 @@ function handleDragStart(event: DragEvent, id: string) {
 .tactical__pool--0 {
   --tactical__pool-bg: var(--md-sys-color-on-secondary-container-alpha);
 }
+
 .tactical__pool--1 {
   --tactical__pool-bg: var(--md-sys-color-on-tertiary-container-alpha);
 }
@@ -48,8 +39,10 @@ function handleDragStart(event: DragEvent, id: string) {
   align-content: start;
   justify-content: start;
   background: var(--tactical__pool-bg);
-  height: calc(var(--size-image-tactical-pool) * 3 + var(--gap) * 4); /* 維持最小高度 */
-  max-height: calc(var(--size-image-tactical-pool) * 3 + var(--gap) * 4); /* 維持最大高度 */
+  height: calc(var(--size-image-tactical-pool) * 3 + var(--gap) * 4);
+  /* 維持最小高度 */
+  max-height: calc(var(--size-image-tactical-pool) * 3 + var(--gap) * 4);
+  /* 維持最大高度 */
   border-radius: var(--border-radius-xs);
   overflow-y: auto;
   gap: var(--gap);

@@ -2,7 +2,7 @@
 import { storeToRefs } from 'pinia';
 import { onMounted, onUnmounted } from 'vue'
 
-import { useSocketStore } from '@/network/socket'
+import { useSocketStore } from '@/stores/socketStore'
 import { useTeamInfoStore } from '@/stores/teamInfoStore'
 
 import type { TeamMembersMap } from '@/types/ITeam'
@@ -20,28 +20,30 @@ export function useTeamInfoSync() {
   const { teamInfoPair, teamMembersMap } = storeToRefs(teamInfoStore)
 
   function setTeamMembers(teamId: number, members: string) {
-    console.log(`setTeamMembers: teamId ${teamId} members ${members}`)
+    console.debug(`[TEAM INFO SYNC] Sent team members update request`, teamId, members);
     teamInfoStore.setTeamMembers(teamId, members)
 
     socket.emit(`${SocketEvent.TEAM_MEMBERS_UPDATE_REQUEST}`, { teamId, members })
   }
 
   function handleTeamMembersMapStateSync(teamMembersMap: TeamMembersMap) {
-    console.log(`${JSON.stringify(teamMembersMap)}`)
+    console.debug(`[TEAM INFO SYNC] Handle team members map state sync`, teamMembersMap);
     teamInfoStore.setTeamMembersMap(teamMembersMap)
   }
 
   function handleTeamMembersUpdateBroadcast({ teamId, members }: { teamId: number; members: string }) {
-    console.log(`[Client] team members updated from other user teamId ${teamId} members ${members}`)
+    console.debug(`[TEAM INFO SYNC] Handle team members update broadcast`, teamId, members);
     teamInfoStore.setTeamMembers(teamId, members)
   }
 
   onMounted(() => {
+    console.debug('[TEAM INFO SYNC] On mounted')
     socket.on(`${SocketEvent.TEAM_MEMBERS_MAP_STATE_SYNC_SELF}`, handleTeamMembersMapStateSync)
     socket.on(`${SocketEvent.TEAM_MEMBERS_UPDATE_BROADCAST}`, handleTeamMembersUpdateBroadcast)
   })
 
   onUnmounted(() => {
+    console.debug('[TEAM INFO SYNC] On unmounted')
     socket.off(`${SocketEvent.TEAM_MEMBERS_MAP_STATE_SYNC_SELF}`)
     socket.off(`${SocketEvent.TEAM_MEMBERS_UPDATE_BROADCAST}`)
   })

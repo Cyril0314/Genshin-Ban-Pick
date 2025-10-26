@@ -1,77 +1,67 @@
 // src/features/CharacterSelector/composables/useSelectorOptions.ts
-
-import { computed } from 'vue'
-
-import type { ICharacter } from '@/types/ICharacter'
-
 import { Element, Weapon, Region, ModelType, Role, Wish, Rarity } from '@/types/ICharacter'
 
-export enum FilterKey {
-  Weapon = 'weapon',
-  Element = 'element',
-  Region = 'region',
-  Rarity = 'rarity',
-  ModelType = 'model_type',
-  Role = 'role',
-  Wish = 'wish',
-}
+import { CharacterFilterKey } from '@/types/CharacterFilterKey'
+import type { ICharacter } from '@/types/ICharacter'
 
 export interface SelectorOption {
-  key: FilterKey
+  key: CharacterFilterKey
   label: string
   items: string[]
   translateFn: (val: string) => string
 }
 
-export function useSelectorOptions(characterMap: Record<string, ICharacter>) {
-  const characters = computed(() =>
-    Object.values(characterMap).filter((c) => c.name.toLowerCase() !== 'traveler'),
-  )
+export enum CommonOption {
+  ALL = 'All',
+}
 
-  return computed(() => [
+export function useSelectorOptions(characterMap: Record<string, ICharacter>): SelectorOption[] {
+  const characters = Object.values(characterMap).filter((c) => c.name.toLowerCase() !== 'traveler')
+
+  return [
     {
-      key: FilterKey.Weapon,
+      key: CharacterFilterKey.Weapon,
       label: '選擇武器',
-      items: uniqueByKey(characters.value, FilterKey.Weapon, weaponOrder),
-      translateFn: (v: string) => translateWeapon(v as Weapon),
+      items: [...uniqueByKey(characters, CharacterFilterKey.Weapon, weaponOrder), CommonOption.ALL],
+      translateFn: (v: string) => translateWeapon(v),
     },
     {
-      key: FilterKey.Element,
+      key: CharacterFilterKey.Element,
       label: '選擇屬性',
-      items: uniqueByKey(characters.value, FilterKey.Element, elementOrder),
-      translateFn: (v: string) => translateElement(v as Element),
+      items: [...uniqueByKey(characters, CharacterFilterKey.Element, elementOrder), CommonOption.ALL],
+      translateFn: (v: string) => translateElement(v),
     },
     {
-      key: FilterKey.Region,
+      key: CharacterFilterKey.Region,
       label: '選擇國家',
-      items: uniqueByKey(characters.value, FilterKey.Region, regionOrder),
-      translateFn: (v: string) => translateRegion(v as Region),
+      items: [...uniqueByKey(characters, CharacterFilterKey.Region, regionOrder), CommonOption.ALL],
+      translateFn: (v: string) => translateRegion(v),
     },
     {
-      key: FilterKey.ModelType,
+      key: CharacterFilterKey.ModelType,
       label: '選擇體型',
-      items: uniqueByKey(characters.value, FilterKey.ModelType, modelTypeOrder),
-      translateFn: (v: string) => translateModelType(v as ModelType),
+      items: [...uniqueByKey(characters, CharacterFilterKey.ModelType, modelTypeOrder), CommonOption.ALL],
+      translateFn: (v: string) => translateModelType(v),
     },
     {
-      key: FilterKey.Role,
+      key: CharacterFilterKey.Role,
       label: '選擇功能',
-      items: uniqueByKey(characters.value, FilterKey.Role, roleOrder),
-      translateFn: (v: string) => translateRole(v as Role),
+      items: [...uniqueByKey(characters, CharacterFilterKey.Role, roleOrder), CommonOption.ALL],
+      translateFn: (v: string) => translateRole(v),
     },
     {
-      key: FilterKey.Wish,
+      key: CharacterFilterKey.Wish,
       label: '選擇祈願',
-      items: uniqueByKey(characters.value, FilterKey.Wish, wishOrder),
-      translateFn: (v: string) => translateWish(v as Wish),
+      items: [...uniqueByKey(characters, CharacterFilterKey.Wish, wishOrder), CommonOption.ALL],
+      translateFn: (v: string) => translateWish(v),
     },
     {
-      key: FilterKey.Rarity,
+      key: CharacterFilterKey.Rarity,
       label: '選擇星級',
-      items: uniqueByKey(characters.value, FilterKey.Rarity, rarityOrder),
-      translateFn: (v: string) => translateRarity(v as Rarity),
+      items: [...uniqueByKey(characters, CharacterFilterKey.Rarity, rarityOrder), CommonOption.ALL],
+      translateFn: (v: string) => translateRarity(v),
     },
-  ])
+  ]
 }
 
 function uniqueByKey<T, K extends keyof T>(data: T[], key: K, orderArray: T[K][]): T[K][] {
@@ -82,17 +72,18 @@ function uniqueByKey<T, K extends keyof T>(data: T[], key: K, orderArray: T[K][]
 
 // --- Translate & Order ---
 
-function translateWeapon(weapon: Weapon) {
+function translateWeapon(weapon: string) {
   return {
     [Weapon.SWORD]: '單手劍',
     [Weapon.CLAYMORE]: '雙手劍',
     [Weapon.POLEARM]: '長槍',
     [Weapon.BOW]: '弓',
     [Weapon.CATALYST]: '法器',
-  }[weapon]
+    [CommonOption.ALL]: '所有',
+  }[weapon] ?? '未定義'
 }
 
-function translateElement(element: Element) {
+function translateElement(element: string) {
   return {
     [Element.ANEMO]: '風',
     [Element.GEO]: '岩',
@@ -102,10 +93,11 @@ function translateElement(element: Element) {
     [Element.PYRO]: '火',
     [Element.CRYO]: '冰',
     [Element.NONE]: '無屬性',
-  }[element]
+    [CommonOption.ALL]: '所有',
+  }[element] ?? '未定義'
 }
 
-function translateRegion(region: Region) {
+function translateRegion(region: string) {
   return {
     [Region.MONDSTADT]: '蒙德',
     [Region.LIYUE]: '璃月',
@@ -116,17 +108,19 @@ function translateRegion(region: Region) {
     [Region.NOD_KRAI]: '挪德卡萊',
     [Region.SNEZHNAYA]: '至冬',
     [Region.NONE]: '無所屬',
-  }[region]
+    [CommonOption.ALL]: '所有',
+  }[region] ?? '未定義'
 }
 
-function translateRarity(rarity: Rarity) {
+function translateRarity(rarity: string) {
   return {
     [Rarity.FIVE_STARS]: '5★',
     [Rarity.FOUR_STARS]: '4★',
-  }[rarity]
+    [CommonOption.ALL]: '所有',
+  }[rarity] ?? '未定義'
 }
 
-function translateModelType(modelType: ModelType) {
+function translateModelType(modelType: string) {
   return {
     [ModelType.TALL_MALE]: '成男',
     [ModelType.TALL_FEMALE]: '成女',
@@ -134,23 +128,26 @@ function translateModelType(modelType: ModelType) {
     [ModelType.MEDIUM_FEMALE]: '少女',
     [ModelType.SHORT_FEMALE]: '幼女',
     [ModelType.NONE]: '旅行者',
-  }[modelType]
+    [CommonOption.ALL]: '所有',
+  }[modelType] ?? '未定義'
 }
 
-function translateRole(role: Role) {
+function translateRole(role: string) {
   return {
     [Role.MAIN_DPS]: '主C',
     [Role.SUB_DPS]: '副C',
     [Role.SUPPORT]: '輔助',
-  }[role]
+    [CommonOption.ALL]: '所有',
+  }[role] ?? '未定義'
 }
 
-function translateWish(wish: Wish) {
+function translateWish(wish: string) {
   return {
     [Wish.LIMITED_TIME_EVENT]: '限定',
     [Wish.STANDARD]: '常駐',
     [Wish.NONE]: '旅行者',
-  }[wish]
+    [CommonOption.ALL]: '所有',
+  }[wish] ?? '未定義'
 }
 
 const weaponOrder: Weapon[] = [

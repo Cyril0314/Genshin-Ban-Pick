@@ -18,24 +18,24 @@ const teamMembers = computed(() => teamMembersMap.value[props.teamId])
 
 const { themeVars } = useTeamTheme(props.teamId)
 
-function updateMembers(e: Event) {
+function handleInputEvent(e: Event) {
+  console.debug(`[TEAM INFO] Handle input event`);
   const target = e.target as HTMLTextAreaElement
-  console.log(`updateMembers: ${target.value}`)
   setTeamMembers(props.teamId, target.value)
 }
 
 function handleDropEvent(event: DragEvent) {
+  console.debug(`[TEAM INFO] Handle drop event`);
   event.preventDefault()
   // isOver.value = false
-  const nickName = event.dataTransfer?.getData(DragTypes.RoomUser)
-  console.log(`nickName ${nickName}`);
+  const nickName = event.dataTransfer?.getData(DragTypes.ROOM_USER)
   if (!nickName) return;
   const newMembers = [teamMembers.value, nickName]
     .filter(Boolean)
     .join('\n')
     .replace(/\n{2,}/g, '\n')
 
-    setTeamMembers(props.teamId, newMembers)
+  setTeamMembers(props.teamId, newMembers)
 }
 
 </script>
@@ -45,15 +45,8 @@ function handleDropEvent(event: DragEvent) {
     <span class="team__name" :class="`team__name--${side}`">
       {{ teamInfo.name }}
     </span>
-    <textarea
-      class="team__member-input"
-      :class="`team__member-input--${side}`"
-      :placeholder="`Members`"
-      :value="teamMembers"
-      @input="updateMembers"
-      @dragover.prevent
-      @drop="handleDropEvent"
-    />
+    <textarea class="team__member-input" :class="`team__member-input--${side}`" :placeholder="`Members`"
+      :value="teamMembers" @input="handleInputEvent" @dragover.prevent @drop="handleDropEvent" />
   </div>
 </template>
 
@@ -75,6 +68,7 @@ function handleDropEvent(event: DragEvent) {
   --border-bottom-right-radius: 0px;
   --border-bottom-left-radius: var(--border-radius-xs);
 }
+
 .team__name--right {
   --text-align: right;
   --border-top-right-radius: var(--border-radius-xs);

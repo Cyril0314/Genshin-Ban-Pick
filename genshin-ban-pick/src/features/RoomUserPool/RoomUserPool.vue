@@ -7,8 +7,8 @@ import { useRoomUsers } from './composables/useRoomUsers.ts';
 const { roomUsers } = useRoomUsers();
 
 function handleDragStartEvent(event: DragEvent, nickname: string) {
-  console.log(`onDragStart ${nickname}`)
-  event?.dataTransfer?.setData(DragTypes.RoomUser, nickname)
+  console.debug(`[ROOM USER POOL] Handle drag start event`);
+  event?.dataTransfer?.setData(DragTypes.ROOM_USER, nickname)
 }
 </script>
 

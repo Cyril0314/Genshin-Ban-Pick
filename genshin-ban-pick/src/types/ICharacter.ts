@@ -1,5 +1,21 @@
 // src/types/ICharacter.ts
 
+export function fromRawCharacter(raw: any): ICharacter {
+  return {
+    icon: raw.icon,
+    name: raw.name,
+    rarity: raw.rarity as Rarity,
+    element: raw.element as Element,
+    weapon: raw.weapon as Weapon,
+    region: raw.region as Region,
+    modelType: raw.model_type as ModelType,
+    releaseDate: raw.release_date,
+    version: raw.version,
+    role: raw.role as Role,
+    wish: raw.wish as Wish
+  }
+}
+
 export interface ICharacter {
   icon: string
   name: string
@@ -7,8 +23,8 @@ export interface ICharacter {
   element: Element
   weapon: Weapon
   region: Region
-  model_type: ModelType
-  release_date: string // 或 Date
+  modelType: ModelType
+  releaseDate: string // 或 Date
   version: string
   role: Role
   wish: Wish

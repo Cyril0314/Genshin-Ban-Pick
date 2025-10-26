@@ -2,10 +2,8 @@
 import { onMounted } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
 
-import { log } from '@/utils/logger'
-
 onMounted(() => {
-  log.info('aaaa')
+  console.info('[APP] On mounted')
 })
 
 </script>

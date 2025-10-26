@@ -1,26 +1,26 @@
 <!-- src/features/BanPick/components/Toolbar.vue -->
- 
+
 <script setup lang="ts">
 const emit = defineEmits<{
   (e: 'reset'): void
   (e: 'record'): void
 }>()
 
-function handleClickResetButton() {
-  console.log('Toolbar reset clicked')
+function handleResetButtonClickEvent() {
+  console.debug('[TOOL BAR] Handle reset button click event')
   emit('reset')
 }
 
-function handleClickRecordButton() {
-  console.log('Toolbar record clicked')
+function handleRecordButtonClickEvent() {
+  console.debug('[TOOL BAR] Handle record button click event')
   emit('record')
 }
 </script>
 
 <template>
   <div class="toolbar">
-    <button class="toolbar__button toolbar__button--reset" @click="handleClickResetButton">Reset</button>
-    <button class="toolbar__button toolbar__button--record" @click="handleClickRecordButton">Record</button>
+    <button class="toolbar__button toolbar__button--reset" @click="handleResetButtonClickEvent">Reset</button>
+    <button class="toolbar__button toolbar__button--record" @click="handleRecordButtonClickEvent">Record</button>
   </div>
 </template>
 
@@ -30,6 +30,7 @@ function handleClickRecordButton() {
   flex-direction: row;
   gap: var(--space-sm);
 }
+
 .toolbar__button {
   width: var(--size-tool-button);
   background-color: var(--md-sys-color-error-container);
@@ -46,10 +47,12 @@ function handleClickRecordButton() {
   font-weight: var(--font-weight-regular);
   font-family: var(--font-family-tech-ui);
 }
+
 .toolbar__button:hover {
   background-color: var(--md-sys-color-error-container);
   transform: scale(1.05);
 }
+
 .toolbar__button:active {
   transform: scale(0.98);
 }

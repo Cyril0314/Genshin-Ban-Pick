@@ -2,12 +2,11 @@
 
 import type { IBanPickStep } from "./IBanPickStep"
 import type { ITeam } from "./ITeam"
+import type { IZone } from "./IZone"
 
 export interface IRoomSetting {
-    numberOfBan: number
-    numberOfPick: number
-    numberOfUtility: number
+    zoneMetaTable: Record<number, IZone>,
+    banPickSteps: IBanPickStep[],
     totalRounds: number
     teams: ITeam[]
-    banPickSteps: IBanPickStep[],
 }

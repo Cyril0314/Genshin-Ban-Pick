@@ -11,7 +11,6 @@ import { useTeamTheme } from '@/composables/useTeamTheme';
 type teamInfo = { id: number; name: string, members: string }
 
 const props = defineProps<{ teamInfoPair: { left: teamInfo; right:teamInfo } }>()
-
 const currentTeamId = ref<number>(props.teamInfoPair.left.id)
 
 </script>

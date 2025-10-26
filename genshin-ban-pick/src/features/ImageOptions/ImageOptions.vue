@@ -10,34 +10,28 @@ import { DragTypes } from '@/constants/customMIMETypes'
 const props = defineProps<{
   characterMap: Record<string, ICharacter>
   usedImageIds: string[]
-  filteredIds: string[]
+  filteredCharacterIds: string[] | null
 }>()
 
-const availableCharacters = computed(() =>
+const availableCharacterIds = computed(() =>
   Object.entries(props.characterMap)
     .filter(([id]) => !props.usedImageIds.includes(id))
-    .sort(([a], [b]) => a.localeCompare(b)),
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([id]) => id)
 )
 
-const isFilitered = (id: string) => props.filteredIds.includes(id)
+const isFilitered = (id: string) => props.filteredCharacterIds?.includes(id) ?? true
 
 function handleDragStartEvent(event: DragEvent, id: string) {
-  console.log(`onDragStart ${id}`)
-  event?.dataTransfer?.setData(DragTypes.CharacterImage, id)
+  console.debug(`[IMAGE OPTIONS] Handle drag start event`, id)
+  event?.dataTransfer?.setData(DragTypes.CHARACTER_IMAGE, id)
 }
 </script>
 
 <template>
   <div class="container__images">
-    <img
-      v-for="[id, char] in availableCharacters"
-      :key="id"
-      :id="id"
-      :src="getProfileImagePath(id)"
-      :class="{ dimmed: !isFilitered(id) }"
-      draggable="true"
-      @dragstart="handleDragStartEvent($event, id)"
-    />
+    <img v-for="id in availableCharacterIds" :class="{ dimmed: !isFilitered(id) }" :key="id" :id="id"
+      :src="getProfileImagePath(id)" draggable="true" @dragstart="handleDragStartEvent($event, id)" />
   </div>
 </template>
 
@@ -46,8 +40,10 @@ function handleDragStartEvent(event: DragEvent, id: string) {
   --gap: var(--space-sm);
   display: grid;
   grid-template-columns: repeat(auto-fit, var(--size-image));
-  height: calc(var(--size-image) * 2.25 + var(--gap) * 2); /* 維持最小高度 */
-  max-height: calc(var(--size-image) * 2.25 + var(--gap) * 2); /* 維持最大高度 */
+  height: calc(var(--size-image) * 2.25 + var(--gap) * 2);
+  /* 維持最小高度 */
+  max-height: calc(var(--size-image) * 2.25 + var(--gap) * 2);
+  /* 維持最大高度 */
   /* width: calc(var(--size-dropzone) * 12 + var(--gap) * 11); */
   width: 100%;
   padding: var(--gap);

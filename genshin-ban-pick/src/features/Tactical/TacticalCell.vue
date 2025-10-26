@@ -6,47 +6,42 @@ import { getProfileImagePath } from '@/utils/imageRegistry'
 import { DragTypes } from '@/constants/customMIMETypes'
 
 const props = defineProps<{
-  zoneId: string
+  cellId: string
   imageId?: string
 }>()
 
 const emit = defineEmits<{
-  (e: 'drop', payload: { zoneId: string; imgId: string }): void
-  (e: 'clear', payload: { zoneId: string }): void
+  (e: 'image-drop', payload: { imgId: string, cellId: string }): void
+  (e: 'image-restore', payload: { cellId: string }): void
 }>()
 
 const isOver = ref(false)
 
 function handleDragStartEvent(event: DragEvent) {
+  console.debug(`[TATICAL CELL] Handle drag start event`);
   if (props.imageId && event.dataTransfer) {
-    console.log(`onDragStart ${props.imageId}`)
-    event?.dataTransfer?.setData(DragTypes.CharacterImage, props.imageId)
-  }  
+    event?.dataTransfer?.setData(DragTypes.CHARACTER_IMAGE, props.imageId)
+  }
 }
 
 function handleDropEvent(event: DragEvent) {
+  console.debug(`[TATICAL CELL] Handle drop event`);
   event.preventDefault()
   isOver.value = false
-  const imgId = event.dataTransfer?.getData(DragTypes.CharacterImage)
+  const imgId = event.dataTransfer?.getData(DragTypes.CHARACTER_IMAGE)
   if (!imgId || props.imageId) return
-  emit('drop', { zoneId: props.zoneId, imgId })
+  emit('image-drop', { imgId, cellId: props.cellId })
 }
 
 function handleClickEvent() {
-  if (props.imageId) emit('clear', { zoneId: props.zoneId })
+  console.debug(`[TATICAL CELL] Handle click event`, props.cellId);
+  if (props.imageId) emit('image-restore', { cellId: props.cellId })
 }
 </script>
 
 <template>
-  <div
-    class="tactical__cell"
-    :class="{ 'tactical__cell--active': isOver }"
-    @dragover.prevent="isOver = true"
-    @dragleave="isOver = false"
-    @dragstart="handleDragStartEvent"
-    @drop="handleDropEvent"
-    @click="handleClickEvent"
-  >
+  <div class="tactical__cell" :class="{ 'tactical__cell--active': isOver }" @dragover.prevent="isOver = true"
+    @dragleave="isOver = false" @dragstart="handleDragStartEvent" @drop="handleDropEvent" @click="handleClickEvent">
     <img v-if="imageId" :src="getProfileImagePath(imageId)" />
   </div>
 </template>
@@ -70,10 +65,10 @@ function handleClickEvent() {
 }
 
 .tactical__cell img {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    object-fit: contain;
-    cursor: grab;
-    z-index: 10;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  cursor: grab;
+  z-index: 10;
 }
 </style>

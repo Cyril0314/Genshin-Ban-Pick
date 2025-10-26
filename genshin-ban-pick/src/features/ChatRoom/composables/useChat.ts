@@ -1,9 +1,9 @@
 // src/features/ChatRoom/composables/useChat.ts
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue';
 
-import type { IChatMessage } from '@/types/IChatMessage'
+import type { IChatMessage } from '@/types/IChatMessage';
 
-import { useSocketStore } from '@/network/socket'
+import { useSocketStore } from '@/stores/socketStore';
 
 enum SocketEvent {
     CHAT_MESSAGE_SEND_REQUEST = 'chat.message.send.request',
@@ -12,21 +12,30 @@ enum SocketEvent {
     CHAT_MESSAGES_STATE_SYNC_SELF = 'chat.messages.state.sync.self',
 }
 
-const messages = ref<IChatMessage[]>([])
-
 export function useChat() {
-    const socket = useSocketStore().getSocket()
+    const socket = useSocketStore().getSocket();
+    const messages = ref<IChatMessage[]>([]);
 
     function sendMessage(message: string) {
-        console.log(`${message}`)
+        console.debug('[CHAT] Sent chat message send request', message);
         socket.emit(`${SocketEvent.CHAT_MESSAGE_SEND_REQUEST}`, {
-            message
-        })
+            message,
+        });
 
         messages.value.push({
             senderName: `我`,
-            message
-        })
+            message,
+        });
+    }
+
+    function handleChatMessagesStateSync(newMessages: IChatMessage[]) {
+        console.debug(`[CHAT] Handle chat messages state sync`, newMessages);
+        messages.value = newMessages;
+    }
+
+    function handleChatMessageSendBroadcast(message: IChatMessage) {
+        console.debug(`[CHAT] Handle chat message send broadcast`, message);
+        messages.value.push(message);
     }
 
     // function changeNickname() {
@@ -37,27 +46,21 @@ export function useChat() {
     //     }
     // }
 
-    function handleChatMessagesStateSync(history: IChatMessage[]) {
-        messages.value = history
-    }
-
-    function handleChatMessageSendBroadcast(msg: IChatMessage) {
-        messages.value.push(msg)
-    }
-
     onMounted(() => {
-        socket.on(`${SocketEvent.CHAT_MESSAGES_STATE_SYNC_SELF}`, handleChatMessagesStateSync)
-        socket.on(`${SocketEvent.CHAT_MESSAGE_SEND_BROADCAST}`, handleChatMessageSendBroadcast)
-    })
+        console.debug('[CHAT] On mounted');
+        socket.on(`${SocketEvent.CHAT_MESSAGES_STATE_SYNC_SELF}`, handleChatMessagesStateSync);
+        socket.on(`${SocketEvent.CHAT_MESSAGE_SEND_BROADCAST}`, handleChatMessageSendBroadcast);
+    });
 
     onUnmounted(() => {
-        socket.off(`${SocketEvent.CHAT_MESSAGES_STATE_SYNC_SELF}`)
-        socket.off(`${SocketEvent.CHAT_MESSAGE_SEND_BROADCAST}`)
-    })
+        console.debug('[CHAT] On unmounted');
+        socket.off(`${SocketEvent.CHAT_MESSAGES_STATE_SYNC_SELF}`);
+        socket.off(`${SocketEvent.CHAT_MESSAGE_SEND_BROADCAST}`);
+    });
 
     return {
         messages,
         sendMessage,
         // changeNickname
-    }
+    };
 }
