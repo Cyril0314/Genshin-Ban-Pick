@@ -19,7 +19,7 @@ enum SocketEvent {
     BOARD_IMAGE_MAP_RESET_REQUEST = 'board.image_map.reset.request',
     BOARD_IMAGE_MAP_RESET_BROADCAST = 'board.image_map.reset.broadcast',
 
-    BOARD_IMAGE_MAP_STATE_SYNC = 'board.image_map.state.sync',
+    BOARD_IMAGE_MAP_STATE_SYNC_SELF = 'board.image_map.state.sync.self',
 }
 
 export function useBoardSync() {
@@ -77,7 +77,7 @@ export function useBoardSync() {
         socket.emit(`${SocketEvent.BOARD_IMAGE_RESTORE_REQUEST}`, { zoneId });
     }
 
-    function handleBoardImageReset() {
+    function handleBoardImageMapReset() {
         console.debug('[BOARD SYNC] Handle board image reset')
         resetBoardImageMap();
         taticalBoardStore.allTeamReset()
@@ -87,7 +87,7 @@ export function useBoardSync() {
         resetStep();
     }
 
-    function handleBanPickRecord() {
+    function handleBoardRecord() {
         const grouped: Record<'ban' | 'pick' | 'utility' | 'other', Record<string, string>> = {
             ban: {},
             pick: {},
@@ -115,7 +115,7 @@ export function useBoardSync() {
         removeImage(zoneId);
     }
 
-    function handleBoardImageResetBroadcast() {
+    function handleBoardImageMapResetBroadcast() {
         console.debug('[BOARD SYNC] Handle board image reset broadcast')
         resetBoardImageMap();
         taticalBoardStore.allTeamReset()
@@ -150,15 +150,15 @@ export function useBoardSync() {
 
     onMounted(() => {
         console.debug('[BOARD SYNC] On mounted')
-        socket.on(`${SocketEvent.BOARD_IMAGE_MAP_STATE_SYNC}`, handleBoradImageMapStateSync);
+        socket.on(`${SocketEvent.BOARD_IMAGE_MAP_STATE_SYNC_SELF}`, handleBoradImageMapStateSync);
         socket.on(`${SocketEvent.BOARD_IMAGE_DROP_BROADCAST}`, handleBoardImageDropBroadcast);
         socket.on(`${SocketEvent.BOARD_IMAGE_RESTORE_BROADCAST}`, handleBoardImageRestoreBroadcast);
-        socket.on(`${SocketEvent.BOARD_IMAGE_MAP_RESET_BROADCAST}`, handleBoardImageResetBroadcast);
+        socket.on(`${SocketEvent.BOARD_IMAGE_MAP_RESET_BROADCAST}`, handleBoardImageMapResetBroadcast);
     });
 
     onUnmounted(() => {
         console.debug('[BOARD SYNC] On unmounted')
-        socket.off(`${SocketEvent.BOARD_IMAGE_MAP_STATE_SYNC}`);
+        socket.off(`${SocketEvent.BOARD_IMAGE_MAP_STATE_SYNC_SELF}`);
         socket.off(`${SocketEvent.BOARD_IMAGE_DROP_BROADCAST}`);
         socket.off(`${SocketEvent.BOARD_IMAGE_RESTORE_BROADCAST}`);
         socket.off(`${SocketEvent.BOARD_IMAGE_MAP_RESET_BROADCAST}`);
@@ -208,7 +208,7 @@ export function useBoardSync() {
         usedImageIds,
         handleBoardImageDrop,
         handleBoardImageRestore,
-        handleBoardImageReset,
-        handleBanPickRecord,
+        handleBoardImageMapReset,
+        handleBoardRecord,
     };
 }

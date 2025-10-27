@@ -25,7 +25,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     (e: 'filter-change', filteredCharacterIds: string[]): void;
-    (e: 'random-button-click', payload: { zoneType: ZoneType }): void;
+    (e: 'random-pull', payload: { zoneType: ZoneType }): void;
 }>();
 
 const selectorOptions = useSelectorOptions(props.characterMap);
@@ -68,7 +68,7 @@ function normalizeAllSelection(filter: Record<CharacterFilterKey, string[]>, opt
 
 function handleRandomButtonClick(zoneType: ZoneType) {
     console.debug(`[CHARACTER SELECTOR] Handle random button click`, zoneType);
-    emit('random-button-click', { zoneType: zoneType });
+    emit('random-pull', { zoneType: zoneType });
 }
 </script>
 

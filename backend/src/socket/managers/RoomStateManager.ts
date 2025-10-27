@@ -1,6 +1,6 @@
 // backend/src/socket/managers/RoomStateManager.ts
 
-import { IRoomState } from '../../types/IRoomState.ts';
+import { IRoomState, TeamMember } from '../../types/IRoomState.ts';
 import { IRoomStateManager } from './IRoomStateManager.ts';
 import { teams } from "../../constants/constants.ts";
 
@@ -13,7 +13,7 @@ export class RoomStateManager implements IRoomStateManager {
                 users: [],
                 chatMessages: [],
                 boardImageMap: {},
-                teamMembersMap: Object.fromEntries(teams.map(t => [t.id, ""])) as Record<number, string>,
+                teamMembersMap: Object.fromEntries(teams.map(t => [t.id, []])) as Record<number, TeamMember[]>,
                 stepIndex: 0,
             };
         }

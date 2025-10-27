@@ -1,12 +1,14 @@
 // src/features/BanPick/composables/useBoardZonesLayout.ts
 
 import { computed } from "vue";
-import type { ComputedRef } from "vue";
+
+import { ZoneType } from "@/types/IZone";
 
 import type { IRoomSetting } from "@/types/IRoomSetting";
-import { ZoneType, type IZone } from "@/types/IZone";
+import type { IZone } from "@/types/IZone";
+import type { TeamMember } from "@/types/ITeam";
 
-export function useBoardZonesLayout(roomSetting: IRoomSetting, teamInfoPair: { left: { members: string; id: number; name: string; }; right: { name: string; members: string; id: number; } }) {
+export function useBoardZonesLayout(roomSetting: IRoomSetting, teamInfoPair: { left: { members: TeamMember[]; id: number; name: string; }; right: { name: string; members: TeamMember[]; id: number; } }) {
     const maxNumberOfPickPerColumn: number = 8
     const maxNumberOfUtilityPerColumn: number = 4
     const maxNumberOfBanPerRow: number = 8

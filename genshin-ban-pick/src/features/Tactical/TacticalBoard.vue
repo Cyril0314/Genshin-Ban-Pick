@@ -6,9 +6,11 @@ import TacticalCell from './TacticalCell.vue'
 import { useTaticalBoardStore } from '@/stores/tacticalBoardStore'
 import { storeToRefs } from 'pinia'
 
+import type { TeamMember } from '@/types/ITeam'
+
 const rows = 4
 const cols = 5
-const props = defineProps<{ teamId: number, teamMembers: string }>()
+const props = defineProps<{ teamId: number, teamMembers: TeamMember[] }>()
 
 const taticalBoardStore = useTaticalBoardStore()
 const { teamTaticalBoardPanelMap } = storeToRefs(taticalBoardStore)
@@ -18,8 +20,13 @@ const taticalBoardPanel = computed(() => (teamTaticalBoardPanelMap.value[props.t
 
 const memberCells = computed(() => {
   // 如果成員不足 4 個，補空字串
-  const members = props.teamMembers.split('\n')
-  return Array.from({ length: 4 }, (_, i) => members[i] || '')
+  return Array.from({ length: 4 }, (_, i) => {
+    const teamMember = props.teamMembers[i]
+    if (!teamMember) return ''
+    return teamMember.type === 'manual'
+      ? teamMember.name
+      : teamMember.user.nickname
+  })
 })
 
 const boardCells = computed(() => {
@@ -51,14 +58,14 @@ function handleImageRestore({ cellId }: { cellId: string }) {
       <span class="tactical__header tactical__header--team-number">隊伍</span>
     </div>
     <div v-for="(member, index) in memberCells" :key="index" class="tactical__cell tactical__cell--member">
-      {{ member }}
+      <span class="text">{{ member }}</span>
     </div>
     <template v-for="cell in boardCells" :key="cell.id">
       <div v-if="cell.col === 0" class="tactical__cell tactical__cell--team-number">
-        {{ cell.row + 1 }}
+        <span class="text">{{ cell.row + 1 }}</span>
       </div>
-      <TacticalCell v-else :cellId="cell.id" :imageId="imageId(cell.id)"
-        @image-drop="handleImageDrop" @image-restore="handleImageRestore" />
+      <TacticalCell v-else :cellId="cell.id" :imageId="imageId(cell.id)" @image-drop="handleImageDrop"
+        @image-restore="handleImageRestore" />
     </template>
   </div>
 </template>
@@ -119,24 +126,32 @@ function handleImageRestore({ cellId }: { cellId: string }) {
 .tactical__cell--member,
 .tactical__cell--team-number {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
   width: 100%;
   height: 100%;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  /* pointer-events: none; */
+}
+
+.tactical__cell--team-number .text,
+.tactical__cell--member .text {
+  display: -webkit-box;
+  /* 需要配合使用 */
+  -webkit-box-orient: vertical;
+  /* 需要配合使用 */
+  -webkit-line-clamp: 2;
+  /* 限制为两行 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  overflow: hidden;
+
   text-align: center;
+  font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   font-family: var(--font-family-tech-ui);
-  z-index: 10;
-  pointer-events: none;
   color: var(--md-sys-color-on-surface);
-}
-
-.tactical__cell--member {
-  font-size: var(--font-size-xs);
-}
-
-.tactical__cell--team-number {
-  font-size: var(--font-size-sm);
+  z-index: 11;
 }
 </style>

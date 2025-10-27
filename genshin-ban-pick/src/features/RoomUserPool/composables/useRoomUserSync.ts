@@ -1,8 +1,10 @@
-// src/features/RoomUserPool/composables/useRoomUsers.ts
+// src/features/RoomUserPool/composables/useRoomUserSync.ts
 
 import { ref, onMounted, onUnmounted } from 'vue';
+import { storeToRefs } from 'pinia';
 
 import { useSocketStore } from '@/stores/socketStore';
+import { useRoomUserStore } from '@/stores/roomUserStore';
 
 import type { IRoomUser } from '@/types/IRoomUser';
 
@@ -16,8 +18,10 @@ enum SocketEvent {
     ROOM_USERS_STATE_SYNC_ALL = 'room.users.state.sync.all',
 }
 
-export function useRoomUsers() {
-    const roomUsers = ref<IRoomUser[]>([]);
+export function useRoomUserSync() {
+    const roomUserStore = useRoomUserStore();
+    const { setRoomUsers } = roomUserStore
+    const { roomUsers } = storeToRefs(roomUserStore)
     const socket = useSocketStore().getSocket();
 
     function joinRoom(roomId: string) {
@@ -41,7 +45,7 @@ export function useRoomUsers() {
     function handleRoomUsersStateSync(newRoomUsers: IRoomUser[]) {
         console.debug('[ROOM USERS] Handle room users state sync', newRoomUsers)
 
-        roomUsers.value = newRoomUsers;
+        setRoomUsers(newRoomUsers)
     }
 
     onMounted(() => {

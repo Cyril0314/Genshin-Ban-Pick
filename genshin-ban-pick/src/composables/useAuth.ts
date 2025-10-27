@@ -40,9 +40,7 @@ export function useAuth() {
   function logout() {
     console.info(`[AUTH] Logout ${JSON.stringify(user.value)}`);
     user.value = null
-    guestId.value = null
     localStorage.removeItem('auth_token')
-    localStorage.removeItem('guest_id')
 
     socketStore.socket?.disconnect()
   }

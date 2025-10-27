@@ -5,10 +5,11 @@ import { ref } from 'vue'
 
 import TacticalBoard from './TacticalBoard.vue'
 import TacticalPool from './TacticalPool.vue'
-
 import { useTeamTheme } from '@/composables/useTeamTheme';
 
-type teamInfo = { id: number; name: string, members: string }
+import type { TeamMember } from '@/types/ITeam';
+
+type teamInfo = { id: number; name: string, members: TeamMember[] }
 
 const props = defineProps<{ teamInfoPair: { left: teamInfo; right:teamInfo } }>()
 const currentTeamId = ref<number>(props.teamInfoPair.left.id)

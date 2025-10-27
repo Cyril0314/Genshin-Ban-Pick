@@ -3,7 +3,6 @@
 import { ref, nextTick, watch } from 'vue'
 
 import { useChat } from './composables/useChat.ts'
-
 import { useAuth } from '@/composables/useAuth.ts'
 
 const newMessage = ref('')

@@ -2,14 +2,14 @@
 
 import { Server, Socket } from 'socket.io';
 
-import { syncChatState } from './chatSocket.ts';
-import { syncBoardState } from './boardSocket.ts';
-import { syncStepState } from './stepSocket.ts';
-import { syncTeamState } from './teamSocket.ts';
+import { syncChatStateSelf } from './chatSocket.ts';
+import { syncBoardStateSelf } from './boardSocket.ts';
+import { syncStepStateSelf } from './stepSocket.ts';
+import { syncTeamStateSelf, syncTeamStateAll } from './teamSocket.ts';
 import { createLogger } from '../../utils/logger.ts';
 import { RoomStateManager } from '../managers/RoomStateManager.ts';
 
-const logger = createLogger('ROOM SOCKET')
+const logger = createLogger('ROOM SOCKET');
 
 enum SocketEvent {
     ROOM_USER_JOIN_REQUEST = 'room.user.join.request',
@@ -38,7 +38,7 @@ export function registerRoomSocket(io: Server, socket: Socket, roomStateManager:
             team: null,
         };
 
-        const roomState = roomStateManager.ensure(roomId)
+        const roomState = roomStateManager.ensure(roomId);
 
         // 🔸 以 identityKey 檢查是否已存在
         const existingIndex = roomState.users.findIndex((u) => u.identityKey === identityKey);
@@ -55,37 +55,53 @@ export function registerRoomSocket(io: Server, socket: Socket, roomStateManager:
             logger.info(`Sent ${SocketEvent.ROOM_USER_JOIN_BROADCAST} joinedUser: ${JSON.stringify(roomUser, null, 2)}`);
         }
 
-        syncRoomState(io, roomId, roomStateManager);
+        syncRoomStateAll(io, roomId, roomStateManager);
 
-        syncBoardState(socket, roomId, roomStateManager);
-        syncStepState(socket, roomId, roomStateManager);
-        syncTeamState(socket, roomId, roomStateManager);
-        syncChatState(socket, roomId, roomStateManager);
+        syncBoardStateSelf(socket, roomId, roomStateManager);
+        syncStepStateSelf(socket, roomId, roomStateManager);
+        syncTeamStateSelf(socket, roomId, roomStateManager);
+        syncChatStateSelf(socket, roomId, roomStateManager);
     });
 
     socket.on(SocketEvent.ROOM_USER_LEAVE_REQUEST, (roomId: string) => {
         logger.info(`Received ${SocketEvent.ROOM_USER_LEAVE_REQUEST} ${socket.id} roomId: ${roomId}`);
-        socket.leave(roomId);
+        handleRoomUserLeaveRequest(io, socket, roomId, roomStateManager);
+    });
 
-        const identityKey = socket.data.identityKey;
-
-        const roomState = roomStateManager.ensure(roomId)
-        const leavingUser = roomState.users.find((u) => u.identityKey === identityKey);
-
-        roomState.users = roomState.users.filter((u) => u.identityKey !== identityKey);
-
-        delete (socket as any).roomId;
-
-        if (leavingUser) {
-            socket.to(roomId).emit(SocketEvent.ROOM_USER_LEAVE_BROADCAST, leavingUser);
-            logger.info(`Sent ${SocketEvent.ROOM_USER_LEAVE_BROADCAST} leavingUser: ${JSON.stringify(leavingUser, null, 2)}`);
-        }
-
-        syncRoomState(io, roomId, roomStateManager);
+    // 監聽斷線事件
+    socket.on('disconnect', (reason) => {
+        const roomId = (socket as any).roomId;
+        if (!roomId) return;
+        logger.info(`Received disconnect ${socket.id} roomId: ${roomId}`, reason);
+        handleRoomUserLeaveRequest(io, socket, roomId, roomStateManager);
     });
 }
 
-function syncRoomState(io: Server, roomId: string, roomStateManager: RoomStateManager) {
+export function handleRoomUserLeaveRequest(io: Server, socket: Socket, roomId: string, roomStateManager: RoomStateManager) {
+    socket.leave(roomId);
+    const identityKey = socket.data.identityKey;
+
+    const roomState = roomStateManager.ensure(roomId);
+    const leavingUser = roomState.users.find((u) => u.identityKey === identityKey);
+
+    roomState.users = roomState.users.filter((u) => u.identityKey !== identityKey);
+
+    delete (socket as any).roomId;
+
+    if (leavingUser) {
+        socket.to(roomId).emit(SocketEvent.ROOM_USER_LEAVE_BROADCAST, leavingUser);
+        logger.info(`Sent ${SocketEvent.ROOM_USER_LEAVE_BROADCAST} leavingUser: ${JSON.stringify(leavingUser, null, 2)}`);
+    }
+
+    for (const [teamId, members] of Object.entries(roomState.teamMembersMap)) {
+        roomState.teamMembersMap[Number(teamId)] = members.filter((m) => m.type !== 'online' || m.user.identityKey !== identityKey);
+    }
+    
+    syncTeamStateAll(io, roomId, roomStateManager);
+    syncRoomStateAll(io, roomId, roomStateManager);
+}
+
+function syncRoomStateAll(io: Server, roomId: string, roomStateManager: RoomStateManager) {
     const roomUsers = roomStateManager.getUsers(roomId);
     io.to(roomId).emit(SocketEvent.ROOM_USERS_STATE_SYNC_ALL, roomUsers);
     logger.info(`Sent ${SocketEvent.ROOM_USERS_STATE_SYNC_ALL} roomUsers: ${JSON.stringify(roomUsers, null, 2)}`);

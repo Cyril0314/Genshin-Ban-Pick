@@ -16,28 +16,30 @@ import { useBanPickStepStore } from '@/stores/banPickStepStore';
 import { useBoardImageStore } from '@/stores/boardImageStore';
 import { useTaticalBoardStore } from '@/stores/tacticalBoardStore';
 import { ZoneType } from '@/types/IZone';
-import { useRoomUsers } from '@/features/RoomUserPool/composables/useRoomUsers';
+import { useRoomUserSync } from '@/features/RoomUserPool/composables/useRoomUserSync';
 
 import type { IRoomSetting } from '@/types/IRoomSetting';
 import type { ICharacter } from '@/types/ICharacter';
 import { storeToRefs } from 'pinia';
+import { useTeamInfoSync } from '@/features/Team/composables/useTeamInfoSync';
 const characterMap = shallowRef<Record<string, ICharacter> | null>(null);
 const roomSetting = shallowRef<IRoomSetting | null>(null);
 
 const filteredCharacterIds = ref<string[] | null>(null);
 
-const { boardImageMap, usedImageIds, handleBoardImageDrop, handleBoardImageRestore, handleBoardImageReset, handleBanPickRecord } = useBoardSync();
+const { boardImageMap, usedImageIds, handleBoardImageDrop, handleBoardImageRestore, handleBoardImageMapReset, handleBoardRecord } = useBoardSync();
 const { randomPull } = useRandomPull();
-const { joinRoom, leaveRoom } = useRoomUsers();
+const { joinRoom, leaveRoom } = useRoomUserSync();
+const { handleMemberInput, handleMemberDrop, handleMemberRestore } = useTeamInfoSync();
 
 const boardImageStore = useBoardImageStore();
 
 const teamInfoStore = useTeamInfoStore();
-const { teamInfoPair } = storeToRefs(teamInfoStore)
+const { teamMembersMap, teams } = storeToRefs(teamInfoStore);
 
 const banPickStepStore = useBanPickStepStore();
 
-const taticalBoardStore = useTaticalBoardStore()
+const taticalBoardStore = useTaticalBoardStore();
 
 onMounted(async () => {
     console.debug('[BAN PICK VIEW] On mounted');
@@ -48,7 +50,7 @@ onMounted(async () => {
         boardImageStore.initZoneMetaTable(roomSetting.value.zoneMetaTable);
         teamInfoStore.initTeams(roomSetting.value.teams);
         banPickStepStore.initBanPickSteps(roomSetting.value.banPickSteps);
-        taticalBoardStore.initTeamTaticalBoardMap(roomSetting.value.teams)
+        taticalBoardStore.initTeamTaticalBoardMap(roomSetting.value.teams);
         const roomId = getRoomId();
         joinRoom(roomId);
     } catch (error) {
@@ -77,7 +79,7 @@ function handleFilterChange(newIds: string[]) {
     filteredCharacterIds.value = newIds;
 }
 
-function handleRandomButtonClick({ zoneType }: { zoneType: ZoneType }) {
+function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
     console.debug(`[BAN PICK VIEW] Handle random pull`, { zoneType });
     if (!roomSetting.value || !filteredCharacterIds.value || filteredCharacterIds.value.length === 0) {
         console.warn(`[BAN PICK VIEW] Room is not ready or do not filiter any character`);
@@ -98,16 +100,31 @@ function handleRandomButtonClick({ zoneType }: { zoneType: ZoneType }) {
         <div class="background-overlay"></div>
         <div class="layout">
             <div class="layout__core">
-                <ImageOptions v-if="characterMap" :characterMap="characterMap" :usedImageIds="usedImageIds"
-                    :filteredCharacterIds="filteredCharacterIds" />
-                <BanPickBoard v-if="roomSetting && characterMap && teamInfoPair" :roomSetting="roomSetting"
-                    :characterMap="characterMap" :boardImageMap="boardImageMap" :teamInfoPair="teamInfoPair"
-                    @image-drop="handleBoardImageDrop" @image-restore="handleBoardImageRestore"
-                    @filter-change="handleFilterChange" @random-button-click="handleRandomButtonClick" />
+                <ImageOptions
+                    v-if="characterMap"
+                    :characterMap="characterMap"
+                    :usedImageIds="usedImageIds"
+                    :filteredCharacterIds="filteredCharacterIds"
+                />
+                <BanPickBoard
+                    v-if="roomSetting && characterMap"
+                    :roomSetting="roomSetting"
+                    :characterMap="characterMap"
+                    :boardImageMap="boardImageMap"
+                    :teamMembersMap="teamMembersMap"
+                    :teams="teams"
+                    @image-drop="handleBoardImageDrop"
+                    @image-restore="handleBoardImageRestore"
+                    @filter-change="handleFilterChange"
+                    @random-pull="handleRandomPull"
+                    @member-input="handleMemberInput"
+                    @member-drop="handleMemberDrop"
+                    @member-restore="handleMemberRestore"
+                />
                 <div v-else class="loading">載入房間設定中...</div>
             </div>
             <div class="layout__toolbar">
-                <Toolbar @reset="handleBoardImageReset" @record="handleBanPickRecord" />
+                <Toolbar @image-map-reset="handleBoardImageMapReset" @board-record="handleBoardRecord" />
             </div>
         </div>
     </div>
@@ -127,8 +144,8 @@ function handleRandomButtonClick({ zoneType }: { zoneType: ZoneType }) {
         /* var(--md-sys-color-surface-container-lowest-alpha), */
         /* rgba(124, 124, 124, 0.9),
       rgba(55, 55, 55, 0.5) */
-        /* ), */
-        url('@/assets/images/background/5.7.png') no-repeat center center;
+        /* ), */ url('@/assets/images/background/5.7.png')
+        no-repeat center center;
     background-size: cover;
 }
 

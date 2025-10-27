@@ -2,18 +2,18 @@
 
 <script setup lang="ts">
 const emit = defineEmits<{
-  (e: 'reset'): void
-  (e: 'record'): void
+  (e: 'image-map-reset'): void
+  (e: 'board-record'): void
 }>()
 
 function handleResetButtonClickEvent() {
   console.debug('[TOOL BAR] Handle reset button click event')
-  emit('reset')
+  emit('image-map-reset')
 }
 
 function handleRecordButtonClickEvent() {
   console.debug('[TOOL BAR] Handle record button click event')
-  emit('record')
+  emit('board-record')
 }
 </script>
 

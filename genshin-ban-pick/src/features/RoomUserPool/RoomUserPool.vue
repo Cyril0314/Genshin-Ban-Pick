@@ -1,23 +1,54 @@
 <!-- src/features/RoomUserPool/RoomUserPool.vue -->
 
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
+
 import { DragTypes } from '@/constants/customMIMETypes.ts';
-import { useRoomUsers } from './composables/useRoomUsers.ts';
+import { useRoomUserStore } from '@/stores/roomUserStore.ts';
+import { useTeamInfoStore } from '@/stores/teamInfoStore.ts';
+import { useTeamTheme } from '@/composables/useTeamTheme';
 
-const { roomUsers } = useRoomUsers();
+import type { IRoomUser } from '@/types/IRoomUser.ts';
 
-function handleDragStartEvent(event: DragEvent, nickname: string) {
-  console.debug(`[ROOM USER POOL] Handle drag start event`);
-  event?.dataTransfer?.setData(DragTypes.ROOM_USER, nickname)
+const roomUserStore = useRoomUserStore();
+const { roomUsers } = storeToRefs(roomUserStore)
+const teamInfoStore = useTeamInfoStore();
+const { teamMembersMap } = storeToRefs(teamInfoStore);
+
+function handleDragStartEvent(event: DragEvent, roomUser: IRoomUser) {
+    console.debug(`[ROOM USER POOL] Handle drag start event`, roomUser.identityKey);
+    event?.dataTransfer?.setData(DragTypes.ROOM_USER, roomUser.identityKey)
 }
+
+function findUserTeamId(roomUser: IRoomUser): number | null {
+    console.debug(`[ROOM USER POOL] Find user team id`, roomUser);
+    for (const [teamId, members] of Object.entries(teamMembersMap.value)) {
+        if (members.some(
+            (m) => m.type === 'online' && m.user.identityKey === roomUser.identityKey
+        )) {
+            return Number(teamId);
+        }
+    }
+    return null;
+}
+
+function getStyleForUser(roomUser: IRoomUser) {
+    const teamId = findUserTeamId(roomUser);
+    if (teamId === null) {
+        return {
+            '--team-bg': `var(--md-sys-color-surface-container-low-alpha)`, '--team-on-bg': `var(--md-sys-color-on-surface-variant)`
+        };
+    }
+    const { themeVars } = useTeamTheme(teamId);
+    return themeVars.value;
+}
+
 </script>
 
 <template>
     <div class="container__users">
-        <div class="container__user"
-            v-for="roomUser in roomUsers"
-            draggable="true"
-            @dragstart="handleDragStartEvent($event, roomUser.nickname)">
+        <div class="container__user" v-for="roomUser in roomUsers" :key="roomUser.identityKey"
+            :style="getStyleForUser(roomUser)" draggable="true" @dragstart="handleDragStartEvent($event, roomUser)">
             <span class="user__label">{{ roomUser.nickname }}</span>
         </div>
     </div>
@@ -36,13 +67,12 @@ function handleDragStartEvent(event: DragEvent, nickname: string) {
     backdrop-filter: var(--backdrop-filter);
     box-shadow: var(--box-shadow);
     overflow-y: auto;
-    /* min-height: 200px; */
-    /* max-height: 360px; */
 }
 
 .container__user {
     display: flex;
-    background-color: var(--md-sys-color-surface-container-high-alpha);
+    background: var(--team-bg);
+    color: var(--team-on-bg);
     box-shadow: var(--box-shadow);
     height: var(--size-room-user-height);
     line-height: var(--size-room-user-height);
@@ -56,15 +86,14 @@ function handleDragStartEvent(event: DragEvent, nickname: string) {
 }
 
 .user__label {
-    flex: 1; /* 撐滿可用寬度 */
-    min-width: 0; /* 允許收縮 */
+    flex: 1;
+    min-width: 0;
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
-    color: var(--md-sys-color-on-surface-variant);
+    color: var(--team-on-bg);
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
 </style>

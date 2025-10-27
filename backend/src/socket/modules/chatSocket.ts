@@ -33,7 +33,7 @@ export function registerChatSocket(io: Server, socket: Socket, roomStateManager:
   );
 }
 
-export function syncChatState(socket: Socket, roomId: string, roomStateManager: RoomStateManager) {
+export function syncChatStateSelf(socket: Socket, roomId: string, roomStateManager: RoomStateManager) {
     const chatMessages = roomStateManager.getChatMessages(roomId);
     socket.emit(`${SocketEvent.CHAT_MESSAGES_STATE_SYNC_SELF}`, chatMessages);
     logger.info(`Sent ${SocketEvent.CHAT_MESSAGES_STATE_SYNC_SELF} chatMessages: ${JSON.stringify(chatMessages, null, 2)}`);

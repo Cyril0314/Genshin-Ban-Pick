@@ -5,5 +5,4 @@ export interface IRoomUser {
     identityKey: string;
     nickname: string;
     timestamp: number;
-    teamId?: number;
 }

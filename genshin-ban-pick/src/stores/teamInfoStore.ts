@@ -3,33 +3,32 @@
 import { defineStore } from 'pinia';
 import { ref, computed, watch, shallowRef } from 'vue';
 
-import type { ITeam, TeamMembersMap } from '@/types/ITeam';
+import type { ITeam, TeamMember, TeamMembersMap } from '@/types/ITeam';
 
 export const useTeamInfoStore = defineStore('teamInfo', () => {
     const teams = shallowRef<ITeam[]>([]);
     const teamMembersMap = ref<TeamMembersMap>({});
-    const teamInfoPair = computed(() => {
-        const map = teamMembersMap.value;
-        if (teams.value.length < 2) return null;
-        const [firstTeam, secondTeam] = teams.value;
-        return {
-            left: { ...firstTeam, members: map[firstTeam.id] ?? '' },
-            right: { ...secondTeam, name: secondTeam.name, members: map[secondTeam.id] ?? '' },
-        };
-    });
-
-    watch(teamInfoPair, (pair) => {
-        console.debug('[TEAM INFO STORE] Watch team info pair', pair)
-    }, { immediate: true })
 
     function initTeams(newTeams: ITeam[]) {
         console.debug('[TEAM INFO STORE] Init teams', newTeams)
         teams.value = newTeams;
     }
 
-    function setTeamMembers(teamId: number, members: string) {
-        console.debug(`[TEAM INFO STORE] Set team members`, teamId, members);
-        teamMembersMap.value[teamId] = members;
+    function addTeamMember(teamId: number, member: TeamMember) {
+        console.debug('[TEAM INFO STORE] Add team member', teamId, member)
+        teamMembersMap.value[teamId].push(member)
+    }
+
+    function removeTeamMember(teamId: number, member: TeamMember) {
+        console.debug('[TEAM INFO STORE] Remove team member', teamId, member)
+        const teamMembers = teamMembersMap.value[teamId]
+        const index = teamMembers.findIndex((m) => {
+            return (m.type === 'manual' && member.type === 'manual' && m.name === member.name) ||
+                (m.type === 'online' && member.type === 'online' && m.user.identityKey === member.user.identityKey)
+        });
+        if (index !== -1) {
+            teamMembersMap.value[teamId].splice(index, 1)
+        }
     }
 
     function setTeamMembersMap(newTeamMembersMap: TeamMembersMap) {
@@ -42,5 +41,13 @@ export const useTeamInfoStore = defineStore('teamInfo', () => {
         teamMembersMap.value = {}
     }
 
-    return { teams, teamInfoPair, teamMembersMap, initTeams, setTeamMembers, setTeamMembersMap, resetTeamMembersMap };
+    return {
+        teams,
+        teamMembersMap,
+        initTeams,
+        addTeamMember,
+        removeTeamMember,
+        setTeamMembersMap,
+        resetTeamMembersMap
+    };
 });
