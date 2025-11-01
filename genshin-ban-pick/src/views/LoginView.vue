@@ -30,7 +30,7 @@ function handleProceedAsGuest() {
 </script>
 
 <template>
-    <div class="login__view">
+    <div class="login__view scale-context">
         <div class="login__card">
             <div class="login__header">
                 <h2>使用者登入</h2>
@@ -63,6 +63,7 @@ function handleProceedAsGuest() {
 <style scoped>
 /* 容器置中，並使用 Chat 風格背景 */
 .login__view {
+    --base-size: 1.2vw;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -76,7 +77,7 @@ function handleProceedAsGuest() {
 /* 卡片風格：圓角、陰影、內邊距 */
 .login__card {
     width: 100%;
-    max-width: var(--size-card-xl);
+    max-width: var(--size-card-lg);
     background-color: var(--md-sys-color-surface-container-highest-alpha);
     backdrop-filter: var(--backdrop-filter);
     border-radius: var(--border-radius-md);
@@ -139,7 +140,7 @@ function handleProceedAsGuest() {
 /* 登入按鈕風格與 Chat 傳送按鈕保持一致：深色背景、白字、圓角 */
 .btn__submit {
     padding: var(--space-md);
-    background-color: var(--md-sys-color-primary);
+    background-color: var(--md-sys-color-primary-container);
     color: var(--md-sys-color-on-primary);
     border: none;
     border-radius: var(--border-radius-sm);
@@ -152,7 +153,7 @@ function handleProceedAsGuest() {
 }
 
 .btn__submit:hover {
-    background-color: var(--md-sys-color-primary-container);
+    background-color: var(--md-sys-color-primary);
     transform: scale(1.02);
 }
 

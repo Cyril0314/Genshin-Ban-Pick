@@ -10,8 +10,8 @@ import type { TeamMember } from "@/types/ITeam";
 
 export function useBoardZonesLayout(roomSetting: IRoomSetting, teamInfoPair: { left: { members: TeamMember[]; id: number; name: string; }; right: { name: string; members: TeamMember[]; id: number; } }) {
     const maxNumberOfPickPerColumn: number = 8
-    const maxNumberOfUtilityPerColumn: number = 4
-    const maxNumberOfBanPerRow: number = 8
+    const maxNumberOfUtilityPerRow: number = 6
+    const maxNumberOfBanPerRow: number = 6
 
     const utilityZones = computed(() => {
         const utilityZones = Object.values(roomSetting.zoneMetaTable).filter(zone => zone.type === ZoneType.UTILITY).sort((a, b) => a.order - b.order)
@@ -63,7 +63,7 @@ export function useBoardZonesLayout(roomSetting: IRoomSetting, teamInfoPair: { l
         banZones,
         leftPickZones,
         rightPickZones,
-        maxNumberOfUtilityPerColumn,
+        maxNumberOfUtilityPerRow,
         maxNumberOfBanPerRow,
         maxNumberOfPickPerColumn,
     }

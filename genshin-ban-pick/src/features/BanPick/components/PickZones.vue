@@ -39,7 +39,7 @@ function handleImageRestore({ zoneId }: { zoneId: number }) {
 </script>
 
 <template>
-    <div :class="['pick-zone__columns', `pick-zone__columns--${props.side}`]">
+    <div :class="['pick-zone', `pick-zone--${props.side}`]">
         <div class="grid__column grid__column--side" v-for="(zones, columnIndex) in zoneMatrix" :key="columnIndex">
             <template v-for="(zone, rowIndex) in zones" :key="rowIndex">
                 <DropZone :zone="zone" :boardImageMap="props.boardImageMap" :label="`Pick ${zone.order + 1}`"
@@ -51,15 +51,15 @@ function handleImageRestore({ zoneId }: { zoneId: number }) {
 </template>
 
 <style scoped>
-.pick-zone__columns--left {
+.pick-zone--left {
     --flex-direction: row;
 }
 
-.pick-zone__columns--right {
+.pick-zone--right {
     --flex-direction: row-reverse;
 }
 
-.pick-zone__columns {
+.pick-zone {
     display: flex;
     flex-direction: var(--flex-direction);
     align-items: start;

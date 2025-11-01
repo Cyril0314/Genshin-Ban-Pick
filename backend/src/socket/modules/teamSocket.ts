@@ -5,6 +5,7 @@ import { Server, Socket } from 'socket.io';
 import { createLogger } from '../../utils/logger.ts';
 import { RoomStateManager } from '../managers/RoomStateManager.ts';
 import { TeamMember } from '../../types/IRoomState.ts';
+import { syncTaticalCellImageMapStateOther } from './taticalSocket.ts';
 
 const logger = createLogger('TEAM SOCKET');
 
@@ -28,6 +29,11 @@ export function registerTeamSocket(io: Server, socket: Socket, roomStateManager:
         roomState.teamMembersMap[teamId].push(member);
         socket.to(roomId).emit(`${SocketEvent.TEAM_MEMBER_ADD_BROADCAST}`, { teamId, member });
         logger.info(`Sent ${SocketEvent.TEAM_MEMBER_ADD_BROADCAST} teamId: ${teamId}`, member);
+
+        const user = roomState.users.find((user) => (member.type === 'online' && member.user.identityKey === user.identityKey));
+        if (user) {
+             syncTaticalCellImageMapStateOther(user, io, roomId, roomStateManager, teamId)
+        }
     });
 
     socket.on(`${SocketEvent.TEAM_MEMBER_REMOVE_REQUEST}`, ({ teamId, member }: { teamId: number; member: TeamMember }) => {
@@ -54,13 +60,13 @@ export function registerTeamSocket(io: Server, socket: Socket, roomStateManager:
     });
 }
 
-export function syncTeamStateSelf(socket: Socket, roomId: string, roomStateManager: RoomStateManager) {
+export function syncTeamMembersMapStateSelf(socket: Socket, roomId: string, roomStateManager: RoomStateManager) {
     const teamMembersMap = roomStateManager.getTeamMembersMap(roomId);
     socket.emit(`${SocketEvent.TEAM_MEMBERS_MAP_STATE_SYNC_SELF}`, teamMembersMap);
     logger.info(`Sent ${SocketEvent.TEAM_MEMBERS_MAP_STATE_SYNC_SELF}`, teamMembersMap);
 }
 
-export function syncTeamStateAll(io: Server, roomId: string, roomStateManager: RoomStateManager) {
+export function syncTeamMembersMapStateAll(io: Server, roomId: string, roomStateManager: RoomStateManager) {
     const teamMembersMap = roomStateManager.getTeamMembersMap(roomId);
     io.emit(`${SocketEvent.TEAM_MEMBERS_MAP_STATE_SYNC_ALL}`, teamMembersMap);
     logger.info(`Sent ${SocketEvent.TEAM_MEMBERS_MAP_STATE_SYNC_ALL}`, teamMembersMap);

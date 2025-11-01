@@ -61,7 +61,7 @@ function normalizeAllSelection(filter: Record<CharacterFilterKey, string[]>, opt
                 filter[key] = [];
             }
         } else {
-          console.debug(`[CHARACTER SELECTOR] ${key} selector selected`, selected);
+            console.debug(`[CHARACTER SELECTOR] ${key} selector selected`, selected);
         }
     }
 }
@@ -76,15 +76,10 @@ function handleRandomButtonClick(zoneType: ZoneType) {
     <div class="container__selector">
         <div class="selector__row" v-for="selectorOption in selectorOptions" :key="selectorOption.key">
             <!-- <label class="selector__label">{{ filter.label }}：</label> -->
-            <v-select
-                class="selector__select"
-                :options="selectorOption.items"
-                :reduce="(val: string) => val"
-                :multiple="true"
-                :placeholder="`${selectorOption.label}`"
+            <v-select class="selector__select" :options="selectorOption.items" :reduce="(val: string) => val"
+                :multiple="true" :placeholder="`${selectorOption.label}`"
                 :get-option-label="(val: string) => selectorOption.translateFn(val)"
-                v-model="characterFilter[selectorOption.key]"
-            >
+                v-model="characterFilter[selectorOption.key]">
                 <template #open-indicator="{ attributes }">
                     <span class="selector__open-indicator" v-bind="attributes">▲</span>
                 </template>
@@ -95,16 +90,21 @@ function handleRandomButtonClick(zoneType: ZoneType) {
                 </template>
                 <template #selected-option-container="{ option, deselect, multiple, disabled }">
                     <div class="selector__selected-option">
-                        <span class="selector__selected-option-label">{{ selectorOption.translateFn(option.label) }}</span>
-                        <span v-if="!disabled" class="selector__remove-btn" @click.stop="deselect(option.label)"> × </span>
+                        <span class="selector__selected-option-label">{{ selectorOption.translateFn(option.label)
+                            }}</span>
+                        <span v-if="!disabled" class="selector__remove-btn" @click.stop="deselect(option.label)"> ×
+                        </span>
                     </div>
                 </template>
             </v-select>
         </div>
         <div class="selector__toolbar">
-            <button class="selector__button selector__button--utility" @click="handleRandomButtonClick(ZoneType.UTILITY)">Utility</button>
-            <button class="selector__button selector__button--ban" @click="handleRandomButtonClick(ZoneType.BAN)">Ban</button>
-            <button class="selector__button selector__button--pick" @click="handleRandomButtonClick(ZoneType.PICK)">Pick</button>
+            <button class="selector__button selector__button--utility"
+                @click="handleRandomButtonClick(ZoneType.UTILITY)">Utility</button>
+            <button class="selector__button selector__button--ban"
+                @click="handleRandomButtonClick(ZoneType.BAN)">Ban</button>
+            <button class="selector__button selector__button--pick"
+                @click="handleRandomButtonClick(ZoneType.PICK)">Pick</button>
         </div>
     </div>
 </template>
@@ -113,12 +113,12 @@ function handleRandomButtonClick(zoneType: ZoneType) {
 .container__selector {
     z-index: 1000;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    justify-content: start;
-    column-gap: var(--space-sm);
-    row-gap: var(--space-sm);
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    /* justify-content: center; */
+    column-gap: var(--space-md);
+    row-gap: var(--space-md);
     width: 100%;
-    padding: var(--space-sm);
+    padding: var(--space-md);
     border-radius: var(--border-radius-xs);
     background-color: var(--md-sys-color-surface-container-alpha);
     backdrop-filter: var(--backdrop-filter);
@@ -135,7 +135,7 @@ function handleRandomButtonClick(zoneType: ZoneType) {
 
 .v-select {
     flex-grow: 1;
-    --vs-font-size: var(--font-size-sm);
+    --vs-font-size: var(--font-size-md);
     --vs-font-family: var(--font-family-tech-ui);
     background-color: var(--md-sys-color-surface-container-high-alpha);
     color: var(--md-sys-color-on-surface-variant);
@@ -143,8 +143,6 @@ function handleRandomButtonClick(zoneType: ZoneType) {
     border-radius: var(--border-radius-xs);
     cursor: pointer;
     transition: all 0.2s ease;
-    /* height: var(--size-selector-height); */
-    /* overflow-y: auto; */
     gap: var(--space-xs);
 }
 
@@ -169,11 +167,11 @@ function handleRandomButtonClick(zoneType: ZoneType) {
 :deep(.vs__actions) {
     display: flex;
     align-items: center;
-    padding-right: var(--space-xs);
+    padding-right: var(--space-sm);
 }
 
 .selector__open-indicator {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-md);
     font-weight: var(--font-weight-medium);
     color: var(--md-sys-color-on-surface-variant);
 }
@@ -220,7 +218,9 @@ function handleRandomButtonClick(zoneType: ZoneType) {
 .selector__selected-option {
     display: flex;
     align-items: center;
+    justify-content: center;
     cursor: pointer;
+    padding: calc(var(--space-xs) / 2) 0;
     color: var(--md-sys-color-on-primary-container);
     background-color: var(--md-sys-color-surface-tint);
     border-radius: var(--border-radius-xs);
@@ -228,8 +228,8 @@ function handleRandomButtonClick(zoneType: ZoneType) {
 
 .selector__selected-option-label {
     cursor: pointer;
-    padding: 0 0 0 var(--space-xs);
-    font-size: var(--font-size-xs);
+    padding: 0 0 0 var(--space-sm);
+    font-size: var(--font-size-sm);
     font-family: var(--font-family-tech-ui);
     font-weight: var(--font-weight-medium);
 }
@@ -237,7 +237,7 @@ function handleRandomButtonClick(zoneType: ZoneType) {
 .selector__remove-btn {
     cursor: pointer;
     color: var(--md-sys-color-on-primary-container);
-    padding: 0 calc(var(--space-xs) / 2) calc(var(--space-xs) / 2) 0;
+    padding: 0 var(--space-xs);
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
     transition: color 0.2s ease;
@@ -259,7 +259,7 @@ function handleRandomButtonClick(zoneType: ZoneType) {
 }
 
 .selector__toolbar {
-    grid-column: span 2;
+    /* grid-column: span 4; */
     display: flex;
     justify-content: space-between;
     width: 100%;

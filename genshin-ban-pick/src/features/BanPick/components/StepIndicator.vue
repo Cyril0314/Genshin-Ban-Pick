@@ -46,22 +46,20 @@ watch(currentTeam, () => {
 
 <template>
     <div class="step-indicator" :class="{ active }" :style="useTeamTheme(currentTeam?.id ?? 0).themeVars.value" @animationend="active = false">
-        {{ displayText }}
+        <span class="step-label">{{ displayText }}</span>
     </div>
 </template>
 
 <style scoped>
 .step-indicator {
-    background-color: var(--md-sys-color-surface-container-highest-alpha);
-    color: var(--md-sys-color-on-surface);
-    font-size: var(--font-size-md);
-    font-weight: var(--font-weight-bold);
-    font-family: var(--font-family-tech-title);
-    text-align: center;
+    display: flex;
+    align-items: center;
     width: var(--size-step-indicator);
-    padding: var(--space-sm) var(--space-xs);
+    height: 100%;
+    /* padding: var(--space-xs) var(--space-xs); */
     border-radius: var(--border-radius-xs);
     backdrop-filter: var(--backdrop-filter);
+    background-color: var(--md-sys-color-surface-container-highest-alpha);
     white-space: pre-line;
     transition: all 0.3s ease;
     animation: steadyGlow 2s ease-in-out infinite alternate;
@@ -105,5 +103,16 @@ watch(currentTeam, () => {
     100% {
         box-shadow: 0 0 6px 2px var(--team-bg, rgba(255, 255, 255, 0.4));
     }
+}
+
+.step-label {
+    width: 100%;
+    text-align: center;
+    line-height: 1.3;
+    color: var(--md-sys-color-on-surface);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    font-family: var(--font-family-tech-title);
+    
 }
 </style>

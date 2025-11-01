@@ -26,17 +26,8 @@ onMounted(() => {
 </template>
 
 <style scoped>
-#app {
-  --layout-width: clamp(
-    calc(var(--base-size) * 60),
-    /* 最小：960px */ calc(var(--base-size) * 80),
-    /* 成長期 */ calc(var(--base-size) * 100) /* 最大：2400px */
-  );
-  width: var(--layout-width);
-  /* max-width: var(--layout-width); */
-  /* margin: 0 auto; */
-}
-
+#app {}
+/* 
 header {
   line-height: 1.5;
   max-height: 100vh;
@@ -70,5 +61,5 @@ nav a {
 
 nav a:first-of-type {
   border: 0;
-}
+} */
 </style>

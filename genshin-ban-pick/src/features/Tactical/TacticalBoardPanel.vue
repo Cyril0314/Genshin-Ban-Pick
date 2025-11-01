@@ -2,22 +2,37 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { storeToRefs } from 'pinia';
 
 import TacticalBoard from './TacticalBoard.vue'
 import TacticalPool from './TacticalPool.vue'
+import { useTeamInfoStore } from '@/stores/teamInfoStore';
 import { useTeamTheme } from '@/composables/useTeamTheme';
+import { useTacticalBoardSync } from './composables/useTacticalBoardSync';
 
-import type { TeamMember } from '@/types/ITeam';
+const teamInfoStore = useTeamInfoStore();
+const { teamInfoPair } = storeToRefs(teamInfoStore);
+const currentTeamId = ref<number>(teamInfoPair.value!.left.id)
 
-type teamInfo = { id: number; name: string, members: TeamMember[] }
+const tacticalBoardSync = useTacticalBoardSync();
+const { handleTaticalCellImagePlace, handleTaticalCellImageRemove } = tacticalBoardSync
 
-const props = defineProps<{ teamInfoPair: { left: teamInfo; right:teamInfo } }>()
-const currentTeamId = ref<number>(props.teamInfoPair.left.id)
+
+function handleImageDrop({ teamId, cellId, imgId }: { teamId: number, cellId: string; imgId: string }) {
+  console.debug(`[TATICAL BOARD PANEL] Handle image drop`, { teamId, cellId, imgId });
+  handleTaticalCellImagePlace({ teamId, cellId, imgId });
+}
+
+function handleImageRestore({ teamId, cellId }: { teamId: number, cellId: string }) {
+  console.debug(`[TATICAL BOARD PANEL] Handle image restore`, { teamId, cellId });
+  handleTaticalCellImageRemove({ teamId, cellId });
+}
 
 </script>
 
 <template>
   <div class="tactical__board" :class="`tactical__board--${currentTeamId}`">
+
     <div class="tactical__board-tabs">
       <button v-for="teamInfo in teamInfoPair" :key="teamInfo.id" class="tactical__tab"
         :class="{ 'tactical__tab--active': currentTeamId === teamInfo.id }"
@@ -31,11 +46,13 @@ const currentTeamId = ref<number>(props.teamInfoPair.left.id)
         <template v-if="teamInfoPair">
           <template v-if="currentTeamId === teamInfoPair.left.id">
             <TacticalPool :teamId="teamInfoPair.left.id" />
-            <TacticalBoard :teamId="teamInfoPair.left.id" :teamMembers="teamInfoPair.left.members" />
+            <TacticalBoard :teamId="teamInfoPair.left.id" :teamMembers="teamInfoPair.left.members"
+              @image-drop="handleImageDrop" @image-restore="handleImageRestore" />
           </template>
           <template v-else>
             <TacticalPool :teamId="teamInfoPair.right.id" />
-            <TacticalBoard :teamId="teamInfoPair.right.id" :teamMembers="teamInfoPair.right.members" />
+            <TacticalBoard :teamId="teamInfoPair.right.id" :teamMembers="teamInfoPair.right.members"
+              @image-drop="handleImageDrop" @image-restore="handleImageRestore" />
           </template>
         </template>
       </div>
@@ -47,14 +64,9 @@ const currentTeamId = ref<number>(props.teamInfoPair.left.id)
 .tactical__board {
   display: flex;
   flex-direction: column;
-  align-items: center;
   width: 100%;
-  padding: var(--space-sm);
-  gap: var(--space-sm);
-  border-radius: var(--border-radius-xs);
-  background-color: var(--md-sys-color-surface-container-low-alpha);
-  backdrop-filter: var(--backdrop-filter);
-  box-shadow: var(--box-shadow);
+  height: 100%;
+  gap: var(--space-md);
 }
 
 .tactical__board-tabs {
@@ -72,7 +84,7 @@ const currentTeamId = ref<number>(props.teamInfoPair.left.id)
   border: none;
   border-radius: var(--border-radius-xs);
   cursor: pointer;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-md);
   font-weight: var(--font-weight-bold);
   font-family: var(--font-family-tech-title);
   transition: background 0.3s ease;

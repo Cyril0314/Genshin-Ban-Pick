@@ -76,7 +76,7 @@ const isHighlighted = computed(() => props.zone.id === currentStep.value?.zoneId
 <style scoped>
 .drop-zone {
   position: relative;
-  width: var(--size-dropzone);
+  width: var(--size-drop-zone-width);
   aspect-ratio: 16 / 9;
   background-color: var(--md-sys-color-surface-container-high-alpha);
   border-radius: var(--border-radius-xs);

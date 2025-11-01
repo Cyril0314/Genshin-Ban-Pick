@@ -37,22 +37,23 @@ function handleDragStartEvent(event: DragEvent, id: string) {
 
 <style scoped>
 .container__images {
-  --gap: var(--space-sm);
+  --size-image: calc(var(--base-size) * 3.60);
+  --min-row: 2;
+  --max-row: 5;
+  --gap: var(--space-md);
   display: grid;
-  grid-template-columns: repeat(auto-fit, var(--size-image));
-  height: calc(var(--size-image) * 2.25 + var(--gap) * 2);
-  /* 維持最小高度 */
-  max-height: calc(var(--size-image) * 2.25 + var(--gap) * 2);
-  /* 維持最大高度 */
-  /* width: calc(var(--size-dropzone) * 12 + var(--gap) * 11); */
-  width: 100%;
   padding: var(--gap);
-  align-content: start;
-  justify-content: start;
-  overflow-y: auto;
   gap: var(--gap);
+  grid-template-columns: repeat(auto-fit, var(--size-image));
+  min-height: calc(var(--size-image) * var(--min-row) + var(--gap) * (var(--min-row) + 1));
+  max-height: calc(var(--size-image) * var(--max-row) + var(--gap) * (var(--max-row) + 1));
+  width: 100%;
+  align-content: start;
+  justify-content: center;
   border-radius: var(--border-radius-xs);
   background: var(--md-sys-color-surface-container-highest-alpha);
+  overflow-y: auto;
+  scrollbar-width: none;
 }
 
 .container__images img {

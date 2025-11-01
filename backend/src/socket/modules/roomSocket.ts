@@ -2,10 +2,9 @@
 
 import { Server, Socket } from 'socket.io';
 
-import { syncChatStateSelf } from './chatSocket.ts';
-import { syncBoardStateSelf } from './boardSocket.ts';
+import { syncBoardImageMapStateSelf } from './boardSocket.ts';
 import { syncStepStateSelf } from './stepSocket.ts';
-import { syncTeamStateSelf, syncTeamStateAll } from './teamSocket.ts';
+import { syncTeamMembersMapStateSelf, syncTeamMembersMapStateAll } from './teamSocket.ts';
 import { createLogger } from '../../utils/logger.ts';
 import { RoomStateManager } from '../managers/RoomStateManager.ts';
 
@@ -35,7 +34,6 @@ export function registerRoomSocket(io: Server, socket: Socket, roomStateManager:
             identityKey: identityKey,
             nickname: nickname,
             timestamp: Date.now(),
-            team: null,
         };
 
         const roomState = roomStateManager.ensure(roomId);
@@ -55,29 +53,20 @@ export function registerRoomSocket(io: Server, socket: Socket, roomStateManager:
             logger.info(`Sent ${SocketEvent.ROOM_USER_JOIN_BROADCAST} joinedUser: ${JSON.stringify(roomUser, null, 2)}`);
         }
 
-        syncRoomStateAll(io, roomId, roomStateManager);
+        syncRoomUsersStateAll(io, roomId, roomStateManager);
 
-        syncBoardStateSelf(socket, roomId, roomStateManager);
+        syncBoardImageMapStateSelf(socket, roomId, roomStateManager);
         syncStepStateSelf(socket, roomId, roomStateManager);
-        syncTeamStateSelf(socket, roomId, roomStateManager);
-        syncChatStateSelf(socket, roomId, roomStateManager);
+        syncTeamMembersMapStateSelf(socket, roomId, roomStateManager);
     });
 
     socket.on(SocketEvent.ROOM_USER_LEAVE_REQUEST, (roomId: string) => {
         logger.info(`Received ${SocketEvent.ROOM_USER_LEAVE_REQUEST} ${socket.id} roomId: ${roomId}`);
-        handleRoomUserLeaveRequest(io, socket, roomId, roomStateManager);
-    });
-
-    // 監聽斷線事件
-    socket.on('disconnect', (reason) => {
-        const roomId = (socket as any).roomId;
-        if (!roomId) return;
-        logger.info(`Received disconnect ${socket.id} roomId: ${roomId}`, reason);
-        handleRoomUserLeaveRequest(io, socket, roomId, roomStateManager);
+        handleRoomUserLeave(io, socket, roomId, roomStateManager);
     });
 }
 
-export function handleRoomUserLeaveRequest(io: Server, socket: Socket, roomId: string, roomStateManager: RoomStateManager) {
+export function handleRoomUserLeave(io: Server, socket: Socket, roomId: string, roomStateManager: RoomStateManager) {
     socket.leave(roomId);
     const identityKey = socket.data.identityKey;
 
@@ -97,11 +86,11 @@ export function handleRoomUserLeaveRequest(io: Server, socket: Socket, roomId: s
         roomState.teamMembersMap[Number(teamId)] = members.filter((m) => m.type !== 'online' || m.user.identityKey !== identityKey);
     }
     
-    syncTeamStateAll(io, roomId, roomStateManager);
-    syncRoomStateAll(io, roomId, roomStateManager);
+    syncTeamMembersMapStateAll(io, roomId, roomStateManager);
+    syncRoomUsersStateAll(io, roomId, roomStateManager);
 }
 
-function syncRoomStateAll(io: Server, roomId: string, roomStateManager: RoomStateManager) {
+function syncRoomUsersStateAll(io: Server, roomId: string, roomStateManager: RoomStateManager) {
     const roomUsers = roomStateManager.getUsers(roomId);
     io.to(roomId).emit(SocketEvent.ROOM_USERS_STATE_SYNC_ALL, roomUsers);
     logger.info(`Sent ${SocketEvent.ROOM_USERS_STATE_SYNC_ALL} roomUsers: ${JSON.stringify(roomUsers, null, 2)}`);

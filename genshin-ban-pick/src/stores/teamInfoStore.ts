@@ -8,26 +8,41 @@ import type { ITeam, TeamMember, TeamMembersMap } from '@/types/ITeam';
 export const useTeamInfoStore = defineStore('teamInfo', () => {
     const teams = shallowRef<ITeam[]>([]);
     const teamMembersMap = ref<TeamMembersMap>({});
+    const teamInfoPair = computed(() => {
+        const map = teamMembersMap.value;
+        if (teams.value.length < 2) return null;
+        const [firstTeam, secondTeam] = teams.value;
+        return {
+            left: { ...firstTeam, members: map[firstTeam.id] ?? [] },
+            right: { ...secondTeam, name: secondTeam.name, members: map[secondTeam.id] ?? [] },
+        };
+    });
+
+    watch(teamInfoPair, (teamInfoPair) => {
+        console.debug('[TEAM INFO STORE] Watch team info pair', teamInfoPair)
+    }, { deep: true, immediate: true })
 
     function initTeams(newTeams: ITeam[]) {
-        console.debug('[TEAM INFO STORE] Init teams', newTeams)
+        console.debug('[TEAM INFO STORE] Init teams', newTeams);
         teams.value = newTeams;
     }
 
     function addTeamMember(teamId: number, member: TeamMember) {
-        console.debug('[TEAM INFO STORE] Add team member', teamId, member)
-        teamMembersMap.value[teamId].push(member)
+        console.debug('[TEAM INFO STORE] Add team member', teamId, member);
+        teamMembersMap.value[teamId].push(member);
     }
 
     function removeTeamMember(teamId: number, member: TeamMember) {
-        console.debug('[TEAM INFO STORE] Remove team member', teamId, member)
-        const teamMembers = teamMembersMap.value[teamId]
+        console.debug('[TEAM INFO STORE] Remove team member', teamId, member);
+        const teamMembers = teamMembersMap.value[teamId];
         const index = teamMembers.findIndex((m) => {
-            return (m.type === 'manual' && member.type === 'manual' && m.name === member.name) ||
+            return (
+                (m.type === 'manual' && member.type === 'manual' && m.name === member.name) ||
                 (m.type === 'online' && member.type === 'online' && m.user.identityKey === member.user.identityKey)
+            );
         });
         if (index !== -1) {
-            teamMembersMap.value[teamId].splice(index, 1)
+            teamMembersMap.value[teamId].splice(index, 1);
         }
     }
 
@@ -38,16 +53,17 @@ export const useTeamInfoStore = defineStore('teamInfo', () => {
 
     function resetTeamMembersMap() {
         console.debug(`[TEAM INFO STORE] Reset team members map`);
-        teamMembersMap.value = {}
+        teamMembersMap.value = {};
     }
 
     return {
         teams,
         teamMembersMap,
+        teamInfoPair,
         initTeams,
         addTeamMember,
         removeTeamMember,
         setTeamMembersMap,
-        resetTeamMembersMap
+        resetTeamMembersMap,
     };
 });

@@ -3,8 +3,9 @@
 import './assets/main.css';
 import '@/assets/styles/semantic-colors.css';
 
-import { createPinia } from 'pinia';
 import { createApp } from 'vue';
+import { createPinia } from 'pinia';
+import naive from 'naive-ui'
 
 import App from './App.vue';
 import router from './router';
@@ -16,6 +17,7 @@ console.info('[MAIN] Create App');
 
 app.use(createPinia());
 app.use(router);
+app.use(naive);
 
 const auth = useAuth();
 

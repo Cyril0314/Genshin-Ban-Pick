@@ -5,8 +5,7 @@ import { defineStore } from "pinia";
 
 import type { ITeam } from "@/types/ITeam";
 
-type TacticalCellImageMap = Record<string, string>
-
+export type TacticalCellImageMap = Record<string, string>
 
 export const useTaticalBoardStore = defineStore('taticalBoard', () => {
     const teamTaticalBoardPanelMap: Record<number, {
@@ -90,6 +89,13 @@ export const useTaticalBoardStore = defineStore('taticalBoard', () => {
         taticalBoardPanel.cellImageMap = {}
     }
 
+    function setTaticalCellImageMap(teamId: number, taticalCellImageMap: TacticalCellImageMap) {
+        console.debug('[TATICAL BOARD STORE] Set tatical cell image map', teamId, taticalCellImageMap)
+        const taticalBoardPanel = teamTaticalBoardPanelMap[teamId];
+        if (!taticalBoardPanel) return;
+        taticalBoardPanel.cellImageMap = taticalCellImageMap
+    }
+
     function allTeamAddImageToPool(imgId: string) {
         console.debug('[TATICAL BOARD STORE] All team add image to pool', imgId)
         for (const teamIdString of Object.keys(teamTaticalBoardPanelMap)) {
@@ -122,6 +128,8 @@ export const useTaticalBoardStore = defineStore('taticalBoard', () => {
         removeImageFromBoard,
         placeCellImage,
         removeCellImage,
+        reset,
+        setTaticalCellImageMap,
         allTeamAddImageToPool,
         allTeamRemoveImageFromBoard,
         allTeamReset

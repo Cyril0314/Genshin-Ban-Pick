@@ -58,7 +58,7 @@ export function registerBoardSocket(io: Server, socket: Socket, roomStateManager
     });
 }
 
-export function syncBoardStateSelf(socket: Socket, roomId: string, roomStateManager: RoomStateManager) {
+export function syncBoardImageMapStateSelf(socket: Socket, roomId: string, roomStateManager: RoomStateManager) {
     const boardImageMap = roomStateManager.getBoardImageMap(roomId);
     socket.emit(`${SocketEvent.BOARD_IMAGE_MAP_STATE_SYNC_SELF}`, boardImageMap);
     logger.info(`Sent ${SocketEvent.BOARD_IMAGE_MAP_STATE_SYNC_SELF} boardImageMap: ${JSON.stringify(boardImageMap, null, 2)}`);

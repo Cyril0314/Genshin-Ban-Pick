@@ -1,6 +1,6 @@
 // backend/src/socket/managers/RoomStateManager.ts
 
-import { IRoomState, TeamMember } from '../../types/IRoomState.ts';
+import { IRoomState, TeamMember, TeamMembersMap, TeamTaticalBoardMap } from '../../types/IRoomState.ts';
 import { IRoomStateManager } from './IRoomStateManager.ts';
 import { teams } from "../../constants/constants.ts";
 
@@ -13,7 +13,8 @@ export class RoomStateManager implements IRoomStateManager {
                 users: [],
                 chatMessages: [],
                 boardImageMap: {},
-                teamMembersMap: Object.fromEntries(teams.map(t => [t.id, []])) as Record<number, TeamMember[]>,
+                teamMembersMap: Object.fromEntries(teams.map(t => [t.id, []])) as TeamMembersMap,
+                teamTaticalBoardMap: Object.fromEntries(teams.map(t => [t.id, {}])) as TeamTaticalBoardMap,
                 stepIndex: 0,
             };
         }
@@ -46,5 +47,9 @@ export class RoomStateManager implements IRoomStateManager {
 
     getStepIndex(roomId: string) {
         return this.ensure(roomId).stepIndex;
+    }
+
+    getTeamTaticalBoardMap(roomId: string) {
+        return this.ensure(roomId).teamTaticalBoardMap;
     }
 }

@@ -1,6 +1,5 @@
 <!-- src/features/Tactical/TacticalPool.vue -->
 <script setup lang="ts">
-
 import { getProfileImagePath } from '@/utils/imageRegistry'
 import { DragTypes } from '@/constants/customMIMETypes';
 import { useTaticalBoardStore } from '@/stores/tacticalBoardStore';
@@ -24,29 +23,21 @@ function handleDragStartEvent(event: DragEvent, id: string) {
 </template>
 
 <style scoped>
-.tactical__pool--0 {
-  --tactical__pool-bg: var(--md-sys-color-on-secondary-container-alpha);
-}
-
-.tactical__pool--1 {
-  --tactical__pool-bg: var(--md-sys-color-on-tertiary-container-alpha);
-}
-
 .tactical__pool {
-  --gap: var(--space-xs);
+  --size-image-tactical-pool: calc(var(--base-size) * 2.9);
+  --gap: var(--space-sm);
   display: grid;
   grid-template-columns: repeat(auto-fit, var(--size-image-tactical-pool));
   align-content: start;
   justify-content: start;
-  background: var(--tactical__pool-bg);
-  height: calc(var(--size-image-tactical-pool) * 3 + var(--gap) * 4);
+  background: var(--md-sys-color-surface-container);
+  min-height: calc(var(--size-image-tactical-pool) * 4 + var(--gap) * 5);
   /* 維持最小高度 */
-  max-height: calc(var(--size-image-tactical-pool) * 3 + var(--gap) * 4);
-  /* 維持最大高度 */
   border-radius: var(--border-radius-xs);
-  overflow-y: auto;
   gap: var(--gap);
   padding: var(--gap);
+  overflow-y: scroll;
+  scrollbar-width: none;
 }
 
 .tactical__pool img {

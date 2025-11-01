@@ -33,7 +33,7 @@ async function handleRegister() {
 </script>
 
 <template>
-    <div class="register__view">
+    <div class="register__view scale-context">
         <div class="register__card">
             <div class="register__header">
                 <h2>創建新帳號</h2>
@@ -73,6 +73,7 @@ async function handleRegister() {
 <style scoped>
 /* 容器置中，並使用 Chat 風格背景 */
 .register__view {
+    --base-size: 1.2vw;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -86,7 +87,7 @@ async function handleRegister() {
 /* 卡片風格：圓角、陰影、內邊距 */
 .register__card {
     width: 100%;
-    max-width: var(--size-card-xl);
+    max-width: var(--size-card-lg);
     background-color: var(--md-sys-color-surface-container-highest-alpha);
     backdrop-filter: var(--backdrop-filter);
     border-radius: var(--border-radius-md);
@@ -149,7 +150,7 @@ async function handleRegister() {
 /* 註冊按鈕風格與 Chat 傳送按鈕保持一致：深色背景、白字、圓角 */
 .btn__submit {
     padding: var(--space-md);
-    background-color: var(--md-sys-color-primary);
+    background-color: var(--md-sys-color-primary-container);
     color: var(--md-sys-color-on-primary);
     border: none;
     border-radius: var(--border-radius-sm);
@@ -162,7 +163,7 @@ async function handleRegister() {
 }
 
 .btn__submit:hover {
-    background-color: var(--md-sys-color-primary-container);
+    background-color: var(--md-sys-color-primary);
     transform: scale(1.02);
 }
 
@@ -174,13 +175,13 @@ async function handleRegister() {
 }
 
 .redirect__link {
-    color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-primary-container);
     text-decoration: none;
     font-weight: var(--font-weight-medium);
     transition: color 0.2s ease;
 }
 
 .redirect__link:hover {
-    color: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-primary);
 }
 </style>

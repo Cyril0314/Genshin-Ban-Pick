@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import { getProfileImagePath } from '@/utils/imageRegistry'
+import { getWishImagePath } from '@/utils/imageRegistry'
 import { DragTypes } from '@/constants/customMIMETypes'
 
 const props = defineProps<{
@@ -40,35 +40,57 @@ function handleClickEvent() {
 </script>
 
 <template>
-  <div class="tactical__cell" :class="{ 'tactical__cell--active': isOver }" @dragover.prevent="isOver = true"
+  
+  <div class="tactical__cell"  @dragover.prevent="isOver = true"
     @dragleave="isOver = false" @dragstart="handleDragStartEvent" @drop="handleDropEvent" @click="handleClickEvent">
-    <img v-if="imageId" :src="getProfileImagePath(imageId)" />
+      <div class="image__container" :class="{ 'image__container--active': isOver }">
+      <template v-if="imageId">
+        <img class="image" :src="getWishImagePath(imageId)" />
+      </template>
+      </div>
   </div>
 </template>
 
 <style scoped>
 .tactical__cell {
-  background: var(--md-sys-color-surface-container-highest-alpha);
-  border-radius: var(--border-radius-xs);
   display: flex;
   align-items: center;
   justify-content: center;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  overflow: hidden;
+  padding: var(--space-lg) var(--space-sm);
+  
 }
 
-.tactical__cell--active {
+.image__container {
+  background: var(--md-sys-color-surface-container-highest-alpha);
+  border-radius: var(--border-radius-xs);
+  width: var(--size-tactical-cell);
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  z-index: 10;
+  cursor: grab;
+  box-shadow: var(--box-shadow);
+  overflow: hidden;
+}
+
+.image__container--active {
   outline: calc(var(--space-xs) / 2) solid var(--md-sys-color-secondary-container);
 }
 
-.tactical__cell:hover {
+.image__container:hover {
   transform: scale(1.03);
   box-shadow: var(--box-shadow-hover);
 }
 
-.tactical__cell img {
+.image {
   width: 100%;
-  aspect-ratio: 1 / 1;
-  object-fit: contain;
-  cursor: grab;
+  height: 100%;
+  object-fit: cover;
   z-index: 10;
+  cursor: grab;
 }
+
 </style>

@@ -845,6 +845,19 @@
         "wish": "Limited-Time Event Wish"
     },
     {
+        "icon": "Nefer Icon",
+        "name": "Nefer",
+        "rarity": "5 Stars",
+        "element": "Dendro",
+        "weapon": "Catalyst",
+        "region": "NodKrai",
+        "model_type": "Tall Female",
+        "release_date": "October 22, 2025",
+        "version": "Luna II",
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
+    },
+    {
         "icon": "Neuvillette Icon",
         "name": "Neuvillette",
         "rarity": "5 Stars",

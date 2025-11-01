@@ -1,14 +1,15 @@
 <!-- src/views/BanPickView.vue -->
 
 <script setup lang="ts">
-import { ref, shallowRef, onMounted, onUnmounted } from 'vue';
+import { ref, shallowRef, onMounted, onUnmounted, computed } from 'vue';
 import { onBeforeRouteLeave } from 'vue-router';
 
+import StepIndicator from '@/features/BanPick/components/StepIndicator.vue';
+import RoomUserPool from '@/features/RoomUserPool/RoomUserPool.vue';
 import BanPickBoard from '@/features/BanPick/BanPickBoard.vue';
 import Toolbar from '@/features/BanPick/components/ToolBar.vue';
 import { useBoardSync } from '@/features/BanPick/composables/useBoardSync';
 import { useRandomPull } from '@/features/BanPick/composables/useRandomPull';
-import ImageOptions from '@/features/ImageOptions/ImageOptions.vue';
 import { fetchCharacterMap } from '@/network/characterService';
 import { fetchRoomSetting } from '@/network/roomService';
 import { useTeamInfoStore } from '@/stores/teamInfoStore';
@@ -40,6 +41,26 @@ const { teamMembersMap, teams } = storeToRefs(teamInfoStore);
 const banPickStepStore = useBanPickStepStore();
 
 const taticalBoardStore = useTaticalBoardStore();
+
+function adjustScale() {
+    const wrapper = document.getElementsByClassName('viewport-wrapper')![0];
+    const content = wrapper.querySelector('.viewport-content') as HTMLElement;
+    const W = 1600;
+    const H = 900;
+    document.documentElement.style.setProperty('--layout-width', `${W}px`);
+    document.documentElement.style.setProperty('--layout-height', `${H}px`);
+    const scale = Math.min(window.innerWidth / W, window.innerHeight / H);
+    content.style.transform = `scale(${scale})`;
+}
+
+onMounted(() => {
+    adjustScale();
+    window.addEventListener('resize', adjustScale);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('resize', adjustScale);
+});
 
 onMounted(async () => {
     console.debug('[BAN PICK VIEW] On mounted');
@@ -95,97 +116,136 @@ function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
 </script>
 
 <template>
-    <div>
+    <div class="root__ban-pick-page scale-context">
         <div class="background-image"></div>
         <div class="background-overlay"></div>
-        <div class="layout">
-            <div class="layout__core">
-                <ImageOptions
-                    v-if="characterMap"
-                    :characterMap="characterMap"
-                    :usedImageIds="usedImageIds"
-                    :filteredCharacterIds="filteredCharacterIds"
-                />
-                <BanPickBoard
-                    v-if="roomSetting && characterMap"
-                    :roomSetting="roomSetting"
-                    :characterMap="characterMap"
-                    :boardImageMap="boardImageMap"
-                    :teamMembersMap="teamMembersMap"
-                    :teams="teams"
-                    @image-drop="handleBoardImageDrop"
-                    @image-restore="handleBoardImageRestore"
-                    @filter-change="handleFilterChange"
-                    @random-pull="handleRandomPull"
-                    @member-input="handleMemberInput"
-                    @member-drop="handleMemberDrop"
-                    @member-restore="handleMemberRestore"
-                />
-                <div v-else class="loading">載入房間設定中...</div>
-            </div>
-            <div class="layout__toolbar">
-                <Toolbar @image-map-reset="handleBoardImageMapReset" @board-record="handleBoardRecord" />
+        <div class="viewport-wrapper">
+            <div class="viewport-content">
+                <div class="layout">
+                    <div class="layout__core">
+                        <div class="layout__top">
+                            <div class="layout__room-user-pool">
+                                <RoomUserPool class="layout__room-user-pool"/>
+                            </div>
+                            <div class="layout__step-indicator">
+                                <StepIndicator />
+                            </div>
+                            <div class="layout__toolbar">
+                                <Toolbar @image-map-reset="handleBoardImageMapReset" @board-record="handleBoardRecord" />
+                            </div>
+                        </div>
+
+                        <BanPickBoard
+                            v-if="roomSetting && characterMap"
+                            :roomSetting="roomSetting"
+                            :characterMap="characterMap"
+                            :boardImageMap="boardImageMap"
+                            :usedImageIds="usedImageIds"
+                            :filteredCharacterIds="filteredCharacterIds"
+                            @image-drop="handleBoardImageDrop"
+                            @image-restore="handleBoardImageRestore"
+                            @filter-change="handleFilterChange"
+                            @random-pull="handleRandomPull"
+                            @member-input="handleMemberInput"
+                            @member-drop="handleMemberDrop"
+                            @member-restore="handleMemberRestore"
+                        />
+                        <div v-else class="loading">載入房間設定中...</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <style scoped>
+.root__ban-pick-page {
+    --base-size: 20px;
+    --size-top-bar: calc(var(--base-size) * 2.5);
+    --size-drop-zone-width: calc(var(--base-size) * 7);
+    --size-drop-zone-height: calc(var(--size-drop-zone-width) * 9 / 16);
+    --size-ban-pick-common-space: var(--space-lg);
+    --size-ban-row-spacer: calc(var(--size-drop-zone-item-space) * 2);
+    --size-drop-zone-line-space: var(--space-lg);
+    --size-drop-zone-item-space: var(--space-md);
+    --size-step-indicator: calc(
+        var(--size-drop-zone-width) * 2 + calc(var(--size-drop-zone-item-space) * 4)
+    );
+}
+
 .background-image {
-    position: fixed;
-    top: 0;
-    left: 0;
+    position: absolute;
     z-index: -1000;
-    width: 100vw;
-    height: 100vh;
-    background:
-        /* linear-gradient( */
-        /* var(--md-sys-color-surface-container-lowest-alpha), */
-        /* var(--md-sys-color-surface-container-lowest-alpha), */
-        /* rgba(124, 124, 124, 0.9),
-      rgba(55, 55, 55, 0.5) */
-        /* ), */ url('@/assets/images/background/5.7.png')
-        no-repeat center center;
+    background: url('@/assets/images/background/5.7.png') no-repeat center center;
     background-size: cover;
+    width: 100%;
+    height: 100vh;
 }
 
 .background-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
+    position: absolute;
     z-index: -999;
-    /* 疊在圖片上方 */
+    width: 100%;
+    height: 100vh;
+    backdrop-filter: blur(8px);
+}
+
+.viewport-wrapper {
     width: 100vw;
     height: 100vh;
-    /* background: linear-gradient(
-    rgba(31, 31, 31, 0.5),
-    rgba(127, 127, , 0.5)
-  ); */
-    backdrop-filter: blur(8px);
-    /* 毛玻璃關鍵 */
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 🎮 設定設計稿基準解析度（你可視覺上微調） */
+.viewport-content {
+    width: var(--layout-width);
+    height: var(--layout-height);
+    transform-origin: center center;
 }
 
 .layout {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    /* grid-template-columns: 1fr auto 1fr; */
-    gap: var(--space-sm);
-    max-height: 100vh;
+    width: 100%;
+    height: 100%;
     padding: var(--space-sm);
+}
+.layout__top {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    width: 100%;
+    height: var(--size-top-bar);
+}
+
+.layout__room-user-pool {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+}
+
+.layout__step-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .layout__toolbar {
     display: flex;
-    justify-content: center;
+    align-items: center;
+    justify-content: end;
 }
 
 .layout__core {
-    display: inline-flex;
+    display: flex;
     flex-direction: column;
-    align-items: stretch;
-    /* 預設值，將內容元素撐開至 flexbox 大小 */
     justify-content: center;
-    gap: var(--space-md);
+    gap: var(--space-xl);
+    flex: 1;
+    min-height: 0;
 }
+
 </style>

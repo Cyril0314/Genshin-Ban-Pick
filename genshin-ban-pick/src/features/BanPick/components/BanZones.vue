@@ -38,7 +38,7 @@ function handleImageRestore({ zoneId }: { zoneId: number }) {
 </script>
 
 <template>
-    <div class="ban-zone__rows">
+    <div class="ban-zone">
         <div class="grid__row" v-for="(zones, rowIndex) in zoneMatrix" :key="rowIndex">
             <template v-for="(zone, colIndex) in zones" :key="zone.id">
                 <DropZone
@@ -56,7 +56,7 @@ function handleImageRestore({ zoneId }: { zoneId: number }) {
 </template>
 
 <style scoped>
-.ban-zone__rows {
+.ban-zone {
     display: flex;
     flex-direction: column;
     align-items: center;
