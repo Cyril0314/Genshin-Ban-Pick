@@ -7,6 +7,8 @@ import { syncStepStateSelf } from './stepSocket.ts';
 import { syncTeamMembersMapStateSelf, syncTeamMembersMapStateAll } from './teamSocket.ts';
 import { createLogger } from '../../utils/logger.ts';
 import { RoomStateManager } from '../managers/RoomStateManager.ts';
+import { syncChatMessagesStateSelf } from './chatSocket.ts';
+import { syncTaticalCellImageMapStateSelf } from './taticalSocket.ts';
 
 const logger = createLogger('ROOM SOCKET');
 
@@ -53,11 +55,21 @@ export function registerRoomSocket(io: Server, socket: Socket, roomStateManager:
             logger.info(`Sent ${SocketEvent.ROOM_USER_JOIN_BROADCAST} joinedUser:`, roomUser);
         }
 
+        const userTeamId = Object.entries(roomState.teamMembersMap).find(([teamId, members]) => {
+            if (members.some((m) => m.type === 'ONLINE' && m.user.identityKey === identityKey)) {
+                return true;
+            } else {
+                return false
+            }
+        })?.[0]
+
         syncRoomUsersStateAll(io, roomId, roomStateManager);
 
         syncBoardImageMapStateSelf(socket, roomId, roomStateManager);
         syncStepStateSelf(socket, roomId, roomStateManager);
         syncTeamMembersMapStateSelf(socket, roomId, roomStateManager);
+        syncChatMessagesStateSelf(socket, roomId, roomStateManager)
+        syncTaticalCellImageMapStateSelf(socket, roomId, roomStateManager, Number(userTeamId))
     });
 
     socket.on(SocketEvent.ROOM_USER_LEAVE_REQUEST, (roomId: string) => {

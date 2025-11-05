@@ -1,5 +1,4 @@
-// src/features/ChatRoom/composables/useChat.ts
-import { ref, onMounted, onUnmounted } from 'vue';
+// src/features/ChatRoom/composables/useChatSync.ts
 import { storeToRefs } from 'pinia';
 
 import type { IChatMessage } from '@/types/IChatMessage';
@@ -17,13 +16,18 @@ enum SocketEvent {
     CHAT_MESSAGES_STATE_SYNC_SELF = 'chat.messages.state.sync.self',
 }
 
-export function useChat() {
+export function useChatSync() {
     const socket = useSocketStore().getSocket();
     const authStore = useAuthStore();
     const { identityKey, nickname } = storeToRefs(authStore);
     const chatStore = useChatStore();
     const { messages } = storeToRefs(chatStore);
     const { addMessage, setMessages } = chatStore;
+
+    function registerChatSync() {
+        socket.on(`${SocketEvent.CHAT_MESSAGES_STATE_SYNC_SELF}`, handleChatMessagesStateSync);
+        socket.on(`${SocketEvent.CHAT_MESSAGE_SEND_BROADCAST}`, handleChatMessageSendBroadcast);
+    }
 
     function sendMessage(message: string) {
         console.debug('[CHAT] Sent chat message send request', message);
@@ -64,30 +68,9 @@ export function useChat() {
         };
     }
 
-    // function changeNickname() {
-    //     const newName = prompt('輸入暱稱:', nickname.value)
-    //     if (newName && newName !== nickname.value) {
-    //         nickname.value = newName
-    //         localStorage.setItem('nickname', newName)
-    //     }
-    // }
-
-    onMounted(() => {
-        console.debug('[CHAT] On mounted');
-        socket.on(`${SocketEvent.CHAT_MESSAGES_STATE_SYNC_SELF}`, handleChatMessagesStateSync);
-        socket.on(`${SocketEvent.CHAT_MESSAGE_SEND_BROADCAST}`, handleChatMessageSendBroadcast);
-
-        socket.emit(`${SocketEvent.CHAT_MESSAGES_STATE_REQUEST}`);
-    });
-
-    onUnmounted(() => {
-        console.debug('[CHAT] On unmounted');
-        socket.off(`${SocketEvent.CHAT_MESSAGES_STATE_SYNC_SELF}`);
-        socket.off(`${SocketEvent.CHAT_MESSAGE_SEND_BROADCAST}`);
-    });
-
     return {
         messages,
+        registerChatSync,
         sendMessage,
         // changeNickname
     };

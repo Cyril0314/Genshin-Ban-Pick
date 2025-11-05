@@ -1,7 +1,6 @@
-// src/features/BanPick/composables/useBanPickStepSync.ts
+// src/features/StepIndicator/composables/useBanPickStepSync.ts
 
 import { storeToRefs } from 'pinia'
-import { onMounted, onUnmounted } from 'vue'
 
 import { useSocketStore } from '@/stores/socketStore'
 import { useBanPickStepStore } from '@/stores/banPickStepStore'
@@ -20,6 +19,11 @@ export function useBanPickStepSync() {
   const banPickStepStore = useBanPickStepStore()
   const { currentStep, banPickSteps } = storeToRefs(banPickStepStore)
   const { setStepIndex } = banPickStepStore
+
+  function registerBanPickStepSync() {
+        socket.on(`${SocketEvent.STEP_STATE_SYNC_SELF}`, handleStepStateSync)
+        socket.on(`${SocketEvent.STEP_STATE_SYNC_ALL}`, handleStepStateSync)
+    }
 
   function advanceStep() {
     console.debug('[BP STEP SYNC] Sent step advance request')
@@ -41,21 +45,10 @@ export function useBanPickStepSync() {
     setStepIndex(newStepIndex)
   }
 
-  onMounted(() => {
-    console.debug('[BP STEP SYNC] On mounted')
-    socket.on(`${SocketEvent.STEP_STATE_SYNC_SELF}`, handleStepStateSync)
-    socket.on(`${SocketEvent.STEP_STATE_SYNC_ALL}`, handleStepStateSync)
-  })
-
-  onUnmounted(() => {
-    console.debug('[BP STEP SYNC] On unmounted')
-    socket.off(`${SocketEvent.STEP_STATE_SYNC_SELF}`)
-    socket.off(`${SocketEvent.STEP_STATE_SYNC_ALL}`)
-  })
-
   return {
     currentStep,
     banPickSteps,
+    registerBanPickStepSync,
     advanceStep,
     rollbackStep,
     resetStep,

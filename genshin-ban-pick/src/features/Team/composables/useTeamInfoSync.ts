@@ -1,6 +1,5 @@
 // src/Team/useTeamInfoSync.ts
 import { storeToRefs } from 'pinia';
-import { onMounted, onUnmounted } from 'vue';
 
 import { useSocketStore } from '@/stores/socketStore';
 import { useTeamInfoStore } from '@/stores/teamInfoStore';
@@ -26,6 +25,13 @@ export function useTeamInfoSync() {
     const roomUserStore = useRoomUserStore();
     const { roomUsers } = storeToRefs(roomUserStore);
 
+    function registerTeamInfoSync() {
+        socket.on(`${SocketEvent.TEAM_MEMBERS_MAP_STATE_SYNC_SELF}`, handleTeamMembersMapStateSync);
+        socket.on(`${SocketEvent.TEAM_MEMBERS_MAP_STATE_SYNC_ALL}`, handleTeamMembersMapStateSync);
+        socket.on(`${SocketEvent.TEAM_MEMBER_ADD_BROADCAST}`, handleTeamMemberAddBroadcast);
+        socket.on(`${SocketEvent.TEAM_MEMBER_REMOVE_BROADCAST}`, handleTeamMemberRemoveBroadcast);
+    }
+
     function handleMemberInput({ name, teamId }: { name: string; teamId: number }) {
         const teamMembers = teamMembersMap.value[teamId];
         if (teamMembers.some((m) => m.type === 'MANUAL' && m.name === name)) {
@@ -46,7 +52,7 @@ export function useTeamInfoSync() {
 
         for (const [teamId, members] of Object.entries(teamMembersMap.value)) {
             teamMembersMap.value[Number(teamId)] = members.filter((m) => m.type !== 'ONLINE' || m.user.identityKey !== identityKey);
-            removeTeamMember(Number(teamId), teamMember)
+            removeTeamMember(Number(teamId), teamMember);
         }
 
         addTeamMember(teamId, teamMember);
@@ -93,23 +99,8 @@ export function useTeamInfoSync() {
         teamInfoStore.setTeamMembersMap(teamMembersMap);
     }
 
-    onMounted(() => {
-        console.debug('[TEAM INFO SYNC] On mounted');
-        socket.on(`${SocketEvent.TEAM_MEMBERS_MAP_STATE_SYNC_SELF}`, handleTeamMembersMapStateSync);
-        socket.on(`${SocketEvent.TEAM_MEMBERS_MAP_STATE_SYNC_ALL}`, handleTeamMembersMapStateSync);
-        socket.on(`${SocketEvent.TEAM_MEMBER_ADD_BROADCAST}`, handleTeamMemberAddBroadcast);
-        socket.on(`${SocketEvent.TEAM_MEMBER_REMOVE_BROADCAST}`, handleTeamMemberRemoveBroadcast);
-    });
-
-    onUnmounted(() => {
-        console.debug('[TEAM INFO SYNC] On unmounted');
-        socket.off(`${SocketEvent.TEAM_MEMBERS_MAP_STATE_SYNC_SELF}`);
-        socket.off(`${SocketEvent.TEAM_MEMBERS_MAP_STATE_SYNC_ALL}`);
-        socket.off(`${SocketEvent.TEAM_MEMBER_ADD_BROADCAST}`);
-        socket.off(`${SocketEvent.TEAM_MEMBER_REMOVE_BROADCAST}`);
-    });
-
     return {
+        registerTeamInfoSync,
         handleMemberInput,
         handleMemberDrop,
         handleMemberRestore,

@@ -1,4 +1,4 @@
-<!-- src/features/BanPick/components/Toolbar.vue -->
+<!-- src/features/Toolbar/Toolbar.vue -->
 
 <script setup lang="ts">
 import { ref } from 'vue';

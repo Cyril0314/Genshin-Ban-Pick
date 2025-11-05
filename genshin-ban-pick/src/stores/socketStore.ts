@@ -2,6 +2,7 @@
 // 建立 Socket 實例
 
 import { SocketNotConnected } from '@/errors/AppError';
+import { registerAllSyncModules } from '@/network/registerAllSyncModules';
 import { defineStore } from 'pinia';
 import { io, type Socket } from 'socket.io-client';
 import { ref } from 'vue';
@@ -18,6 +19,7 @@ export const useSocketStore = defineStore('socket', () => {
 
         const baseURL = import.meta.env.VITE_SOCKET_URL;
         socket.value = io(baseURL, { auth: { token } });
+        registerAllSyncModules(socket.value as Socket)
 
         socket.value.on('connect', () => {
             console.info('[SOCKET] Connected:', socket.value!.id);

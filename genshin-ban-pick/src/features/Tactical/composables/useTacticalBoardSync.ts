@@ -1,5 +1,5 @@
 // src/features/TacticalBoard/useTacticalBoardSync.ts
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import { useSocketStore } from '@/stores/socketStore';
@@ -21,8 +21,6 @@ enum SocketEvent {
     TATICAL_CELL_IMAGE_MAP_STATE_SYNC_SELF = 'tatical.cell.image_map.state.sync.self',
 }
 
-let isSocketBound = false;
-
 export function useTacticalBoardSync() {
     const socket = useSocketStore().getSocket();
     const authStore = useAuthStore();
@@ -41,6 +39,13 @@ export function useTacticalBoardSync() {
         }
         return null;
     });
+
+    function registerTacticalBoardSync() {
+        socket.on(SocketEvent.TATICAL_CELL_IMAGE_PLACE_BROADCAST, handleTaticalCellImagePlaceBroadcast);
+        socket.on(SocketEvent.TATICAL_CELL_IMAGE_REMOVE_BROADCAST, handleTaticalCellImageRemoveBroadcast);
+        socket.on(SocketEvent.TATICAL_CELL_IMAGE_MAP_RESET_BROADCAST, handleTaticalCellImageMapResetBroadcast);
+        socket.on(SocketEvent.TATICAL_CELL_IMAGE_MAP_STATE_SYNC_SELF, handleTaticalCellImageMapStateSync);
+    }
 
     function handleTaticalCellImagePlace({ teamId, cellId, imgId }: { teamId: number; cellId: number; imgId: string }) {
         console.debug(`[TATICAL BOARD SYNC] Handle tatical cell image place`, { teamId, cellId, imgId });
@@ -84,6 +89,7 @@ export function useTacticalBoardSync() {
     }
 
     function handleTaticalCellImagePlaceBroadcast({ teamId, cellId, imgId }: { teamId: number; cellId: number; imgId: string }) {
+        console.debug(`userTeamId.value`, userTeamId.value)
         if (userTeamId.value !== teamId) return;
         console.debug(`[TATICAL BOARD SYNC] Handle tatical cell image place broadcast`, { teamId, cellId, imgId });
         placeCellImage(teamId, cellId, imgId);
@@ -164,30 +170,9 @@ export function useTacticalBoardSync() {
         }
     }
 
-    function bindSocketListeners() {
-        if (isSocketBound) return;
-        isSocketBound = true;
-
-        socket.on(SocketEvent.TATICAL_CELL_IMAGE_PLACE_BROADCAST, handleTaticalCellImagePlaceBroadcast);
-        socket.on(SocketEvent.TATICAL_CELL_IMAGE_REMOVE_BROADCAST, handleTaticalCellImageRemoveBroadcast);
-        socket.on(SocketEvent.TATICAL_CELL_IMAGE_MAP_RESET_BROADCAST, handleTaticalCellImageMapResetBroadcast);
-        socket.on(SocketEvent.TATICAL_CELL_IMAGE_MAP_STATE_SYNC_SELF, handleTaticalCellImageMapStateSync);
-    }
-
-    onMounted(() => {
-        console.debug('[TATICAL BOARD SYNC] On mounted');
-        bindSocketListeners()
-
-        if (userTeamId.value !== null) {
-            socket.emit(`${SocketEvent.TATICAL_CELL_IMAGE_MAP_STATE_REQUEST}`, { teamId: userTeamId.value });
-        }
-    });
-
-    onUnmounted(() => {
-        console.debug('[TATICAL BOARD SYNC] On unmounted');
-    });
-
     return {
+        userTeamId,
+        registerTacticalBoardSync,
         handleTaticalCellImagePlace,
         handleTaticalCellImageRemove,
         handleAddImageToPool,

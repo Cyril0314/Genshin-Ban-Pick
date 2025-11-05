@@ -12,11 +12,11 @@ import { useTacticalBoardSync } from './composables/useTacticalBoardSync';
 
 const teamInfoStore = useTeamInfoStore();
 const { teamInfoPair } = storeToRefs(teamInfoStore);
-const currentTeamId = ref<number>(teamInfoPair.value!.left.id)
 
 const tacticalBoardSync = useTacticalBoardSync();
-const { handleTaticalCellImagePlace, handleTaticalCellImageRemove } = tacticalBoardSync
+const { userTeamId, handleTaticalCellImagePlace, handleTaticalCellImageRemove } = tacticalBoardSync
 
+const currentTeamId = ref<number>( userTeamId.value ?? teamInfoPair.value!.left.id)
 
 function handleImageDrop({ teamId, cellId, imgId }: { teamId: number, cellId: number; imgId: string }) {
   console.debug(`[TATICAL BOARD PANEL] Handle image drop`, { teamId, cellId, imgId });

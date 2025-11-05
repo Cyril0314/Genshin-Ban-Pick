@@ -4,10 +4,10 @@
 import { ref, shallowRef, onMounted, onUnmounted, computed } from 'vue';
 import { onBeforeRouteLeave } from 'vue-router';
 
-import StepIndicator from '@/features/BanPick/components/StepIndicator.vue';
+import StepIndicator from '@/features/StepIndicator/StepIndicator.vue';
 import RoomUserPool from '@/features/RoomUserPool/RoomUserPool.vue';
 import BanPickBoard from '@/features/BanPick/BanPickBoard.vue';
-import Toolbar from '@/features/BanPick/components/ToolBar.vue';
+import Toolbar from '@/features/Toolbar/ToolBar.vue';
 import { useBoardSync } from '@/features/BanPick/composables/useBoardSync';
 import { useRandomPull } from '@/features/BanPick/composables/useRandomPull';
 import { fetchCharacterMap } from '@/network/characterService';

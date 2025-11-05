@@ -1,9 +1,9 @@
 // src/features/BanPick/composables/useBoardSync.vue
 
-import { readonly, onMounted, onUnmounted } from 'vue';
+import { readonly } from 'vue';
 import { storeToRefs } from 'pinia';
 
-import { useBanPickStepSync } from './useBanPickStepSync';
+import { useBanPickStepSync } from '../../StepIndicator/composables/useBanPickStepSync';
 import { useSocketStore } from '@/stores/socketStore';
 import { useBoardImageStore } from '@/stores/boardImageStore';
 import { useTacticalBoardSync } from '@/features/Tactical/composables/useTacticalBoardSync';
@@ -37,6 +37,13 @@ export function useBoardSync() {
         handleAllTeamRemoveImageFromBoard,
         handleAllTeamResetBoard,
     } = useTacticalBoardSync();
+
+    function registerBoardSync() {
+        socket.on(`${SocketEvent.BOARD_IMAGE_MAP_STATE_SYNC_SELF}`, handleBoradImageMapStateSync);
+        socket.on(`${SocketEvent.BOARD_IMAGE_DROP_BROADCAST}`, handleBoardImageDropBroadcast);
+        socket.on(`${SocketEvent.BOARD_IMAGE_RESTORE_BROADCAST}`, handleBoardImageRestoreBroadcast);
+        socket.on(`${SocketEvent.BOARD_IMAGE_MAP_RESET_BROADCAST}`, handleBoardImageMapResetBroadcast);
+    }
 
     function handleBoardImageDrop({ zoneId, imgId }: { zoneId: number; imgId: string }) {
         console.log(`[BOARD SYNC] Handle image drop`, { zoneId, imgId });
@@ -154,22 +161,6 @@ export function useBoardSync() {
         removeFromTacticalBoardIfNeeded(zoneId, imgId);
     }
 
-    onMounted(() => {
-        console.debug('[BOARD SYNC] On mounted');
-        socket.on(`${SocketEvent.BOARD_IMAGE_MAP_STATE_SYNC_SELF}`, handleBoradImageMapStateSync);
-        socket.on(`${SocketEvent.BOARD_IMAGE_DROP_BROADCAST}`, handleBoardImageDropBroadcast);
-        socket.on(`${SocketEvent.BOARD_IMAGE_RESTORE_BROADCAST}`, handleBoardImageRestoreBroadcast);
-        socket.on(`${SocketEvent.BOARD_IMAGE_MAP_RESET_BROADCAST}`, handleBoardImageMapResetBroadcast);
-    });
-
-    onUnmounted(() => {
-        console.debug('[BOARD SYNC] On unmounted');
-        socket.off(`${SocketEvent.BOARD_IMAGE_MAP_STATE_SYNC_SELF}`);
-        socket.off(`${SocketEvent.BOARD_IMAGE_DROP_BROADCAST}`);
-        socket.off(`${SocketEvent.BOARD_IMAGE_RESTORE_BROADCAST}`);
-        socket.off(`${SocketEvent.BOARD_IMAGE_MAP_RESET_BROADCAST}`);
-    });
-
     function getTeamIdFromZoneId(zoneId: number) {
         const match = banPickSteps.value.find((f) => f.zoneId === zoneId);
         return match?.teamId;
@@ -212,6 +203,7 @@ export function useBoardSync() {
     return {
         boardImageMap: readonly(boardImageMap),
         usedImageIds,
+        registerBoardSync,
         handleBoardImageDrop,
         handleBoardImageRestore,
         handleBoardImageMapReset,

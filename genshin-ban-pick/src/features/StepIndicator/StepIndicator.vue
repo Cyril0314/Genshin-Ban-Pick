@@ -1,4 +1,4 @@
-<!-- src/features/BanPick/components/StepIndicator.vue -->
+<!-- src/features/StepIndicator/StepIndicator.vue -->
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { ref, computed, watch } from 'vue';

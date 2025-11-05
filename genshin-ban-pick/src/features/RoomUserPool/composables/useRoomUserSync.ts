@@ -1,6 +1,5 @@
 // src/features/RoomUserPool/composables/useRoomUserSync.ts
 
-import { ref, onMounted, onUnmounted } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import { useSocketStore } from '@/stores/socketStore';
@@ -23,6 +22,12 @@ export function useRoomUserSync() {
     const { setRoomUsers } = roomUserStore
     const { roomUsers } = storeToRefs(roomUserStore)
     const socket = useSocketStore().getSocket();
+
+    function registerRoomUserSync() {
+        socket.on(`${SocketEvent.ROOM_USER_JOIN_BROADCAST}`, handleRoomUserJoinBroadcast);
+        socket.on(`${SocketEvent.ROOM_USER_LEAVE_BROADCAST}`, handleRoomUserLeaveBroadcast);
+        socket.on(`${SocketEvent.ROOM_USERS_STATE_SYNC_ALL}`, handleRoomUsersStateSync);
+    }
 
     function joinRoom(roomId: string) {
         console.debug('[ROOM USERS] Sent room user join request', roomId)
@@ -48,22 +53,9 @@ export function useRoomUserSync() {
         setRoomUsers(newRoomUsers)
     }
 
-    onMounted(() => {
-        console.debug('[ROOM USERS] On mounted')
-        socket.on(`${SocketEvent.ROOM_USER_JOIN_BROADCAST}`, handleRoomUserJoinBroadcast);
-        socket.on(`${SocketEvent.ROOM_USER_LEAVE_BROADCAST}`, handleRoomUserLeaveBroadcast);
-        socket.on(`${SocketEvent.ROOM_USERS_STATE_SYNC_ALL}`, handleRoomUsersStateSync);
-    });
-
-    onUnmounted(() => {
-        console.debug('[ROOM USERS] On unmounted')
-        socket.off(`${SocketEvent.ROOM_USER_JOIN_BROADCAST}`);
-        socket.off(`${SocketEvent.ROOM_USER_LEAVE_BROADCAST}`);
-        socket.off(`${SocketEvent.ROOM_USERS_STATE_SYNC_ALL}`);
-    });
-
     return {
         roomUsers,
+        registerRoomUserSync,
         joinRoom,
         leaveRoom,
     };
