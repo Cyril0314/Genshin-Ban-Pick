@@ -1,15 +1,15 @@
-// src/stores/banPickStepStore.ts
+// src/stores/matchStepStore.ts
 
 import { defineStore } from 'pinia';
 import { ref, computed, watch, shallowRef } from 'vue';
 
-import type { IBanPickStep } from '@/types/IBanPickStep';
+import type { IMatchStep } from '@/types/IMatchFlow';
 
-export const useBanPickStepStore = defineStore('banPickStep', () => {
-    const banPickSteps = shallowRef<IBanPickStep[]>([]);
+export const useMatchStepStore = defineStore('matchStep', () => {
+    const matchSteps = shallowRef<IMatchStep[]>([]);
     const stepIndex = ref<number>(0)
     const currentStep = computed(() => {
-        const steps = banPickSteps.value
+        const steps = matchSteps.value
         if (!steps) return null
         const index = stepIndex.value
         if (index >= steps.length) return null
@@ -20,9 +20,9 @@ export const useBanPickStepStore = defineStore('banPickStep', () => {
         console.debug('[BP STEP STORE] Watch current step', step)
     }, { immediate: true })
 
-    function initBanPickSteps(newSteps: IBanPickStep[]) {
+    function initMatchSteps(newSteps: IMatchStep[]) {
         console.debug('[BP STEP STORE] Init ban pick steps', newSteps)
-        banPickSteps.value = newSteps
+        matchSteps.value = newSteps
     }
 
     function setStepIndex(index: number) {
@@ -30,5 +30,5 @@ export const useBanPickStepStore = defineStore('banPickStep', () => {
         stepIndex.value = index
     }
 
-    return { banPickSteps, currentStep, initBanPickSteps, setStepIndex };
+    return { matchSteps, currentStep, initMatchSteps, setStepIndex };
 });

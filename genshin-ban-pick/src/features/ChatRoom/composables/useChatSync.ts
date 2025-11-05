@@ -8,12 +8,12 @@ import { useSocketStore } from '@/stores/socketStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useChatStore } from '@/stores/chatStore';
 
-enum SocketEvent {
-    CHAT_MESSAGE_SEND_REQUEST = 'chat.message.send.request',
-    CHAT_MESSAGE_SEND_BROADCAST = 'chat.message.send.broadcast',
+enum ChatEvent {
+    MessageSendRequest = 'chat.message.send.request',
+    MessageSendBroadcast = 'chat.message.send.broadcast',
 
-    CHAT_MESSAGES_STATE_REQUEST = 'chat.messages.state.request',
-    CHAT_MESSAGES_STATE_SYNC_SELF = 'chat.messages.state.sync.self',
+    MessagesStateRequest = 'chat.messages.state.request',
+    MessagesStateSyncSelf = 'chat.messages.state.sync.self',
 }
 
 export function useChatSync() {
@@ -25,8 +25,8 @@ export function useChatSync() {
     const { addMessage, setMessages } = chatStore;
 
     function registerChatSync() {
-        socket.on(`${SocketEvent.CHAT_MESSAGES_STATE_SYNC_SELF}`, handleChatMessagesStateSync);
-        socket.on(`${SocketEvent.CHAT_MESSAGE_SEND_BROADCAST}`, handleChatMessageSendBroadcast);
+        socket.on(`${ChatEvent.MessagesStateSyncSelf}`, handleChatMessagesStateSync);
+        socket.on(`${ChatEvent.MessageSendBroadcast}`, handleChatMessageSendBroadcast);
     }
 
     function sendMessage(message: string) {
@@ -43,7 +43,7 @@ export function useChatSync() {
         const chatMessage = transformChatMessage(messageDTO);
         addMessage(chatMessage);
 
-        socket.emit(`${SocketEvent.CHAT_MESSAGE_SEND_REQUEST}`, messageDTO);
+        socket.emit(`${ChatEvent.MessageSendRequest}`, messageDTO);
     }
 
     function handleChatMessagesStateSync(newMessageDTOs: IChatMessageDTO[]) {

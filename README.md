@@ -222,7 +222,7 @@ Genshin-Ban-Pick
 │  │  ├─ index.html
 │  │  └─ wish.png
 │  ├─ src
-│  │  ├─ banPickSteps.ts
+│  │  ├─ matchSteps.ts
 │  │  ├─ character
 │  │  │  └─ characters.json
 │  │  ├─ constants
@@ -701,7 +701,7 @@ Genshin-Ban-Pick
 │  │  │  │  └─ composables
 │  │  │  │     ├─ useBanPickImageSync.ts
 │  │  │  │     ├─ useBanPickOrder.ts
-│  │  │  │     ├─ useBanPickStep.ts
+│  │  │  │     ├─ useMatchStep.ts
 │  │  │  │     └─ useRandomizeImage.ts
 │  │  │  ├─ CharacterSelector
 │  │  │  │  ├─ CharacterSelector.vue

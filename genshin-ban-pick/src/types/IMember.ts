@@ -6,11 +6,11 @@ export interface IMember {
     nickname: string;
     createdAt: Date;
     updatedAt: Date;
-    role: Role;
+    role: MemberRole;
 }
 
-export enum Role {
-    USER = 'USER',
-    OWNER = 'OWNER',
-    ADMIN = 'ADMIN',
+export enum MemberRole {
+    User = 'User',
+    Owner = 'Owner',
+    Admin = 'Admin',
 }

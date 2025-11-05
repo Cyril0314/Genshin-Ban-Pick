@@ -11,9 +11,9 @@ import Toolbar from '@/features/Toolbar/ToolBar.vue';
 import { useBoardSync } from '@/features/BanPick/composables/useBoardSync';
 import { useRandomPull } from '@/features/BanPick/composables/useRandomPull';
 import { fetchCharacterMap } from '@/network/characterService';
-import { fetchRoomSetting } from '@/network/roomService';
+import { fetchRoomSetting, postRoomSave } from '@/network/roomService';
 import { useTeamInfoStore } from '@/stores/teamInfoStore';
-import { useBanPickStepStore } from '@/stores/banPickStepStore';
+import { useMatchStepStore } from '@/stores/matchStepStore';
 import { useBoardImageStore } from '@/stores/boardImageStore';
 import { useTacticalBoardStore } from '@/stores/tacticalBoardStore';
 import { ZoneType } from '@/types/IZone';
@@ -21,25 +21,20 @@ import { useRoomUserSync } from '@/features/RoomUserPool/composables/useRoomUser
 
 import type { IRoomSetting } from '@/types/IRoomSetting';
 import type { ICharacter } from '@/types/ICharacter';
-import { storeToRefs } from 'pinia';
 import { useTeamInfoSync } from '@/features/Team/composables/useTeamInfoSync';
 const characterMap = shallowRef<Record<string, ICharacter> | null>(null);
 const roomSetting = shallowRef<IRoomSetting | null>(null);
 
-const filteredCharacterIds = ref<string[] | null>(null);
+const filteredCharacterKeys = ref<string[] | null>(null);
 
-const { boardImageMap, usedImageIds, handleBoardImageDrop, handleBoardImageRestore, handleBoardImageMapReset, handleBoardRecord } = useBoardSync();
+const { boardImageMap, usedImageIds, handleBoardImageDrop, handleBoardImageRestore, handleBoardImageMapReset } = useBoardSync();
 const { randomPull } = useRandomPull();
 const { joinRoom, leaveRoom } = useRoomUserSync();
 const { handleMemberInput, handleMemberDrop, handleMemberRestore } = useTeamInfoSync();
 
 const boardImageStore = useBoardImageStore();
-
 const teamInfoStore = useTeamInfoStore();
-const { teamMembersMap, teams } = storeToRefs(teamInfoStore);
-
-const banPickStepStore = useBanPickStepStore();
-
+const matchStepStore = useMatchStepStore();
 const tacticalBoardStore = useTacticalBoardStore();
 
 function adjustScale() {
@@ -67,10 +62,10 @@ onMounted(async () => {
     try {
         characterMap.value = await fetchCharacterMap();
         roomSetting.value = await fetchRoomSetting();
-        filteredCharacterIds.value = Object.keys(characterMap.value).map((id) => id);
+        filteredCharacterKeys.value = Object.keys(characterMap.value).map((id) => id);
         boardImageStore.initZoneMetaTable(roomSetting.value.zoneMetaTable);
         teamInfoStore.initTeams(roomSetting.value.teams);
-        banPickStepStore.initBanPickSteps(roomSetting.value.banPickSteps);
+        matchStepStore.initMatchSteps(roomSetting.value.matchFlow.steps);
         tacticalBoardStore.initTeamTacticalBoardMap(roomSetting.value.teams, roomSetting.value.numberOfTeamSetup, roomSetting.value.numberOfSetupCharacter);
         const roomId = getRoomId();
         joinRoom(roomId);
@@ -95,24 +90,31 @@ function getRoomId(): string {
     return roomId;
 }
 
-function handleFilterChange(newIds: string[]) {
-    console.debug(`[BAN PICK VIEW] Handle filiter changed:`, newIds);
-    filteredCharacterIds.value = newIds;
+function handleFilterChange(newKeys: string[]) {
+    console.debug(`[BAN PICK VIEW] Handle filiter changed:`, newKeys);
+    filteredCharacterKeys.value = newKeys;
 }
 
 function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
     console.debug(`[BAN PICK VIEW] Handle random pull`, { zoneType });
-    if (!roomSetting.value || !filteredCharacterIds.value || filteredCharacterIds.value.length === 0) {
+    if (!roomSetting.value || !filteredCharacterKeys.value || filteredCharacterKeys.value.length === 0) {
         console.warn(`[BAN PICK VIEW] Room is not ready or do not filiter any character`);
         return;
     }
-    const result = randomPull(zoneType, roomSetting.value, boardImageMap.value, filteredCharacterIds.value);
+    const result = randomPull(zoneType, roomSetting.value, boardImageMap.value, filteredCharacterKeys.value);
     if (!result) {
         console.warn(`[BAN PICK VIEW] Random pull does not get any result`);
         return;
     }
     handleBoardImageDrop(result);
 }
+
+async function handleBoardRecord() {
+    const roomId = getRoomId();
+    if (!roomSetting.value) return;
+    await postRoomSave(roomId, roomSetting.value)
+}
+
 </script>
 
 <template>
@@ -141,7 +143,7 @@ function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
                             :characterMap="characterMap"
                             :boardImageMap="boardImageMap"
                             :usedImageIds="usedImageIds"
-                            :filteredCharacterIds="filteredCharacterIds"
+                            :filteredCharacterKeys="filteredCharacterKeys"
                             @image-drop="handleBoardImageDrop"
                             @image-restore="handleBoardImageRestore"
                             @filter-change="handleFilterChange"

@@ -24,17 +24,17 @@ const props = defineProps<{
     characterMap: Record<string, ICharacter>;
     boardImageMap: Record<number, string>;
     usedImageIds: string[];
-    filteredCharacterIds: string[] | null;
+    filteredCharacterKeys: string[] | null;
 }>();
 
 const emit = defineEmits<{
     (e: 'image-drop', payload: { zoneId: number; imgId: string }): void;
     (e: 'image-restore', payload: { zoneId: number }): void;
-    (e: 'filter-change', filteredCharacterIds: string[]): void;
+    (e: 'filter-change', filteredCharacterKeys: string[]): void;
     (e: 'random-pull', payload: { zoneType: ZoneType }): void;
-    (e: 'member-drop', payload: { identityKey: string; teamId: number }): void;
-    (e: 'member-input', payload: { name: string; teamId: number }): void;
-    (e: 'member-restore', payload: { member: TeamMember; teamId: number }): void;
+    (e: 'member-drop', payload: { identityKey: string; teamSlot: number }): void;
+    (e: 'member-input', payload: { name: string; teamSlot: number }): void;
+    (e: 'member-restore', payload: { member: TeamMember; teamSlot: number }): void;
 }>();
 
 const teamInfoStore = useTeamInfoStore();
@@ -53,9 +53,9 @@ function handleImageRestore({ zoneId }: { zoneId: number }) {
     emit('image-restore', { zoneId });
 }
 
-function handleSelectorFilterChange(filteredCharacterIds: string[]) {
-    console.debug(`[BAN PICK BOARD] Handle selector filter change`, filteredCharacterIds);
-    emit('filter-change', filteredCharacterIds);
+function handleSelectorFilterChange(filteredCharacterKeys: string[]) {
+    console.debug(`[BAN PICK BOARD] Handle selector filter change`, filteredCharacterKeys);
+    emit('filter-change', filteredCharacterKeys);
 }
 
 function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
@@ -63,19 +63,19 @@ function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
     emit('random-pull', { zoneType });
 }
 
-function handleMemberInput({ name, teamId }: { name: string; teamId: number }) {
-    console.debug(`[BAN PICK BOARD] Handle member input`, { name, teamId });
-    emit('member-input', { name, teamId });
+function handleMemberInput({ name, teamSlot }: { name: string; teamSlot: number }) {
+    console.debug(`[BAN PICK BOARD] Handle member input`, { name, teamSlot });
+    emit('member-input', { name, teamSlot });
 }
 
-function handleMemberDrop({ identityKey, teamId }: { identityKey: string; teamId: number }) {
-    console.debug(`[BAN PICK BOARD] Handle member drop`, { identityKey, teamId });
-    emit('member-drop', { identityKey, teamId });
+function handleMemberDrop({ identityKey, teamSlot }: { identityKey: string; teamSlot: number }) {
+    console.debug(`[BAN PICK BOARD] Handle member drop`, { identityKey, teamSlot });
+    emit('member-drop', { identityKey, teamSlot });
 }
 
-function handleMemberRestore({ member, teamId }: { member: TeamMember; teamId: number }) {
-    console.debug(`[BAN PICK BOARD] Handle member restore`, { member, teamId });
-    emit('member-restore', { member, teamId });
+function handleMemberRestore({ member, teamSlot }: { member: TeamMember; teamSlot: number }) {
+    console.debug(`[BAN PICK BOARD] Handle member restore`, { member, teamSlot });
+    emit('member-restore', { member, teamSlot });
 }
 </script>
 
@@ -97,7 +97,7 @@ function handleMemberRestore({ member, teamId }: { member: TeamMember; teamId: n
             </div>
             <div class="layout__common">
                 <ImageOptions v-if="characterMap" :characterMap="characterMap" :usedImageIds="usedImageIds"
-                    :filteredCharacterIds="filteredCharacterIds" />
+                    :filteredCharacterKeys="filteredCharacterKeys" />
 
 
                 <CharacterSelector :characterMap="props.characterMap" @filter-change="handleSelectorFilterChange"

@@ -10,11 +10,12 @@
     "strict": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "allowImportingTsExtensions": true
+    "allowImportingTsExtensions": true,
+    "types": ["node"]
   },
   "ts-node": {
     "esm": true              
   },
-  "include": ["src/**/*", "../Genshin-Ban-Pick/src/types/IMember.ts"],
+  "include": ["src/**/*", "prisma/**/*.ts"],
   "exclude": ["dist", "public", "node_modules"]
 }

@@ -7,18 +7,18 @@ import { useTacticalBoardStore, type TacticalCellImageMap } from '@/stores/tacti
 import { useTeamInfoStore } from '@/stores/teamInfoStore';
 import { useAuthStore } from '@/stores/authStore';
 
-enum SocketEvent {
-    TATICAL_CELL_IMAGE_PLACE_REQUEST = 'tactical.cell.image.place.request',
-    TATICAL_CELL_IMAGE_PLACE_BROADCAST = 'tactical.cell.image.place.broadcast',
+enum TacticalEvent {
+    CellImagePlaceRequest = 'tactical.cell.image.place.request',
+    CellImagePlaceBroadcast = 'tactical.cell.image.place.broadcast',
 
-    TATICAL_CELL_IMAGE_REMOVE_REQUEST = 'tactical.cell.image.remove.request',
-    TATICAL_CELL_IMAGE_REMOVE_BROADCAST = 'tactical.cell.image.remove.broadcast',
+    CellImageRemoveRequest = 'tactical.cell.image.remove.request',
+    CellImageRemoveBroadcast = 'tactical.cell.image.remove.broadcast',
 
-    TATICAL_CELL_IMAGE_MAP_RESET_REQUEST = 'tactical.cell.image_map.reset.request',
-    TATICAL_CELL_IMAGE_MAP_RESET_BROADCAST = 'tactical.cell.image_map.reset.broadcast',
+    CellImageMapResetRequest = 'tactical.cell.image_map.reset.request',
+    CellImageMapResetBroadcast = 'tactical.cell.image_map.reset.broadcast',
 
-    TATICAL_CELL_IMAGE_MAP_STATE_REQUEST = 'tactical.cell.image_map.state.request',
-    TATICAL_CELL_IMAGE_MAP_STATE_SYNC_SELF = 'tactical.cell.image_map.state.sync.self',
+    CellImageMapStateRequest = 'tactical.cell.image_map.state.request',
+    CellImageMapStateSyncSelf = 'tactical.cell.image_map.state.sync.self',
 }
 
 export function useTacticalBoardSync() {
@@ -31,147 +31,147 @@ export function useTacticalBoardSync() {
     const { teamTacticalBoardPanelMap } = storeToRefs(tacticalBoardStore);
     const { addImageToPool, removeImageFromPool, placeCellImage, removeCellImage, resetBoard, setTacticalCellImageMap, findCellIdByImageId } = tacticalBoardStore;
 
-    const userTeamId = computed(() => {
-        for (const [teamId, members] of Object.entries(teamMembersMap.value)) {
-            if (members.some((m) => m.type === 'ONLINE' && m.user.identityKey === identityKey.value)) {
-                return Number(teamId);
+    const userTeamSlot = computed(() => {
+        for (const [teamSlot, members] of Object.entries(teamMembersMap.value)) {
+            if (members.some((m) => m.type === 'Online' && m.user.identityKey === identityKey.value)) {
+                return Number(teamSlot);
             }
         }
         return null;
     });
 
     function registerTacticalBoardSync() {
-        socket.on(SocketEvent.TATICAL_CELL_IMAGE_PLACE_BROADCAST, handleTacticalCellImagePlaceBroadcast);
-        socket.on(SocketEvent.TATICAL_CELL_IMAGE_REMOVE_BROADCAST, handleTacticalCellImageRemoveBroadcast);
-        socket.on(SocketEvent.TATICAL_CELL_IMAGE_MAP_RESET_BROADCAST, handleTacticalCellImageMapResetBroadcast);
-        socket.on(SocketEvent.TATICAL_CELL_IMAGE_MAP_STATE_SYNC_SELF, handleTacticalCellImageMapStateSync);
+        socket.on(TacticalEvent.CellImagePlaceBroadcast, handleTacticalCellImagePlaceBroadcast);
+        socket.on(TacticalEvent.CellImageRemoveBroadcast, handleTacticalCellImageRemoveBroadcast);
+        socket.on(TacticalEvent.CellImageMapResetBroadcast, handleTacticalCellImageMapResetBroadcast);
+        socket.on(TacticalEvent.CellImageMapStateSyncSelf, handleTacticalCellImageMapStateSync);
     }
 
-    function handleTacticalCellImagePlace({ teamId, cellId, imgId }: { teamId: number; cellId: number; imgId: string }) {
-        console.debug(`[TATICAL BOARD SYNC] Handle tactical cell image place`, { teamId, cellId, imgId });
-        const tacticalBoardPanel = teamTacticalBoardPanelMap.value[teamId];
-        const previousCellId = findCellIdByImageId(teamId, imgId);
+    function handleTacticalCellImagePlace({ teamSlot, cellId, imgId }: { teamSlot: number; cellId: number; imgId: string }) {
+        console.debug(`[TATICAL BOARD SYNC] Handle tactical cell image place`, { teamSlot, cellId, imgId });
+        const tacticalBoardPanel = teamTacticalBoardPanelMap.value[teamSlot];
+        const previousCellId = findCellIdByImageId(teamSlot, imgId);
         const displacedCellImgId = tacticalBoardPanel.cellImageMap[cellId] ?? null;
 
         if (previousCellId !== null && displacedCellImgId !== null && previousCellId !== cellId) {
-            swapImages(teamId, cellId, previousCellId, imgId, displacedCellImgId);
-            if (userTeamId.value === teamId) {
-                socket.emit(`${SocketEvent.TATICAL_CELL_IMAGE_REMOVE_REQUEST}`, { teamId, cellId: previousCellId });
-                socket.emit(`${SocketEvent.TATICAL_CELL_IMAGE_REMOVE_REQUEST}`, { teamId, cellId });
-                socket.emit(`${SocketEvent.TATICAL_CELL_IMAGE_PLACE_REQUEST}`, { teamId, cellId, imgId });
-                socket.emit(`${SocketEvent.TATICAL_CELL_IMAGE_PLACE_REQUEST}`, { teamId, cellId: previousCellId, imgId: displacedCellImgId });
+            swapImages(teamSlot, cellId, previousCellId, imgId, displacedCellImgId);
+            if (userTeamSlot.value === teamSlot) {
+                socket.emit(`${TacticalEvent.CellImageRemoveRequest}`, { teamSlot, cellId: previousCellId });
+                socket.emit(`${TacticalEvent.CellImageRemoveRequest}`, { teamSlot, cellId });
+                socket.emit(`${TacticalEvent.CellImagePlaceRequest}`, { teamSlot, cellId, imgId });
+                socket.emit(`${TacticalEvent.CellImagePlaceRequest}`, { teamSlot, cellId: previousCellId, imgId: displacedCellImgId });
             }
         } else {
             if (previousCellId !== null) {
-                removeCellImage(teamId, previousCellId);
-                if (userTeamId.value === teamId) {
-                    socket.emit(`${SocketEvent.TATICAL_CELL_IMAGE_REMOVE_REQUEST}`, { teamId, cellId: previousCellId });
+                removeCellImage(teamSlot, previousCellId);
+                if (userTeamSlot.value === teamSlot) {
+                    socket.emit(`${TacticalEvent.CellImageRemoveRequest}`, { teamSlot, cellId: previousCellId });
                 }
             } else if (displacedCellImgId !== null) {
-                removeCellImage(teamId, cellId);
-                if (userTeamId.value === teamId) {
-                    socket.emit(`${SocketEvent.TATICAL_CELL_IMAGE_REMOVE_REQUEST}`, { teamId, cellId });
+                removeCellImage(teamSlot, cellId);
+                if (userTeamSlot.value === teamSlot) {
+                    socket.emit(`${TacticalEvent.CellImageRemoveRequest}`, { teamSlot, cellId });
                 }
             }
-            placeCellImage(teamId, cellId, imgId);
-            if (userTeamId.value === teamId) {
-                socket.emit(`${SocketEvent.TATICAL_CELL_IMAGE_PLACE_REQUEST}`, { teamId, cellId, imgId });
+            placeCellImage(teamSlot, cellId, imgId);
+            if (userTeamSlot.value === teamSlot) {
+                socket.emit(`${TacticalEvent.CellImagePlaceRequest}`, { teamSlot, cellId, imgId });
             }
         }
     }
 
-    function handleTacticalCellImageRemove({ teamId, cellId }: { teamId: number; cellId: number }) {
-        console.debug(`[TATICAL BOARD SYNC] Handle tactical cell image remove`, { teamId, cellId });
-        removeCellImage(teamId, cellId);
+    function handleTacticalCellImageRemove({ teamSlot, cellId }: { teamSlot: number; cellId: number }) {
+        console.debug(`[TATICAL BOARD SYNC] Handle tactical cell image remove`, { teamSlot, cellId });
+        removeCellImage(teamSlot, cellId);
 
-        if (userTeamId.value !== teamId) return;
-        socket.emit(`${SocketEvent.TATICAL_CELL_IMAGE_REMOVE_REQUEST}`, { teamId, cellId });
+        if (userTeamSlot.value !== teamSlot) return;
+        socket.emit(`${TacticalEvent.CellImageRemoveRequest}`, { teamSlot, cellId });
     }
 
-    function handleTacticalCellImagePlaceBroadcast({ teamId, cellId, imgId }: { teamId: number; cellId: number; imgId: string }) {
-        console.debug(`userTeamId.value`, userTeamId.value)
-        if (userTeamId.value !== teamId) return;
-        console.debug(`[TATICAL BOARD SYNC] Handle tactical cell image place broadcast`, { teamId, cellId, imgId });
-        placeCellImage(teamId, cellId, imgId);
+    function handleTacticalCellImagePlaceBroadcast({ teamSlot, cellId, imgId }: { teamSlot: number; cellId: number; imgId: string }) {
+        console.debug(`userTeamSlot.value`, userTeamSlot.value)
+        if (userTeamSlot.value !== teamSlot) return;
+        console.debug(`[TATICAL BOARD SYNC] Handle tactical cell image place broadcast`, { teamSlot, cellId, imgId });
+        placeCellImage(teamSlot, cellId, imgId);
     }
 
-    function handleTacticalCellImageRemoveBroadcast({ teamId, cellId }: { teamId: number; cellId: number }) {
-        if (userTeamId.value !== teamId) return;
-        console.debug(`[TATICAL BOARD SYNC] Handle tactical cell image remove broadcast`, { teamId, cellId });
-        removeCellImage(teamId, cellId);
+    function handleTacticalCellImageRemoveBroadcast({ teamSlot, cellId }: { teamSlot: number; cellId: number }) {
+        if (userTeamSlot.value !== teamSlot) return;
+        console.debug(`[TATICAL BOARD SYNC] Handle tactical cell image remove broadcast`, { teamSlot, cellId });
+        removeCellImage(teamSlot, cellId);
     }
 
-    function handleTacticalCellImageMapResetBroadcast({ teamId }: { teamId: number }) {
-        if (userTeamId.value !== teamId) return;
-        console.debug(`[TATICAL BOARD SYNC] Handle tactical cell image remove reset broadcast`, { teamId });
-        resetBoard(teamId);
+    function handleTacticalCellImageMapResetBroadcast({ teamSlot }: { teamSlot: number }) {
+        if (userTeamSlot.value !== teamSlot) return;
+        console.debug(`[TATICAL BOARD SYNC] Handle tactical cell image remove reset broadcast`, { teamSlot });
+        resetBoard(teamSlot);
     }
 
-    function handleTacticalCellImageMapStateSync({ teamId, tacticalCellImageMap }: { teamId: number; tacticalCellImageMap: TacticalCellImageMap }) {
-        if (userTeamId.value !== teamId) return;
-        console.debug(`[TATICAL BOARD SYNC] Handle tactical cell image map state sync`, { teamId, tacticalCellImageMap });
-        setTacticalCellImageMap(teamId, tacticalCellImageMap);
+    function handleTacticalCellImageMapStateSync({ teamSlot, tacticalCellImageMap }: { teamSlot: number; tacticalCellImageMap: TacticalCellImageMap }) {
+        if (userTeamSlot.value !== teamSlot) return;
+        console.debug(`[TATICAL BOARD SYNC] Handle tactical cell image map state sync`, { teamSlot, tacticalCellImageMap });
+        setTacticalCellImageMap(teamSlot, tacticalCellImageMap);
     }
 
-    function swapImages(teamId: number, cellId: number, previousCellId: number, imgId: string, displacedImgId: string) {
-        removeCellImage(teamId, previousCellId);
-        removeCellImage(teamId, cellId);
-        placeCellImage(teamId, cellId, imgId);
-        placeCellImage(teamId, previousCellId, displacedImgId);
+    function swapImages(teamSlot: number, cellId: number, previousCellId: number, imgId: string, displacedImgId: string) {
+        removeCellImage(teamSlot, previousCellId);
+        removeCellImage(teamSlot, cellId);
+        placeCellImage(teamSlot, cellId, imgId);
+        placeCellImage(teamSlot, previousCellId, displacedImgId);
     }
 
-    function handleAddImageToPool(teamId: number, imgId: string) {
-        console.debug('[TATICAL BOARD SYNC] Handle add image to pool', teamId, imgId)
-        addImageToPool(teamId, imgId)
+    function handleAddImageToPool(teamSlot: number, imgId: string) {
+        console.debug('[TATICAL BOARD SYNC] Handle add image to pool', teamSlot, imgId)
+        addImageToPool(teamSlot, imgId)
     }
 
-    function handleRemoveImageFromBoard(teamId: number, imgId: string) {
-        console.debug('[TATICAL BOARD SYNC] Handle remove image from board', teamId, imgId)
-        removeImageFromPool(teamId, imgId)
+    function handleRemoveImageFromBoard(teamSlot: number, imgId: string) {
+        console.debug('[TATICAL BOARD SYNC] Handle remove image from board', teamSlot, imgId)
+        removeImageFromPool(teamSlot, imgId)
 
-        const cellId = findCellIdByImageId(teamId, imgId);
+        const cellId = findCellIdByImageId(teamSlot, imgId);
         if (cellId === null) return;
-        removeCellImage(teamId, cellId)
+        removeCellImage(teamSlot, cellId)
 
-        if (userTeamId.value !== teamId) return;
-        socket.emit(`${SocketEvent.TATICAL_CELL_IMAGE_REMOVE_REQUEST}`, { teamId, cellId });
+        if (userTeamSlot.value !== teamSlot) return;
+        socket.emit(`${TacticalEvent.CellImageRemoveRequest}`, { teamSlot, cellId });
         
     }
 
-    function handleResetBoard(teamId: number) {
-        console.debug('[TATICAL BOARD SYNC] Handle reset board', teamId)
-         resetBoard(teamId);
+    function handleResetBoard(teamSlot: number) {
+        console.debug('[TATICAL BOARD SYNC] Handle reset board', teamSlot)
+         resetBoard(teamSlot);
 
-        if (userTeamId.value !== teamId) return;
-        socket.emit(`${SocketEvent.TATICAL_CELL_IMAGE_MAP_RESET_REQUEST}`, { teamId });
+        if (userTeamSlot.value !== teamSlot) return;
+        socket.emit(`${TacticalEvent.CellImageMapResetRequest}`, { teamSlot });
     }
 
     function handleAllTeamAddImageToPool(imgId: string) {
         console.debug('[TATICAL BOARD SYNC] Handle all team add image to pool', imgId)
-        for (const teamIdString of Object.keys(teamTacticalBoardPanelMap.value)) {
-            const teamId = Number(teamIdString)
-            handleAddImageToPool(teamId, imgId);
+        for (const teamSlotString of Object.keys(teamTacticalBoardPanelMap.value)) {
+            const teamSlot = Number(teamSlotString)
+            handleAddImageToPool(teamSlot, imgId);
         }
     }
 
     function handleAllTeamRemoveImageFromBoard(imgId: string) {
         console.debug('[TATICAL BOARD SYNC] Handle all team remove image from board', imgId)
-        for (const teamIdString of Object.keys(teamTacticalBoardPanelMap.value)) {
-            const teamId = Number(teamIdString)
-            handleRemoveImageFromBoard(teamId, imgId)
+        for (const teamSlotString of Object.keys(teamTacticalBoardPanelMap.value)) {
+            const teamSlot = Number(teamSlotString)
+            handleRemoveImageFromBoard(teamSlot, imgId)
         }
     }
 
     function handleAllTeamResetBoard() {
         console.debug('[TATICAL BOARD STORE] Handle all team reset board')
-        for (const teamIdString of Object.keys(teamTacticalBoardPanelMap.value)) {
-            const teamId = Number(teamIdString)
-            handleResetBoard(teamId)
+        for (const teamSlotString of Object.keys(teamTacticalBoardPanelMap.value)) {
+            const teamSlot = Number(teamSlotString)
+            handleResetBoard(teamSlot)
         }
     }
 
     return {
-        userTeamId,
+        userTeamSlot,
         registerTacticalBoardSync,
         handleTacticalCellImagePlace,
         handleTacticalCellImageRemove,

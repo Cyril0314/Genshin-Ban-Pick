@@ -20,7 +20,7 @@ export default function authRoutes(guestService: GuestService, memberService: Me
                 throw new MissingFieldsError();
             }
             const member = await memberService.register(account, password, nickname);
-            const token = jwt.sign({ id: member.id, type: 'MEMBER' }, 7);
+            const token = jwt.sign({ id: member.id, type: 'Member' }, 7);
             res.status(201).json({
                 ...member,
                 token,
@@ -36,7 +36,7 @@ export default function authRoutes(guestService: GuestService, memberService: Me
                 throw new MissingFieldsError();
             }
             const member = await memberService.login(account, password);
-            const token = jwt.sign({ id: member.id, type: 'MEMBER' }, 7);
+            const token = jwt.sign({ id: member.id, type: 'Member' }, 7);
 
             res.status(200).json({
                 ...member,
@@ -52,7 +52,7 @@ export default function authRoutes(guestService: GuestService, memberService: Me
                 throw new MissingFieldsError();
             }
             const guest = await guestService.login(nickname);
-            const token = jwt.sign({ id: guest.id, type: 'GUEST' }, 180);
+            const token = jwt.sign({ id: guest.id, type: 'Guest' }, 180);
 
             res.status(200).json({
                 ...guest,
@@ -74,10 +74,10 @@ export default function authRoutes(guestService: GuestService, memberService: Me
             const payload = jwt.verify(token);
             let result;
             switch (payload.type) {
-                case 'GUEST':
+                case 'Guest':
                     result = await guestService.getById(payload.id);
                     break;
-                case 'MEMBER':
+                case 'Member':
                     result = await memberService.getById(payload.id);
                     break;
                 default:

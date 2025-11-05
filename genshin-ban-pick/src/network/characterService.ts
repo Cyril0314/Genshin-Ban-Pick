@@ -10,7 +10,7 @@ export async function fetchCharacterMap(): Promise<Record<string, ICharacter>> {
 
     const map: Record<string, ICharacter> = {}
     characters.forEach((char: any) => {
-        map[char.name] = fromRawCharacter(char)
+        map[char.key] = fromRawCharacter(char)
     })
     return map
 }

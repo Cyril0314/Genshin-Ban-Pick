@@ -20,10 +20,10 @@ export function createSocketAuth(guestService: GuestService, memberService: Memb
 
                 let result;
                 switch (payload.type) {
-                    case 'GUEST':
+                    case 'Guest':
                         result = await guestService.getById(payload.id);
                         break;
-                    case 'MEMBER':
+                    case 'Member':
                         result = await memberService.getById(payload.id);
                         break;
                     default:

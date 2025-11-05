@@ -6,19 +6,19 @@ import { ref, computed, watch } from 'vue';
 import { useTeamTheme } from '@/composables/useTeamTheme';
 import { useBoardImageStore } from '@/stores/boardImageStore';
 import { useTeamInfoStore } from '@/stores/teamInfoStore';
-import { useBanPickStepStore } from '@/stores/banPickStepStore';
+import { useMatchStepStore } from '@/stores/matchStepStore';
 import { ZoneType } from '@/types/IZone';
 
 const active = ref(false);
-const banPickStepStore = useBanPickStepStore();
-const { currentStep } = storeToRefs(banPickStepStore);
+const matchStepStore = useMatchStepStore();
+const { currentStep } = storeToRefs(matchStepStore);
 const boardImageStore = useBoardImageStore();
 const { zoneMetaTable } = storeToRefs(boardImageStore);
 const teamInfoStore = useTeamInfoStore();
 const { teams } = storeToRefs(teamInfoStore);
 
 const currentTeam = computed(() => {
-    return teams.value.find((team) => team.id === currentStep.value?.teamId);
+    return teams.value.find((team) => team.slot === currentStep.value?.teamSlot);
 });
 
 const displayText = computed(() => {
@@ -26,13 +26,13 @@ const displayText = computed(() => {
     const currentZone = zoneMetaTable.value[currentStep.value.zoneId];
     let currentZoneName: string;
     switch (currentZone.type) {
-        case ZoneType.BAN:
+        case ZoneType.Ban:
             currentZoneName = `Ban ${currentZone.order + 1}`;
             break;
-        case ZoneType.PICK:
+        case ZoneType.Pick:
             currentZoneName = `Pick ${currentZone.order + 1}`;
             break;
-        case ZoneType.UTILITY:
+        case ZoneType.Utility:
             currentZoneName = `Utility ${currentZone.order + 1}`;
             break;
     }
@@ -45,7 +45,7 @@ watch(currentTeam, () => {
 </script>
 
 <template>
-    <div class="step-indicator" :class="{ active }" :style="useTeamTheme(currentTeam?.id ?? 0).themeVars.value" @animationend="active = false">
+    <div class="step-indicator" :class="{ active }" :style="useTeamTheme(currentTeam?.slot ?? 0).themeVars.value" @animationend="active = false">
         <span class="step-label">{{ displayText }}</span>
     </div>
 </template>

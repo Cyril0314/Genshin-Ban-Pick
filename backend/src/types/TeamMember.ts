@@ -2,6 +2,6 @@
 
 import { IRoomUser } from './IRoomUser.ts';
 
-export type TeamMember = { type: 'ONLINE'; user: IRoomUser } | { type: 'MANUAL'; name: string };
+export type TeamMember = { type: 'Online'; user: IRoomUser } | { type: 'Manual'; name: string };
 
 export type TeamMembersMap = Record<number, TeamMember[]>;

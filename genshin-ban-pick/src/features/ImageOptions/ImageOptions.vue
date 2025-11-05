@@ -10,17 +10,17 @@ import { DragTypes } from '@/constants/customMIMETypes'
 const props = defineProps<{
   characterMap: Record<string, ICharacter>
   usedImageIds: string[]
-  filteredCharacterIds: string[] | null
+  filteredCharacterKeys: string[] | null
 }>()
 
-const availableCharacterIds = computed(() =>
+const availableCharacterKeys = computed(() =>
   Object.entries(props.characterMap)
     .filter(([id]) => !props.usedImageIds.includes(id))
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([id]) => id)
 )
 
-const isFilitered = (id: string) => props.filteredCharacterIds?.includes(id) ?? true
+const isFilitered = (id: string) => props.filteredCharacterKeys?.includes(id) ?? true
 
 function handleDragStartEvent(event: DragEvent, id: string) {
   console.debug(`[IMAGE OPTIONS] Handle drag start event`, id)
@@ -30,7 +30,7 @@ function handleDragStartEvent(event: DragEvent, id: string) {
 
 <template>
   <div class="container__images">
-    <img v-for="id in availableCharacterIds" :class="{ dimmed: !isFilitered(id) }" :key="id" :id="id"
+    <img v-for="id in availableCharacterKeys" :class="{ dimmed: !isFilitered(id) }" :key="id" :id="id"
       :src="getProfileImagePath(id)" draggable="true" @dragstart="handleDragStartEvent($event, id)" />
   </div>
 </template>

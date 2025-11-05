@@ -33,26 +33,26 @@ function handleDragStartEvent(event: DragEvent, roomUser: IRoomUser) {
     event?.dataTransfer?.setData(DragTypes.ROOM_USER, roomUser.identityKey)
 }
 
-function findUserTeamId(roomUser: IRoomUser): number | null {
-    console.debug(`[ROOM USER POOL] Find user team id`, roomUser);
-    for (const [teamId, members] of Object.entries(teamMembersMap.value)) {
+function findUserTeamSlot(roomUser: IRoomUser): number | null {
+    console.debug(`[ROOM USER POOL] Find user team slot`, roomUser);
+    for (const [teamSlot, members] of Object.entries(teamMembersMap.value)) {
         if (members.some(
-            (m) => m.type === 'ONLINE' && m.user.identityKey === roomUser.identityKey
+            (m) => m.type === 'Online' && m.user.identityKey === roomUser.identityKey
         )) {
-            return Number(teamId);
+            return Number(teamSlot);
         }
     }
     return null;
 }
 
 function getStyleForUser(roomUser: IRoomUser) {
-    const teamId = findUserTeamId(roomUser);
-    if (teamId === null) {
+    const teamSlot = findUserTeamSlot(roomUser);
+    if (teamSlot === null) {
         return {
             '--team-bg': `var(--md-sys-color-surface-container-low)`, '--team-on-bg': `var(--md-sys-color-on-surface-variant)`
         };
     }
-    const { themeVars } = useTeamTheme(teamId);
+    const { themeVars } = useTeamTheme(teamSlot);
     return themeVars.value;
 }
 

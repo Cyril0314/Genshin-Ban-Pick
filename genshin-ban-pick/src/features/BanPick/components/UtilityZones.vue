@@ -44,7 +44,7 @@ function handleImageRestore({ zoneId }: { zoneId: number }) {
                 <DropZone
                     :zone="zone"
                     :boardImageMap="props.boardImageMap"
-                    :label="`Utility`"
+                    :label="`Utility ${zone.order + 1}`"
                     :labelColor="'var(--md-sys-color-on-primary-container)'"
                     @image-drop="handleImageDrop"
                     @image-restore="handleImageRestore"
@@ -57,7 +57,7 @@ function handleImageRestore({ zoneId }: { zoneId: number }) {
 <style scoped>
 .utility-zone {
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
     align-items: center;
     gap: var(--size-drop-zone-line-space);
 }

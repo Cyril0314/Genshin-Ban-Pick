@@ -2,5 +2,5 @@
 
 export interface AuthPayload {
   id: number;
-  type: "MEMBER" | "GUEST";
+  type: "Member" | "Guest";
 }

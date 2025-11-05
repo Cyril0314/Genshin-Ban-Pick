@@ -3,6 +3,7 @@
 import { Server, Socket } from 'socket.io';
 
 import { createLogger } from '../utils/logger.ts';
+import { IRoomStateManager } from './managers/IRoomStateManager.ts';
 import { RoomStateManager } from './managers/RoomStateManager.ts';
 import { registerChatSocket } from './modules/chatSocket.ts';
 import { registerBoardSocket } from './modules/boardSocket.ts';
@@ -13,11 +14,9 @@ import { registerTacticalSocket } from './modules/tacticalSocket.ts';
 
 const logger = createLogger('SOCKET CONTROLLER');
 
-export function setupSocketIO(io: Server) {
+export function setupSocketIO(io: Server, roomStateManager: IRoomStateManager) {
     io.on('connection', (socket: Socket) => {
         logger.info(`User connected socket.id: ${socket.id} identity:`, socket.data.identity);
-
-        const roomStateManager = new RoomStateManager();
 
         registerRoomSocket(io, socket, roomStateManager);
         registerBoardSocket(io, socket, roomStateManager);

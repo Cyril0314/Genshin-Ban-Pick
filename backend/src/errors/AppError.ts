@@ -25,7 +25,7 @@ export class UserNotFoundError extends AppError {
 
 export class InvalidPasswordError extends AppError {
     constructor() {
-        super(ErrorCode.INVALID_PASSWORD, 401, '密碼錯誤');
+        super(ErrorCode.INVALID_PASSword, 401, '密碼錯誤');
     }
 }
 
@@ -63,7 +63,7 @@ export enum ErrorCode {
     USER_EXISTS = 'USER_EXISTS',
     USER_NOT_FOUND = 'USER_NOT_FOUND',
     DATA_NOT_FOUND = 'DATA_NOT_FOUND',
-    INVALID_PASSWORD = 'INVALID_PASSWORD',
+    INVALID_PASSword = 'INVALID_PASSword',
     INVALID_TOKEN = 'INVALID_TOKEN',
     EXPIRED_TOKEN = 'EXPIRED_TOKEN',
     MISSING_FIELDS = 'MISSING_FIELDS',

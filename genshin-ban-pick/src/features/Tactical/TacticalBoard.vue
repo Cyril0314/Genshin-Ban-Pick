@@ -8,17 +8,17 @@ import { storeToRefs } from 'pinia';
 
 import type { TeamMember } from '@/types/TeamMember';
 
-const props = defineProps<{ teamId: number; teamMembers: TeamMember[] }>();
+const props = defineProps<{ teamSlot: number; teamMembers: TeamMember[] }>();
 
 const emit = defineEmits<{
-    (e: 'image-drop', payload: { teamId: number; cellId: number; imgId: string }): void;
-    (e: 'image-restore', payload: { teamId: number; cellId: number }): void;
+    (e: 'image-drop', payload: { teamSlot: number; cellId: number; imgId: string }): void;
+    (e: 'image-restore', payload: { teamSlot: number; cellId: number }): void;
 }>();
 
 const tacticalBoardStore = useTacticalBoardStore();
 const { teamTacticalBoardPanelMap, numberOfTeamSetup, numberOfSetupCharacter } = storeToRefs(tacticalBoardStore);
 
-const tacticalBoardPanel = computed(() => teamTacticalBoardPanelMap.value[props.teamId]);
+const tacticalBoardPanel = computed(() => teamTacticalBoardPanelMap.value[props.teamSlot]);
 
 const rows = computed(() => numberOfTeamSetup.value);
 const cols = computed(() => numberOfSetupCharacter.value);
@@ -28,7 +28,7 @@ const memberNames = computed(() => {
     return Array.from({ length: numberOfSetupCharacter.value }, (_, i) => {
         const teamMember = props.teamMembers[i];
         if (!teamMember) return '';
-        return teamMember.type === 'MANUAL' ? teamMember.name : teamMember.user.nickname;
+        return teamMember.type === 'Manual' ? teamMember.name : teamMember.user.nickname;
     });
 });
 
@@ -51,17 +51,17 @@ const imageId = (cellId: number) => tacticalBoardPanel.value.cellImageMap[cellId
 
 function handleImageDrop({ cellId, imgId }: { cellId: number; imgId: string }) {
     console.debug(`[TATICAL BOARD] Handle image drop`, imgId, cellId);
-    emit('image-drop', { teamId: props.teamId, cellId, imgId });
+    emit('image-drop', { teamSlot: props.teamSlot, cellId, imgId });
 }
 
 function handleImageRestore({ cellId }: { cellId: number }) {
     console.debug(`[TATICAL BOARD] Handle image restore`, cellId);
-    emit('image-restore', { teamId: props.teamId, cellId });
+    emit('image-restore', { teamSlot: props.teamSlot, cellId });
 }
 </script>
 
 <template>
-    <div class="tactical__board">
+    <div class="tactical__board" :style="{ '--number-of-team-setup': numberOfTeamSetup, '--number-of-setup-character': numberOfSetupCharacter }">
         <div class="tactical__member-names">
             <div class="tactical__header"></div>
             <div v-for="(memberName, index) in memberNames" :key="index" class="tactical__member-name">
@@ -111,8 +111,8 @@ function handleImageRestore({ cellId }: { cellId: number }) {
 
 .tactical__grid {
     display: grid;
-    grid-template-columns: repeat(4, auto);
-    grid-template-rows: repeat(4, auto);
+    grid-template-columns: repeat(var(--number-of-setup-character), auto);
+    grid-template-rows: repeat(var(--number-of-team-setup), auto);
     justify-content: center;
 }
 

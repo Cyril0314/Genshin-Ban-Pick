@@ -6,6 +6,6 @@ export enum CharacterFilterKey {
   Region = 'region',
   Rarity = 'rarity',
   ModelType = 'modelType',
-  Role = 'role',
+  CharacterRole = 'role',
   Wish = 'wish',
 }

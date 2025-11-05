@@ -7,7 +7,7 @@ export interface IZone {
 }
 
 export enum ZoneType {
-    BAN = 'ban',
-    PICK = 'pick',
-    UTILITY = 'utility',
+    Ban = 'Ban',
+    Pick = 'Pick',
+    Utility = 'Utility',
 }

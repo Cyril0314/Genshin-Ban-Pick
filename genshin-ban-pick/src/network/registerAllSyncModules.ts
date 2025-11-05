@@ -3,7 +3,7 @@
 import { useBoardSync } from '@/features/BanPick/composables/useBoardSync';
 import { useChatSync } from '@/features/ChatRoom/composables/useChatSync';
 import { useRoomUserSync } from '@/features/RoomUserPool/composables/useRoomUserSync';
-import { useBanPickStepSync } from '@/features/StepIndicator/composables/useBanPickStepSync';
+import { useMatchStepSync } from '@/features/StepIndicator/composables/useMatchStepSync';
 import { useTacticalBoardSync } from '@/features/Tactical/composables/useTacticalBoardSync';
 import { useTeamInfoSync } from '@/features/Team/composables/useTeamInfoSync';
 import type { Socket } from 'socket.io-client';
@@ -17,14 +17,14 @@ export function registerAllSyncModules(socket: Socket) {
     const { registerRoomUserSync } = useRoomUserSync();
     const { registerTeamInfoSync } = useTeamInfoSync();
     const { registerBoardSync } = useBoardSync();
-    const { registerBanPickStepSync } = useBanPickStepSync();
+    const { registerMatchStepSync } = useMatchStepSync();
     const { registerTacticalBoardSync } = useTacticalBoardSync();
     const { registerChatSync } = useChatSync();
 
     registerRoomUserSync();
     registerTeamInfoSync();
     registerBoardSync();
-    registerBanPickStepSync();
+    registerMatchStepSync();
     registerTacticalBoardSync();
     registerChatSync();
 

@@ -14,8 +14,8 @@ export const useTeamInfoStore = defineStore('teamInfo', () => {
         if (teams.value.length < 2) return null;
         const [firstTeam, secondTeam] = teams.value;
         return {
-            left: { ...firstTeam, members: map[firstTeam.id] ?? [] },
-            right: { ...secondTeam, name: secondTeam.name, members: map[secondTeam.id] ?? [] },
+            left: { ...firstTeam, members: map[firstTeam.slot] ?? [] },
+            right: { ...secondTeam, name: secondTeam.name, members: map[secondTeam.slot] ?? [] },
         };
     });
 
@@ -28,22 +28,22 @@ export const useTeamInfoStore = defineStore('teamInfo', () => {
         teams.value = newTeams;
     }
 
-    function addTeamMember(teamId: number, member: TeamMember) {
-        console.debug('[TEAM INFO STORE] Add team member', teamId, member);
-        teamMembersMap.value[teamId].push(member);
+    function addTeamMember(teamSlot: number, member: TeamMember) {
+        console.debug('[TEAM INFO STORE] Add team member', teamSlot, member);
+        teamMembersMap.value[teamSlot].push(member);
     }
 
-    function removeTeamMember(teamId: number, member: TeamMember) {
-        console.debug('[TEAM INFO STORE] Remove team member', teamId, member);
-        const teamMembers = teamMembersMap.value[teamId];
+    function removeTeamMember(teamSlot: number, member: TeamMember) {
+        console.debug('[TEAM INFO STORE] Remove team member', teamSlot, member);
+        const teamMembers = teamMembersMap.value[teamSlot];
         const index = teamMembers.findIndex((m) => {
             return (
-                (m.type === 'MANUAL' && member.type === 'MANUAL' && m.name === member.name) ||
-                (m.type === 'ONLINE' && member.type === 'ONLINE' && m.user.identityKey === member.user.identityKey)
+                (m.type === 'Manual' && member.type === 'Manual' && m.name === member.name) ||
+                (m.type === 'Online' && member.type === 'Online' && m.user.identityKey === member.user.identityKey)
             );
         });
         if (index !== -1) {
-            teamMembersMap.value[teamId].splice(index, 1);
+            teamMembersMap.value[teamSlot].splice(index, 1);
         }
     }
 

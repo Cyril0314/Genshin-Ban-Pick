@@ -3,7 +3,7 @@
 
 import { ref, computed } from 'vue'
 
-import { useBanPickStepStore } from '@/stores/banPickStepStore';
+import { useMatchStepStore } from '@/stores/matchStepStore';
 import { getWishImagePath } from '@/utils/imageRegistry'
 import { DragTypes } from '@/constants/customMIMETypes'
 
@@ -26,8 +26,8 @@ const isOver = ref(false)
 
 const imageId = computed(() => props.boardImageMap[props.zone.id] ?? '')
 
-const banPickStepStore = useBanPickStepStore()
-const { currentStep } = storeToRefs(banPickStepStore)
+const matchStepStore = useMatchStepStore()
+const { currentStep } = storeToRefs(matchStepStore)
 
 function handleDragStartEvent(event: DragEvent) {
   console.debug(`[DROP ZONE] Handle drag start event`);

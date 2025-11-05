@@ -21,9 +21,9 @@ export function createZoneMetaTable({
         }));
     }
 
-    const utilityZones = createZones(numberOfUtility, ZoneType.UTILITY);
-    const banZones = createZones(numberOfBan, ZoneType.BAN);
-    const pickZones = createZones(numberOfPick, ZoneType.PICK);
+    const utilityZones = createZones(numberOfUtility, ZoneType.Utility);
+    const banZones = createZones(numberOfBan, ZoneType.Ban);
+    const pickZones = createZones(numberOfPick, ZoneType.Pick);
 
     const zones = [...utilityZones, ...banZones, ...pickZones];
 

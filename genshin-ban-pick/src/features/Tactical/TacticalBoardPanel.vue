@@ -14,28 +14,28 @@ const teamInfoStore = useTeamInfoStore();
 const { teamInfoPair } = storeToRefs(teamInfoStore);
 
 const tacticalBoardSync = useTacticalBoardSync();
-const { userTeamId, handleTacticalCellImagePlace, handleTacticalCellImageRemove } = tacticalBoardSync
+const { userTeamSlot, handleTacticalCellImagePlace, handleTacticalCellImageRemove } = tacticalBoardSync
 
-const currentTeamId = ref<number>( userTeamId.value ?? teamInfoPair.value!.left.id)
+const currentTeamSlot = ref<number>( userTeamSlot.value ?? teamInfoPair.value!.left.slot)
 
-function handleImageDrop({ teamId, cellId, imgId }: { teamId: number, cellId: number; imgId: string }) {
-  console.debug(`[TATICAL BOARD PANEL] Handle image drop`, { teamId, cellId, imgId });
-  handleTacticalCellImagePlace({ teamId, cellId, imgId });
+function handleImageDrop({ teamSlot, cellId, imgId }: { teamSlot: number, cellId: number; imgId: string }) {
+  console.debug(`[TATICAL BOARD PANEL] Handle image drop`, { teamSlot, cellId, imgId });
+  handleTacticalCellImagePlace({ teamSlot, cellId, imgId });
 }
 
-function handleImageRestore({ teamId, cellId }: { teamId: number, cellId: number }) {
-  console.debug(`[TATICAL BOARD PANEL] Handle image restore`, { teamId, cellId });
-  handleTacticalCellImageRemove({ teamId, cellId });
+function handleImageRestore({ teamSlot, cellId }: { teamSlot: number, cellId: number }) {
+  console.debug(`[TATICAL BOARD PANEL] Handle image restore`, { teamSlot, cellId });
+  handleTacticalCellImageRemove({ teamSlot, cellId });
 }
 
 </script>
 
 <template>
-  <div class="tactical__board-panel" :class="`tactical__board-panel--${currentTeamId}`">
+  <div class="tactical__board-panel" :class="`tactical__board-panel--${currentTeamSlot}`">
     <div class="tactical__board-tabs">
-      <button v-for="teamInfo in teamInfoPair" :key="teamInfo.id" class="tactical__tab"
-        :class="{ 'tactical__tab--active': currentTeamId === teamInfo.id }"
-        :style="useTeamTheme(teamInfo.id).themeVars.value" @click="currentTeamId = teamInfo.id">
+      <button v-for="teamInfo in teamInfoPair" :key="teamInfo.slot" class="tactical__tab"
+        :class="{ 'tactical__tab--active': currentTeamSlot === teamInfo.slot }"
+        :style="useTeamTheme(teamInfo.slot).themeVars.value" @click="currentTeamSlot = teamInfo.slot">
         {{ teamInfo.name }}
       </button>
     </div>
@@ -43,14 +43,14 @@ function handleImageRestore({ teamId, cellId }: { teamId: number, cellId: number
     <div class="tactical__board-content">
       <div class="tactical__board-section">
         <template v-if="teamInfoPair">
-          <template v-if="currentTeamId === teamInfoPair.left.id">
-            <TacticalPool :teamId="teamInfoPair.left.id" />
-            <TacticalBoard :teamId="teamInfoPair.left.id" :teamMembers="teamInfoPair.left.members"
+          <template v-if="currentTeamSlot === teamInfoPair.left.slot">
+            <TacticalPool :teamSlot="teamInfoPair.left.slot" />
+            <TacticalBoard :teamSlot="teamInfoPair.left.slot" :teamMembers="teamInfoPair.left.members"
               @image-drop="handleImageDrop" @image-restore="handleImageRestore" />
           </template>
           <template v-else>
-            <TacticalPool :teamId="teamInfoPair.right.id" />
-            <TacticalBoard :teamId="teamInfoPair.right.id" :teamMembers="teamInfoPair.right.members"
+            <TacticalPool :teamSlot="teamInfoPair.right.slot" />
+            <TacticalBoard :teamSlot="teamInfoPair.right.slot" :teamMembers="teamInfoPair.right.members"
               @image-drop="handleImageDrop" @image-restore="handleImageRestore" />
           </template>
         </template>

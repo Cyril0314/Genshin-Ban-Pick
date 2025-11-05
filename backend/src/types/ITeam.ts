@@ -1,20 +1,20 @@
 // backend/src/types/ITeam.ts
 
 export interface ITeam {
-    id: number;
+    slot: number;
     name: string;
 }
 
 export function createAetherTeam(): ITeam {
     return {
-        id: 0,
+        slot: 0,
         name: 'Team Aether'
     }
 }
 
 export function createLumineTeam(): ITeam {
     return {
-        id: 1,
+        slot: 1,
         name: 'Team Lumine'
     }
 }

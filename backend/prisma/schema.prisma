@@ -7,25 +7,177 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  USER
-  OWNER
-  ADMIN
+enum MemberRole {
+  User
+  Owner
+  Admin
 }
 
 model Member {
-  id           Int      @id @default(autoincrement())
-  account      String   @unique
-  nickname     String
-  createdAt    DateTime @default(now())
-  passwordHash String
-  updatedAt    DateTime @updatedAt
-  role         Role     @default(USER)
+  id              Int               @id @default(autoincrement())
+  account         String            @unique
+  nickname        String
+  createdAt       DateTime          @default(now())
+  passwordHash    String
+  updatedAt       DateTime          @updatedAt
+  role            MemberRole        @default(User)
+  MatchTeamMember MatchTeamMember[]
 }
 
 model Guest {
-  id           Int      @id @default(autoincrement())
-  nickname     String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt           
+  id              Int               @id @default(autoincrement())
+  nickname        String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  MatchTeamMember MatchTeamMember[]
+}
+
+model Match {
+  id          Int         @id @default(autoincrement())
+  flowVersion Int         @default(1)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  teams       MatchTeam[]
+  moves       MatchMove[]
+}
+
+model MatchTeam {
+  id          Int               @id @default(autoincrement())
+  matchId     Int
+  match       Match             @relation(fields: [matchId], references: [id])
+  teamSlot    Int
+  name        String?
+  teamMembers MatchTeamMember[]
+  MatchMove   MatchMove[]
+}
+
+model MatchTeamMember {
+  id             Int                  @id @default(autoincrement())
+  name           String
+  teamId         Int
+  team           MatchTeam            @relation(fields: [teamId], references: [id])
+  memberRef      Int?
+  member         Member?              @relation(fields: [memberRef], references: [id])
+  guestRef       Int?
+  guest          Guest?               @relation(fields: [guestRef], references: [id])
+  tacticalUsages MatchTacticalUsage[]
+
+  @@index([teamId, memberRef])
+  @@index([teamId, guestRef])
+}
+
+model MatchTacticalUsage {
+  id           Int             @id @default(autoincrement())
+  modelVersion Int             @default(1)
+  characterKey String
+  setupNumber  Int
+  teamMemberId Int
+  teamMember   MatchTeamMember @relation(fields: [teamMemberId], references: [id])
+  character    Character       @relation(fields: [characterKey], references: [key])
+
+  @@index([teamMemberId, setupNumber])
+  @@index([setupNumber])
+}
+
+enum MoveType {
+  Ban
+  Pick
+  Utility
+}
+
+model MatchMove {
+  id           Int        @id @default(autoincrement())
+  matchId      Int
+  teamId       Int?
+  characterKey String
+  order        Int
+  type         MoveType
+  match        Match      @relation(fields: [matchId], references: [id])
+  team         MatchTeam? @relation(fields: [teamId], references: [id])
+  character    Character  @relation(fields: [characterKey], references: [key])
+
+  @@index([matchId, order])
+  @@index([characterKey])
+  @@index([teamId, characterKey])
+}
+
+enum Rarity {
+  FourStar
+  FiveStar
+}
+
+enum Element {
+  Anemo
+  Geo
+  Electro
+  Dendro
+  Pyro
+  Hydro
+  Cryo
+  None
+}
+
+enum Weapon {
+  Sword
+  Claymore
+  Polearm
+  Bow
+  Catalyst
+}
+
+enum Region {
+  Mondstadt
+  Liyue
+  Inazuma
+  Sumeru
+  Fontaine
+  Natlan
+  NodKrai
+  Snezhnaya
+  Khaenriah
+  None
+}
+
+enum ModelType {
+  TallMale
+  TallFemale
+  MediumMale
+  MediumFemale
+  ShortFemale
+  None
+}
+
+enum CharacterRole {
+  MainDPS
+  SubDPS
+  Support
+}
+
+enum Wish {
+  Standard
+  Limited
+  None
+}
+
+model Character {
+  id   Int    @id @default(autoincrement())
+  key  String @unique
+  name String
+
+  rarity    Rarity
+  element   Element
+  weapon    Weapon
+  region    Region
+  modelType ModelType
+
+  releaseDate DateTime?
+  version     String?
+  role        CharacterRole?
+  wish        Wish?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  matchMoves          MatchMove[]
+  matchTacticalUsages MatchTacticalUsage[]
 }

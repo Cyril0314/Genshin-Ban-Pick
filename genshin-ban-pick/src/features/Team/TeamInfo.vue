@@ -9,34 +9,34 @@ import type { TeamMember, TeamMembersMap } from '@/types/TeamMember';
 const props = defineProps<{
     side: 'left' | 'right';
     teamInfo: {
-        id: number;
+        slot: number;
         name: string;
         members: TeamMember[];
     };
 }>();
 
 const emit = defineEmits<{
-    (e: 'member-drop', payload: { identityKey: string; teamId: number }): void;
-    (e: 'member-input', payload: { name: string; teamId: number }): void;
-    (e: 'member-restore', payload: { member: TeamMember; teamId: number }): void;
+    (e: 'member-drop', payload: { identityKey: string; teamSlot: number }): void;
+    (e: 'member-input', payload: { name: string; teamSlot: number }): void;
+    (e: 'member-restore', payload: { member: TeamMember; teamSlot: number }): void;
 }>();
 
 const inputValue = ref('');
 
-const { themeVars } = useTeamTheme(props.teamInfo.id);
+const { themeVars } = useTeamTheme(props.teamInfo.slot);
 
 function handleInput(e: Event) {
     console.debug(`[TEAM INFO] Handle input`);
 
     const name = inputValue.value.trim();
     if (!name) return;
-    emit('member-input', { name, teamId: props.teamInfo.id });
+    emit('member-input', { name, teamSlot: props.teamInfo.slot });
     inputValue.value = '';
 }
 
 function handleRemoveMemberButtonClick(member: TeamMember) {
     console.debug('[TEAM INFO] Remove member button click', member);
-    emit('member-restore', { member, teamId: props.teamInfo.id });
+    emit('member-restore', { member, teamSlot: props.teamInfo.slot });
 }
 
 function handleDropEvent(event: DragEvent) {
@@ -45,7 +45,7 @@ function handleDropEvent(event: DragEvent) {
     // isOver.value = false
     const identityKey = event.dataTransfer?.getData(DragTypes.ROOM_USER);
     if (identityKey === undefined) return;
-    emit('member-drop', { identityKey, teamId: props.teamInfo.id });
+    emit('member-drop', { identityKey, teamSlot: props.teamInfo.slot });
 }
 </script>
 
@@ -66,7 +66,7 @@ function handleDropEvent(event: DragEvent) {
             />
             <div class="layout__team-member-names">
                 <div class="team-member" v-for="teamMember in props.teamInfo.members">
-                    <span class="team-member__name">{{ teamMember.type === 'MANUAL' ? teamMember.name : teamMember.user.nickname }}</span>
+                    <span class="team-member__name">{{ teamMember.type === 'Manual' ? teamMember.name : teamMember.user.nickname }}</span>
                     <button class="team-member__remove" @click="handleRemoveMemberButtonClick(teamMember)">✕</button>
                 </div>
             </div>

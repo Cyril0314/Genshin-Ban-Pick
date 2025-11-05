@@ -4,7 +4,7 @@ import { getProfileImagePath } from '@/utils/imageRegistry'
 import { DragTypes } from '@/constants/customMIMETypes';
 import { useTacticalBoardStore } from '@/stores/tacticalBoardStore';
 
-const props = defineProps<{ teamId: number }>()
+const props = defineProps<{ teamSlot: number }>()
 
 const tacticalBoardStore = useTacticalBoardStore()
 const { displayPoolImageIds } = tacticalBoardStore
@@ -16,8 +16,8 @@ function handleDragStartEvent(event: DragEvent, id: string) {
 </script>
 
 <template>
-  <div class="tactical__pool" :class="`tactical__pool--${props.teamId}`">
-    <img v-for="id in displayPoolImageIds(teamId).value" :key="id" :src="getProfileImagePath(id)" draggable="true"
+  <div class="tactical__pool" :class="`tactical__pool--${props.teamSlot}`">
+    <img v-for="id in displayPoolImageIds(teamSlot).value" :key="id" :src="getProfileImagePath(id)" draggable="true"
       @dragstart="handleDragStartEvent($event, id)" />
   </div>
 </template>

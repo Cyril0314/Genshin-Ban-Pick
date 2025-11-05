@@ -3,17 +3,17 @@
 import { defineStore } from 'pinia';
 import { ref, computed, watch, shallowRef } from 'vue';
 
-import { Role, type IMember } from '@/types/IMember';
+import { MemberRole, type IMember } from '@/types/IMember';
 import type { IGuest } from '@/types/IGuest';
 
-export type Identity = { type: 'MEMBER'; user: IMember } | { type: 'GUEST'; user: IGuest }
+export type Identity = { type: 'Member'; user: IMember } | { type: 'Guest'; user: IGuest }
 export type MaybeIdentity = Identity | null
 
 export const useAuthStore = defineStore('auth', () => {
     const identity = ref<MaybeIdentity>(null);
     const isLoggedIn = computed(() => identity.value !== null);
-    const isAdmin = computed(() => identity.value?.type === 'MEMBER' && identity.value.user.role === Role.ADMIN );
-    const isGuest = computed(() => identity.value?.type === 'GUEST');
+    const isAdmin = computed(() => identity.value?.type === 'Member' && identity.value.user.role === MemberRole.Admin );
+    const isGuest = computed(() => identity.value?.type === 'Guest');
     const identityKey = computed(() => {
         if (!identity.value) return null;
         return `${identity.value.type}:${identity.value.user.id}`;

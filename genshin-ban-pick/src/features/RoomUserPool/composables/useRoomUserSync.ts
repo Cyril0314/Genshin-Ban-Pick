@@ -7,14 +7,14 @@ import { useRoomUserStore } from '@/stores/roomUserStore';
 
 import type { IRoomUser } from '@/types/IRoomUser';
 
-enum SocketEvent {
-    ROOM_USER_JOIN_REQUEST = 'room.user.join.request',
-    ROOM_USER_JOIN_BROADCAST = 'room.user.join.broadcast',
+enum RoomEvent {
+    UserJoinRequest = 'room.user.join.request',
+    UserJoinBroadcast = 'room.user.join.broadcast',
 
-    ROOM_USER_LEAVE_REQUEST = 'room.user.leave.request',
-    ROOM_USER_LEAVE_BROADCAST = 'room.user.leave.broadcast',
+    UserLeaveRequest = 'room.user.leave.request',
+    UserLeaveBroadcast = 'room.user.leave.broadcast',
 
-    ROOM_USERS_STATE_SYNC_ALL = 'room.users.state.sync.all',
+    UsersStateSyncAll = 'room.users.state.sync.all',
 }
 
 export function useRoomUserSync() {
@@ -24,19 +24,19 @@ export function useRoomUserSync() {
     const socket = useSocketStore().getSocket();
 
     function registerRoomUserSync() {
-        socket.on(`${SocketEvent.ROOM_USER_JOIN_BROADCAST}`, handleRoomUserJoinBroadcast);
-        socket.on(`${SocketEvent.ROOM_USER_LEAVE_BROADCAST}`, handleRoomUserLeaveBroadcast);
-        socket.on(`${SocketEvent.ROOM_USERS_STATE_SYNC_ALL}`, handleRoomUsersStateSync);
+        socket.on(`${RoomEvent.UserJoinBroadcast}`, handleRoomUserJoinBroadcast);
+        socket.on(`${RoomEvent.UserLeaveBroadcast}`, handleRoomUserLeaveBroadcast);
+        socket.on(`${RoomEvent.UsersStateSyncAll}`, handleRoomUsersStateSync);
     }
 
     function joinRoom(roomId: string) {
         console.debug('[ROOM USERS] Sent room user join request', roomId)
-        socket.emit(`${SocketEvent.ROOM_USER_JOIN_REQUEST}`, roomId);
+        socket.emit(`${RoomEvent.UserJoinRequest}`, roomId);
     }
 
     function leaveRoom(roomId: string) {
         console.debug('[ROOM USERS] Sent room user leave request', roomId)
-        socket.emit(`${SocketEvent.ROOM_USER_LEAVE_REQUEST}`, roomId);
+        socket.emit(`${RoomEvent.UserLeaveRequest}`, roomId);
     }
 
     function handleRoomUserJoinBroadcast(roomUser: IRoomUser) {

@@ -21,7 +21,7 @@ export function useAuth() {
     }): Promise<{ identity: Identity; token: string }> {
         try {
             let response = await registerMember(payload);
-            const newIdentity: Identity = { type: 'MEMBER', user: { ...response.data } };
+            const newIdentity: Identity = { type: 'Member', user: { ...response.data } };
             const token = response.data.token;
             setIdentity(newIdentity);
             setToken(token);
@@ -34,7 +34,7 @@ export function useAuth() {
     async function handleLoginMember(payload: { account: string; password: string }): Promise<{ identity: Identity; token: string }> {
         try {
             const response = await loginMember(payload);
-            const newIdentity: Identity = { type: 'MEMBER', user: { ...response.data } };
+            const newIdentity: Identity = { type: 'Member', user: { ...response.data } };
             const token = response.data.token;
             setIdentity(newIdentity);
             setToken(token);
@@ -49,7 +49,7 @@ export function useAuth() {
         try {
             const nickname = `guest_${Math.random().toString(36).slice(2, 8)}`;
             const response = await loginGuest({ nickname });
-            const newIdentity: Identity = { type: 'GUEST', user: { ...response.data } };
+            const newIdentity: Identity = { type: 'Guest', user: { ...response.data } };
             const token = response.data.token;
             setIdentity(newIdentity);
             setToken(token);
