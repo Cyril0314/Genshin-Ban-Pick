@@ -1,6 +1,6 @@
 // backend/src/socket/managers/RoomStateManager.ts
 
-import { IRoomState, TeamTaticalBoardMap } from '../../types/IRoomState.ts';
+import { IRoomState, TeamTacticalBoardMap } from '../../types/IRoomState.ts';
 import { IRoomStateManager } from './IRoomStateManager.ts';
 import { teams } from "../../constants/constants.ts";
 import { TeamMembersMap } from '../../types/TeamMember.ts';
@@ -15,7 +15,7 @@ export class RoomStateManager implements IRoomStateManager {
                 chatMessages: [],
                 boardImageMap: {},
                 teamMembersMap: Object.fromEntries(teams.map(t => [t.id, []])) as TeamMembersMap,
-                teamTaticalBoardMap: Object.fromEntries(teams.map(t => [t.id, {}])) as TeamTaticalBoardMap,
+                teamTacticalBoardMap: Object.fromEntries(teams.map(t => [t.id, {}])) as TeamTacticalBoardMap,
                 stepIndex: 0,
             };
         }
@@ -50,7 +50,7 @@ export class RoomStateManager implements IRoomStateManager {
         return this.ensure(roomId).stepIndex;
     }
 
-    getTeamTaticalBoardMap(roomId: string) {
-        return this.ensure(roomId).teamTaticalBoardMap;
+    getTeamTacticalBoardMap(roomId: string) {
+        return this.ensure(roomId).teamTacticalBoardMap;
     }
 }

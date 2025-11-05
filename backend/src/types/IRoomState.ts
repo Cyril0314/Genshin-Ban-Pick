@@ -6,13 +6,13 @@ import { TeamMembersMap } from './TeamMember.ts';
 
 export type BoardImageMap = Record<number, string>;
 export type TacticalCellImageMap = Record<number, string>;
-export type TeamTaticalBoardMap = Record<number, TacticalCellImageMap>;
+export type TeamTacticalBoardMap = Record<number, TacticalCellImageMap>;
 
 export interface IRoomState {
     users: IRoomUser[];
     chatMessages: IChatMessageDTO[];
     boardImageMap: BoardImageMap;
-    teamTaticalBoardMap: TeamTaticalBoardMap;
+    teamTacticalBoardMap: TeamTacticalBoardMap;
     teamMembersMap: TeamMembersMap;
     stepIndex: number;
 }

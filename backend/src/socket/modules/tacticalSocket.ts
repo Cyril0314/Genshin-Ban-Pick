@@ -1,4 +1,4 @@
-// backend/src/socket/modules/taticalSocket.ts
+// backend/src/socket/modules/tacticalSocket.ts
 
 import { Server, Socket } from 'socket.io';
 
@@ -9,27 +9,27 @@ import { IRoomUser } from '../../types/IRoomUser.ts';
 const logger = createLogger('TATICAL SOCKET');
 
 enum SocketEvent {
-    TATICAL_CELL_IMAGE_PLACE_REQUEST = 'tatical.cell.image.place.request',
-    TATICAL_CELL_IMAGE_PLACE_BROADCAST = 'tatical.cell.image.place.broadcast',
+    TATICAL_CELL_IMAGE_PLACE_REQUEST = 'tactical.cell.image.place.request',
+    TATICAL_CELL_IMAGE_PLACE_BROADCAST = 'tactical.cell.image.place.broadcast',
 
-    TATICAL_CELL_IMAGE_REMOVE_REQUEST = 'tatical.cell.image.remove.request',
-    TATICAL_CELL_IMAGE_REMOVE_BROADCAST = 'tatical.cell.image.remove.broadcast',
+    TATICAL_CELL_IMAGE_REMOVE_REQUEST = 'tactical.cell.image.remove.request',
+    TATICAL_CELL_IMAGE_REMOVE_BROADCAST = 'tactical.cell.image.remove.broadcast',
 
-    TATICAL_CELL_IMAGE_MAP_RESET_REQUEST = 'tatical.cell.image_map.reset.request',
-    TATICAL_CELL_IMAGE_MAP_RESET_BROADCAST = 'tatical.cell.image_map.reset.broadcast',
+    TATICAL_CELL_IMAGE_MAP_RESET_REQUEST = 'tactical.cell.image_map.reset.request',
+    TATICAL_CELL_IMAGE_MAP_RESET_BROADCAST = 'tactical.cell.image_map.reset.broadcast',
 
-    TATICAL_CELL_IMAGE_MAP_STATE_REQUEST = 'tatical.cell.image_map.state.request',
-    TATICAL_CELL_IMAGE_MAP_STATE_SYNC_SELF = 'tatical.cell.image_map.state.sync.self',
+    TATICAL_CELL_IMAGE_MAP_STATE_REQUEST = 'tactical.cell.image_map.state.request',
+    TATICAL_CELL_IMAGE_MAP_STATE_SYNC_SELF = 'tactical.cell.image_map.state.sync.self',
 }
 
-export function registerTaticalSocket(io: Server, socket: Socket, roomStateManager: RoomStateManager) {
+export function registerTacticalSocket(io: Server, socket: Socket, roomStateManager: RoomStateManager) {
     socket.on(`${SocketEvent.TATICAL_CELL_IMAGE_PLACE_REQUEST}`, ({ teamId, cellId, imgId }: { teamId: number; cellId: number; imgId: string }) => {
         logger.info(`Received ${SocketEvent.TATICAL_CELL_IMAGE_PLACE_REQUEST}`, { teamId, cellId, imgId });
         const roomId = (socket as any).roomId;
         if (!roomId) return;
 
         const roomState = roomStateManager.ensure(roomId);
-        roomState.teamTaticalBoardMap[teamId][cellId] = imgId;
+        roomState.teamTacticalBoardMap[teamId][cellId] = imgId;
         socket.to(roomId).emit(`${SocketEvent.TATICAL_CELL_IMAGE_PLACE_BROADCAST}`, { teamId, cellId, imgId });
         logger.info(`Sent ${SocketEvent.TATICAL_CELL_IMAGE_PLACE_BROADCAST}`, { teamId, cellId, imgId });
     });
@@ -40,7 +40,7 @@ export function registerTaticalSocket(io: Server, socket: Socket, roomStateManag
         if (!roomId) return;
 
         const roomState = roomStateManager.ensure(roomId);
-        delete roomState.teamTaticalBoardMap[teamId][cellId];
+        delete roomState.teamTacticalBoardMap[teamId][cellId];
         socket.to(roomId).emit(`${SocketEvent.TATICAL_CELL_IMAGE_REMOVE_BROADCAST}`, { teamId, cellId });
         logger.info(`Sent ${SocketEvent.TATICAL_CELL_IMAGE_REMOVE_BROADCAST}`, { teamId, cellId });
     });
@@ -51,7 +51,7 @@ export function registerTaticalSocket(io: Server, socket: Socket, roomStateManag
         if (!roomId) return;
 
         const roomState = roomStateManager.ensure(roomId);
-        roomState.teamTaticalBoardMap[teamId] = {};
+        roomState.teamTacticalBoardMap[teamId] = {};
         socket.to(roomId).emit(`${SocketEvent.TATICAL_CELL_IMAGE_MAP_RESET_BROADCAST}`, { teamId });
         logger.info(`Sent ${SocketEvent.TATICAL_CELL_IMAGE_MAP_RESET_BROADCAST}`, { teamId });
     });
@@ -59,24 +59,24 @@ export function registerTaticalSocket(io: Server, socket: Socket, roomStateManag
     socket.on(`${SocketEvent.TATICAL_CELL_IMAGE_MAP_STATE_REQUEST}`, ({ teamId }: { teamId: number }) => {
         logger.info(`Received ${SocketEvent.TATICAL_CELL_IMAGE_MAP_STATE_REQUEST}`, { teamId });
         const roomId = (socket as any).roomId;
-        syncTaticalCellImageMapStateSelf(socket, roomId, roomStateManager, teamId);
+        syncTacticalCellImageMapStateSelf(socket, roomId, roomStateManager, teamId);
     });
 }
 
-export function syncTaticalCellImageMapStateSelf(socket: Socket, roomId: string, roomStateManager: RoomStateManager, teamId: number) {
-    const taticalCellImageMap = roomStateManager.getTeamTaticalBoardMap(roomId)[teamId];
-    socket.emit(`${SocketEvent.TATICAL_CELL_IMAGE_MAP_STATE_SYNC_SELF}`, { teamId, taticalCellImageMap });
-    logger.info(`Sent ${SocketEvent.TATICAL_CELL_IMAGE_MAP_STATE_SYNC_SELF}`, { teamId, taticalCellImageMap });
+export function syncTacticalCellImageMapStateSelf(socket: Socket, roomId: string, roomStateManager: RoomStateManager, teamId: number) {
+    const tacticalCellImageMap = roomStateManager.getTeamTacticalBoardMap(roomId)[teamId];
+    socket.emit(`${SocketEvent.TATICAL_CELL_IMAGE_MAP_STATE_SYNC_SELF}`, { teamId, tacticalCellImageMap });
+    logger.info(`Sent ${SocketEvent.TATICAL_CELL_IMAGE_MAP_STATE_SYNC_SELF}`, { teamId, tacticalCellImageMap });
 }
 
-export function syncTaticalCellImageMapStateOther(
+export function syncTacticalCellImageMapStateOther(
     roomUser: IRoomUser,
     io: Server,
     roomId: string,
     roomStateManager: RoomStateManager,
     teamId: number,
 ) {
-    const taticalCellImageMap = roomStateManager.getTeamTaticalBoardMap(roomId)[teamId];
-    io.to(roomUser.id).emit(`${SocketEvent.TATICAL_CELL_IMAGE_MAP_STATE_SYNC_SELF}`, { teamId, taticalCellImageMap });
-    logger.info(`Sent ${SocketEvent.TATICAL_CELL_IMAGE_MAP_STATE_SYNC_SELF}`, { teamId, taticalCellImageMap });
+    const tacticalCellImageMap = roomStateManager.getTeamTacticalBoardMap(roomId)[teamId];
+    io.to(roomUser.id).emit(`${SocketEvent.TATICAL_CELL_IMAGE_MAP_STATE_SYNC_SELF}`, { teamId, tacticalCellImageMap });
+    logger.info(`Sent ${SocketEvent.TATICAL_CELL_IMAGE_MAP_STATE_SYNC_SELF}`, { teamId, tacticalCellImageMap });
 }

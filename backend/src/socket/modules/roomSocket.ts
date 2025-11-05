@@ -8,7 +8,7 @@ import { syncTeamMembersMapStateSelf, syncTeamMembersMapStateAll } from './teamS
 import { createLogger } from '../../utils/logger.ts';
 import { RoomStateManager } from '../managers/RoomStateManager.ts';
 import { syncChatMessagesStateSelf } from './chatSocket.ts';
-import { syncTaticalCellImageMapStateSelf } from './taticalSocket.ts';
+import { syncTacticalCellImageMapStateSelf } from './tacticalSocket.ts';
 
 const logger = createLogger('ROOM SOCKET');
 
@@ -69,7 +69,7 @@ export function registerRoomSocket(io: Server, socket: Socket, roomStateManager:
         syncStepStateSelf(socket, roomId, roomStateManager);
         syncTeamMembersMapStateSelf(socket, roomId, roomStateManager);
         syncChatMessagesStateSelf(socket, roomId, roomStateManager)
-        syncTaticalCellImageMapStateSelf(socket, roomId, roomStateManager, Number(userTeamId))
+        syncTacticalCellImageMapStateSelf(socket, roomId, roomStateManager, Number(userTeamId))
     });
 
     socket.on(SocketEvent.ROOM_USER_LEAVE_REQUEST, (roomId: string) => {

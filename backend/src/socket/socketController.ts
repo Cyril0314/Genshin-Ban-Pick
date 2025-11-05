@@ -9,7 +9,7 @@ import { registerBoardSocket } from './modules/boardSocket.ts';
 import { registerRoomSocket, handleRoomUserLeave } from './modules/roomSocket.ts';
 import { registerStepSocket } from './modules/stepSocket.ts';
 import { registerTeamSocket } from './modules/teamSocket.ts';
-import { registerTaticalSocket } from './modules/taticalSocket.ts';
+import { registerTacticalSocket } from './modules/tacticalSocket.ts';
 
 const logger = createLogger('SOCKET CONTROLLER');
 
@@ -24,7 +24,7 @@ export function setupSocketIO(io: Server) {
         registerStepSocket(io, socket, roomStateManager);
         registerTeamSocket(io, socket, roomStateManager);
         registerChatSocket(io, socket, roomStateManager);
-        registerTaticalSocket(io, socket, roomStateManager);
+        registerTacticalSocket(io, socket, roomStateManager);
 
         // 監聽斷線事件
         socket.on('disconnect', (reason) => {

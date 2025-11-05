@@ -15,7 +15,7 @@ import { fetchRoomSetting } from '@/network/roomService';
 import { useTeamInfoStore } from '@/stores/teamInfoStore';
 import { useBanPickStepStore } from '@/stores/banPickStepStore';
 import { useBoardImageStore } from '@/stores/boardImageStore';
-import { useTaticalBoardStore } from '@/stores/tacticalBoardStore';
+import { useTacticalBoardStore } from '@/stores/tacticalBoardStore';
 import { ZoneType } from '@/types/IZone';
 import { useRoomUserSync } from '@/features/RoomUserPool/composables/useRoomUserSync';
 
@@ -40,7 +40,7 @@ const { teamMembersMap, teams } = storeToRefs(teamInfoStore);
 
 const banPickStepStore = useBanPickStepStore();
 
-const taticalBoardStore = useTaticalBoardStore();
+const tacticalBoardStore = useTacticalBoardStore();
 
 function adjustScale() {
     const wrapper = document.getElementsByClassName('viewport-wrapper')![0];
@@ -71,7 +71,7 @@ onMounted(async () => {
         boardImageStore.initZoneMetaTable(roomSetting.value.zoneMetaTable);
         teamInfoStore.initTeams(roomSetting.value.teams);
         banPickStepStore.initBanPickSteps(roomSetting.value.banPickSteps);
-        taticalBoardStore.initTeamTaticalBoardMap(roomSetting.value.teams, roomSetting.value.numberOfTeamSetup, roomSetting.value.numberOfSetupCharacter);
+        tacticalBoardStore.initTeamTacticalBoardMap(roomSetting.value.teams, roomSetting.value.numberOfTeamSetup, roomSetting.value.numberOfSetupCharacter);
         const roomId = getRoomId();
         joinRoom(roomId);
     } catch (error) {

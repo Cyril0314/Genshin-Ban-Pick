@@ -14,18 +14,18 @@ const teamInfoStore = useTeamInfoStore();
 const { teamInfoPair } = storeToRefs(teamInfoStore);
 
 const tacticalBoardSync = useTacticalBoardSync();
-const { userTeamId, handleTaticalCellImagePlace, handleTaticalCellImageRemove } = tacticalBoardSync
+const { userTeamId, handleTacticalCellImagePlace, handleTacticalCellImageRemove } = tacticalBoardSync
 
 const currentTeamId = ref<number>( userTeamId.value ?? teamInfoPair.value!.left.id)
 
 function handleImageDrop({ teamId, cellId, imgId }: { teamId: number, cellId: number; imgId: string }) {
   console.debug(`[TATICAL BOARD PANEL] Handle image drop`, { teamId, cellId, imgId });
-  handleTaticalCellImagePlace({ teamId, cellId, imgId });
+  handleTacticalCellImagePlace({ teamId, cellId, imgId });
 }
 
 function handleImageRestore({ teamId, cellId }: { teamId: number, cellId: number }) {
   console.debug(`[TATICAL BOARD PANEL] Handle image restore`, { teamId, cellId });
-  handleTaticalCellImageRemove({ teamId, cellId });
+  handleTacticalCellImageRemove({ teamId, cellId });
 }
 
 </script>

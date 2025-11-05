@@ -4,7 +4,7 @@ import { Server, Socket } from 'socket.io';
 
 import { createLogger } from '../../utils/logger.ts';
 import { RoomStateManager } from '../managers/RoomStateManager.ts';
-import { syncTaticalCellImageMapStateOther } from './taticalSocket.ts';
+import { syncTacticalCellImageMapStateOther } from './tacticalSocket.ts';
 import { TeamMember } from '../../types/TeamMember.ts';
 
 const logger = createLogger('TEAM SOCKET');
@@ -32,7 +32,7 @@ export function registerTeamSocket(io: Server, socket: Socket, roomStateManager:
 
         const user = roomState.users.find((user) => (member.type === 'ONLINE' && member.user.identityKey === user.identityKey));
         if (user) {
-             syncTaticalCellImageMapStateOther(user, io, roomId, roomStateManager, teamId)
+             syncTacticalCellImageMapStateOther(user, io, roomId, roomStateManager, teamId)
         }
     });
 

@@ -2,12 +2,12 @@
 <script setup lang="ts">
 import { getProfileImagePath } from '@/utils/imageRegistry'
 import { DragTypes } from '@/constants/customMIMETypes';
-import { useTaticalBoardStore } from '@/stores/tacticalBoardStore';
+import { useTacticalBoardStore } from '@/stores/tacticalBoardStore';
 
 const props = defineProps<{ teamId: number }>()
 
-const taticalBoardStore = useTaticalBoardStore()
-const { displayPoolImageIds } = taticalBoardStore
+const tacticalBoardStore = useTacticalBoardStore()
+const { displayPoolImageIds } = tacticalBoardStore
 
 function handleDragStartEvent(event: DragEvent, id: string) {
   console.debug(`[TATICAL POOL] Handle drag start event`, id);

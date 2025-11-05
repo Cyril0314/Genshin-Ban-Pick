@@ -16,12 +16,12 @@ const emit = defineEmits<{
 
 const authStore = useAuthStore()
 const { isAdmin } = storeToRefs(authStore)
-const isTaticalDrawerOpen = ref(false);
+const isTacticalDrawerOpen = ref(false);
 const isChatRoomDrawerOpen = ref(false);
 
-function handleTaticalButtonClickEvent() {
-    console.debug('[TOOL BAR] Handle tatical button click event');
-    isTaticalDrawerOpen.value = !isTaticalDrawerOpen.value
+function handleTacticalButtonClickEvent() {
+    console.debug('[TOOL BAR] Handle tactical button click event');
+    isTacticalDrawerOpen.value = !isTacticalDrawerOpen.value
 }
 
 function handleChatButtonClickEvent() {
@@ -42,8 +42,8 @@ function handleRecordButtonClickEvent() {
 
 <template>
     <div class="toolbar">
-        <button class="toolbar__button toolbar__button--tatical" @click="handleTaticalButtonClickEvent">編隊</button>
-        <TacticalBoardPanelDrawer v-model:open="isTaticalDrawerOpen"/>
+        <button class="toolbar__button toolbar__button--tactical" @click="handleTacticalButtonClickEvent">編隊</button>
+        <TacticalBoardPanelDrawer v-model:open="isTacticalDrawerOpen"/>
         
         <button class="toolbar__button toolbar__button--chat" @click="handleChatButtonClickEvent">聊天</button>
         <ChatRoomDrawer v-model:open="isChatRoomDrawerOpen"/>

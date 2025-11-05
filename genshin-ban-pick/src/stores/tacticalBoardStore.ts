@@ -1,4 +1,4 @@
-// src/stores/taticalBoardStore.ts
+// src/stores/tacticalBoardStore.ts
 
 import { computed, reactive, ref, shallowRef, watch } from "vue";
 import { defineStore } from "pinia";
@@ -7,8 +7,8 @@ import type { ITeam } from "@/types/ITeam";
 
 export type TacticalCellImageMap = Record<number, string>
 
-export const useTaticalBoardStore = defineStore('taticalBoard', () => {
-    const teamTaticalBoardPanelMap: Record<number, {
+export const useTacticalBoardStore = defineStore('tacticalBoard', () => {
+    const teamTacticalBoardPanelMap: Record<number, {
         poolImageIds: string[];
         cellImageMap: TacticalCellImageMap;
     }> = reactive({});
@@ -17,16 +17,16 @@ export const useTaticalBoardStore = defineStore('taticalBoard', () => {
     const numberOfSetupCharacter = shallowRef(0)
 
     const displayPoolImageIds = (teamId: number) => computed(() => {
-        const taticalBoardPanel = teamTaticalBoardPanelMap[teamId];
-        if (!taticalBoardPanel) return [];
-        const used = new Set(Object.values(taticalBoardPanel.cellImageMap));
-        return taticalBoardPanel.poolImageIds.filter(id => !used.has(id));
+        const tacticalBoardPanel = teamTacticalBoardPanelMap[teamId];
+        if (!tacticalBoardPanel) return [];
+        const used = new Set(Object.values(tacticalBoardPanel.cellImageMap));
+        return tacticalBoardPanel.poolImageIds.filter(id => !used.has(id));
     });
 
-    watch(teamTaticalBoardPanelMap, (teamTaticalBoardPanelMap) => {
-        console.debug('[TATICAL BOARD STORE] Watch team tatical board panel map', teamTaticalBoardPanelMap)
+    watch(teamTacticalBoardPanelMap, (teamTacticalBoardPanelMap) => {
+        console.debug('[TATICAL BOARD STORE] Watch team tactical board panel map', teamTacticalBoardPanelMap)
         // console.table(
-        //     Object.entries(teamTaticalBoardPanelMap).map(([id, panel]) => ({
+        //     Object.entries(teamTacticalBoardPanelMap).map(([id, panel]) => ({
         //         teamId: id,
         //         hasPool: !!panel?.poolImageIds,
         //         hasMap: !!panel?.cellImageMap,
@@ -35,10 +35,10 @@ export const useTaticalBoardStore = defineStore('taticalBoard', () => {
     }, { deep: true, immediate: true })
 
 
-    function initTeamTaticalBoardMap(teams: ITeam[], newNumberOfTeamSetup: number, newNumberOfSetupCharacter: number) {
-        console.debug('[TATICAL BOARD STORE] Init team tatical board panel map', teams)
+    function initTeamTacticalBoardMap(teams: ITeam[], newNumberOfTeamSetup: number, newNumberOfSetupCharacter: number) {
+        console.debug('[TATICAL BOARD STORE] Init team tactical board panel map', teams)
         for (const team of teams) {
-            teamTaticalBoardPanelMap[team.id] = {
+            teamTacticalBoardPanelMap[team.id] = {
                 poolImageIds: [],
                 cellImageMap: {}
             };
@@ -49,56 +49,56 @@ export const useTaticalBoardStore = defineStore('taticalBoard', () => {
 
     function addImageToPool(teamId: number, imgId: string) {
         console.debug('[TATICAL BOARD STORE] Add image to pool', teamId, imgId)
-        const taticalBoardPanel = teamTaticalBoardPanelMap[teamId];
-        if (!taticalBoardPanel) return;
-        if (!taticalBoardPanel.poolImageIds.includes(imgId)) {
-            taticalBoardPanel.poolImageIds.push(imgId)
+        const tacticalBoardPanel = teamTacticalBoardPanelMap[teamId];
+        if (!tacticalBoardPanel) return;
+        if (!tacticalBoardPanel.poolImageIds.includes(imgId)) {
+            tacticalBoardPanel.poolImageIds.push(imgId)
         }
     }
 
     function removeImageFromPool(teamId: number, imgId: string) {
         console.debug('[TATICAL BOARD STORE] Remove image from pool', teamId, imgId)
-        const taticalBoardPanel = teamTaticalBoardPanelMap[teamId];
-        if (!taticalBoardPanel) return;
-        const index = taticalBoardPanel.poolImageIds.indexOf(imgId)
+        const tacticalBoardPanel = teamTacticalBoardPanelMap[teamId];
+        if (!tacticalBoardPanel) return;
+        const index = tacticalBoardPanel.poolImageIds.indexOf(imgId)
         if (index !== -1) {
-            taticalBoardPanel.poolImageIds.splice(index, 1)
+            tacticalBoardPanel.poolImageIds.splice(index, 1)
         }
     }
 
     function placeCellImage(teamId: number, cellId: number, imgId: string) {
         console.debug('[TATICAL BOARD STORE] Place cell image', teamId, cellId, imgId)
-        const taticalBoardPanel = teamTaticalBoardPanelMap[teamId];
-        if (!taticalBoardPanel) return;
-        taticalBoardPanel.cellImageMap[cellId] = imgId
+        const tacticalBoardPanel = teamTacticalBoardPanelMap[teamId];
+        if (!tacticalBoardPanel) return;
+        tacticalBoardPanel.cellImageMap[cellId] = imgId
     }
 
     function removeCellImage(teamId: number, cellId: number) {
         console.debug('[TATICAL BOARD STORE] Remove cell image', teamId, cellId)
-        const taticalBoardPanel = teamTaticalBoardPanelMap[teamId];
-        if (!taticalBoardPanel) return;
-        delete taticalBoardPanel.cellImageMap[cellId]
+        const tacticalBoardPanel = teamTacticalBoardPanelMap[teamId];
+        if (!tacticalBoardPanel) return;
+        delete tacticalBoardPanel.cellImageMap[cellId]
     }
 
     function resetBoard(teamId: number) {
         console.debug('[TATICAL BOARD STORE] Reset board', teamId)
-        const taticalBoardPanel = teamTaticalBoardPanelMap[teamId];
-        if (!taticalBoardPanel) return;
-        taticalBoardPanel.poolImageIds = []
-        taticalBoardPanel.cellImageMap = {}
+        const tacticalBoardPanel = teamTacticalBoardPanelMap[teamId];
+        if (!tacticalBoardPanel) return;
+        tacticalBoardPanel.poolImageIds = []
+        tacticalBoardPanel.cellImageMap = {}
     }
 
-    function setTaticalCellImageMap(teamId: number, taticalCellImageMap: TacticalCellImageMap) {
-        console.debug('[TATICAL BOARD STORE] Set tatical cell image map', teamId, taticalCellImageMap)
-        const taticalBoardPanel = teamTaticalBoardPanelMap[teamId];
-        if (!taticalBoardPanel) return;
-        taticalBoardPanel.cellImageMap = taticalCellImageMap
+    function setTacticalCellImageMap(teamId: number, tacticalCellImageMap: TacticalCellImageMap) {
+        console.debug('[TATICAL BOARD STORE] Set tactical cell image map', teamId, tacticalCellImageMap)
+        const tacticalBoardPanel = teamTacticalBoardPanelMap[teamId];
+        if (!tacticalBoardPanel) return;
+        tacticalBoardPanel.cellImageMap = tacticalCellImageMap
     }
 
     function findCellIdByImageId(teamId: number, imgId: string): number | null {
-        const taticalBoardPanel = teamTaticalBoardPanelMap[teamId];
-        if (!taticalBoardPanel) return null;
-        const value = Object.entries(taticalBoardPanel.cellImageMap).find(([, f]) => f === imgId)
+        const tacticalBoardPanel = teamTacticalBoardPanelMap[teamId];
+        if (!tacticalBoardPanel) return null;
+        const value = Object.entries(tacticalBoardPanel.cellImageMap).find(([, f]) => f === imgId)
         if (!value) {
             console.debug('[TATICAL BOARD STORE] Cannot find cell id by image id', imgId)
             return null
@@ -108,17 +108,17 @@ export const useTaticalBoardStore = defineStore('taticalBoard', () => {
     }
 
     return {
-        teamTaticalBoardPanelMap,
+        teamTacticalBoardPanelMap,
         numberOfTeamSetup,
         numberOfSetupCharacter,
         displayPoolImageIds,
-        initTeamTaticalBoardMap,
+        initTeamTacticalBoardMap,
         addImageToPool,
         removeImageFromPool,
         placeCellImage,
         removeCellImage,
         resetBoard,
-        setTaticalCellImageMap,
+        setTacticalCellImageMap,
         findCellIdByImageId,
     }
 })

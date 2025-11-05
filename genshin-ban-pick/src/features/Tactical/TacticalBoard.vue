@@ -3,7 +3,7 @@
 import { computed } from 'vue';
 
 import TacticalCell from './TacticalCell.vue';
-import { useTaticalBoardStore } from '@/stores/tacticalBoardStore';
+import { useTacticalBoardStore } from '@/stores/tacticalBoardStore';
 import { storeToRefs } from 'pinia';
 
 import type { TeamMember } from '@/types/TeamMember';
@@ -15,10 +15,10 @@ const emit = defineEmits<{
     (e: 'image-restore', payload: { teamId: number; cellId: number }): void;
 }>();
 
-const taticalBoardStore = useTaticalBoardStore();
-const { teamTaticalBoardPanelMap, numberOfTeamSetup, numberOfSetupCharacter } = storeToRefs(taticalBoardStore);
+const tacticalBoardStore = useTacticalBoardStore();
+const { teamTacticalBoardPanelMap, numberOfTeamSetup, numberOfSetupCharacter } = storeToRefs(tacticalBoardStore);
 
-const taticalBoardPanel = computed(() => teamTaticalBoardPanelMap.value[props.teamId]);
+const tacticalBoardPanel = computed(() => teamTacticalBoardPanelMap.value[props.teamId]);
 
 const rows = computed(() => numberOfTeamSetup.value);
 const cols = computed(() => numberOfSetupCharacter.value);
@@ -47,7 +47,7 @@ const cells = computed(() => {
     });
 });
 
-const imageId = (cellId: number) => taticalBoardPanel.value.cellImageMap[cellId] ?? null;
+const imageId = (cellId: number) => tacticalBoardPanel.value.cellImageMap[cellId] ?? null;
 
 function handleImageDrop({ cellId, imgId }: { cellId: number; imgId: string }) {
     console.debug(`[TATICAL BOARD] Handle image drop`, imgId, cellId);
