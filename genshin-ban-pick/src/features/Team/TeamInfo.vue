@@ -4,8 +4,7 @@ import { computed, ref } from 'vue';
 
 import { useTeamTheme } from '@/composables/useTeamTheme';
 import { DragTypes } from '@/constants/customMIMETypes';
-import type { IRoomUser } from '@/types/IRoomUser';
-import type { TeamMember, TeamMembersMap } from '@/types/ITeam';
+import type { TeamMember, TeamMembersMap } from '@/types/TeamMember';
 
 const props = defineProps<{
     side: 'left' | 'right';
@@ -67,7 +66,7 @@ function handleDropEvent(event: DragEvent) {
             />
             <div class="layout__team-member-names">
                 <div class="team-member" v-for="teamMember in props.teamInfo.members">
-                    <span class="team-member__name">{{ teamMember.type === 'manual' ? teamMember.name : teamMember.user.nickname }}</span>
+                    <span class="team-member__name">{{ teamMember.type === 'MANUAL' ? teamMember.name : teamMember.user.nickname }}</span>
                     <button class="team-member__remove" @click="handleRemoveMemberButtonClick(teamMember)">✕</button>
                 </div>
             </div>

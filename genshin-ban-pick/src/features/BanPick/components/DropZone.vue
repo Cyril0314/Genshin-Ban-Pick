@@ -18,7 +18,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'image-drop', payload: { imgId: string; zoneId: number }): void
+  (e: 'image-drop', payload: { zoneId: number; imgId: string }): void
   (e: 'image-restore', payload: { zoneId: number }): void
 }>()
 
@@ -42,7 +42,7 @@ function handleDropEvent(event: DragEvent) {
   isOver.value = false
   const imgId = event.dataTransfer?.getData(DragTypes.CHARACTER_IMAGE)
   if (imgId) {
-    emit('image-drop', { imgId, zoneId: props.zone.id })
+    emit('image-drop', { zoneId: props.zone.id, imgId })
   }
 }
 

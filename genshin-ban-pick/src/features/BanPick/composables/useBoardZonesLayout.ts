@@ -6,7 +6,7 @@ import { ZoneType } from "@/types/IZone";
 
 import type { IRoomSetting } from "@/types/IRoomSetting";
 import type { IZone } from "@/types/IZone";
-import type { TeamMember } from "@/types/ITeam";
+import type { TeamMember } from '@/types/TeamMember';
 
 export function useBoardZonesLayout(roomSetting: IRoomSetting, teamInfoPair: { left: { members: TeamMember[]; id: number; name: string; }; right: { name: string; members: TeamMember[]; id: number; } }) {
     const maxNumberOfPickPerColumn: number = 8

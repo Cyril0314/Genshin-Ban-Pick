@@ -7,7 +7,7 @@ import { ZoneType } from "@/types/IZone";
 import type { IZone } from "@/types/IZone";
 
 export function useRandomPull() {
-  function randomPull(zoneType: ZoneType, roomSetting: IRoomSetting, boardImageMap: Record<number, string>, filteredImageIds: string[]): { imgId: string; zoneId: number } | null {
+  function randomPull(zoneType: ZoneType, roomSetting: IRoomSetting, boardImageMap: Record<number, string>, filteredImageIds: string[]): { zoneId: number, imgId: string } | null {
     let zoneId: number | null
     switch (zoneType) {
       case ZoneType.UTILITY:
@@ -25,7 +25,7 @@ export function useRandomPull() {
     const randomImgId = getRandomImgId(filteredImageIds, boardImageMap)
     if (zoneId === null || randomImgId === null) return null
     console.debug(`[RANDOM PULL] Get random image ${randomImgId} and find drop zoneId ${zoneId}`)
-    return { imgId: randomImgId, zoneId }
+    return { zoneId, imgId: randomImgId }
   }
 
   function findNextUtilityZoneId(zoneMetaTable: Record<number, IZone>, boardImageMap: Record<number, string>): number | null {

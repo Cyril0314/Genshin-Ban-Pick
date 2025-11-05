@@ -1,4 +1,4 @@
-// backend/src/type/ITeam.ts
+// backend/src/types/ITeam.ts
 
 export interface ITeam {
     id: number;

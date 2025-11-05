@@ -16,7 +16,8 @@ import characterRoutes from './routes/characters.ts';
 import roomRoutes from './routes/room.ts';
 import CharacterService from './services/CharacterService.ts';
 import RoomService from './services/RoomService.ts';
-import UserService from './services/UserService.ts';
+import MemberService from './services/auth/MemberService.ts';
+import GuestService from './services/auth/GuestService.ts';
 import { createSocketApp } from './socket/index.ts';
 
 import type { Request, Response } from 'express';
@@ -66,7 +67,8 @@ app.use(express.json());
 // ---------------------------------------------------------
 logger.info('Init Services');
 const prisma = new PrismaClient();
-const userService = new UserService(prisma);
+const guestService = new GuestService(prisma)
+const memberService = new MemberService(prisma);
 const roomService = new RoomService();
 const characterService = new CharacterService();
 
@@ -74,19 +76,15 @@ const characterService = new CharacterService();
 // 🧩 7. Routes 註冊
 // ---------------------------------------------------------
 logger.info('Register Api Routes');
-app.use('/api', authRoutes(userService));
+app.use('/api', authRoutes(guestService, memberService));
 app.use('/api', roomRoutes(roomService));
 app.use('/api', characterRoutes(characterService));
-
-app.use('/api', authRoutes(userService));
-app.use('/api', characterRoutes(characterService));
-app.use('/api', roomRoutes(roomService));
 
 // ---------------------------------------------------------
 // 🧩 8. Socket 初始化
 // ---------------------------------------------------------
 logger.info('Init Socket');
-createSocketApp(server, prisma);
+createSocketApp(server, guestService, memberService);
 
 // ---------------------------------------------------------
 // 🧩 9. Error Handler (一定要最後)

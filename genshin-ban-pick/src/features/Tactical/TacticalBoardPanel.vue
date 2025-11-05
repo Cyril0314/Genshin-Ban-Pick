@@ -18,12 +18,12 @@ const tacticalBoardSync = useTacticalBoardSync();
 const { handleTaticalCellImagePlace, handleTaticalCellImageRemove } = tacticalBoardSync
 
 
-function handleImageDrop({ teamId, cellId, imgId }: { teamId: number, cellId: string; imgId: string }) {
+function handleImageDrop({ teamId, cellId, imgId }: { teamId: number, cellId: number; imgId: string }) {
   console.debug(`[TATICAL BOARD PANEL] Handle image drop`, { teamId, cellId, imgId });
   handleTaticalCellImagePlace({ teamId, cellId, imgId });
 }
 
-function handleImageRestore({ teamId, cellId }: { teamId: number, cellId: string }) {
+function handleImageRestore({ teamId, cellId }: { teamId: number, cellId: number }) {
   console.debug(`[TATICAL BOARD PANEL] Handle image restore`, { teamId, cellId });
   handleTaticalCellImageRemove({ teamId, cellId });
 }
@@ -31,8 +31,7 @@ function handleImageRestore({ teamId, cellId }: { teamId: number, cellId: string
 </script>
 
 <template>
-  <div class="tactical__board" :class="`tactical__board--${currentTeamId}`">
-
+  <div class="tactical__board-panel" :class="`tactical__board-panel--${currentTeamId}`">
     <div class="tactical__board-tabs">
       <button v-for="teamInfo in teamInfoPair" :key="teamInfo.id" class="tactical__tab"
         :class="{ 'tactical__tab--active': currentTeamId === teamInfo.id }"
@@ -61,7 +60,7 @@ function handleImageRestore({ teamId, cellId }: { teamId: number, cellId: string
 </template>
 
 <style scoped>
-.tactical__board {
+.tactical__board-panel {
   display: flex;
   flex-direction: column;
   width: 100%;

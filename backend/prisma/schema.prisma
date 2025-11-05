@@ -7,12 +7,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+enum Role {
+  USER
+  OWNER
+  ADMIN
+}
+
+model Member {
   id           Int      @id @default(autoincrement())
   account      String   @unique
   nickname     String
   createdAt    DateTime @default(now())
-  isGuest      Boolean  @default(false)
   passwordHash String
   updatedAt    DateTime @updatedAt
+  role         Role     @default(USER)
+}
+
+model Guest {
+  id           Int      @id @default(autoincrement())
+  nickname     String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt           
 }

@@ -1,4 +1,4 @@
-// backend/src/type/IRoomUser.ts
+// backend/src/types/IRoomUser.ts
 
 export interface IRoomUser {
     id: string;

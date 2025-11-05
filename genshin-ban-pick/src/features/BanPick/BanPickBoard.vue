@@ -4,6 +4,9 @@
 import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
 
+import ImageOptions from '../ImageOptions/ImageOptions.vue';
+import CharacterSelector from '@/features/CharacterSelector/CharacterSelector.vue';
+import TeamInfo from '@/features/Team/TeamInfo.vue';
 import BanZones from './components/BanZones.vue';
 import PickZones from './components/PickZones.vue';
 import UtilityZones from './components/UtilityZones.vue';
@@ -11,13 +14,10 @@ import UtilityZones from './components/UtilityZones.vue';
 import { ZoneType } from '@/types/IZone';
 import { useBoardZonesLayout } from './composables/useBoardZonesLayout';
 import { useTeamInfoStore } from '@/stores/teamInfoStore';
-import CharacterSelector from '@/features/CharacterSelector/CharacterSelector.vue';
-import TeamInfo from '@/features/Team/TeamInfo.vue';
 
 import type { ICharacter } from '@/types/ICharacter';
 import type { IRoomSetting } from '@/types/IRoomSetting';
-import type { ITeam, TeamMember, TeamMembersMap } from '@/types/ITeam';
-import ImageOptions from '../ImageOptions/ImageOptions.vue';
+import type { TeamMember } from '@/types/TeamMember';
 
 const props = defineProps<{
     roomSetting: IRoomSetting;
@@ -28,7 +28,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    (e: 'image-drop', payload: { imgId: string; zoneId: number }): void;
+    (e: 'image-drop', payload: { zoneId: number; imgId: string }): void;
     (e: 'image-restore', payload: { zoneId: number }): void;
     (e: 'filter-change', filteredCharacterIds: string[]): void;
     (e: 'random-pull', payload: { zoneType: ZoneType }): void;
@@ -43,9 +43,9 @@ const { teamInfoPair } = storeToRefs(teamInfoStore);
 const { utilityZones, banZones, leftPickZones, rightPickZones, maxNumberOfUtilityPerRow, maxNumberOfBanPerRow, maxNumberOfPickPerColumn } =
     useBoardZonesLayout(props.roomSetting, teamInfoPair.value!);
 
-function handleImageDrop({ imgId, zoneId }: { imgId: string; zoneId: number }) {
-    console.debug(`[BAN PICK BOARD] Handle image drop`, { imgId, zoneId });
-    emit('image-drop', { imgId, zoneId });
+function handleImageDrop({ zoneId, imgId }: { zoneId: number; imgId: string }) {
+    console.debug(`[BAN PICK BOARD] Handle image drop`, { zoneId, imgId });
+    emit('image-drop', { zoneId, imgId });
 }
 
 function handleImageRestore({ zoneId }: { zoneId: number }) {
@@ -122,14 +122,17 @@ function handleMemberRestore({ member, teamId }: { member: TeamMember; teamId: n
 
 <style scoped>
 .layout__main {
-    --zone-count: var(--max-number-of-pick-per-column);
-    --layout-side-height: calc((var(--zone-count) + 1) * var(--size-drop-zone-height) + var(--zone-count) * var(--size-drop-zone-item-space));
-    display: grid;
-    grid-template-columns: auto min-content auto;
-    /* 中間避免被撐大關鍵 */
+    --pick-per-column-count: var(--max-number-of-pick-per-column);
+    --layout-main-height: calc((var(--pick-per-column-count) + 1) * var(--size-drop-zone-height) + var(--pick-per-column-count) * var(--size-drop-zone-item-space));
+
+    --ban-per-row-count: var(--max-number-of-ban-per-row);
+    --layout-center-width: calc(var(--ban-per-row-count) * var(--size-drop-zone-width) + var(--ban-per-row-count) * var(--size-drop-zone-item-space) + var(--size-ban-row-spacer));
+
+    display: flex;
+    justify-content: space-evenly;
     gap: var(--space-xl);
     min-height: 0;
-    height: var(--layout-side-height);
+    height: var(--layout-main-height);
 }
 
 .layout__side {
@@ -146,6 +149,7 @@ function handleMemberRestore({ member, teamId }: { member: TeamMember; teamId: n
     gap: var(--space-lg);
     min-height: 0;
     height: 100%;
+    width: var(--layout-center-width);
 }
 
 .layout__ban-zone {
@@ -154,13 +158,13 @@ function handleMemberRestore({ member, teamId }: { member: TeamMember; teamId: n
 }
 
 .layout__common {
-    width: 100%;
     display: flex;
     flex: 1;
     flex-direction: column;
     align-items: stretch;
     gap: var(--space-md);
     min-height: 0;
+    width: 100%;
 }
 
 .layout__utility-zone {

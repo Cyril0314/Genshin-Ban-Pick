@@ -1,8 +1,9 @@
 // backend/src/socket/managers/RoomStateManager.ts
 
-import { IRoomState, TeamMember, TeamMembersMap, TeamTaticalBoardMap } from '../../types/IRoomState.ts';
+import { IRoomState, TeamTaticalBoardMap } from '../../types/IRoomState.ts';
 import { IRoomStateManager } from './IRoomStateManager.ts';
 import { teams } from "../../constants/constants.ts";
+import { TeamMembersMap } from '../../types/TeamMember.ts';
 
 const roomStates: Record<string, IRoomState> = {};
 

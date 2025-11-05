@@ -37,7 +37,7 @@ function findUserTeamId(roomUser: IRoomUser): number | null {
     console.debug(`[ROOM USER POOL] Find user team id`, roomUser);
     for (const [teamId, members] of Object.entries(teamMembersMap.value)) {
         if (members.some(
-            (m) => m.type === 'online' && m.user.identityKey === roomUser.identityKey
+            (m) => m.type === 'ONLINE' && m.user.identityKey === roomUser.identityKey
         )) {
             return Number(teamId);
         }

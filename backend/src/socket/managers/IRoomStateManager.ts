@@ -3,7 +3,8 @@
 import { IRoomUser } from "../../types/IRoomUser.ts";
 import { IChatMessageDTO } from "../../types/IChatMessageDTO.ts";
 
-import type { BoardImageMap, IRoomState, TeamMembersMap, TeamTaticalBoardMap } from "../../types/IRoomState.ts";
+import { TeamMembersMap } from "../../types/TeamMember.ts";
+import type { BoardImageMap, IRoomState, TeamTaticalBoardMap } from "../../types/IRoomState.ts";
 
 export interface IRoomStateManager {
   ensure(roomId: string): IRoomState;

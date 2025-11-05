@@ -4,8 +4,8 @@ import { Server, Socket } from 'socket.io';
 
 import { createLogger } from '../../utils/logger.ts';
 import { RoomStateManager } from '../managers/RoomStateManager.ts';
-import { TeamMember } from '../../types/IRoomState.ts';
 import { syncTaticalCellImageMapStateOther } from './taticalSocket.ts';
+import { TeamMember } from '../../types/TeamMember.ts';
 
 const logger = createLogger('TEAM SOCKET');
 
@@ -30,7 +30,7 @@ export function registerTeamSocket(io: Server, socket: Socket, roomStateManager:
         socket.to(roomId).emit(`${SocketEvent.TEAM_MEMBER_ADD_BROADCAST}`, { teamId, member });
         logger.info(`Sent ${SocketEvent.TEAM_MEMBER_ADD_BROADCAST} teamId: ${teamId}`, member);
 
-        const user = roomState.users.find((user) => (member.type === 'online' && member.user.identityKey === user.identityKey));
+        const user = roomState.users.find((user) => (member.type === 'ONLINE' && member.user.identityKey === user.identityKey));
         if (user) {
              syncTaticalCellImageMapStateOther(user, io, roomId, roomStateManager, teamId)
         }
@@ -45,8 +45,8 @@ export function registerTeamSocket(io: Server, socket: Socket, roomStateManager:
 
         const index = roomState.teamMembersMap[teamId].findIndex((m) => {
             return (
-                (m.type === 'manual' && member.type === 'manual' && m.name === member.name) ||
-                (m.type === 'online' && member.type === 'online' && m.user.identityKey === member.user.identityKey)
+                (m.type === 'MANUAL' && member.type === 'MANUAL' && m.name === member.name) ||
+                (m.type === 'ONLINE' && member.type === 'ONLINE' && m.user.identityKey === member.user.identityKey)
             );
         });
 

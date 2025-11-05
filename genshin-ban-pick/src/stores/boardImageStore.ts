@@ -26,7 +26,7 @@ export const useBoardImageStore = defineStore('boardImage', () => {
         boardImageMap.value = { ...newBoardImageMap }
     }
 
-    function placeBoardImage(imageId: string, zoneId: number) {
+    function placeBoardImage(zoneId: number, imageId: string) {
         console.debug('[BOARD IMAGE STORE] Place board image', imageId, zoneId)
         boardImageMap.value[zoneId] = imageId
     }

@@ -1,98 +1,88 @@
 // src/composables/useAuth.ts
-import { ref, computed } from 'vue';
 
-import { getCurrentUser } from '@/network/authService';
-import { useSocketStore } from '@/stores/socketStore';
-
-interface UserInfo {
-    id: string;
-    account: string;
-    nickname: string;
-}
-const user = ref<UserInfo | null>(null);
-const guestId = ref<string | null>(localStorage.getItem('guest_id'));
+import { registerMember, loginMember, loginGuest, getAuthSession } from '@/network/authService';
+import { useAuthStore, type Identity } from '@/stores/authStore';
+import { TokenNotFound } from '@/errors/AppError';
 
 export function useAuth() {
-    const socketStore = useSocketStore();
-    const isLoggedIn = computed(() => !!user.value);
-    const isGuest = computed(() => !!guestId.value && !user.value);
-    const identityKey = computed(() => {
-        if (user.value) {
-            return `user:${user.value.id}`;
-        } else if (guestId.value) {
-            return `guest:${guestId.value}`;
-        } else {
-            return null;
-        }
-    });
-    const nickname = computed(() => {
-        if (user.value) {
-            return user.value.nickname;
-        } else if (guestId.value) {
-            return guestId.value;
-        } else {
-            return null;
-        }
-    });
-
-    function proceedAsGuest() {
-        console.info(`[AUTH] Proceed as guestId:`, guestId);
-        if (!guestId.value) {
-            guestId.value = `guest_${Math.random().toString(36).slice(2, 8)}`;
-            localStorage.setItem('guest_id', guestId.value);
-            localStorage.removeItem('auth_token');
-        }
-
-        socketStore.connect(undefined, guestId.value);
-    }
-
-    function login(userInfo: UserInfo, token: string) {
-        console.info(`[AUTH] Login userInfo:`, userInfo);
-        user.value = { ...userInfo };
-        localStorage.setItem('auth_token', token);
-        localStorage.removeItem('guest_id');
-
-        socketStore.connect(token, undefined);
-    }
+    const authStore = useAuthStore();
+    const { setIdentity, removeIdentity, getToken, setToken } = authStore;
 
     function logout() {
-        console.info(`[AUTH] Logout ${JSON.stringify(user.value)}`);
-        user.value = null;
-        localStorage.removeItem('auth_token');
-
-        socketStore.socket?.disconnect();
+        console.info(`[AUTH] Logout`);
+        removeIdentity();
+        setToken(null);
     }
 
-    async function tryAutoLogin() {
-        const token = localStorage.getItem('auth_token');
+    async function handleRegisterMember(payload: {
+        account: string;
+        password: string;
+        nickname: string;
+    }): Promise<{ identity: Identity; token: string }> {
+        try {
+            let response = await registerMember(payload);
+            const newIdentity: Identity = { type: 'MEMBER', user: { ...response.data } };
+            const token = response.data.token;
+            setIdentity(newIdentity);
+            setToken(token);
+            return { identity: newIdentity, token };
+        } catch (error: any) {
+            throw error;
+        }
+    }
+
+    async function handleLoginMember(payload: { account: string; password: string }): Promise<{ identity: Identity; token: string }> {
+        try {
+            const response = await loginMember(payload);
+            const newIdentity: Identity = { type: 'MEMBER', user: { ...response.data } };
+            const token = response.data.token;
+            setIdentity(newIdentity);
+            setToken(token);
+            return { identity: newIdentity, token };
+        } catch (error: any) {
+            console.error(`[AUTH] Handle login member failed error:`, error);
+            throw error;
+        }
+    }
+
+    async function handleLoginGuest(): Promise<{ identity: Identity; token: string }> {
+        try {
+            const nickname = `guest_${Math.random().toString(36).slice(2, 8)}`;
+            const response = await loginGuest({ nickname });
+            const newIdentity: Identity = { type: 'GUEST', user: { ...response.data } };
+            const token = response.data.token;
+            setIdentity(newIdentity);
+            setToken(token);
+            return { identity: newIdentity, token };
+        } catch (error) {
+            console.error(`[AUTH] Handle login guest failed error:`, error);
+            throw error;
+        }
+    }
+
+    async function tryAutoLogin(): Promise<{ identity: Identity; token: string }> {
+        const token = getToken();
         if (!token) {
             console.warn('[AUTH] Auto login failed, token is nil');
-            return false;
+            throw new TokenNotFound();
         }
 
         try {
-            const response = await getCurrentUser();
-            const userInfo = response.data;
-            console.info(`[AUTH] Auto login success userInfo:`, userInfo);
-            login(userInfo, token);
-            return true;
+            const response = await getAuthSession();
+            const newIdentity: Identity = { type: response.data.type, user: { ...response.data } };
+            setIdentity(newIdentity);
+            return { identity: newIdentity, token };
         } catch (error) {
             console.error(`[AUTH] Auto login failed error:`, error);
-            logout();
-            return false;
+            throw error;
         }
     }
 
     return {
-        user,
-        guestId,
-        isLoggedIn,
-        isGuest,
-        identityKey,
-        nickname,
-        proceedAsGuest,
-        login,
-        logout,
+        handleRegisterMember,
+        handleLoginMember,
+        handleLoginGuest,
         tryAutoLogin,
+        logout,
     };
 }

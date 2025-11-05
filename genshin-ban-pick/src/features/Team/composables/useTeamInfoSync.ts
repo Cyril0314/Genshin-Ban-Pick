@@ -7,7 +7,7 @@ import { useTeamInfoStore } from '@/stores/teamInfoStore';
 import { useRoomUserStore } from '@/stores/roomUserStore';
 
 import type { IRoomUser } from '@/types/IRoomUser';
-import type { TeamMember, TeamMembersMap } from '@/types/ITeam';
+import type { TeamMember, TeamMembersMap } from '@/types/TeamMember';
 
 enum SocketEvent {
     TEAM_MEMBER_ADD_REQUEST = 'team.member.add.request',
@@ -28,7 +28,7 @@ export function useTeamInfoSync() {
 
     function handleMemberInput({ name, teamId }: { name: string; teamId: number }) {
         const teamMembers = teamMembersMap.value[teamId];
-        if (teamMembers.some((m) => m.type === 'manual' && m.name === name)) {
+        if (teamMembers.some((m) => m.type === 'MANUAL' && m.name === name)) {
             return;
         }
         let teamMember = createManualMember(name);
@@ -39,13 +39,13 @@ export function useTeamInfoSync() {
         const roomUser = roomUsers.value.find((roomUser) => roomUser.identityKey === identityKey);
         if (!roomUser) return;
         const teamMembers = teamMembersMap.value[teamId];
-        if (teamMembers.some((m) => m.type === 'online' && m.user.identityKey === roomUser.identityKey)) {
+        if (teamMembers.some((m) => m.type === 'ONLINE' && m.user.identityKey === roomUser.identityKey)) {
             return;
         }
         let teamMember = createOnlineMember(roomUser);
 
         for (const [teamId, members] of Object.entries(teamMembersMap.value)) {
-            teamMembersMap.value[Number(teamId)] = members.filter((m) => m.type !== 'online' || m.user.identityKey !== identityKey);
+            teamMembersMap.value[Number(teamId)] = members.filter((m) => m.type !== 'ONLINE' || m.user.identityKey !== identityKey);
             removeTeamMember(Number(teamId), teamMember)
         }
 
@@ -57,11 +57,11 @@ export function useTeamInfoSync() {
     }
 
     function createOnlineMember(user: IRoomUser): TeamMember {
-        return { type: 'online', user };
+        return { type: 'ONLINE', user };
     }
 
     function createManualMember(name: string): TeamMember {
-        return { type: 'manual', name };
+        return { type: 'MANUAL', name };
     }
 
     function addTeamMember(teamId: number, member: TeamMember) {

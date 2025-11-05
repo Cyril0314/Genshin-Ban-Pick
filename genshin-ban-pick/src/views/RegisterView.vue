@@ -4,28 +4,27 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-import { registerUser } from '../network/authService';
+import { useAuth } from '../composables/useAuth';
+import { useSocketStore } from '@/stores/socketStore';
 
 const router = useRouter();
+const { handleRegisterMember } = useAuth();
+const socketStore = useSocketStore();
 
-const account = ref('');
-const nickname = ref('');
-const password = ref('');
-const confirmPassword = ref('');
+const accountInput = ref('');
+const nicknameInput = ref('');
+const passwordInput = ref('');
+const confirmPasswordInput = ref('');
 
-async function handleRegister() {
-    if (password.value !== confirmPassword.value) {
+async function handleRegisterMemberSubmit() {
+    if (passwordInput.value !== confirmPasswordInput.value) {
         alert('密碼不一致');
         return;
     }
-
-    try {
-        await registerUser({
-            account: account.value,
-            password: password.value,
-            nickname: nickname.value,
-        });
-        router.push('/login'); // 成功後導向登入頁
+    try { 
+        const { token } = await handleRegisterMember({ account: accountInput.value, password: passwordInput.value, nickname: nicknameInput.value })
+        socketStore.connect(token)
+        router.push('/');
     } catch (error: any) {
         alert(`${error.response?.data?.message || '註冊失敗'}`);
     }
@@ -38,25 +37,25 @@ async function handleRegister() {
             <div class="register__header">
                 <h2>創建新帳號</h2>
             </div>
-            <form class="register__form" @submit.prevent="handleRegister">
+            <form class="register__form" @submit.prevent="handleRegisterMemberSubmit">
                 <div class="form__group">
                     <label for="account">帳號</label>
-                    <input id="account" v-model="account" type="text" placeholder="請輸入帳號" required />
+                    <input id="account" v-model="accountInput" type="text" placeholder="請輸入帳號" required />
                 </div>
 
                 <div class="form__group">
                     <label for="nickname">暱稱</label>
-                    <input id="nickname" v-model="nickname" type="text" placeholder="請輸入暱稱" required />
+                    <input id="nickname" v-model="nicknameInput" type="text" placeholder="請輸入暱稱" required />
                 </div>
 
                 <div class="form__group">
                     <label for="password">密碼</label>
-                    <input id="password" v-model="password" type="password" placeholder="請輸入密碼" required />
+                    <input id="password" v-model="passwordInput" type="password" placeholder="請輸入密碼" required />
                 </div>
 
                 <div class="form__group">
                     <label for="confirmPassword">確認密碼</label>
-                    <input id="confirmPassword" v-model="confirmPassword" type="password" placeholder="再次輸入密碼" required />
+                    <input id="confirmPassword" v-model="confirmPasswordInput" type="password" placeholder="再次輸入密碼" required />
                 </div>
 
                 <button type="submit" class="btn__submit">註冊</button>

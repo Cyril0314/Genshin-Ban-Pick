@@ -6,7 +6,7 @@ import type { IChatMessage } from '@/types/IChatMessage';
 import type { IChatMessageDTO } from '@/types/IChatMessageDTO';
 
 import { useSocketStore } from '@/stores/socketStore';
-import { useAuth } from '@/composables/useAuth';
+import { useAuthStore } from '@/stores/authStore';
 import { useChatStore } from '@/stores/chatStore';
 
 enum SocketEvent {
@@ -19,7 +19,8 @@ enum SocketEvent {
 
 export function useChat() {
     const socket = useSocketStore().getSocket();
-    const { identityKey, nickname } = useAuth();
+    const authStore = useAuthStore();
+    const { identityKey, nickname } = storeToRefs(authStore);
     const chatStore = useChatStore();
     const { messages } = storeToRefs(chatStore);
     const { addMessage, setMessages } = chatStore;

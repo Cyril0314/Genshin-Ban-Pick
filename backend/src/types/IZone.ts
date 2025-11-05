@@ -1,4 +1,4 @@
-// backend/src/type/IZone.ts
+// backend/src/types/IZone.ts
 
 export interface IZone {
     id: number;

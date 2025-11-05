@@ -15,10 +15,7 @@ const logger = createLogger('SOCKET CONTROLLER');
 
 export function setupSocketIO(io: Server) {
     io.on('connection', (socket: Socket) => {
-        logger.info(`User connected socket.id: ${socket.id}`, {
-            userId: socket.data.userId ?? null,
-            guestId: socket.data.guestId ?? null,
-        });
+        logger.info(`User connected socket.id: ${socket.id} identity:`, socket.data.identity);
 
         const roomStateManager = new RoomStateManager();
 

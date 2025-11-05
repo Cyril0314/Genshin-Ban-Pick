@@ -6,13 +6,13 @@ import { getWishImagePath } from '@/utils/imageRegistry'
 import { DragTypes } from '@/constants/customMIMETypes'
 
 const props = defineProps<{
-  cellId: string
+  cellId: number
   imageId?: string
 }>()
 
 const emit = defineEmits<{
-  (e: 'image-drop', payload: { imgId: string, cellId: string }): void
-  (e: 'image-restore', payload: { cellId: string }): void
+  (e: 'image-drop', payload: { cellId: number, imgId: string }): void
+  (e: 'image-restore', payload: { cellId: number }): void
 }>()
 
 const isOver = ref(false)
@@ -29,8 +29,8 @@ function handleDropEvent(event: DragEvent) {
   event.preventDefault()
   isOver.value = false
   const imgId = event.dataTransfer?.getData(DragTypes.CHARACTER_IMAGE)
-  if (!imgId || props.imageId) return
-  emit('image-drop', { imgId, cellId: props.cellId })
+  if (!imgId) return
+  emit('image-drop', { cellId: props.cellId, imgId })
 }
 
 function handleClickEvent() {

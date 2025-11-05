@@ -22,9 +22,9 @@ export function registerChatSocket(io: Server, socket: Socket, roomStateManager:
       const roomId = (socket as any).roomId;
       if (!roomId || !message) return;
 
-      const identityKey = socket.data.identityKey;
       const roomState = roomStateManager.ensure(roomId);
-      const nickname = socket.data.nickname as string;
+      const identityKey = socket.data.identity.identityKey as string;
+      const nickname = socket.data.identity.nickname as string;
       const newMsg = { identityKey, nickname, message, timestamp: Date.now() };
       roomState.chatMessages.push(newMsg);
 

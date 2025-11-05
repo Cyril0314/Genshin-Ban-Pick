@@ -5,27 +5,33 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { useAuth } from '../composables/useAuth';
-import { loginUser } from '../network/authService';
+import { useSocketStore } from '@/stores/socketStore';
 
-const account = ref('');
-const password = ref('');
 const router = useRouter();
-const { proceedAsGuest, login } = useAuth();
+const { handleLoginMember, handleLoginGuest } = useAuth();
+const socketStore = useSocketStore();
 
-async function handleLogin() {
-    try {
-        const response = await loginUser({ account: account.value, password: password.value });
-        const { id, account: userAccount, nickname, token } = response.data;
-        login({ id, account: userAccount, nickname }, token);
+const accountInput = ref('');
+const passwordInput = ref('');
+
+async function handleLoginMemberSubmit() {
+    try { 
+        const { token } = await handleLoginMember({ account: accountInput.value, password: passwordInput.value })
+        socketStore.connect(token)
         router.push('/');
     } catch (error: any) {
         alert(`${error.response?.data?.message || '登入失敗，請確認帳密'}`);
     }
 }
 
-function handleProceedAsGuest() {
-    proceedAsGuest();
-    router.push('/');
+async function handleLoginGuestButtonClick() {
+    try { 
+        const { token } = await handleLoginGuest()
+        socketStore.connect(token)
+        router.push('/');
+    } catch (error: any) {
+        alert(`${error.response?.data?.message || '登入失敗，請確認帳密'}`);
+    }
 }
 </script>
 
@@ -35,22 +41,22 @@ function handleProceedAsGuest() {
             <div class="login__header">
                 <h2>使用者登入</h2>
             </div>
-            <form class="login__form" @submit.prevent="handleLogin">
+            <form class="login__form" @submit.prevent="handleLoginMemberSubmit">
                 <div class="form__group">
                     <label for="account">帳號</label>
-                    <input id="account" v-model="account" type="text" placeholder="請輸入帳號" required />
+                    <input id="account" v-model="accountInput" type="text" placeholder="請輸入帳號" required />
                 </div>
 
                 <div class="form__group">
                     <label for="password">密碼</label>
-                    <input id="password" v-model="password" type="password" placeholder="請輸入密碼" required />
+                    <input id="password" v-model="passwordInput" type="password" placeholder="請輸入密碼" required />
                 </div>
 
                 <button type="submit" class="btn__submit">登入</button>
             </form>
 
             <div class="alternative__actions">
-                <button class="btn__guest" @click="handleProceedAsGuest">以訪客身份繼續</button>
+                <button class="btn__guest" @click="handleLoginGuestButtonClick">以訪客身份繼續</button>
                 <p class="redirect__text">
                     還沒有帳號？
                     <RouterLink to="/register" class="redirect__link">前往註冊</RouterLink>

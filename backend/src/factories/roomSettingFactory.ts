@@ -6,6 +6,8 @@ import {
     numberOfPick,
     totalRounds,
     teams,
+    numberOfTeamSetup,
+    numberOfSetupCharacter,
 } from '../constants/constants.ts';
 import { createZoneMetaTable } from '../utils/zoneMetaTable.ts';
 import { generateBanPickSteps } from '../utils/banPickSteps.ts';
@@ -23,5 +25,7 @@ export function createRoomSetting() {
         totalRounds,
         banPickSteps,
         teams,
+        numberOfTeamSetup,
+        numberOfSetupCharacter,
     };
 }

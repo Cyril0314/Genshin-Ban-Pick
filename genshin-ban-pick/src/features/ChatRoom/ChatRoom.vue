@@ -1,14 +1,16 @@
 <!-- src/features/ChatRoom/ChatRoom.vue -->
 <script setup lang="ts">
 import { ref, nextTick, watch, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 
 import { useChat } from './composables/useChat.ts'
-import { useAuth } from '@/composables/useAuth.ts'
+import { useAuthStore } from '@/stores/authStore.ts'
 
 const newMessage = ref('')
 const messagesContainer = ref<HTMLElement | null>(null)
 const { messages, sendMessage } = useChat()
-const { nickname } = useAuth()
+const authStore = useAuthStore();
+const { nickname } = storeToRefs(authStore);
 
 watch(messages, (newMessages) => {
   scrollToBottom()

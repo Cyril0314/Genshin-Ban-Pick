@@ -1,15 +1,21 @@
 <!-- src/features/BanPick/components/Toolbar.vue -->
 
 <script setup lang="ts">
+import { ref } from 'vue';
+
 import ChatRoomDrawer from '@/features/ChatRoom/ChatRoomDrawer.vue';
 import TacticalBoardPanelDrawer from '@/features/Tactical/TacticalBoardPanelDrawer.vue';
-import { ref } from 'vue';
+
+import { useAuthStore } from '@/stores/authStore';
+import { storeToRefs } from 'pinia';
 
 const emit = defineEmits<{
     (e: 'image-map-reset'): void;
     (e: 'board-record'): void;
 }>();
 
+const authStore = useAuthStore()
+const { isAdmin } = storeToRefs(authStore)
 const isTaticalDrawerOpen = ref(false);
 const isChatRoomDrawerOpen = ref(false);
 
@@ -42,9 +48,9 @@ function handleRecordButtonClickEvent() {
         <button class="toolbar__button toolbar__button--chat" @click="handleChatButtonClickEvent">聊天</button>
         <ChatRoomDrawer v-model:open="isChatRoomDrawerOpen"/>
 
-        <button class="toolbar__button toolbar__button--reset" @click="handleResetButtonClickEvent">重置</button>
+        <button v-if="isAdmin" class="toolbar__button toolbar__button--reset" @click="handleResetButtonClickEvent">重置</button>
 
-        <button class="toolbar__button toolbar__button--record" @click="handleRecordButtonClickEvent">紀錄</button>
+        <button v-if="isAdmin" class="toolbar__button toolbar__button--record" @click="handleRecordButtonClickEvent">紀錄</button>
     </div>
 </template>
 

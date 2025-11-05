@@ -1,4 +1,4 @@
-// backend/src/type/IBanPickStep.ts
+// backend/src/types/IBanPickStep.ts
 
 export interface IBanPickStep {
     index: number;

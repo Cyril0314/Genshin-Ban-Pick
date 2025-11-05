@@ -26,8 +26,8 @@ export function registerRoomSocket(io: Server, socket: Socket, roomStateManager:
         socket.join(roomId);
         (socket as any).roomId = roomId;
 
-        const nickname = socket.data.nickname as string;
-        const identityKey = socket.data.identityKey;
+        const nickname = socket.data.identity.nickname as string;
+        const identityKey = socket.data.identity.identityKey as string;
 
         const roomUser = {
             id: socket.id,
@@ -50,7 +50,7 @@ export function registerRoomSocket(io: Server, socket: Socket, roomStateManager:
             // 新使用者加入
             roomState.users.push(roomUser);
             socket.to(roomId).emit(SocketEvent.ROOM_USER_JOIN_BROADCAST, roomUser);
-            logger.info(`Sent ${SocketEvent.ROOM_USER_JOIN_BROADCAST} joinedUser: ${JSON.stringify(roomUser, null, 2)}`);
+            logger.info(`Sent ${SocketEvent.ROOM_USER_JOIN_BROADCAST} joinedUser:`, roomUser);
         }
 
         syncRoomUsersStateAll(io, roomId, roomStateManager);
@@ -68,7 +68,7 @@ export function registerRoomSocket(io: Server, socket: Socket, roomStateManager:
 
 export function handleRoomUserLeave(io: Server, socket: Socket, roomId: string, roomStateManager: RoomStateManager) {
     socket.leave(roomId);
-    const identityKey = socket.data.identityKey;
+    const identityKey = socket.data.identity.identityKey as string;
 
     const roomState = roomStateManager.ensure(roomId);
     const leavingUser = roomState.users.find((u) => u.identityKey === identityKey);
@@ -79,11 +79,11 @@ export function handleRoomUserLeave(io: Server, socket: Socket, roomId: string, 
 
     if (leavingUser) {
         socket.to(roomId).emit(SocketEvent.ROOM_USER_LEAVE_BROADCAST, leavingUser);
-        logger.info(`Sent ${SocketEvent.ROOM_USER_LEAVE_BROADCAST} leavingUser: ${JSON.stringify(leavingUser, null, 2)}`);
+        logger.info(`Sent ${SocketEvent.ROOM_USER_LEAVE_BROADCAST} leavingUser:`, leavingUser);
     }
 
     for (const [teamId, members] of Object.entries(roomState.teamMembersMap)) {
-        roomState.teamMembersMap[Number(teamId)] = members.filter((m) => m.type !== 'online' || m.user.identityKey !== identityKey);
+        roomState.teamMembersMap[Number(teamId)] = members.filter((m) => m.type !== 'ONLINE' || m.user.identityKey !== identityKey);
     }
     
     syncTeamMembersMapStateAll(io, roomId, roomStateManager);

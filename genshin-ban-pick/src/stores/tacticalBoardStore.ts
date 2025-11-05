@@ -1,17 +1,20 @@
 // src/stores/taticalBoardStore.ts
 
-import { computed, reactive, ref, watch, type Ref } from "vue";
+import { computed, reactive, ref, shallowRef, watch } from "vue";
 import { defineStore } from "pinia";
 
 import type { ITeam } from "@/types/ITeam";
 
-export type TacticalCellImageMap = Record<string, string>
+export type TacticalCellImageMap = Record<number, string>
 
 export const useTaticalBoardStore = defineStore('taticalBoard', () => {
     const teamTaticalBoardPanelMap: Record<number, {
         poolImageIds: string[];
         cellImageMap: TacticalCellImageMap;
     }> = reactive({});
+
+    const numberOfTeamSetup = shallowRef(0)
+    const numberOfSetupCharacter = shallowRef(0)
 
     const displayPoolImageIds = (teamId: number) => computed(() => {
         const taticalBoardPanel = teamTaticalBoardPanelMap[teamId];
@@ -32,7 +35,7 @@ export const useTaticalBoardStore = defineStore('taticalBoard', () => {
     }, { deep: true, immediate: true })
 
 
-    function initTeamTaticalBoardMap(teams: ITeam[]) {
+    function initTeamTaticalBoardMap(teams: ITeam[], newNumberOfTeamSetup: number, newNumberOfSetupCharacter: number) {
         console.debug('[TATICAL BOARD STORE] Init team tatical board panel map', teams)
         for (const team of teams) {
             teamTaticalBoardPanelMap[team.id] = {
@@ -40,6 +43,8 @@ export const useTaticalBoardStore = defineStore('taticalBoard', () => {
                 cellImageMap: {}
             };
         }
+        numberOfTeamSetup.value = newNumberOfTeamSetup
+        numberOfSetupCharacter.value = newNumberOfSetupCharacter
     }
 
     function addImageToPool(teamId: number, imgId: string) {
@@ -51,38 +56,32 @@ export const useTaticalBoardStore = defineStore('taticalBoard', () => {
         }
     }
 
-    function removeImageFromBoard(teamId: number, imgId: string) {
-        console.debug('[TATICAL BOARD STORE] Remove image from board', teamId, imgId)
+    function removeImageFromPool(teamId: number, imgId: string) {
+        console.debug('[TATICAL BOARD STORE] Remove image from pool', teamId, imgId)
         const taticalBoardPanel = teamTaticalBoardPanelMap[teamId];
         if (!taticalBoardPanel) return;
         const index = taticalBoardPanel.poolImageIds.indexOf(imgId)
         if (index !== -1) {
             taticalBoardPanel.poolImageIds.splice(index, 1)
         }
-        for (const [k, v] of Object.entries(taticalBoardPanel.cellImageMap)) {
-            if (v === imgId) delete taticalBoardPanel.cellImageMap[k]
-        }
     }
 
-    function placeCellImage(teamId: number, cellId: string, imgId: string) {
+    function placeCellImage(teamId: number, cellId: number, imgId: string) {
         console.debug('[TATICAL BOARD STORE] Place cell image', teamId, cellId, imgId)
         const taticalBoardPanel = teamTaticalBoardPanelMap[teamId];
         if (!taticalBoardPanel) return;
-        for (const [k, v] of Object.entries(taticalBoardPanel.cellImageMap)) {
-            if (v === imgId) delete taticalBoardPanel.cellImageMap[k]
-        }
         taticalBoardPanel.cellImageMap[cellId] = imgId
     }
 
-    function removeCellImage(teamId: number, cellId: string) {
+    function removeCellImage(teamId: number, cellId: number) {
         console.debug('[TATICAL BOARD STORE] Remove cell image', teamId, cellId)
         const taticalBoardPanel = teamTaticalBoardPanelMap[teamId];
         if (!taticalBoardPanel) return;
         delete taticalBoardPanel.cellImageMap[cellId]
     }
 
-    function reset(teamId: number) {
-        console.debug('[TATICAL BOARD STORE] Reset', teamId)
+    function resetBoard(teamId: number) {
+        console.debug('[TATICAL BOARD STORE] Reset board', teamId)
         const taticalBoardPanel = teamTaticalBoardPanelMap[teamId];
         if (!taticalBoardPanel) return;
         taticalBoardPanel.poolImageIds = []
@@ -96,42 +95,30 @@ export const useTaticalBoardStore = defineStore('taticalBoard', () => {
         taticalBoardPanel.cellImageMap = taticalCellImageMap
     }
 
-    function allTeamAddImageToPool(imgId: string) {
-        console.debug('[TATICAL BOARD STORE] All team add image to pool', imgId)
-        for (const teamIdString of Object.keys(teamTaticalBoardPanelMap)) {
-            const teamId = Number(teamIdString)
-            addImageToPool(teamId, imgId);
+    function findCellIdByImageId(teamId: number, imgId: string): number | null {
+        const taticalBoardPanel = teamTaticalBoardPanelMap[teamId];
+        if (!taticalBoardPanel) return null;
+        const value = Object.entries(taticalBoardPanel.cellImageMap).find(([, f]) => f === imgId)
+        if (!value) {
+            console.debug('[TATICAL BOARD STORE] Cannot find cell id by image id', imgId)
+            return null
         }
-    }
-
-    function allTeamRemoveImageFromBoard(imgId: string) {
-        console.debug('[TATICAL BOARD STORE] All team remove image from board', imgId)
-        for (const teamIdString of Object.keys(teamTaticalBoardPanelMap)) {
-            const teamId = Number(teamIdString)
-            removeImageFromBoard(teamId, imgId)
-        }
-    }
-
-    function allTeamReset() {
-        console.debug('[TATICAL BOARD STORE] All team reset')
-        for (const teamIdString of Object.keys(teamTaticalBoardPanelMap)) {
-            const teamId = Number(teamIdString)
-            reset(teamId)
-        }
+        console.debug('[TATICAL BOARD STORE] Find cell id by image id', value[0], imgId)
+        return Number(value[0])
     }
 
     return {
         teamTaticalBoardPanelMap,
+        numberOfTeamSetup,
+        numberOfSetupCharacter,
         displayPoolImageIds,
         initTeamTaticalBoardMap,
         addImageToPool,
-        removeImageFromBoard,
+        removeImageFromPool,
         placeCellImage,
         removeCellImage,
-        reset,
+        resetBoard,
         setTaticalCellImageMap,
-        allTeamAddImageToPool,
-        allTeamRemoveImageFromBoard,
-        allTeamReset
+        findCellIdByImageId,
     }
 })

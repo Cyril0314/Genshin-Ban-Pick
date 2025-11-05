@@ -12,7 +12,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    (e: 'image-drop', payload: { imgId: string; zoneId: number }): void;
+    (e: 'image-drop', payload: { zoneId: number; imgId: string }): void;
     (e: 'image-restore', payload: { zoneId: number }): void;
 }>();
 
@@ -26,9 +26,9 @@ function chunk<T>(arr: T[], size: number): T[][] {
 
 const zoneMatrix = chunk(props.zones ?? [], props.maxPerRow);
 
-function handleImageDrop({ imgId, zoneId }: { imgId: string; zoneId: number }) {
-    console.debug(`[BAN ZONES] Handle image drop`, imgId, zoneId);
-    emit('image-drop', { imgId, zoneId });
+function handleImageDrop({ zoneId, imgId }: { zoneId: number; imgId: string }) {
+    console.debug(`[BAN ZONES] Handle image drop`, zoneId, imgId);
+    emit('image-drop', { zoneId, imgId });
 }
 
 function handleImageRestore({ zoneId }: { zoneId: number }) {

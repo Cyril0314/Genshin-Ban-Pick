@@ -9,7 +9,7 @@ import { ref } from 'vue';
 export const useSocketStore = defineStore('socket', () => {
     const socket = ref<Socket | null>(null);
 
-    function connect(token?: string, guestId?: string) {
+    function connect(token: string) {
         console.info(`[SOCKET] Connecting`);
         if (socket.value?.connected) {
             console.warn(`[SOCKET] Has Connected`);
@@ -17,10 +17,7 @@ export const useSocketStore = defineStore('socket', () => {
         }
 
         const baseURL = import.meta.env.VITE_SOCKET_URL;
-
-        socket.value = io(baseURL, {
-            auth: token ? { token } : { guestId },
-        });
+        socket.value = io(baseURL, { auth: { token } });
 
         socket.value.on('connect', () => {
             console.info('[SOCKET] Connected:', socket.value!.id);
@@ -41,6 +38,15 @@ export const useSocketStore = defineStore('socket', () => {
         });
     }
 
+    function disconnect() {
+        console.info(`[SOCKET] Disconnecting`);
+        if (!socket.value || socket.value.disconnected) {
+            console.warn(`[SOCKET] Has Disconnected`);
+            return
+        }
+        socket.value?.disconnect()
+    }
+
     function getSocket(): Socket {
         if (!socket.value) throw new SocketNotConnected();
         return socket.value as Socket;
@@ -49,6 +55,7 @@ export const useSocketStore = defineStore('socket', () => {
     return {
         socket,
         connect,
+        disconnect,
         getSocket,
     };
 });

@@ -3,7 +3,8 @@
 import { defineStore } from 'pinia';
 import { ref, computed, watch, shallowRef } from 'vue';
 
-import type { ITeam, TeamMember, TeamMembersMap } from '@/types/ITeam';
+import type { ITeam } from '@/types/ITeam';
+import type { TeamMember, TeamMembersMap } from '@/types/TeamMember';
 
 export const useTeamInfoStore = defineStore('teamInfo', () => {
     const teams = shallowRef<ITeam[]>([]);
@@ -37,8 +38,8 @@ export const useTeamInfoStore = defineStore('teamInfo', () => {
         const teamMembers = teamMembersMap.value[teamId];
         const index = teamMembers.findIndex((m) => {
             return (
-                (m.type === 'manual' && member.type === 'manual' && m.name === member.name) ||
-                (m.type === 'online' && member.type === 'online' && m.user.identityKey === member.user.identityKey)
+                (m.type === 'MANUAL' && member.type === 'MANUAL' && m.name === member.name) ||
+                (m.type === 'ONLINE' && member.type === 'ONLINE' && m.user.identityKey === member.user.identityKey)
             );
         });
         if (index !== -1) {

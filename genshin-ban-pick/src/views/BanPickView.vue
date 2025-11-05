@@ -71,7 +71,7 @@ onMounted(async () => {
         boardImageStore.initZoneMetaTable(roomSetting.value.zoneMetaTable);
         teamInfoStore.initTeams(roomSetting.value.teams);
         banPickStepStore.initBanPickSteps(roomSetting.value.banPickSteps);
-        taticalBoardStore.initTeamTaticalBoardMap(roomSetting.value.teams);
+        taticalBoardStore.initTeamTaticalBoardMap(roomSetting.value.teams, roomSetting.value.numberOfTeamSetup, roomSetting.value.numberOfSetupCharacter);
         const roomId = getRoomId();
         joinRoom(roomId);
     } catch (error) {
@@ -213,7 +213,18 @@ function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
     width: 100%;
     height: 100%;
     padding: var(--space-sm);
+    /* align-items: stretch; */
 }
+
+.layout__core {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--space-xl);
+    flex: 1;
+    min-height: 0;
+}
+
 .layout__top {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -237,15 +248,6 @@ function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
     display: flex;
     align-items: center;
     justify-content: end;
-}
-
-.layout__core {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: var(--space-xl);
-    flex: 1;
-    min-height: 0;
 }
 
 </style>

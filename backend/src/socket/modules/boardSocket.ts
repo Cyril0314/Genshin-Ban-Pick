@@ -21,18 +21,15 @@ enum SocketEvent {
 }
 
 export function registerBoardSocket(io: Server, socket: Socket, roomStateManager: RoomStateManager) {
-    socket.on(`${SocketEvent.BOARD_IMAGE_DROP_REQUEST}`, ({ imgId, zoneId }: { imgId: string; zoneId: number }) => {
-        logger.info(`Received ${SocketEvent.BOARD_IMAGE_DROP_REQUEST} imgId: ${imgId} zoneId: ${zoneId}`);
+    socket.on(`${SocketEvent.BOARD_IMAGE_DROP_REQUEST}`, ({ zoneId, imgId }: { zoneId: number; imgId: string }) => {
+        logger.info(`Received ${SocketEvent.BOARD_IMAGE_DROP_REQUEST}`, { zoneId, imgId });
         const roomId = (socket as any).roomId;
         if (!roomId) return;
 
-        const who = socket.data.userId ?? socket.data.guestId;
-        // console.log(`[Socket] image.drop.request from:`, who);
-
         const roomState = roomStateManager.ensure(roomId)
         roomState.boardImageMap[zoneId] = imgId;
-        socket.to(roomId).emit(`${SocketEvent.BOARD_IMAGE_DROP_BROADCAST}`, { imgId, zoneId });
-        logger.info(`Sent ${SocketEvent.BOARD_IMAGE_DROP_BROADCAST} imgId: ${imgId} zoneId: ${zoneId}`);
+        socket.to(roomId).emit(`${SocketEvent.BOARD_IMAGE_DROP_BROADCAST}`, { zoneId, imgId });
+        logger.info(`Sent ${SocketEvent.BOARD_IMAGE_DROP_BROADCAST}`, { zoneId, imgId });
     });
 
     socket.on(`${SocketEvent.BOARD_IMAGE_RESTORE_REQUEST}`, ({ zoneId }: { zoneId: number }) => {
@@ -43,7 +40,7 @@ export function registerBoardSocket(io: Server, socket: Socket, roomStateManager
         const roomState = roomStateManager.ensure(roomId);
         delete roomState.boardImageMap[zoneId];
         socket.to(roomId).emit(`${SocketEvent.BOARD_IMAGE_RESTORE_BROADCAST}`, { zoneId });
-        logger.info(`Sent ${SocketEvent.BOARD_IMAGE_RESTORE_BROADCAST} zoneId: ${zoneId}`);
+        logger.info(`Sent ${SocketEvent.BOARD_IMAGE_RESTORE_BROADCAST}`, { zoneId });
     });
 
     socket.on(`${SocketEvent.BOARD_IMAGE_MAP_RESET_REQUEST}`, () => {
@@ -61,5 +58,5 @@ export function registerBoardSocket(io: Server, socket: Socket, roomStateManager
 export function syncBoardImageMapStateSelf(socket: Socket, roomId: string, roomStateManager: RoomStateManager) {
     const boardImageMap = roomStateManager.getBoardImageMap(roomId);
     socket.emit(`${SocketEvent.BOARD_IMAGE_MAP_STATE_SYNC_SELF}`, boardImageMap);
-    logger.info(`Sent ${SocketEvent.BOARD_IMAGE_MAP_STATE_SYNC_SELF} boardImageMap: ${JSON.stringify(boardImageMap, null, 2)}`);
+    logger.info(`Sent ${SocketEvent.BOARD_IMAGE_MAP_STATE_SYNC_SELF}`, boardImageMap);
 }
