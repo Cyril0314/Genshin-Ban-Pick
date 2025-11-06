@@ -1,15 +1,16 @@
 <!-- src/features/ChatRoom/ChatRoom.vue -->
 <script setup lang="ts">
-import { ref, nextTick, watch } from 'vue'
+import { ref, nextTick, watch, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 
-import { useChat } from './composables/useChat.ts'
-
-import { useAuth } from '@/composables/useAuth.ts'
+import { useChatSync } from './composables/useChatSync.ts'
+import { useAuthStore } from '@/stores/authStore.ts'
 
 const newMessage = ref('')
 const messagesContainer = ref<HTMLElement | null>(null)
-const { messages, sendMessage } = useChat()
-const { user, guestId, isGuest } = useAuth()
+const { messages, sendMessage } = useChatSync()
+const authStore = useAuthStore();
+const { nickname } = storeToRefs(authStore);
 
 watch(messages, (newMessages) => {
   scrollToBottom()
@@ -35,20 +36,19 @@ function scrollToBottom() {
 <template>
   <div class="chat__window">
     <div class="chat__header">
-      <span id="current-nickname">暱稱:
-        <template v-if="!isGuest">{{ user?.nickname }}</template>
-        <template v-else>{{ guestId }}</template></span>
+      <span id="current-nickname">用戶名稱: {{ nickname }} </span>
       <!-- <button @click="changeNickname">更改</button> -->
     </div>
 
     <div ref="messagesContainer" class="chat__messages">
-      <div v-for="(msg, index) in messages" :key="index" class="chat__message">
-        <strong>{{ msg.senderName }}:</strong> {{ msg.message }}
+      <div v-for="(msg, index) in messages" :key="index" class="chat__message"
+        :class="[{ 'chat__message--self': msg.isSelf }]">
+        <strong>{{ msg.isSelf ? '' : `${msg.nickname}:` }}</strong> {{ msg.message }}
       </div>
     </div>
 
     <div class="chat__footer">
-      <input v-model="newMessage" @keydown.enter="handleSend" type="text" placeholder="哈囉今天過得好嗎" id="chat-input" />
+      <input v-model="newMessage" @keydown.enter="handleSend" type="text" placeholder="輸入" id="chat-input" />
       <button @click="handleSend">傳送</button>
     </div>
   </div>
@@ -56,19 +56,13 @@ function scrollToBottom() {
 
 <style scoped>
 .chat__window {
+  --size-chat-room: calc(var(--base-size) * 15);
+
   display: flex;
   flex-direction: column;
-  width: 100%;
-  height: var(--size-chat-room);
-  padding: calc(var(--space-sm));
-  gap: var(--space-xs);
-  border-radius: var(--border-radius-xs);
-  background-color: var(--md-sys-color-surface-container-alpha);
-  backdrop-filter: var(--backdrop-filter);
-  box-shadow: var(--box-shadow);
-
-  /* min-height: 200px; */
-  /* max-height: 360px; */
+  width: var(--size-chat-room);
+  height: 100%;
+  gap: var(--space-md);
 }
 
 .chat__window button {
@@ -76,7 +70,7 @@ function scrollToBottom() {
   border-radius: var(--border-radius-xs);
   padding: var(--space-sm);
   cursor: pointer;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-md);
   font-weight: var(--font-weight-bold);
   font-family: var(--font-family-tech-ui);
   background: var(--md-sys-color-primary-container);
@@ -94,12 +88,12 @@ function scrollToBottom() {
 
 .chat__header {
   display: flex;
-  gap: var(--space-xs);
+  gap: var(--space-sm);
   align-items: center;
 }
 
 #current-nickname {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
   font-family: var(--font-family-sans);
   color: var(--md-sys-color-on-primary-container);
@@ -113,30 +107,38 @@ function scrollToBottom() {
   flex-direction: column;
   overflow-y: auto;
   color: var(--md-sys-color-on-primary-container);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-regular);
-  font-family: var(--font-family-sans);
-  padding: var(--space-xs) 0px;
+  padding: var(--space-sm) 0;
+  gap: var(--space-xs);
+
+  overflow-y: scroll;
+  scrollbar-width: none;
 }
 
 .chat__message {
   max-width: 100%;
   word-break: break-all;
   overflow-wrap: break-word;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-regular);
+  font-family: var(--font-family-sans);
   color: var(--md-sys-color-on-surface-variant);
+}
+
+.chat__message--self {
+  text-align: end;
 }
 
 .chat__footer {
   display: flex;
   align-items: center;
-  gap: var(--space-xs);
+  gap: var(--space-sm);
 }
 
 #chat-input {
   height: 100%;
-  padding: var(--space-xs);
+  padding: var(--space-sm);
   border-radius: var(--border-radius-xs);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-md);
   font-weight: var(--font-weight-regular);
   font-family: var(--font-family-sans);
   flex: 1;

@@ -8,48 +8,8 @@
   /* 🔧 基準縮放：全站核心縮放節奏 */
   /* --base-size: clamp(1rem, 1vw, 4rem);  約 16px ~ 24px */
   /* --base-size: 2rem;  約 16px ~ 24px */
-  --base-size: 1.25vw;
-
-  /* 🅰️ 字體大小 */
-  --font-size-xs: calc(var(--base-size) * 0.5);
-  --font-size-sm: calc(var(--base-size) * 0.675);
-  --font-size-md: calc(var(--base-size) * 0.75);
-  --font-size-lg: calc(var(--base-size) * 1);
-  --font-size-xl: calc(var(--base-size) * 1.25);
-  --font-size-xxl: calc(var(--base-size) * 1.5);
-
-  /* 🅱️ 間距 spacing */
-  --space-xs: calc(var(--base-size) * 0.25);
-  --space-sm: calc(var(--base-size) * 0.375);
-  --space-md: calc(var(--base-size) * 0.5);
-  --space-lg: calc(var(--base-size) * 0.75);
-  --space-xl: calc(var(--base-size) * 1);
-
-  /* border-radius */
-  --border-radius-xs: calc(var(--base-size) * 0.25);
-  --border-radius-sm: calc(var(--base-size) * 0.5);
-  --border-radius-md: calc(var(--base-size) * 1); 
-  --border-radius-lg: calc(var(--base-size) * 1.5);
-  --border-radius-xl: calc(var(--base-size) * 2);
-
-  /* 📦 元件尺寸（保持關聯，縮放一致） */
-  --size-card-xl: calc(var(--base-size) * 20);
-  --size-dropzone: calc(var(--base-size) * 6);
-  --size-ban-pick-common-space: var(--space-sm);
-  --size-ban-row-spacer: var(--space-sm);
-  --size-drop-zone-line-space: var(--space-md);
-  --size-drop-zone-item-space: var(--space-sm);
-  --size-step-indicator: calc(var(--size-dropzone) * 2 + var(--size-drop-zone-item-space) * 4 + var(--size-ban-row-spacer) - 2 * var(--size-ban-pick-common-space));
-  --size-tool-button: calc(var(--base-size) * 2.5);
-  --size-image: calc(var(--base-size) * 2.75);
-  --size-image-tactical-pool: calc(var(--base-size) * 2.5);
-  --size-chat-room: calc(var(--base-size) * 12);
-  --size-tactical-cell: calc(var(--base-size) * 2.75);
-  --size-selector-height: calc(var(--base-size) * 2.25);
-
-  --size-room-user-pool: calc(var(--base-size) * 4);
-  --size-room-user-width: calc(var(--base-size) * 6);
-  --size-room-user-height: calc(var(--base-size) * 1.5);
+  /* --base-size: 1.2vw; */
+  --base-size: 22px;
 
   /* 📏 行高與字重  */
   --line-height-tightest: 1;
@@ -72,10 +32,6 @@
   --font-family-tech-ui: 'Audiowide', 'Noto Sans TC', sans-serif;
   --font-family-tech-mono: 'Share Tech Mono', monospace;
 
-  --box-shadow: 0 calc(var(--space-xs) / 2) calc(var(--space-xs) / 2) var(--md-sys-color-shadow-alpha);
-  --box-shadow-hover: 0 calc(var(--space-xs)) calc(var(--space-xs)) var(--md-sys-color-shadow-alpha);
-
-  --box-shadow-lg: 0 var(--space-xs) var(--space-xs) var(--md-sys-color-shadow-alpha);
   --backdrop-filter: blur(4px);
   --background-overlay: var(--md-sys-color-shadow-alpha);
 
@@ -90,6 +46,36 @@
   --team-second-on-bg: var(--md-sys-color-on-tertiary-container);
   --team-second-hover: var(--md-sys-color-tertiary);
   --team-second-alpha: var(--md-sys-color-tertiary-container-alpha);
+}
+
+.scale-context {
+    /* 🅰️ 字體大小 */
+  --font-size-xs: calc(var(--base-size) * 0.5);
+  --font-size-sm: calc(var(--base-size) * 0.675);
+  --font-size-md: calc(var(--base-size) * 0.75);
+  --font-size-lg: calc(var(--base-size) * 1);
+  --font-size-xl: calc(var(--base-size) * 1.25);
+  --font-size-xxl: calc(var(--base-size) * 1.5);
+
+  /* 🅱️ 間距 spacing */
+  --space-xs: calc(var(--base-size) * 0.25);
+  --space-sm: calc(var(--base-size) * 0.375);
+  --space-md: calc(var(--base-size) * 0.5);
+  --space-lg: calc(var(--base-size) * 0.75);
+  --space-xl: calc(var(--base-size) * 1);
+
+  /* border-radius */
+  --border-radius-xs: calc(var(--base-size) * 0.25);
+  --border-radius-sm: calc(var(--base-size) * 0.5);
+  --border-radius-md: calc(var(--base-size) * 1); 
+  --border-radius-lg: calc(var(--base-size) * 1.5);
+  --border-radius-xl: calc(var(--base-size) * 2);
+
+  --box-shadow: 0 calc(var(--space-xs) / 2) calc(var(--space-xs) / 2) var(--md-sys-color-shadow-alpha);
+  --box-shadow-hover: 0 calc(var(--space-xs)) calc(var(--space-xs)) var(--md-sys-color-shadow-alpha);
+  --box-shadow-lg: 0 var(--space-xs) var(--space-xs) var(--md-sys-color-shadow-alpha);
+
+  --size-card-lg: calc(var(--base-size) * 20);
 }
 
 html {

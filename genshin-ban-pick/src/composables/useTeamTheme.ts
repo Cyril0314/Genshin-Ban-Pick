@@ -2,12 +2,10 @@
 
 import { computed } from 'vue'
 
-import type { ITeam } from '@/types/ITeam'
-
 const themeKeyMap: Record<number, string> = { 0: "first", 1: "second" }
 
-export function useTeamTheme(teamId: number) {
-    const key = themeKeyMap[teamId] ?? "first"
+export function useTeamTheme(teamSlot: number) {
+    const key = themeKeyMap[teamSlot] ?? "first"
 
     const themeVars = computed(() => ({
         '--team-bg': `var(--team-${key}-bg)`,

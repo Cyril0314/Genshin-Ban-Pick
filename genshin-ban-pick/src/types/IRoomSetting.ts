@@ -1,13 +1,15 @@
 // src/types/IRoomSetting.ts
 
-import type { IBanPickStep } from "./IBanPickStep"
-import type { ITeam } from "./ITeam"
+import type { IMatchFlow } from './IMatchFlow';
+import type { ITeam } from './ITeam';
+import type { IZone } from './IZone';
 
 export interface IRoomSetting {
-    numberOfBan: number
-    numberOfPick: number
-    numberOfUtility: number
-    totalRounds: number
-    teams: ITeam[]
-    banPickSteps: IBanPickStep[],
+    zoneMetaTable: Record<number, IZone>;
+    matchFlow: IMatchFlow;
+    totalRounds: number;
+    teams: ITeam[];
+    tacticalVersion: number;
+    numberOfTeamSetup: number;
+    numberOfSetupCharacter: number;
 }

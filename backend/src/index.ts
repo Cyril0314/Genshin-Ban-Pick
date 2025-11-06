@@ -9,17 +9,22 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 
-import { logger } from './utils/logger.ts';
+import { createLogger } from './utils/logger.ts';
 import { errorHandler } from './middlewares/errorHandler.ts';
 import authRoutes from './routes/auth.ts';
 import characterRoutes from './routes/characters.ts';
 import roomRoutes from './routes/room.ts';
 import CharacterService from './services/CharacterService.ts';
-import RoomService from './services/RoomService.ts';
-import UserService from './services/UserService.ts';
+import RoomService from './services/room/RoomService.ts';
+import MemberService from './services/auth/MemberService.ts';
+import GuestService from './services/auth/GuestService.ts';
 import { createSocketApp } from './socket/index.ts';
+import { RoomStateManager } from './socket/managers/RoomStateManager.ts';
+import { RoomStatePersistenceService } from './services/room/RoomStatePersistenceService.ts'
 
-import type { Request, Response } from 'express';
+import type { Request, Response } from 'express';;
+
+const logger = createLogger('INDEX')
 
 // ---------------------------------------------------------
 // 🧩 4. 環境變數設定
@@ -64,27 +69,27 @@ app.use(express.json());
 // ---------------------------------------------------------
 logger.info('Init Services');
 const prisma = new PrismaClient();
-const userService = new UserService(prisma);
-const roomService = new RoomService();
-const characterService = new CharacterService();
+const guestService = new GuestService(prisma)
+const memberService = new MemberService(prisma);
+const roomStateManager = new RoomStateManager()
+const roomStatePersistenceService = new RoomStatePersistenceService(prisma, roomStateManager)
+const roomService = new RoomService(roomStatePersistenceService);
+const characterService = new CharacterService(prisma);
+
 
 // ---------------------------------------------------------
 // 🧩 7. Routes 註冊
 // ---------------------------------------------------------
 logger.info('Register Api Routes');
-app.use('/api', authRoutes(userService));
+app.use('/api', authRoutes(guestService, memberService));
 app.use('/api', roomRoutes(roomService));
 app.use('/api', characterRoutes(characterService));
-
-app.use('/api', authRoutes(userService));
-app.use('/api', characterRoutes(characterService));
-app.use('/api', roomRoutes(roomService));
 
 // ---------------------------------------------------------
 // 🧩 8. Socket 初始化
 // ---------------------------------------------------------
 logger.info('Init Socket');
-createSocketApp(server, prisma);
+createSocketApp(server, guestService, memberService, roomStateManager);
 
 // ---------------------------------------------------------
 // 🧩 9. Error Handler (一定要最後)

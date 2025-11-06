@@ -1,17 +1,35 @@
 // backend/src/factories/roomSettingFactory.ts
 
-import { numberOfUtility, numberOfBan, numberOfPick, totalRounds, teams } from "../constants/constants.js";
-import { generateBanPickSteps } from "../utils/banPickSteps.js";
+import {
+    flowVersion,
+    numberOfUtility,
+    numberOfBan,
+    numberOfPick,
+    totalRounds,
+    teams,
+    tacticalVersion,
+    numberOfTeamSetup,
+    numberOfSetupCharacter,
+} from '../constants/constants.ts';
+import { createZoneMetaTable } from '../utils/zoneMetaTable.ts';
+import { generateMatchFlow } from '../utils/matchFlow.ts';
+import { IRoomSetting } from '../types/IRoomSetting.ts';
 
-export function createRoomSetting() {
-    const banPickSteps = generateBanPickSteps(numberOfBan, numberOfPick, teams, totalRounds);
-
-    return {
+export function createRoomSetting(): IRoomSetting {
+    const zoneMetaTable = createZoneMetaTable({
         numberOfUtility,
         numberOfBan,
         numberOfPick,
+    });
+    const matchFlow = generateMatchFlow(flowVersion, zoneMetaTable, totalRounds, teams);
+
+    return {
+        zoneMetaTable,
         totalRounds,
+        matchFlow,
         teams,
-        banPickSteps,
+        tacticalVersion,
+        numberOfTeamSetup,
+        numberOfSetupCharacter,
     };
 }

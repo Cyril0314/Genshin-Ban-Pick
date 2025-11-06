@@ -1,39 +1,74 @@
 // backend/src/socket/modules/teamSocket.ts
 
-import { Server, Socket } from "socket.io";
+import { Server, Socket } from 'socket.io';
 
-import { logger } from '../../utils/logger.ts';
-import { teams } from "../../constants/constants.ts";
+import { createLogger } from '../../utils/logger.ts';
+import { RoomStateManager } from '../managers/RoomStateManager.ts';
+import { IRoomStateManager } from '../managers/IRoomStateManager.ts';
+import { syncTacticalCellImageMapStateOther } from './tacticalSocket.ts';
+import { TeamMember } from '../../types/TeamMember.ts';
 
-enum SocketEvent {
-    TEAM_MEMBERS_UPDATE_REQUEST = 'team.members.update.request',
-    TEAM_MEMBERS_UPDATE_BROADCAST = 'team.members.update.broadcast',
+const logger = createLogger('TEAM SOCKET');
 
-    TEAM_MEMBERS_STATE_SYNC = 'team.members.state.sync',
+enum TeamEvent {
+    MemberAddRequest = 'team.member.add.request',
+    MemberAddBroadcast = 'team.member.add.broadcast',
+    MemberRemoveRequest = 'team.member.remove.request',
+    MemberRemoveBroadcast = 'team.member.remove.broadcast',
+
+    MembersMapStateSyncSelf = 'team.members_map.state.sync.self',
+    MembersMapStateSyncAll = 'team.members_map.state.sync.all',
 }
 
-type RoomId = string;
-type Members = string
-export const teamMembersState: Record<RoomId, Record<number, Members>> = {};
+export function registerTeamSocket(io: Server, socket: Socket, roomStateManager: IRoomStateManager) {
+    socket.on(`${TeamEvent.MemberAddRequest}`, ({ teamSlot, member }: { teamSlot: number; member: TeamMember }) => {
+        logger.info(`Received ${TeamEvent.MemberAddRequest} teamSlot: ${teamSlot}`, member);
+        const roomId = (socket as any).roomId;
+        if (!roomId) return;
 
-export function registerTeamSocket(io: Server, socket: Socket) {
-  socket.on(
-    `${SocketEvent.TEAM_MEMBERS_UPDATE_REQUEST}`,
-    ({ teamId, members, senderId }: { teamId: number; members: string; senderId: string }) => {
-      logger.info(`Received ${SocketEvent.TEAM_MEMBERS_UPDATE_REQUEST} teamId: ${teamId} members: ${members} senderId: ${senderId}`);
-      const roomId = (socket as any).roomId;
-      if (!roomId) return;
+        const roomState = roomStateManager.ensure(roomId);
+        roomState.teamMembersMap[teamSlot].push(member);
+        socket.to(roomId).emit(`${TeamEvent.MemberAddBroadcast}`, { teamSlot, member });
+        logger.info(`Sent ${TeamEvent.MemberAddBroadcast} teamSlot: ${teamSlot}`, member);
 
-      teamMembersState[roomId] ||= Object.fromEntries(teams.map(team => [team.id, ''])) as Record <number, Members>
-      teamMembersState[roomId][teamId] = members;
-      socket.to(roomId).emit(`${SocketEvent.TEAM_MEMBERS_UPDATE_BROADCAST}`, { teamId, members, senderId });
-      logger.info(`Sent ${SocketEvent.TEAM_MEMBERS_UPDATE_BROADCAST} teamId: ${teamId} members: ${members} senderId: ${senderId}`);
-    }
-  );
+        const user = roomState.users.find((user) => (member.type === 'Online' && member.user.identityKey === user.identityKey));
+        if (user) {
+             syncTacticalCellImageMapStateOther(user, io, roomId, roomStateManager, teamSlot)
+        }
+    });
+
+    socket.on(`${TeamEvent.MemberRemoveRequest}`, ({ teamSlot, member }: { teamSlot: number; member: TeamMember }) => {
+        logger.info(`Received ${TeamEvent.MemberRemoveRequest} teamSlot: ${teamSlot}`, member);
+        const roomId = (socket as any).roomId;
+        if (!roomId) return;
+
+        const roomState = roomStateManager.ensure(roomId);
+
+        const index = roomState.teamMembersMap[teamSlot].findIndex((m) => {
+            return (
+                (m.type === 'Manual' && member.type === 'Manual' && m.name === member.name) ||
+                (m.type === 'Online' && member.type === 'Online' && m.user.identityKey === member.user.identityKey)
+            );
+        });
+
+        if (index !== -1) {
+            logger.debug('index', index);
+            roomState.teamMembersMap[teamSlot].splice(index, 1);
+        }
+
+        socket.to(roomId).emit(`${TeamEvent.MemberRemoveBroadcast}`, { teamSlot, member });
+        logger.info(`Sent ${TeamEvent.MemberRemoveBroadcast} teamSlot: ${teamSlot}`, member);
+    });
 }
 
-export function syncTeamState(socket: Socket, roomId: RoomId) {
-    const teamMembers = teamMembersState[roomId] || Object.fromEntries(teams.map(team => [team.id, ''])) as Record <number, Members>
-    socket.emit(`${SocketEvent.TEAM_MEMBERS_STATE_SYNC}`, teamMembers);
-    logger.info(`Sent ${SocketEvent.TEAM_MEMBERS_STATE_SYNC} chatMessages: ${JSON.stringify(teamMembers, null, 2)}`);
+export function syncTeamMembersMapStateSelf(socket: Socket, roomId: string, roomStateManager: IRoomStateManager) {
+    const teamMembersMap = roomStateManager.getTeamMembersMap(roomId);
+    socket.emit(`${TeamEvent.MembersMapStateSyncSelf}`, teamMembersMap);
+    logger.info(`Sent ${TeamEvent.MembersMapStateSyncSelf}`, teamMembersMap);
+}
+
+export function syncTeamMembersMapStateAll(io: Server, roomId: string, roomStateManager: IRoomStateManager) {
+    const teamMembersMap = roomStateManager.getTeamMembersMap(roomId);
+    io.emit(`${TeamEvent.MembersMapStateSyncAll}`, teamMembersMap);
+    logger.info(`Sent ${TeamEvent.MembersMapStateSyncAll}`, teamMembersMap);
 }

@@ -1,8 +1,8 @@
 // src/types/IChatMessage.ts
 
 export interface IChatMessage {
-    senderName: string
+    nickname: string
     message: string
     timestamp?: number
-    senderId?: string
+    isSelf: boolean
 }

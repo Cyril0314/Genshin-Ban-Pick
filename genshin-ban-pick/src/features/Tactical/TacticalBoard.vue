@@ -1,133 +1,168 @@
 <!-- src/features/Tactical/TacticalBoard.vue -->
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed } from 'vue';
 
-import { useTacticalBoardSync } from './composables/useTacticalBoardSync'
-import TacticalCell from './TacticalCell.vue'
+import TacticalCell from './TacticalCell.vue';
+import { useTacticalBoardStore } from '@/stores/tacticalBoardStore';
+import { storeToRefs } from 'pinia';
 
-import { useTeamInfoSync } from '@/features/Team/composables/useTeamInfoSync'
+import type { TeamMember } from '@/types/TeamMember';
 
-const rows = 4
-const cols = 5
-const props = defineProps<{ teamId: number }>()
+const props = defineProps<{ teamSlot: number; teamMembers: TeamMember[] }>();
 
-const { cellMap, handleCellDrop, handleCellClear } = useTacticalBoardSync(props.teamId)
+const emit = defineEmits<{
+    (e: 'image-drop', payload: { teamSlot: number; cellId: number; imgId: string }): void;
+    (e: 'image-restore', payload: { teamSlot: number; cellId: number }): void;
+}>();
 
-const { teamMembersMap } = useTeamInfoSync()
+const tacticalBoardStore = useTacticalBoardStore();
+const { teamTacticalBoardPanelMap, numberOfTeamSetup, numberOfSetupCharacter } = storeToRefs(tacticalBoardStore);
 
-const teamMembers = computed(() =>
-  teamMembersMap[props.teamId]
-)
+const tacticalBoardPanel = computed(() => teamTacticalBoardPanelMap.value[props.teamSlot]);
 
-const memberCells = computed(() => {
-  // 如果成員不足 4 個，補空字串
-  const members = teamMembers.value.split('\n')
-  return Array.from({ length: 4 }, (_, i) => members[i] || '')
-})
+const rows = computed(() => numberOfTeamSetup.value);
+const cols = computed(() => numberOfSetupCharacter.value);
 
-const boardCells = computed(() => {
-  return Array.from({ length: rows * cols }, (_, i) => {
-    // 將 i 轉換成 row 與 col（0-indexed）
-    const row = Math.floor(i / cols)
-    const col = i % cols
-    return { row, col, zoneId: `cell-${i + 1}` }
-  })
-})
+const memberNames = computed(() => {
+    // 如果成員不足 4 個，補空字串
+    return Array.from({ length: numberOfSetupCharacter.value }, (_, i) => {
+        const teamMember = props.teamMembers[i];
+        if (!teamMember) return '';
+        return teamMember.type === 'Manual' ? teamMember.name : teamMember.user.nickname;
+    });
+});
+
+const setupNumbers = computed(() => {
+    return Array.from({ length: numberOfTeamSetup.value }, (_, i) => {
+        return `${i + 1}`;
+    });
+});
+
+const cells = computed(() => {
+    return Array.from({ length: rows.value * cols.value }, (_, i) => {
+        // 將 i 轉換成 row 與 col（0-indexed）
+        const row = Math.floor(i / cols.value);
+        const col = i % cols.value;
+        return { row, col, id: i };
+    });
+});
+
+const imageId = (cellId: number) => tacticalBoardPanel.value.cellImageMap[cellId] ?? null;
+
+function handleImageDrop({ cellId, imgId }: { cellId: number; imgId: string }) {
+    console.debug(`[TATICAL BOARD] Handle image drop`, imgId, cellId);
+    emit('image-drop', { teamSlot: props.teamSlot, cellId, imgId });
+}
+
+function handleImageRestore({ cellId }: { cellId: number }) {
+    console.debug(`[TATICAL BOARD] Handle image restore`, cellId);
+    emit('image-restore', { teamSlot: props.teamSlot, cellId });
+}
 </script>
 
 <template>
-  <div class="tactical__grid">
-    <div class="tactical__cell tactical__cell--header">
-      <span class="tactical__header tactical__header--member">成員</span>
-      <span class="tactical__header tactical__header--team-number">隊伍</span>
+    <div class="tactical__board" :style="{ '--number-of-team-setup': numberOfTeamSetup, '--number-of-setup-character': numberOfSetupCharacter }">
+        <div class="tactical__member-names">
+            <div class="tactical__header"></div>
+            <div v-for="(memberName, index) in memberNames" :key="index" class="tactical__member-name">
+                <span class="text">{{ memberName }}</span>
+            </div>
+        </div>
+        <div class="tactical__setup">
+            <div class="tactical__setup-numbers">
+                <div v-for="(setupNumber, index) in setupNumbers" :key="index" class="tactical__setup-number">
+                    <span class="text">{{ setupNumber }}</span>
+                </div>
+            </div>
+            <div class="tactical__grid">
+                <template v-for="cell in cells">
+                    <TacticalCell :cellId="cell.id" :imageId="imageId(cell.id)" @image-drop="handleImageDrop"
+                        @image-restore="handleImageRestore" />
+                </template>
+            </div>
+        </div>
     </div>
-    <div v-for="(member, index) in memberCells" :key="index" class="tactical__cell tactical__cell--member">
-      {{ member }}
-    </div>
-    <template v-for="cell in boardCells" :key="cell.zoneId">
-      <div v-if="cell.col === 0" class="tactical__cell tactical__cell--team-number">
-        {{ cell.row + 1 }}
-      </div>
-      <TacticalCell v-else :zoneId="cell.zoneId" :imageId="cellMap[cell.zoneId]" @drop="handleCellDrop"
-        @clear="handleCellClear" />
-    </template>
-  </div>
 </template>
 
 <style scoped>
+.tactical__board {
+    --size-setup-number: calc(var(--base-size) * 1.5);
+    --size-tactical-cell: calc(var(--base-size) * 5);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: var(--space-sm);
+}
+
+.tactical__member-names {
+    display: flex;
+    flex-direction: row;
+}
+
+.tactical__setup {
+    display: flex;
+    flex-direction: row;
+}
+
+.tactical__setup-numbers {
+    display: flex;
+    flex-direction: column;
+}
+
 .tactical__grid {
-  display: grid;
-  justify-content: center;
-  grid-template-columns: repeat(5, var(--size-tactical-cell));
-  grid-template-rows: repeat(5, var(--size-tactical-cell));
-  gap: var(--space-sm);
-  padding: var(--space-sm);
-  border-radius: var(--border-radius-xs);
-  background-color: var(--md-sys-color-surface-container-alpha);
+    display: grid;
+    grid-template-columns: repeat(var(--number-of-setup-character), auto);
+    grid-template-rows: repeat(var(--number-of-team-setup), auto);
+    justify-content: center;
 }
 
-.tactical__cell--header {
-  position: relative;
-}
-
-.tactical__cell--header::before {
-  content: '';
-  position: absolute;
-  border-radius: var(--border-radius-xs);
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  /* 利用 linear-gradient 將 cell 分成兩部分，
-       50% 透明 50% 填充顏色 (可根據需求調整) */
-  background: linear-gradient(to top right, transparent 50%, var(--md-sys-color-surface-variant) 50%);
-  pointer-events: none;
-  /* 不影響滑鼠事件 */
+.tactical__member-name,
+.tactical__setup-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    /* pointer-events: none; */
 }
 
 .tactical__header {
-  position: absolute;
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
-  font-family: var(--font-family-tech-ui);
-  color: var(--md-sys-color-on-surface);
-  z-index: 10;
-  pointer-events: none;
+    flex-shrink: 0;
+    height: calc(var(--base-size) * 3);
+    width: var(--size-setup-number);
 }
 
-.tactical__header--team-number {
-  top: calc(var(--space-xl) + var(--space-md));
-  right: calc(var(--space-lg) + var(--space-lg));
-  text-align: right;
+.tactical__member-name {
+    height: calc(var(--base-size) * 3);
+    padding: 0 var(--space-sm);
 }
 
-.tactical__header--member {
-  bottom: calc(var(--space-xl) + var(--space-md));
-  left: calc(var(--space-lg) + var(--space-lg));
-  text-align: left;
+.tactical__setup-number {
+    height: 100%;
+    width: var(--size-setup-number);
 }
 
-.tactical__cell--member,
-.tactical__cell--team-number {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  font-weight: var(--font-weight-medium);
-  font-family: var(--font-family-tech-ui);
-  z-index: 10;
-  pointer-events: none;
-  color: var(--md-sys-color-on-surface);
+.tactical__member-name .text,
+.tactical__setup-number .text {
+    display: -webkit-box;
+    /* 需要配合使用 */
+    -webkit-box-orient: vertical;
+    /* 需要配合使用 */
+    -webkit-line-clamp: 2;
+    /* 限制为两行 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    overflow: hidden;
+
+    text-align: center;
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    font-family: var(--font-family-tech-ui);
+    color: var(--md-sys-color-on-surface);
+    z-index: 11;
 }
 
-.tactical__cell--member {
-  font-size: var(--font-size-xs);
-}
-
-.tactical__cell--team-number {
-  font-size: var(--font-size-sm);
+.tactical__member-name .text {
+    width: var(--size-tactical-cell);
 }
 </style>

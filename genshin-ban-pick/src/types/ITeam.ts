@@ -1,8 +1,6 @@
 // src/types/ITeam.ts
 
 export interface ITeam {
-    id: number;
+    slot: number;
     name: string;
 }
-
-export type TeamMembersMap = Record<number, string>;

@@ -1,59 +1,43 @@
 <!-- src/features/Tactical/TacticalPool.vue -->
 <script setup lang="ts">
-import { computed } from 'vue'
-
-import { useTacticalBoardSync } from './composables/useTacticalBoardSync'
-
 import { getProfileImagePath } from '@/utils/imageRegistry'
 import { DragTypes } from '@/constants/customMIMETypes';
+import { useTacticalBoardStore } from '@/stores/tacticalBoardStore';
 
-const props = defineProps<{ teamId: number }>()
+const props = defineProps<{ teamSlot: number }>()
 
-const { cellMap, tacticalPoolImages } = useTacticalBoardSync(props.teamId)
-const poolImages = computed(() =>
-  tacticalPoolImages.value.filter((id) => !Object.values(cellMap.value).includes(id)),
-)
+const tacticalBoardStore = useTacticalBoardStore()
+const { displayPoolImageIds } = tacticalBoardStore
 
-function handleDragStart(event: DragEvent, id: string) {
-    console.log(`onDragStart ${id}`)
-    event?.dataTransfer?.setData(DragTypes.CharacterImage, id)
+function handleDragStartEvent(event: DragEvent, id: string) {
+  console.debug(`[TATICAL POOL] Handle drag start event`, id);
+  event?.dataTransfer?.setData(DragTypes.CHARACTER_IMAGE, id)
 }
 </script>
 
 <template>
-  <div class="tactical__pool"
-  :class="`tactical__pool--${teamId}`">
-    <img
-      v-for="id in poolImages"
-      :key="id"
-      :src="getProfileImagePath(id)"
-      draggable="true"
-      @dragstart="handleDragStart($event, id)"
-    />
+  <div class="tactical__pool" :class="`tactical__pool--${props.teamSlot}`">
+    <img v-for="id in displayPoolImageIds(teamSlot).value" :key="id" :src="getProfileImagePath(id)" draggable="true"
+      @dragstart="handleDragStartEvent($event, id)" />
   </div>
 </template>
 
 <style scoped>
-.tactical__pool--0 {
-  --tactical__pool-bg: var(--md-sys-color-on-secondary-container-alpha);
-}
-.tactical__pool--1 {
-  --tactical__pool-bg: var(--md-sys-color-on-tertiary-container-alpha);
-}
-
 .tactical__pool {
-  --gap: var(--space-xs);
+  --size-image-tactical-pool: calc(var(--base-size) * 2.9);
+  --gap: var(--space-sm);
   display: grid;
   grid-template-columns: repeat(auto-fit, var(--size-image-tactical-pool));
   align-content: start;
   justify-content: start;
-  background: var(--tactical__pool-bg);
-  height: calc(var(--size-image-tactical-pool) * 3 + var(--gap) * 4); /* 維持最小高度 */
-  max-height: calc(var(--size-image-tactical-pool) * 3 + var(--gap) * 4); /* 維持最大高度 */
+  background: var(--md-sys-color-surface-container);
+  min-height: calc(var(--size-image-tactical-pool) * 4 + var(--gap) * 5);
+  /* 維持最小高度 */
   border-radius: var(--border-radius-xs);
-  overflow-y: auto;
   gap: var(--gap);
   padding: var(--gap);
+  overflow-y: scroll;
+  scrollbar-width: none;
 }
 
 .tactical__pool img {

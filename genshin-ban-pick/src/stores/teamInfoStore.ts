@@ -1,69 +1,70 @@
 // src/stores/teamInfoStore.ts
 
 import { defineStore } from 'pinia';
-import { ref, computed, toRaw, reactive, watch } from 'vue';
+import { ref, computed, watch, shallowRef } from 'vue';
 
-import type { ITeam, TeamMembersMap } from '@/types/ITeam';
+import type { ITeam } from '@/types/ITeam';
+import type { TeamMember, TeamMembersMap } from '@/types/TeamMember';
 
 export const useTeamInfoStore = defineStore('teamInfo', () => {
-    const currentTeams = ref<ITeam[]>([]);
+    const teams = shallowRef<ITeam[]>([]);
     const teamMembersMap = ref<TeamMembersMap>({});
-
     const teamInfoPair = computed(() => {
-        console.log('[DEBUG] computed teamInfoPair re-evaluated');
-        const teams = currentTeams.value;
         const map = teamMembersMap.value;
-        if (Object.keys(map).length === 0 || teams.length < 2) return null;
-        const [firstTeam, secondTeam] = teams;
-        console.log('[DEBUG] firstTeam:', firstTeam, 'secondTeam:', secondTeam);
-        console.log('[DEBUG] teamMembersMap.value:', map);
+        if (teams.value.length < 2) return null;
+        const [firstTeam, secondTeam] = teams.value;
         return {
-            left: { ...firstTeam, members: map[firstTeam.id] },
-            right: { ...secondTeam, name: secondTeam.name, members: map[secondTeam.id] },
+            left: { ...firstTeam, members: map[firstTeam.slot] ?? [] },
+            right: { ...secondTeam, name: secondTeam.name, members: map[secondTeam.slot] ?? [] },
         };
     });
 
-    watch(teamInfoPair, (pair) => {
-        if (pair) {
-            console.log('[INIT] teamInfoPair ready', pair)
-            // ✅ 可在這裡做後續動作
-        }
-    }, { immediate: true })
+    watch(teamInfoPair, (teamInfoPair) => {
+        console.debug('[TEAM INFO STORE] Watch team info pair', teamInfoPair)
+    }, { deep: true, immediate: true })
 
-    function initTeams(teams: ITeam[]) {
-        console.log('[DEBUG] initTeams');
-        if (Object.keys(teamMembersMap.value).length > 0) return;
-        currentTeams.value = teams;
-        console.log('[DEBUG] currentTeams');
-        for (const team of teams) {
-            teamMembersMap.value[team.id] = '';
-        }
-        console.log('[DEBUG] teamMembersMap');
-        // watch(teamInfoPair, (val) => {
-        //     console.log('[DEBUG] teamInfoPair changed', toRaw(val))
-        //   }, { deep: true })
+    function initTeams(newTeams: ITeam[]) {
+        console.debug('[TEAM INFO STORE] Init teams', newTeams);
+        teams.value = newTeams;
     }
 
-    function setTeamMembers(teamId: number, members: string) {
-        console.log(`[DEBUG] setTeamMembers teamId ${teamId} members ${members}`);
-        // teamMembersMap.value[teamId] = members;
-        teamMembersMap.value[teamId] = members;
-        console.log('after setTeamMembers', toRaw(teamMembersMap));
+    function addTeamMember(teamSlot: number, member: TeamMember) {
+        console.debug('[TEAM INFO STORE] Add team member', teamSlot, member);
+        teamMembersMap.value[teamSlot].push(member);
+    }
+
+    function removeTeamMember(teamSlot: number, member: TeamMember) {
+        console.debug('[TEAM INFO STORE] Remove team member', teamSlot, member);
+        const teamMembers = teamMembersMap.value[teamSlot];
+        const index = teamMembers.findIndex((m) => {
+            return (
+                (m.type === 'Manual' && member.type === 'Manual' && m.name === member.name) ||
+                (m.type === 'Online' && member.type === 'Online' && m.user.identityKey === member.user.identityKey)
+            );
+        });
+        if (index !== -1) {
+            teamMembersMap.value[teamSlot].splice(index, 1);
+        }
     }
 
     function setTeamMembersMap(newTeamMembersMap: TeamMembersMap) {
-        console.log('[DEBUG] setTeamMembersMap');
-        for (const [id, members] of Object.entries(newTeamMembersMap)) {
-            const teamId = Number(id);
-            if (teamMembersMap.value[teamId]) {
-                teamMembersMap.value[teamId] = members;
-            }
-        }
+        console.debug(`[TEAM INFO STORE] Set team members map`, newTeamMembersMap);
+        teamMembersMap.value = newTeamMembersMap;
     }
 
-    function reset() {
-        teamMembersMap.value = {}
+    function resetTeamMembersMap() {
+        console.debug(`[TEAM INFO STORE] Reset team members map`);
+        teamMembersMap.value = {};
     }
 
-    return { teamInfoPair, teamMembersMap, initTeams, setTeamMembers, setTeamMembersMap, reset };
+    return {
+        teams,
+        teamMembersMap,
+        teamInfoPair,
+        initTeams,
+        addTeamMember,
+        removeTeamMember,
+        setTeamMembersMap,
+        resetTeamMembersMap,
+    };
 });

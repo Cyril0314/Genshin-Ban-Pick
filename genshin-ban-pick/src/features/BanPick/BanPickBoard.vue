@@ -1,219 +1,175 @@
 <!-- src/features/BanPick/BanPickBoard.vue -->
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed } from 'vue';
+import { storeToRefs } from 'pinia';
 
-import BanZone from './components/BanZone.vue'
-import PickZone from './components/PickZone.vue'
-import StepIndicator from './components/StepIndicator.vue'
-import UtilityZone from './components/UtilityZone.vue'
+import ImageOptions from '../ImageOptions/ImageOptions.vue';
+import CharacterSelector from '@/features/CharacterSelector/CharacterSelector.vue';
+import TeamInfo from '@/features/Team/TeamInfo.vue';
+import BanZones from './components/BanZones.vue';
+import PickZones from './components/PickZones.vue';
+import UtilityZones from './components/UtilityZones.vue';
 
-import type { ICharacter } from '@/types/ICharacter'
-import type { IRoomSetting } from '@/types/IRoomSetting'
-import type { ZoneType } from '@/types/ZoneType'
+import { ZoneType } from '@/types/IZone';
+import { useBoardZonesLayout } from './composables/useBoardZonesLayout';
+import { useTeamInfoStore } from '@/stores/teamInfoStore';
 
-import {
-  generateUtilityOrder,
-  generateBanOrder,
-  generatePickOrder,
-} from '@/features/BanPick/composables/useBanPickOrder'
-import { useBanPickStep } from '@/features/BanPick/composables/useBanPickStep'
-import CharacterSelector from '@/features/CharacterSelector/CharacterSelector.vue'
-import ChatRoom from '@/features/ChatRoom/ChatRoom.vue'
-import RoomUserPool from '@/features/RoomUserPool/RoomUserPool.vue'
-import TacticalBoardPanel from '@/features/Tactical/TacticalBoardPanel.vue'
-import { useTeamInfoSync } from '@/features/Team/composables/useTeamInfoSync'
-import TeamInfo from '@/features/Team/TeamInfo.vue'
+import type { ICharacter } from '@/types/ICharacter';
+import type { IRoomSetting } from '@/types/IRoomSetting';
+import type { TeamMember } from '@/types/TeamMember';
 
 const props = defineProps<{
-  roomSetting: IRoomSetting
-  characterMap: Record<string, ICharacter>
-  imageMap: Record<string, string>
-}>()
-
-const { teamInfoPair } = useTeamInfoSync()
+    roomSetting: IRoomSetting;
+    characterMap: Record<string, ICharacter>;
+    boardImageMap: Record<number, string>;
+    usedImageIds: string[];
+    filteredCharacterKeys: string[] | null;
+}>();
 
 const emit = defineEmits<{
-  (e: 'image-drop', payload: { imgId: string; zoneId: string }): void
-  (e: 'image-restore', payload: { imgId: string }): void
-  (e: 'filter-changed', filters: Record<string, string[]>): void
-  (e: 'pull', payload: { zoneType: ZoneType }): void
-}>()
+    (e: 'image-drop', payload: { zoneId: number; imgId: string }): void;
+    (e: 'image-restore', payload: { zoneId: number }): void;
+    (e: 'filter-change', filteredCharacterKeys: string[]): void;
+    (e: 'random-pull', payload: { zoneType: ZoneType }): void;
+    (e: 'member-drop', payload: { identityKey: string; teamSlot: number }): void;
+    (e: 'member-input', payload: { name: string; teamSlot: number }): void;
+    (e: 'member-restore', payload: { member: TeamMember; teamSlot: number }): void;
+}>();
 
-const utilityZones = computed(() => generateUtilityOrder(props.roomSetting.numberOfUtility))
+const teamInfoStore = useTeamInfoStore();
+const { teamInfoPair } = storeToRefs(teamInfoStore);
 
-const banZones = computed(() =>
-  generateBanOrder(props.roomSetting.numberOfBan, 8, props.roomSetting.totalRounds),
-)
+const { utilityZones, banZones, leftPickZones, rightPickZones, maxNumberOfUtilityPerRow, maxNumberOfBanPerRow, maxNumberOfPickPerColumn } =
+    useBoardZonesLayout(props.roomSetting, teamInfoPair.value!);
 
-const pickZones = computed(() =>
-  generatePickOrder(props.roomSetting.numberOfPick, props.roomSetting.totalRounds),
-)
-
-const { currentStep } = useBanPickStep()
-
-function handleImageDropped({ imgId, zoneId }: { imgId: string; zoneId: string }) {
-  console.log(`BanPickBoard handleImageDropped imgId ${imgId} zoneId ${zoneId}`)
-  emit('image-drop', { imgId, zoneId })
+function handleImageDrop({ zoneId, imgId }: { zoneId: number; imgId: string }) {
+    console.debug(`[BAN PICK BOARD] Handle image drop`, { zoneId, imgId });
+    emit('image-drop', { zoneId, imgId });
 }
 
-function handleImageRestore({ imgId }: { imgId: string }) {
-  console.log(`BanPickBoard handleImageRestore imgId ${imgId}`)
-  emit('image-restore', { imgId })
+function handleImageRestore({ zoneId }: { zoneId: number }) {
+    console.debug(`[BAN PICK BOARD] Handle image restore`, { zoneId });
+    emit('image-restore', { zoneId });
 }
 
-function handleSelectorFilterChanged(filters: Record<string, string[]>) {
-  emit('filter-changed', filters)
+function handleSelectorFilterChange(filteredCharacterKeys: string[]) {
+    console.debug(`[BAN PICK BOARD] Handle selector filter change`, filteredCharacterKeys);
+    emit('filter-change', filteredCharacterKeys);
 }
 
-function handleSelectorPull({ zoneType }: { zoneType: ZoneType }) {
-  emit('pull', { zoneType })
+function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
+    console.debug(`[BAN PICK BOARD] Handle selector random button click`, { zoneType });
+    emit('random-pull', { zoneType });
 }
 
-console.log('[BanPickBoard] setup start')
-console.log('[BanPickBoard] props.roomSetting', props.roomSetting)
-console.log(`[BanPickBoard] utilityZones: ${utilityZones.value}`)
-console.log(`[BanPickBoard] banZones: ${banZones.value}`)
-console.log(`[BanPickBoard] pickZones: left ${pickZones.value.left} right ${pickZones.value.right}`)
+function handleMemberInput({ name, teamSlot }: { name: string; teamSlot: number }) {
+    console.debug(`[BAN PICK BOARD] Handle member input`, { name, teamSlot });
+    emit('member-input', { name, teamSlot });
+}
 
+function handleMemberDrop({ identityKey, teamSlot }: { identityKey: string; teamSlot: number }) {
+    console.debug(`[BAN PICK BOARD] Handle member drop`, { identityKey, teamSlot });
+    emit('member-drop', { identityKey, teamSlot });
+}
+
+function handleMemberRestore({ member, teamSlot }: { member: TeamMember; teamSlot: number }) {
+    console.debug(`[BAN PICK BOARD] Handle member restore`, { member, teamSlot });
+    emit('member-restore', { member, teamSlot });
+}
 </script>
 
 <template>
-  <div class="layout__main">
-    <div class="layout__side layout__side--left">
-      <TeamInfo
-        side='left'
-        v-if="teamInfoPair"
-        :teamId="teamInfoPair.left.id"
-      />
-      <PickZone
-        :zones="pickZones.left"
-        side="left"
-        :imageMap="props.imageMap"
-        @image-drop="handleImageDropped"
-        @image-restore="handleImageRestore"
-      />
-    </div>
-    <div class="layout__center">
-      <div class="layout__ban-zone">
-        <BanZone
-          :zones="banZones"
-          :imageMap="props.imageMap"
-          @image-drop="handleImageDropped"
-          @image-restore="handleImageRestore"
-        />
-      </div>
-      <div class="layout__common">
-        <div class="layout__common-side">
-          <ChatRoom />
-          <RoomUserPool />
-          <CharacterSelector
-            :characterMap="props.characterMap"
-            @filter-changed="handleSelectorFilterChanged"
-            @pull="handleSelectorPull"
-          />
+    <!-- <div class="ban-pick-board"> -->
+    <div class="layout__main"
+        :style="{ '--max-number-of-pick-per-column': maxNumberOfPickPerColumn, '--max-number-of-ban-per-row': maxNumberOfBanPerRow, '--max-number-of-utility-per-row': maxNumberOfUtilityPerRow }">
+        <div class="layout__side layout__side--left">
+            <TeamInfo v-if="teamInfoPair" side="left" :teamInfo="teamInfoPair.left" @member-input="handleMemberInput"
+                @member-drop="handleMemberDrop" @member-restore="handleMemberRestore" />
+            <PickZones v-if="leftPickZones" :zones="leftPickZones" :maxPerColumn="maxNumberOfPickPerColumn" side="left"
+                :boardImageMap="props.boardImageMap" @image-drop="handleImageDrop"
+                @image-restore="handleImageRestore" />
         </div>
-        <div class="layout__common-center">
-          <div class="layout__step-indicator">
-            <StepIndicator 
-              :step="currentStep" />
-          </div>
-          <div class="layout__utility-zone">
-            <UtilityZone
-              :zones="utilityZones"
-              :imageMap="props.imageMap"
-              @image-drop="handleImageDropped"
-              @image-restore="handleImageRestore"
-            />
-          </div>
+        <div class="layout__center">
+            <div class="layout__ban-zone">
+                <BanZones :zones="banZones" :maxPerRow="maxNumberOfBanPerRow" :boardImageMap="props.boardImageMap"
+                    @image-drop="handleImageDrop" @image-restore="handleImageRestore" />
+            </div>
+            <div class="layout__common">
+                <ImageOptions v-if="characterMap" :characterMap="characterMap" :usedImageIds="usedImageIds"
+                    :filteredCharacterKeys="filteredCharacterKeys" />
+
+
+                <CharacterSelector :characterMap="props.characterMap" @filter-change="handleSelectorFilterChange"
+                    @random-pull="handleRandomPull" />
+            </div>
+            <div class="layout__utility-zone">
+                <UtilityZones :zones="utilityZones" :maxPerRow="maxNumberOfUtilityPerRow"
+                    :boardImageMap="props.boardImageMap" @image-drop="handleImageDrop"
+                    @image-restore="handleImageRestore" />
+            </div>
         </div>
-        <div class="layout__common-side">
-          <TacticalBoardPanel />
+        <div class="layout__side layout__side--right">
+            <TeamInfo v-if="teamInfoPair" side="right" :teamInfo="teamInfoPair.right" @member-input="handleMemberInput"
+                @member-drop="handleMemberDrop" @member-restore="handleMemberRestore" />
+            <PickZones v-if="rightPickZones" :zones="rightPickZones" :maxPerColumn="maxNumberOfPickPerColumn"
+                side="right" :boardImageMap="props.boardImageMap" @image-drop="handleImageDrop"
+                @image-restore="handleImageRestore" />
         </div>
-      </div>
     </div>
-    <div class="layout__side layout__side--right">
-      <TeamInfo 
-        side='right'
-        v-if="teamInfoPair"
-        :teamId="teamInfoPair.right.id"
-      />
-      <PickZone
-        :zones="pickZones.right"
-        side="right"
-        :imageMap="props.imageMap"
-        @image-drop="handleImageDropped"
-        @image-restore="handleImageRestore"
-      />
-    </div>
-  </div>
+    <!-- </div> -->
 </template>
 
 <style scoped>
 .layout__main {
-  display: flex;
-  align-items: stretch;
-  gap: var(--space-md);
-  justify-content: center;
+    --pick-per-column-count: var(--max-number-of-pick-per-column);
+    --layout-main-height: calc((var(--pick-per-column-count) + 1) * var(--size-drop-zone-height) + var(--pick-per-column-count) * var(--size-drop-zone-item-space));
+
+    --ban-per-row-count: var(--max-number-of-ban-per-row);
+    --layout-center-width: calc(var(--ban-per-row-count) * var(--size-drop-zone-width) + var(--ban-per-row-count) * var(--size-drop-zone-item-space) + var(--size-ban-row-spacer));
+
+    display: flex;
+    justify-content: space-evenly;
+    gap: var(--space-xl);
+    min-height: 0;
+    height: var(--layout-main-height);
 }
 
 .layout__side {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: calc(var(--size-dropzone) * 2 + var(--size-drop-zone-line-space));
-  gap: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    width: min-content;
 }
 
 .layout__center {
-  /* width: 100%; */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-  gap: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    min-height: 0;
+    height: 100%;
+    width: var(--layout-center-width);
 }
 
 .layout__ban-zone {
-  position: relative;
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 }
 
 .layout__common {
-  width: 100%;
-  height: 100%;
-  display: grid;
-  grid-template-columns: calc(var(--size-dropzone) * 3 + var(--size-drop-zone-item-space) * 2) 1fr calc(var(--size-dropzone) * 3 + var(--size-drop-zone-item-space) * 2);
-  gap: var(--size-ban-pick-common-space);
-}
-
-.layout__common-side {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  /* width: calc(var(--size-dropzone) * 3 + var(--size-drop-zone-item-space) * 2); */
-  gap: var(--space-lg);
-}
-
-.layout__common-center {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
-}
-
-.layout__step-indicator {
-  display: flex;
-  flex-grow: 4;
-  align-items: center;
-  justify-content: center;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-md);
+    min-height: 0;
+    width: 100%;
 }
 
 .layout__utility-zone {
-  display: flex;
-  flex-grow: 5;
-  align-items: start;
-  justify-content: center;
+    display: flex;
+    align-items: start;
+    justify-content: center;
 }
 </style>

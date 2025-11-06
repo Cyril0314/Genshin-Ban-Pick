@@ -1,72 +1,90 @@
 // src/types/ICharacter.ts
 
+export function fromRawCharacter(raw: any): ICharacter {
+  return {
+    id: raw.id,
+    key: raw.key,
+    name: raw.name,
+    rarity: raw.rarity as Rarity,
+    element: raw.element as Element,
+    weapon: raw.weapon as Weapon,
+    region: raw.region as Region,
+    modelType: raw.modelType as ModelType,
+    releaseDate: raw.release_date,
+    version: raw.version,
+    role: raw.role as CharacterRole,
+    wish: raw.wish as Wish
+  }
+}
+
 export interface ICharacter {
-  icon: string
+  id: number
+  key: string
   name: string
   rarity: Rarity
   element: Element
   weapon: Weapon
   region: Region
-  model_type: ModelType
-  release_date: string // 或 Date
+  modelType: ModelType
+  releaseDate: string // 或 Date
   version: string
-  role: Role
+  role: CharacterRole
   wish: Wish
 }
 
 export enum Rarity {
-  FOUR_STARS = "4 Stars",
-  FIVE_STARS = "5 Stars",
+  FourStar = "FourStar",
+  FiveStar = "FiveStar",
 }
 
 export enum Element {
-  ANEMO = "Anemo",
-  GEO = "Geo",
-  ELECTRO = "Electro",
-  DENDRO = "Dendro",
-  HYDRO = "Hydro",
-  PYRO = "Pyro",
-  CRYO = "Cryo",
-  NONE = "None",
+  Anemo = "Anemo",
+  Geo = "Geo",
+  Electro = "Electro",
+  Dendro = "Dendro",
+  Hydro = "Hydro",
+  Pyro = "Pyro",
+  Cryo = "Cryo",
+  None = "None",
 }
 
 export enum Weapon {
-  SWORD = "Sword",
-  CLAYMORE = "Claymore",
-  POLEARM = "Polearm",
-  BOW = "Bow",
-  CATALYST = "Catalyst",
+  Sword = "Sword",
+  Claymore = "Claymore",
+  Polearm = "Polearm",
+  Bow = "Bow",
+  Catalyst = "Catalyst",
 }
 
 export enum Region {
-  MONDSTADT = "Mondstadt",
-  LIYUE = "Liyue",
-  INAZUMA = "Inazuma",
-  SUMERU = "Sumeru",
-  FONTAINE = "Fontaine",
-  NATLAN = "Natlan",
-  SNEZHNAYA = "Snezhnaya",
-  NOD_KRAI = "NodKrai",
-  NONE = "None",
+  Mondstadt = "Mondstadt",
+  Liyue = "Liyue",
+  Inazuma = "Inazuma",
+  Sumeru = "Sumeru",
+  Fontaine = "Fontaine",
+  Natlan = "Natlan",
+  Snezhnaya = "Snezhnaya",
+  NodKrai = "NodKrai",
+  None = "None",
 }
 
 export enum ModelType {
-  TALL_MALE = "Tall Male",
-  TALL_FEMALE = "Tall Female",
-  MEDIUM_MALE = "Medium Male",
-  MEDIUM_FEMALE = "Medium Female",
-  SHORT_FEMALE = "Short Female",
-  NONE = "None",
+  TallMale = "TallMale",
+  TallFemale = "TallFemale",
+  MediumMale = "MediumMale",
+  MediumFemale = "MediumFemale",
+  ShortFemale = "ShortFemale",
+  None = "None",
 }
 
-export enum Role {
-  MAIN_DPS = "Main DPS",
-  SUB_DPS = "Sub DPS",
-  SUPPORT = "Support",
+export enum CharacterRole {
+  MainDPS = "MainDPS",
+  SubDPS = "SubDPS",
+  Support = "Support",
 }
 
 export enum Wish {
-  LIMITED_TIME_EVENT = "Limited-Time Event Wish",
-  STANDARD = "Standard Wish",
-  NONE = "None",
+  Limited = "Limited",
+  Standard = "Standard",
+  None = "None",
 }

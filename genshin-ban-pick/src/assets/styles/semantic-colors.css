@@ -59,13 +59,12 @@
 }
 
 [data-theme='dark'] { */
- /* 主色（Primary）— 亮星空藍 */
- --md-sys-color-primary: rgb(40, 60, 120);  
- --md-sys-color-on-primary: rgb(245, 245, 255);
- --md-sys-color-primary-container: rgb(25, 45, 90); 
- --md-sys-color-on-primary-container: rgb(200, 210, 240);  
- --md-sys-color-surface-tint: rgba(120, 140, 220, 0.32);
- --md-sys-color-on-surface-tint: rgb(255, 255, 255);
+--md-sys-color-primary: rgb(82, 109, 255);
+--md-sys-color-on-primary: rgb(255, 255, 255);
+--md-sys-color-primary-container: rgb(49, 70, 165);
+--md-sys-color-on-primary-container: rgb(220, 230, 255);
+--md-sys-color-surface-tint: rgba(120, 140, 220, 0.32);
+--md-sys-color-on-surface-tint: rgb(255, 255, 255);
 --md-sys-color-secondary: rgb(255, 212, 175);
 --md-sys-color-on-secondary: rgb(57, 32, 3);
 --md-sys-color-secondary-container: rgb(211, 167, 127);
