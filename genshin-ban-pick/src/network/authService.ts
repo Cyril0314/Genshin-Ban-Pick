@@ -1,46 +1,33 @@
-import axios from 'axios';
+// src/network/authService.ts
 
-import { TokenNotFound } from '@/errors/AppError';
-import { useAuthStore } from '@/stores/authStore';
+import api from './httpClient';
 
-const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
-    withCredentials: true, // 如果後端需要帶 cookie
-});
+import type { HttpClient } from './httpClient';
 
-api.interceptors.request.use((config) => {
-    const withToken = config.withToken ?? true;
-    if (withToken) {
-        const token = useAuthStore().getToken();
-        if (token && config.headers?.set) {
-            config.headers?.set?.('Authorization', `Bearer ${token}`);
-        } else {
-            throw new TokenNotFound();
-        }
+export function createAuthService(client: HttpClient = api) {
+
+     async function postRegisterMember(payload: { account: string; password: string; nickname: string }) {
+        return client.post('/auth/register/member', payload, { withToken: false });
     }
-    return config;
-});
 
-declare module 'axios' {
-    export interface AxiosRequestConfig {
-        withToken?: boolean;
+     async function postLoginMember(payload: { account: string; password: string }) {
+        return client.post('/auth/login/member', payload, { withToken: false });
+    }
+
+     async function postLoginGuest(payload: { nickname: string }) {
+        return client.post('/auth/login/guest', payload, { withToken: false });
+    }
+
+     async function getSession() {
+        return client.get('/auth/session');
+    }
+
+    return {
+        postRegisterMember,
+        postLoginMember,
+        postLoginGuest,
+        getSession
     }
 }
 
-export default api;
-
-export async function registerMember(payload: { account: string; password: string; nickname: string }) {
-    return api.post('/auth/register/member', payload, { withToken: false });
-}
-
-export async function loginMember(payload: { account: string; password: string }) {
-    return api.post('/auth/login/member', payload, { withToken: false });
-}
-
-export async function loginGuest(payload: { nickname: string }) {
-    return api.post('/auth/login/guest', payload, { withToken: false });
-}
-
-export async function getAuthSession() {
-    return api.get('/auth/session');
-}
+export const authService = createAuthService();

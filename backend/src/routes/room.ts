@@ -8,7 +8,7 @@ import { createLogger } from '../utils/logger.ts';
 
 import type { Request, Response } from 'express';
 
-const logger = createLogger('ROOM')
+const logger = createLogger('ROOM');
 
 export default function roomRoutes(roomService: RoomService) {
     const router = express.Router();
@@ -16,7 +16,7 @@ export default function roomRoutes(roomService: RoomService) {
     router.get(
         '/rooms/setting',
         asyncHandler(async (req: Request, res: Response) => {
-            const roomSetting = roomService.getRoomSetting();
+            const roomSetting = roomService.getSetting();
             res.json(roomSetting);
         }),
     );
@@ -26,10 +26,9 @@ export default function roomRoutes(roomService: RoomService) {
         asyncHandler(async (req: Request, res: Response) => {
             const { roomId } = req.params;
             const roomSetting = req.body;
-            logger.debug(`[POST] Received /rooms/:roomId/save`, roomId, roomSetting)
-            await roomService.save(roomId, roomSetting);
+            const id = await roomService.save({ roomId, roomSetting });
 
-            res.status(200).send({meesage: 'Record received'});
+            res.status(200).send({ matchId: id });
         }),
     );
 

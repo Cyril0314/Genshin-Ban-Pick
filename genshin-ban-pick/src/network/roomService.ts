@@ -1,17 +1,22 @@
 // src/network/roomService.ts
+
+import api from './httpClient';
+
+import type { HttpClient } from './httpClient';
 import type { IRoomSetting } from '@/types/IRoomSetting';
 
-export async function fetchRoomSetting(): Promise<IRoomSetting> {
-    const response = await fetch('/api/rooms/setting');
-    const roomSetting = await response.json();
-    return roomSetting;
+export function createRoomService(client: HttpClient = api) {
+    async function getSetting() {
+        return client.get('/rooms/setting');
+    }
+    async function postSave({ roomId, roomSetting }: { roomId: string, roomSetting: IRoomSetting }) {
+        return client.post(`/rooms/${roomId}/save`, roomSetting);
+    }
+
+    return {
+        getSetting,
+        postSave,
+    };
 }
 
-export async function postRoomSave(roomId: string, roomSetting: IRoomSetting) {
-    const response = await fetch(`/api/rooms/${roomId}/save`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(roomSetting),
-    });
-    return response.json();
-}
+export const roomService = createRoomService();

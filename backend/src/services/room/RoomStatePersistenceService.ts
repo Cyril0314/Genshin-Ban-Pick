@@ -1,9 +1,21 @@
 // backend/src/services/room/RoomStatePersistenceService.ts
+import { Prisma, PrismaClient } from '@prisma/client';
 
-import { PrismaClient } from '@prisma/client/extension';
 import { RoomStateManager } from '../../socket/managers/RoomStateManager.ts';
 import { IRoomSetting } from '../../types/IRoomSetting.ts';
 import { TeamMember } from '../../types/TeamMember.ts';
+import {
+    DataNotFoundError,
+    DbConnectionError,
+    DbForeignKeyConstraintError,
+    DbUniqueConstraintError,
+    DryRunError,
+    InvalidFieldsError,
+    UserNotFoundError,
+} from '../../errors/AppError.ts';
+import { createLogger } from '../../utils/logger.ts';
+
+const logger = createLogger('ROOM STATE PERSISTENCE SERVICE');
 
 export class RoomStatePersistenceService {
     constructor(
@@ -11,14 +23,39 @@ export class RoomStatePersistenceService {
         private roomStateManager: RoomStateManager,
     ) {}
 
-    async save(roomId: string, roomSetting: IRoomSetting, dryRun = true) {
+    async save({ roomId, roomSetting }: { roomId: string; roomSetting: IRoomSetting }, dryRun = true) {
+        const roomState = this.roomStateManager.get(roomId);
+        if (!roomState) {
+            logger.error('Room state not found');
+            throw new DataNotFoundError();
+        }
+
+        for (const [teamSlotString, teamMembers] of Object.entries(roomState.teamMembersMap)) {
+            if (teamMembers.length !== roomSetting.numberOfTeamSetup) {
+                logger.error('Team members are inconsistent with numberOfTeamSetup', teamSlotString, teamMembers, roomSetting.numberOfTeamSetup);
+                throw new InvalidFieldsError();
+            }
+        }
+
+        const totalZonesCount = Object.values(roomSetting.zoneMetaTable).length;
+        const selectedCount = Object.values(roomState.boardImageMap).length;
+
+        if (totalZonesCount !== selectedCount) {
+            logger.error('Selected board image count is inconsistent with total zones count', selectedCount, totalZonesCount);
+            throw new InvalidFieldsError();
+        }
+
+        for (const tacticalCellImageMap of Object.values(roomState.teamTacticalBoardMap)) {
+            const totalCellsCount = roomSetting.numberOfSetupCharacter * roomSetting.numberOfTeamSetup;
+            const selectedCount = Object.values(tacticalCellImageMap).length;
+            if (selectedCount !== totalCellsCount) {
+                logger.error('Selected tactical cell image count is inconsistent with total cells count', selectedCount, totalCellsCount);
+                throw new InvalidFieldsError();
+            }
+        }
+
         try {
             return await this.prisma.$transaction(async (tx: any) => {
-                const roomState = this.roomStateManager.get(roomId);
-                if (!roomState) {
-                    throw new Error(`[RoomStatePersistenceService] No state for roomId=${roomId}`);
-                }
-
                 const flowVersion = roomSetting.matchFlow.version;
                 // 1. Match: 對局
                 const match = await tx.match.create({
@@ -88,7 +125,7 @@ export class RoomStatePersistenceService {
 
                 // 5. MatchTacticalUsage: 戰術版
 
-                const tacticalVersion = roomSetting.tacticalVersion
+                const tacticalVersion = roomSetting.tacticalVersion;
                 const teamTacticalBoardMap = roomState.teamTacticalBoardMap;
                 const numberOfTeamSetup = roomSetting.numberOfTeamSetup;
                 const numberOfSetupCharacter = roomSetting.numberOfSetupCharacter;
@@ -125,23 +162,25 @@ export class RoomStatePersistenceService {
                     await tx.matchTacticalUsage.createMany({ data: usages });
                 }
 
-
-                const matchMembers = await tx.matchTeamMember.findMany();
-                const matchTacticalUsages = await tx.matchTacticalUsage.findMany();
-                console.log(`match`, match)
-                console.log(`matchTeams`, matchTeams)
-                console.log(`matchMembers`, matchMembers)
-                console.log(`matchMoves`, matchMoves)
-                console.log(`matchTacticalUsages`, matchTacticalUsages)
-                if (dryRun) throw new Error('DRY_RUN');
+                if (dryRun) throw new DryRunError();
                 return match.id;
             });
         } catch (err: any) {
-            if (err.message === 'DRY_RUN') {
-                    console.log(`DRY_RUN Success`)
-                    return null; 
+            if (err instanceof DryRunError) {
+                logger.warn('Block dry run', err);
+                return null;
+            }
+            if (err instanceof Prisma.PrismaClientKnownRequestError) {
+                if (err.code === 'P2002') {
+                    throw new DbUniqueConstraintError(err);
                 }
-            throw err; // 真錯誤
+
+                if (err.code === 'P2003') {
+                    throw new DbForeignKeyConstraintError(err);
+                }
+            }
+
+            throw new DbConnectionError(err);
         }
     }
 }
@@ -176,5 +215,5 @@ function resolveIdentity(teamMember: TeamMember) {
         };
     }
 
-    throw new Error(`Unknown identityKey type: ${identityKey}`);
+    throw new UserNotFoundError();
 }

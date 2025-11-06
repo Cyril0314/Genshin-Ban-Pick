@@ -8,10 +8,11 @@ import StepIndicator from '@/features/StepIndicator/StepIndicator.vue';
 import RoomUserPool from '@/features/RoomUserPool/RoomUserPool.vue';
 import BanPickBoard from '@/features/BanPick/BanPickBoard.vue';
 import Toolbar from '@/features/Toolbar/ToolBar.vue';
+import { useCharacterDomain } from '@/composables/useCharacterDomain';
+import { useRoomDomain } from '@/composables/useRoomDomain';
 import { useBoardSync } from '@/features/BanPick/composables/useBoardSync';
+import { useTeamInfoSync } from '@/features/Team/composables/useTeamInfoSync';
 import { useRandomPull } from '@/features/BanPick/composables/useRandomPull';
-import { fetchCharacterMap } from '@/network/characterService';
-import { fetchRoomSetting, postRoomSave } from '@/network/roomService';
 import { useTeamInfoStore } from '@/stores/teamInfoStore';
 import { useMatchStepStore } from '@/stores/matchStepStore';
 import { useBoardImageStore } from '@/stores/boardImageStore';
@@ -21,11 +22,14 @@ import { useRoomUserSync } from '@/features/RoomUserPool/composables/useRoomUser
 
 import type { IRoomSetting } from '@/types/IRoomSetting';
 import type { ICharacter } from '@/types/ICharacter';
-import { useTeamInfoSync } from '@/features/Team/composables/useTeamInfoSync';
+
 const characterMap = shallowRef<Record<string, ICharacter> | null>(null);
 const roomSetting = shallowRef<IRoomSetting | null>(null);
 
 const filteredCharacterKeys = ref<string[] | null>(null);
+
+const characterDomain = useCharacterDomain();
+const roomDomain = useRoomDomain();
 
 const { boardImageMap, usedImageIds, handleBoardImageDrop, handleBoardImageRestore, handleBoardImageMapReset } = useBoardSync();
 const { randomPull } = useRandomPull();
@@ -60,13 +64,17 @@ onUnmounted(() => {
 onMounted(async () => {
     console.debug('[BAN PICK VIEW] On mounted');
     try {
-        characterMap.value = await fetchCharacterMap();
-        roomSetting.value = await fetchRoomSetting();
+        characterMap.value = await characterDomain.fetchCharacterMap();
+        roomSetting.value = await roomDomain.fetchSetting();
         filteredCharacterKeys.value = Object.keys(characterMap.value).map((id) => id);
         boardImageStore.initZoneMetaTable(roomSetting.value.zoneMetaTable);
         teamInfoStore.initTeams(roomSetting.value.teams);
         matchStepStore.initMatchSteps(roomSetting.value.matchFlow.steps);
-        tacticalBoardStore.initTeamTacticalBoardMap(roomSetting.value.teams, roomSetting.value.numberOfTeamSetup, roomSetting.value.numberOfSetupCharacter);
+        tacticalBoardStore.initTeamTacticalBoardMap(
+            roomSetting.value.teams,
+            roomSetting.value.numberOfTeamSetup,
+            roomSetting.value.numberOfSetupCharacter,
+        );
         const roomId = getRoomId();
         joinRoom(roomId);
     } catch (error) {
@@ -112,9 +120,8 @@ function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
 async function handleBoardRecord() {
     const roomId = getRoomId();
     if (!roomSetting.value) return;
-    await postRoomSave(roomId, roomSetting.value)
+    await roomDomain.save({ roomId, roomSetting: roomSetting.value });
 }
-
 </script>
 
 <template>
@@ -127,7 +134,7 @@ async function handleBoardRecord() {
                     <div class="layout__core">
                         <div class="layout__top">
                             <div class="layout__room-user-pool">
-                                <RoomUserPool class="layout__room-user-pool"/>
+                                <RoomUserPool class="layout__room-user-pool" />
                             </div>
                             <div class="layout__step-indicator">
                                 <StepIndicator />
@@ -170,9 +177,7 @@ async function handleBoardRecord() {
     --size-ban-row-spacer: calc(var(--size-drop-zone-item-space) * 2);
     --size-drop-zone-line-space: var(--space-lg);
     --size-drop-zone-item-space: var(--space-md);
-    --size-step-indicator: calc(
-        var(--size-drop-zone-width) * 2 + calc(var(--size-drop-zone-item-space) * 4)
-    );
+    --size-step-indicator: calc(var(--size-drop-zone-width) * 2 + calc(var(--size-drop-zone-item-space) * 4));
 }
 
 .background-image {
@@ -251,5 +256,4 @@ async function handleBoardRecord() {
     align-items: center;
     justify-content: end;
 }
-
 </style>

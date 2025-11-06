@@ -3,7 +3,7 @@
 import { IMatchStep } from '../types/IMatchFlow.ts';
 import { ITeam } from '../types/ITeam.ts';
 import { IZone, ZoneType } from '../types/IZone.ts';
-import { InvalidRoomSetting } from '../errors/AppError.ts';
+import { InvalidRoomSettingError } from '../errors/AppError.ts';
 import { createLogger } from './logger.ts';
 
 const logger = createLogger('BAN PICK STEPS');
@@ -93,7 +93,7 @@ function splitZonesByRound(zones: IZone[], totalRounds: number): IZone[][] {
 
     // 確保總數為偶數（蛇行/互選通常要求偶數
     if (total % 2 !== 0) {
-        throw new InvalidRoomSetting();
+        throw new InvalidRoomSettingError();
     }
 
     const base = Math.floor(total / totalRounds); // 例如 52/3 => 17

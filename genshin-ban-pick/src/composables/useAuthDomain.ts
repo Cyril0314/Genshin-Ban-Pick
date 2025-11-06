@@ -1,10 +1,10 @@
-// src/composables/useAuth.ts
+// src/composables/useAuthDomain.ts
 
-import { registerMember, loginMember, loginGuest, getAuthSession } from '@/network/authService';
+import { authService } from '@/network/authService';
 import { useAuthStore, type Identity } from '@/stores/authStore';
 import { TokenNotFound } from '@/errors/AppError';
 
-export function useAuth() {
+export function useAuthDomain() {
     const authStore = useAuthStore();
     const { setIdentity, removeIdentity, getToken, setToken } = authStore;
 
@@ -20,7 +20,7 @@ export function useAuth() {
         nickname: string;
     }): Promise<{ identity: Identity; token: string }> {
         try {
-            let response = await registerMember(payload);
+            let response = await authService.postRegisterMember(payload);
             const newIdentity: Identity = { type: 'Member', user: { ...response.data } };
             const token = response.data.token;
             setIdentity(newIdentity);
@@ -33,7 +33,7 @@ export function useAuth() {
 
     async function handleLoginMember(payload: { account: string; password: string }): Promise<{ identity: Identity; token: string }> {
         try {
-            const response = await loginMember(payload);
+            const response = await authService.postLoginMember(payload);
             const newIdentity: Identity = { type: 'Member', user: { ...response.data } };
             const token = response.data.token;
             setIdentity(newIdentity);
@@ -48,7 +48,7 @@ export function useAuth() {
     async function handleLoginGuest(): Promise<{ identity: Identity; token: string }> {
         try {
             const nickname = `guest_${Math.random().toString(36).slice(2, 8)}`;
-            const response = await loginGuest({ nickname });
+            const response = await authService.postLoginGuest({ nickname });
             const newIdentity: Identity = { type: 'Guest', user: { ...response.data } };
             const token = response.data.token;
             setIdentity(newIdentity);
@@ -68,7 +68,7 @@ export function useAuth() {
         }
 
         try {
-            const response = await getAuthSession();
+            const response = await authService.getSession();
             const newIdentity: Identity = { type: response.data.type, user: { ...response.data } };
             setIdentity(newIdentity);
             return { identity: newIdentity, token };

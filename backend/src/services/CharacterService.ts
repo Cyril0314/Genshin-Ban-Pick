@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 
 import { PrismaClient } from '@prisma/client';
 
-import { DataNotFound } from '../errors/AppError.ts';
+import { DataNotFoundError } from '../errors/AppError.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,13 +21,12 @@ export default class CharacterService {
             });
 
             if (!characters || characters.length === 0) {
-                throw new DataNotFound();
+                throw new DataNotFoundError();
             }
-            console.log('characters', characters)
             return characters;
         } catch (error) {
             console.error('[CharacterService] Failed to fetch characters:', error);
-            throw new DataNotFound();
+            throw new DataNotFoundError();
         }
     }
 }

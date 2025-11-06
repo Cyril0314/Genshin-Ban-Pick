@@ -2,12 +2,13 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { storeToRefs } from 'pinia';
+
 
 import ChatRoomDrawer from '@/features/ChatRoom/ChatRoomDrawer.vue';
 import TacticalBoardPanelDrawer from '@/features/Tactical/TacticalBoardPanelDrawer.vue';
-
+import AnalysisDrawer from '../Analysis/AnalysisDrawer.vue';
 import { useAuthStore } from '@/stores/authStore';
-import { storeToRefs } from 'pinia';
 
 const emit = defineEmits<{
     (e: 'image-map-reset'): void;
@@ -18,6 +19,7 @@ const authStore = useAuthStore()
 const { isAdmin } = storeToRefs(authStore)
 const isTacticalDrawerOpen = ref(false);
 const isChatRoomDrawerOpen = ref(false);
+const isAnalysisDrawerOpen = ref(false);
 
 function handleTacticalButtonClickEvent() {
     console.debug('[TOOL BAR] Handle tactical button click event');
@@ -27,6 +29,11 @@ function handleTacticalButtonClickEvent() {
 function handleChatButtonClickEvent() {
     console.debug('[TOOL BAR] Handle chat button click event');
     isChatRoomDrawerOpen.value = !isChatRoomDrawerOpen.value
+}
+
+function handleAnalysisButtonClickEvent() {
+    console.debug('[TOOL BAR] Handle analysis button click event');
+    isAnalysisDrawerOpen.value = !isAnalysisDrawerOpen.value
 }
 
 function handleResetButtonClickEvent() {
@@ -47,6 +54,9 @@ function handleRecordButtonClickEvent() {
         
         <button class="toolbar__button toolbar__button--chat" @click="handleChatButtonClickEvent">聊天</button>
         <ChatRoomDrawer v-model:open="isChatRoomDrawerOpen"/>
+
+        <button class="toolbar__button toolbar__button--analysis" @click="handleAnalysisButtonClickEvent">報表</button>
+        <AnalysisDrawer v-model:open="isAnalysisDrawerOpen"/>
 
         <button v-if="isAdmin" class="toolbar__button toolbar__button--reset" @click="handleResetButtonClickEvent">重置</button>
 

@@ -7,11 +7,11 @@ import { RoomStatePersistenceService } from "./RoomStatePersistenceService.ts";
 export default class RoomService {
     constructor(private persistenceService: RoomStatePersistenceService) {}
 
-    getRoomSetting(): IRoomSetting {
+    getSetting(): IRoomSetting {
         return createRoomSetting();
     }
 
-    async save(roomId: string, roomSetting: IRoomSetting) {
-        return await this.persistenceService.save(roomId, roomSetting)
+    async save(payload: { roomId: string, roomSetting: IRoomSetting }) {
+        return await this.persistenceService.save(payload, false)
     }
 }

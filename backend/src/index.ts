@@ -14,6 +14,8 @@ import { errorHandler } from './middlewares/errorHandler.ts';
 import authRoutes from './routes/auth.ts';
 import characterRoutes from './routes/characters.ts';
 import roomRoutes from './routes/room.ts';
+import analysisRoutes from './routes/analysis.ts';
+;
 import CharacterService from './services/CharacterService.ts';
 import RoomService from './services/room/RoomService.ts';
 import MemberService from './services/auth/MemberService.ts';
@@ -21,8 +23,9 @@ import GuestService from './services/auth/GuestService.ts';
 import { createSocketApp } from './socket/index.ts';
 import { RoomStateManager } from './socket/managers/RoomStateManager.ts';
 import { RoomStatePersistenceService } from './services/room/RoomStatePersistenceService.ts'
+import AnalysisService from './services/analysis/AnalysisService.ts';
 
-import type { Request, Response } from 'express';;
+import type { Request, Response } from 'express';
 
 const logger = createLogger('INDEX')
 
@@ -75,7 +78,7 @@ const roomStateManager = new RoomStateManager()
 const roomStatePersistenceService = new RoomStatePersistenceService(prisma, roomStateManager)
 const roomService = new RoomService(roomStatePersistenceService);
 const characterService = new CharacterService(prisma);
-
+const analysisService = new AnalysisService(prisma)
 
 // ---------------------------------------------------------
 // 🧩 7. Routes 註冊
@@ -84,6 +87,7 @@ logger.info('Register Api Routes');
 app.use('/api', authRoutes(guestService, memberService));
 app.use('/api', roomRoutes(roomService));
 app.use('/api', characterRoutes(characterService));
+app.use('/api', analysisRoutes(analysisService));
 
 // ---------------------------------------------------------
 // 🧩 8. Socket 初始化

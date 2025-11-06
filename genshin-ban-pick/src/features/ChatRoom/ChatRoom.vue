@@ -1,6 +1,6 @@
 <!-- src/features/ChatRoom/ChatRoom.vue -->
 <script setup lang="ts">
-import { ref, nextTick, watch, onMounted } from 'vue'
+import { ref, nextTick, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import { useChatSync } from './composables/useChatSync.ts'

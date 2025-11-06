@@ -4,11 +4,11 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-import { useAuth } from '../composables/useAuth';
+import { useAuthDomain } from '../composables/useAuthDomain';
 import { useSocketStore } from '@/stores/socketStore';
 
 const router = useRouter();
-const { handleRegisterMember } = useAuth();
+const { handleRegisterMember } = useAuthDomain();
 const socketStore = useSocketStore();
 
 const accountInput = ref('');

@@ -1,16 +1,18 @@
 // src/network/characterService.ts
 
-import { fromRawCharacter } from '@/types/ICharacter'
+import api from './httpClient';
 
-import type { ICharacter } from '@/types/ICharacter'
+import type { HttpClient } from './httpClient';
 
-export async function fetchCharacterMap(): Promise<Record<string, ICharacter>> {
-    const response = await fetch('/api/characters')
-    const characters = await response.json()
+export function createCharacterService(client: HttpClient = api) {
 
-    const map: Record<string, ICharacter> = {}
-    characters.forEach((char: any) => {
-        map[char.key] = fromRawCharacter(char)
-    })
-    return map
+    async function getCharacters() {
+        return client.get('/characters')
+    }
+
+    return {
+        getCharacters
+    }
 }
+
+export const characterService = createCharacterService();

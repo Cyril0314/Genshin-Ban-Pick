@@ -10,7 +10,7 @@ import naive from 'naive-ui';
 import App from './App.vue';
 import router from './router';
 
-import { useAuth } from '@/composables/useAuth';
+import { useAuthDomain } from '@/composables/useAuthDomain';
 import { useSocketStore } from './stores/socketStore';
 import { useAuthStore } from './stores/authStore';
 
@@ -21,11 +21,11 @@ app.use(createPinia());
 app.use(router);
 app.use(naive);
 
-const auth = useAuth();
+const authDomain = useAuthDomain();
 const authStore = useAuthStore();
 const socketStore = useSocketStore();
 
-await auth
+await authDomain
     .tryAutoLogin()
     .then(({ identity, token }) => {
         console.info('[MAIN] Try auto login:', identity);
@@ -34,7 +34,7 @@ await auth
     })
     .catch((error) => {
         console.error('[MAIN] Redirect to /login');
-        auth.logout();
+        authDomain.logout();
         router.replace('/login');
         app.mount('#app');
     });
@@ -49,7 +49,7 @@ router.beforeEach((to, from, next) => {
     // 未認證又要進入受保護頁面 → 先斷線（若有），再導回 /login
     if (!isLoggedIn && !isPublic) {
         console.warn('[MAIN] Logout because user is not authenticated');
-        auth.logout();
+        authDomain.logout();
         socketStore.disconnect()
         return next({ path: '/login' });
     }
@@ -57,7 +57,7 @@ router.beforeEach((to, from, next) => {
     // 進入公開頁面 → 先登出
     if (isPublic && isLoggedIn) {
         console.debug('[MAIN] Logout on public page');
-        auth.logout();
+        authDomain.logout();
         socketStore.disconnect()
     }
 

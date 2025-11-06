@@ -1,4 +1,5 @@
-<!-- TacticalBoardPanelDrawer.vue -->
+<!-- src/features/Tactical/TacticalBoardPanelDrawer.vue -->
+
 <script setup lang="ts">
 import TacticalBoardPanel from './TacticalBoardPanel.vue';
 
@@ -21,11 +22,6 @@ const emit = defineEmits<{
         content-class="scale-context"
         content-style="background-color: var(--md-sys-color-surface-container-low); --base-size: 1.2vw;"
     >
-        <!-- <n-drawer-content title="123456">
-            <div class="layout__panel">
-                <TacticalBoardPanel v-if="teamInfoPair" :teamInfoPair="teamInfoPair" />
-            </div>
-        </n-drawer-content> -->
         <div class="layout__panel">
             <TacticalBoardPanel />
         </div>
