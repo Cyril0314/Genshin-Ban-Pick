@@ -14,7 +14,7 @@ export function useFilteredCharacters(
     const result = Object.entries(characterMap).filter(([id, char]) => {
       return Object.entries(characterFilter).every(([key, selected]) => {
         if (!Array.isArray(selected) || selected.length === 0) return true
-        return selected.includes(char[key as FilterKey])
+        return selected.includes(char[key as CharacterFilterKey] as string)
       })
     })
     .map(([id]) => id)
