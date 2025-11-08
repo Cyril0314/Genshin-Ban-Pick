@@ -22,7 +22,7 @@ const currentTeam = computed(() => {
 });
 
 const displayText = computed(() => {
-    if (!currentStep.value || !currentTeam.value) return '選角結束';
+    if (!currentStep.value) return '選角結束';
     const currentZone = zoneMetaTable.value[currentStep.value.zoneId];
     let currentZoneName: string;
     switch (currentZone.type) {
@@ -36,7 +36,11 @@ const displayText = computed(() => {
             currentZoneName = `Utility ${currentZone.order + 1}`;
             break;
     }
-    return `輪到 ${currentTeam.value.name}\n選擇 ${currentZoneName} 角色`;
+    if (currentTeam.value) {
+        return `輪到 ${currentTeam.value.name}\n選擇 ${currentZoneName} 角色`;
+    } else {
+        return `選擇 ${currentZoneName} 角色`;
+    }
 });
 
 watch(currentTeam, () => {

@@ -1,4 +1,4 @@
-// src/types/CharacterFilterKey.ts
+// backend/src/types/CharacterFilterKey.ts
 
 export enum CharacterFilterKey {
   Weapon = 'weapon',

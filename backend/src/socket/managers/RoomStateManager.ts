@@ -14,6 +14,7 @@ export class RoomStateManager implements IRoomStateManager {
                 users: [],
                 chatMessages: [],
                 boardImageMap: {},
+                characterRandomContextMap: {},
                 teamMembersMap: Object.fromEntries(teams.map(t => [t.slot, []])) as TeamMembersMap,
                 teamTacticalBoardMap: Object.fromEntries(teams.map(t => [t.slot, {}])) as TeamTacticalBoardMap,
                 stepIndex: 0,
@@ -40,6 +41,10 @@ export class RoomStateManager implements IRoomStateManager {
 
     getBoardImageMap(roomId: string) {
         return this.ensure(roomId).boardImageMap;
+    }
+
+    getCharacterRandomContextMap(roomId: string) {
+        return this.ensure(roomId).characterRandomContextMap;
     }
 
     getTeamMembersMap(roomId: string) {

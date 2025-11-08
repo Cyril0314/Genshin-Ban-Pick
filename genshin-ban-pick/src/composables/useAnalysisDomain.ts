@@ -8,6 +8,11 @@ export function useAnalysisDomain() {
         return response.data;
     }
 
+    async function fetchBanPickUtilityStats() {
+        const response = await analysisService.getBanPickUtilityStats();
+        return response.data;
+    }
+
     async function fetchPreference() {
         const response = await analysisService.getPreference();
         return response.data;
@@ -15,14 +20,25 @@ export function useAnalysisDomain() {
 
     async function fetchSynergy() {
         const response = await analysisService.getSynergy();
-        const synergy = response.data
-        console.log(`synergy`, synergy)
+        return response.data;
+    }
+
+    async function fetchArchetypes() {
+        const response = await analysisService.getArchetypes();
+        return response.data;
+    }
+
+    async function fetchArchetypeMap() {
+        const response = await analysisService.getArchetypeMap();
         return response.data;
     }
 
     return {
         fetchMeta,
+        fetchBanPickUtilityStats,
         fetchPreference,
-        fetchSynergy
+        fetchSynergy,
+        fetchArchetypes,
+        fetchArchetypeMap
     }
 }

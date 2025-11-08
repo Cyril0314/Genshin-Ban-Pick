@@ -28,6 +28,9 @@
     "dotenv": "^16.5.0",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
+    "ml-kmeans": "^6.0.0",
+    "ml-matrix": "^6.12.1",
+    "ml-pca": "^4.1.1",
     "socket.io": "^4.8.1",
     "ws": "^8.18.1"
   },

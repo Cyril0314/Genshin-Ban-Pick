@@ -3,16 +3,17 @@
 <script setup lang="ts">
 import { ref, shallowRef, onMounted, onUnmounted, computed } from 'vue';
 import { onBeforeRouteLeave } from 'vue-router';
+import { storeToRefs } from 'pinia';
 
 import StepIndicator from '@/features/StepIndicator/StepIndicator.vue';
 import RoomUserPool from '@/features/RoomUserPool/RoomUserPool.vue';
 import BanPickBoard from '@/features/BanPick/BanPickBoard.vue';
 import Toolbar from '@/features/Toolbar/ToolBar.vue';
-import { useCharacterDomain } from '@/composables/useCharacterDomain';
 import { useRoomDomain } from '@/composables/useRoomDomain';
 import { useBoardSync } from '@/features/BanPick/composables/useBoardSync';
 import { useTeamInfoSync } from '@/features/Team/composables/useTeamInfoSync';
 import { useRandomPull } from '@/features/BanPick/composables/useRandomPull';
+import { useCharacterStore } from '@/stores/characterStore'
 import { useTeamInfoStore } from '@/stores/teamInfoStore';
 import { useMatchStepStore } from '@/stores/matchStepStore';
 import { useBoardImageStore } from '@/stores/boardImageStore';
@@ -21,14 +22,22 @@ import { ZoneType } from '@/types/IZone';
 import { useRoomUserSync } from '@/features/RoomUserPool/composables/useRoomUserSync';
 
 import type { IRoomSetting } from '@/types/IRoomSetting';
-import type { ICharacter } from '@/types/ICharacter';
+import type { CharacterFilterKey } from '@/types/CharacterFilterKey';
+import type { ICharacterRandomContext } from '@/types/ICharacterRandomContext';
 
-const characterMap = shallowRef<Record<string, ICharacter> | null>(null);
 const roomSetting = shallowRef<IRoomSetting | null>(null);
 
-const filteredCharacterKeys = ref<string[] | null>(null);
+const filteredCharacterKeys = ref<string[]>([]);
+const characterFilter = ref<Record<CharacterFilterKey, string[]>>({
+    weapon: [],
+    element: [],
+    region: [],
+    rarity: [],
+    modelType: [],
+    role: [],
+    wish: [],
+});
 
-const characterDomain = useCharacterDomain();
 const roomDomain = useRoomDomain();
 
 const { boardImageMap, usedImageIds, handleBoardImageDrop, handleBoardImageRestore, handleBoardImageMapReset } = useBoardSync();
@@ -40,6 +49,8 @@ const boardImageStore = useBoardImageStore();
 const teamInfoStore = useTeamInfoStore();
 const matchStepStore = useMatchStepStore();
 const tacticalBoardStore = useTacticalBoardStore();
+const characterStore = useCharacterStore();
+const { characterMap, loaded } = storeToRefs(characterStore);
 
 function adjustScale() {
     const wrapper = document.getElementsByClassName('viewport-wrapper')![0];
@@ -64,7 +75,8 @@ onUnmounted(() => {
 onMounted(async () => {
     console.debug('[BAN PICK VIEW] On mounted');
     try {
-        characterMap.value = await characterDomain.fetchCharacterMap();
+        await characterStore.loadCharacters();
+
         roomSetting.value = await roomDomain.fetchSetting();
         filteredCharacterKeys.value = Object.keys(characterMap.value).map((id) => id);
         boardImageStore.initZoneMetaTable(roomSetting.value.zoneMetaTable);
@@ -98,9 +110,10 @@ function getRoomId(): string {
     return roomId;
 }
 
-function handleFilterChange(newKeys: string[]) {
-    console.debug(`[BAN PICK VIEW] Handle filiter changed:`, newKeys);
+function handleFilterChange({ filteredCharacterKeys: newKeys, characterFilter: newFilter }: { filteredCharacterKeys: string[]; characterFilter: Record<CharacterFilterKey, string[]> }) {
+    console.debug(`[BAN PICK VIEW] Handle filiter changed:`, { filteredCharacterKeys: newKeys, characterFilter: newFilter });
     filteredCharacterKeys.value = newKeys;
+    characterFilter.value = newFilter
 }
 
 function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
@@ -114,7 +127,8 @@ function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
         console.warn(`[BAN PICK VIEW] Random pull does not get any result`);
         return;
     }
-    handleBoardImageDrop(result);
+    const randomContext: ICharacterRandomContext = { characterFilter: characterFilter.value }
+    handleBoardImageDrop({ ...result, randomContext });
 }
 
 async function handleBoardRecord() {
@@ -140,25 +154,17 @@ async function handleBoardRecord() {
                                 <StepIndicator />
                             </div>
                             <div class="layout__toolbar">
-                                <Toolbar @image-map-reset="handleBoardImageMapReset" @board-record="handleBoardRecord" />
+                                <Toolbar @image-map-reset="handleBoardImageMapReset"
+                                    @board-record="handleBoardRecord" />
                             </div>
                         </div>
 
-                        <BanPickBoard
-                            v-if="roomSetting && characterMap"
-                            :roomSetting="roomSetting"
-                            :characterMap="characterMap"
-                            :boardImageMap="boardImageMap"
-                            :usedImageIds="usedImageIds"
-                            :filteredCharacterKeys="filteredCharacterKeys"
-                            @image-drop="handleBoardImageDrop"
-                            @image-restore="handleBoardImageRestore"
-                            @filter-change="handleFilterChange"
-                            @random-pull="handleRandomPull"
-                            @member-input="handleMemberInput"
-                            @member-drop="handleMemberDrop"
-                            @member-restore="handleMemberRestore"
-                        />
+                        <BanPickBoard v-if="roomSetting && characterMap" :roomSetting="roomSetting"
+                            :characterMap="characterMap" :boardImageMap="boardImageMap" :usedImageIds="usedImageIds"
+                            :filteredCharacterKeys="filteredCharacterKeys" @image-drop="handleBoardImageDrop"
+                            @image-restore="handleBoardImageRestore" @filter-change="handleFilterChange"
+                            @random-pull="handleRandomPull" @member-input="handleMemberInput"
+                            @member-drop="handleMemberDrop" @member-restore="handleMemberRestore" />
                         <div v-else class="loading">載入房間設定中...</div>
                     </div>
                 </div>

@@ -1,7 +1,10 @@
 // src/composables/useCharacterDomain.ts
 
+import { characterNameMap } from '@/constants/characterNameMap';
 import { characterService } from '@/network/characterService';
-import { fromRawCharacter, type ICharacter } from '@/types/ICharacter';
+import { fromRawCharacter } from '@/types/ICharacter';
+
+import type { ICharacter } from '@/types/ICharacter';
 
 export function useCharacterDomain() {
     async function fetchCharacterMap(): Promise<Record<string, ICharacter>> {
@@ -15,7 +18,12 @@ export function useCharacterDomain() {
         return map;
     }
 
-    return {
-        fetchCharacterMap
+    function getDisplayName(key: string) {
+        return characterNameMap[key] ?? key;
     }
+
+    return {
+        fetchCharacterMap,
+        getDisplayName,
+    };
 }

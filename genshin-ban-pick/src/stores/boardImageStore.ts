@@ -11,6 +11,7 @@ export const useBoardImageStore = defineStore('boardImage', () => {
     const zoneMetaTable = shallowRef<Record<number, IZone>>({})
     const boardImageMap = ref<BoardImageMap>({})
     const usedImageIds = computed(() => [...new Set(Object.values(boardImageMap.value).map(imgId => imgId))])
+    const randomCotextMap = 
 
     watch(usedImageIds, (usedImageIds) => {
         console.debug('[BOARD IMAGE STORE] Watch used image ids', usedImageIds)

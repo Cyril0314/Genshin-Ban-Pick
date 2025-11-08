@@ -6,7 +6,6 @@ import { syncBoardImageMapStateSelf } from './boardSocket.ts';
 import { syncStepStateSelf } from './stepSocket.ts';
 import { syncTeamMembersMapStateSelf, syncTeamMembersMapStateAll } from './teamSocket.ts';
 import { createLogger } from '../../utils/logger.ts';
-import { RoomStateManager } from '../managers/RoomStateManager.ts';
 import { IRoomStateManager } from '../managers/IRoomStateManager.ts';
 import { syncChatMessagesStateSelf } from './chatSocket.ts';
 import { syncTacticalCellImageMapStateSelf } from './tacticalSocket.ts';

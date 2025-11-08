@@ -38,12 +38,12 @@ export function generateMatchFlow(
 
     steps.push(
         ...utilityZones.map((zone, i) => {
-            const isOdd = i % 2 === 1;
-            const isFirstTeamStep = !isOdd;
-            const teamSlot = isFirstTeamStep ? teams[0].slot : teams[1].slot;
+            // const isOdd = i % 2 === 1;
+            // const isFirstTeamStep = !isOdd;
+            // const teamSlot = isFirstTeamStep ? teams[0].slot : teams[1].slot;
             return {
                 index: index++,
-                teamSlot,
+                teamSlot: null,
                 zoneId: zone.id,
             };
         }),

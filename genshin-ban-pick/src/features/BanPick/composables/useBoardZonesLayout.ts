@@ -22,15 +22,15 @@ export function useBoardZonesLayout(roomSetting: IRoomSetting, teamInfoPair: { l
         let row = 0;
         for (let i = 0; i < utilityZones.length; i++) {
             const zone = utilityZones[i]
-            const step = matchFlow.steps.find(s => s.zoneId === zone.id)
-            if (step?.teamSlot === teamInfoPair.left.slot) {
-                zoneMatrix[row].unshift(zone)
-            } else {
+            // const step = matchFlow.steps.find(s => s.zoneId === zone.id)
+            // if (step?.teamSlot === teamInfoPair.left.slot) {
+            //     zoneMatrix[row].unshift(zone)
+            // } else {
                 zoneMatrix[row].push(zone)
-            }
-            if ((i + 1) % maxNumberOfUtilityPerRow === 0) {
-                row++;
-            }
+            // }
+            // if ((i + 1) % maxNumberOfUtilityPerRow === 0) {
+            //     row++;
+            // }
         }
 
         return zoneMatrix.flat()

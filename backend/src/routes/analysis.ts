@@ -17,6 +17,15 @@ export default function analysisRoutes(analysisService: AnalysisService) {
     );
 
     router.get(
+        '/analysis/ban-pick-utility-stats',
+        asyncHandler(async (req, res) => {
+            const stats = await analysisService.getBanPickUtilityStats();
+            res.status(200).json(stats);
+        }),
+    );
+
+
+    router.get(
         '/analysis/preference',
         asyncHandler(async (req, res) => {
             const preference = await analysisService.getPreference();
@@ -37,6 +46,14 @@ export default function analysisRoutes(analysisService: AnalysisService) {
         asyncHandler(async (req, res) => {
             const archetypes = await analysisService.getArchetypes();
             res.status(200).json(archetypes);
+        }),
+    );
+
+    router.get(
+        '/analysis/archetypeMap',
+        asyncHandler(async (req, res) => {
+            const archetypeMap = await analysisService.getArchetypeMap();
+            res.status(200).json(archetypeMap);
         }),
     );
 

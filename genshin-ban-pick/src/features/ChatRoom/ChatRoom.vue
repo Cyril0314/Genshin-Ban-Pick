@@ -62,6 +62,7 @@ function scrollToBottom() {
   flex-direction: column;
   width: var(--size-chat-room);
   height: 100%;
+  padding: var(--space-lg);
   gap: var(--space-md);
 }
 

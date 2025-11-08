@@ -8,6 +8,7 @@ import { useSocketStore } from '@/stores/socketStore';
 import { useBoardImageStore } from '@/stores/boardImageStore';
 import { useTacticalBoardSync } from '@/features/Tactical/composables/useTacticalBoardSync';
 import { ZoneType } from '@/types/IZone';
+import type { ICharacterRandomContext } from '@/types/ICharacterRandomContext';
 
 enum BoardEvent {
     ImageDropRequest = 'board.image.drop.request',
@@ -45,41 +46,30 @@ export function useBoardSync() {
         socket.on(`${BoardEvent.ImageMapResetBroadcast}`, handleBoardImageMapResetBroadcast);
     }
 
-    function handleBoardImageDrop({ zoneId, imgId }: { zoneId: number; imgId: string }) {
-        console.log(`[BOARD SYNC] Handle image drop`, { zoneId, imgId });
+    function handleBoardImageDrop({ zoneId, imgId, randomContext }: { zoneId: number; imgId: string; randomContext?: ICharacterRandomContext }) {
+        console.log(`[BOARD SYNC] Handle image drop`, { zoneId, imgId, randomContext });
         const previousZoneId = findZoneIdByImageId(imgId);
         const displacedZoneImgId = boardImageMap.value[zoneId] ?? null;
 
+        if (previousZoneId !== null) {
+            removeImage(previousZoneId);
+        }
+
+        if (displacedZoneImgId !== null) {
+            removeImage(zoneId);
+        }
+
         if (previousZoneId !== null && displacedZoneImgId !== null && previousZoneId !== zoneId) {
-            swapImages(zoneId, previousZoneId, imgId, displacedZoneImgId);
-            console.debug('[BOARD SYNC] Sent board image restore request', { zoneId: previousZoneId });
-            console.debug('[BOARD SYNC] Sent board image restore request', { zoneId });
-            console.debug('[BOARD SYNC] Sent board image drop request', { zoneId, imgId });
-            console.debug('[BOARD SYNC] Sent board image drop request', { zoneId: previousZoneId, imgId: displacedZoneImgId });
-            socket.emit(`${BoardEvent.ImageRestoreRequest}`, { zoneId: previousZoneId });
-            socket.emit(`${BoardEvent.ImageRestoreRequest}`, { zoneId });
-            socket.emit(`${BoardEvent.ImageDropRequest}`, { zoneId, imgId });
-            socket.emit(`${BoardEvent.ImageDropRequest}`, { zoneId: previousZoneId, imgId: displacedZoneImgId });
-        } else {
-            if (previousZoneId !== null) {
-                removeImage(previousZoneId);
+            placeImage(previousZoneId, displacedZoneImgId);
+        }
 
-                console.debug('[BOARD SYNC] Sent board image restore request', { zoneId: previousZoneId });
-                socket.emit(`${BoardEvent.ImageRestoreRequest}`, { zoneId: previousZoneId });
-            } else if (displacedZoneImgId !== null) {
-                removeImage(zoneId);
+        placeImage(zoneId, imgId);
 
-                console.debug('[BOARD SYNC] Sent board image restore request', { zoneId });
-                socket.emit(`${BoardEvent.ImageRestoreRequest}`, { zoneId });
-            }
-            placeImage(zoneId, imgId);
+        console.debug('[BOARD SYNC] Sent board image drop request', { zoneId, imgId });
+        socket.emit(`${BoardEvent.ImageDropRequest}`, { zoneId, imgId, randomContext });
 
-            console.debug('[BOARD SYNC] Sent board image drop request', { zoneId, imgId });
-            socket.emit(`${BoardEvent.ImageDropRequest}`, { zoneId, imgId });
-
-            if (currentStep.value?.zoneId === zoneId) {
-                advanceStep();
-            }
+        if (currentStep.value?.zoneId === zoneId) {
+            advanceStep();
         }
     }
 
@@ -145,7 +135,7 @@ export function useBoardSync() {
 
     function getTeamSlotFromZoneId(zoneId: number) {
         const match = matchSteps.value.find((f) => f.zoneId === zoneId);
-        return match?.teamSlot;
+        return match?.teamSlot ?? null;
     }
 
     function cloneToTacticalPoolIfNeeded(zoneId: number, imgId: string) {
@@ -153,7 +143,7 @@ export function useBoardSync() {
         switch (zone.type) {
             case ZoneType.Pick:
                 const teamSlot = getTeamSlotFromZoneId(zoneId);
-                if (teamSlot !== undefined) {
+                if (teamSlot !== null) {
                     handleAddImageToPool(teamSlot, imgId);
                 }
                 break;
@@ -170,7 +160,7 @@ export function useBoardSync() {
         switch (zone.type) {
             case ZoneType.Pick:
                 const teamSlot = getTeamSlotFromZoneId(zoneId);
-                if (teamSlot !== undefined) {
+                if (teamSlot !== null) {
                     handleRemoveImageFromBoard(teamSlot, imgId);
                 }
                 break;
@@ -188,6 +178,6 @@ export function useBoardSync() {
         registerBoardSync,
         handleBoardImageDrop,
         handleBoardImageRestore,
-        handleBoardImageMapReset
+        handleBoardImageMapReset,
     };
 }

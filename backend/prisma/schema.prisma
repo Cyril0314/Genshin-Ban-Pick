@@ -7,6 +7,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// 1) 基本欄位（id, createdAt, updatedAt ...）
+// 2) Domain fields（和商業邏輯有關的欄位）
+// 3) 外鍵欄位 (xxxId)
+// 4) Relation 欄位（relation(...))
+// 5) Array Relations (一對多 / 多對多)
+// 6) Indexes / Constraints / @@index
+
 enum MemberRole {
   User
   Owner
@@ -14,51 +21,63 @@ enum MemberRole {
 }
 
 model Member {
-  id              Int               @id @default(autoincrement())
-  account         String            @unique
-  nickname        String
-  createdAt       DateTime          @default(now())
-  passwordHash    String
-  updatedAt       DateTime          @updatedAt
-  role            MemberRole        @default(User)
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  account      String     @unique
+  nickname     String
+  passwordHash String
+  role         MemberRole @default(User)
+
   MatchTeamMember MatchTeamMember[]
 }
 
 model Guest {
-  id              Int               @id @default(autoincrement())
-  nickname        String
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  nickname String
+
   MatchTeamMember MatchTeamMember[]
 }
 
 model Match {
-  id          Int         @id @default(autoincrement())
-  flowVersion Int         @default(1)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  teams       MatchTeam[]
-  moves       MatchMove[]
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  flowVersion Int @default(1)
+
+  teams MatchTeam[]
+  moves MatchMove[]
 }
 
 model MatchTeam {
-  id          Int               @id @default(autoincrement())
-  matchId     Int
-  match       Match             @relation(fields: [matchId], references: [id])
-  teamSlot    Int
-  name        String?
+  id Int @id @default(autoincrement())
+
+  teamSlot Int
+  name     String?
+
+  matchId Int
+
+  match       Match             @relation(fields: [matchId], references: [id], onDelete: Cascade)
   teamMembers MatchTeamMember[]
   MatchMove   MatchMove[]
 }
 
 model MatchTeamMember {
-  id             Int                  @id @default(autoincrement())
-  name           String
-  teamId         Int
-  team           MatchTeam            @relation(fields: [teamId], references: [id])
-  memberRef      Int?
+  id Int @id @default(autoincrement())
+
+  name String
+
+  teamId    Int
+  memberRef Int?
+  guestRef  Int?
+
+  team           MatchTeam            @relation(fields: [teamId], references: [id], onDelete: Cascade)
   member         Member?              @relation(fields: [memberRef], references: [id])
-  guestRef       Int?
   guest          Guest?               @relation(fields: [guestRef], references: [id])
   tacticalUsages MatchTacticalUsage[]
 
@@ -67,13 +86,16 @@ model MatchTeamMember {
 }
 
 model MatchTacticalUsage {
-  id           Int             @id @default(autoincrement())
-  modelVersion Int             @default(1)
-  characterKey String
+  id Int @id @default(autoincrement())
+
+  modelVersion Int @default(1)
   setupNumber  Int
+
   teamMemberId Int
-  teamMember   MatchTeamMember @relation(fields: [teamMemberId], references: [id])
-  character    Character       @relation(fields: [characterKey], references: [key])
+  characterKey String
+
+  teamMember MatchTeamMember @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
+  character  Character       @relation(fields: [characterKey], references: [key])
 
   @@index([teamMemberId, setupNumber])
   @@index([setupNumber])
@@ -85,20 +107,41 @@ enum MoveType {
   Utility
 }
 
+enum MoveSource {
+  Manual
+  Random
+}
+
 model MatchMove {
-  id           Int        @id @default(autoincrement())
+  id Int @id @default(autoincrement())
+
+  order  Int
+  type   MoveType
+  source MoveSource @default(Manual)
+
   matchId      Int
   teamId       Int?
   characterKey String
-  order        Int
-  type         MoveType
-  match        Match      @relation(fields: [matchId], references: [id])
-  team         MatchTeam? @relation(fields: [teamId], references: [id])
-  character    Character  @relation(fields: [characterKey], references: [key])
+
+  match             Match              @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  team              MatchTeam?         @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  character         Character          @relation(fields: [characterKey], references: [key])
+  randomMoveContext RandomMoveContext?
 
   @@index([matchId, order])
   @@index([characterKey])
   @@index([teamId, characterKey])
+}
+
+model RandomMoveContext {
+  id          Int       @id @default(autoincrement())
+
+  filters     Json?
+
+  matchMoveId Int       @unique
+  
+  matchMove   MatchMove @relation(fields: [matchMoveId], references: [id], onDelete: Cascade)
+  
 }
 
 enum Rarity {
@@ -160,23 +203,21 @@ enum Wish {
 }
 
 model Character {
-  id   Int    @id @default(autoincrement())
-  key  String @unique
-  name String
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
+  key       String   @unique
+  name      String
   rarity    Rarity
   element   Element
   weapon    Weapon
   region    Region
   modelType ModelType
-
-  releaseDate DateTime?
-  version     String?
   role        CharacterRole?
   wish        Wish?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  releaseDate DateTime?
+  version     String?
 
   matchMoves          MatchMove[]
   matchTacticalUsages MatchTacticalUsage[]

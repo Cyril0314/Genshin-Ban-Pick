@@ -18,6 +18,7 @@ import { useTeamInfoStore } from '@/stores/teamInfoStore';
 import type { ICharacter } from '@/types/ICharacter';
 import type { IRoomSetting } from '@/types/IRoomSetting';
 import type { TeamMember } from '@/types/TeamMember';
+import type { CharacterFilterKey } from '@/types/CharacterFilterKey';
 
 const props = defineProps<{
     roomSetting: IRoomSetting;
@@ -30,7 +31,7 @@ const props = defineProps<{
 const emit = defineEmits<{
     (e: 'image-drop', payload: { zoneId: number; imgId: string }): void;
     (e: 'image-restore', payload: { zoneId: number }): void;
-    (e: 'filter-change', filteredCharacterKeys: string[]): void;
+    (e: 'filter-change', payload: { filteredCharacterKeys: string[]; characterFilter: Record<CharacterFilterKey, string[]> }): void;
     (e: 'random-pull', payload: { zoneType: ZoneType }): void;
     (e: 'member-drop', payload: { identityKey: string; teamSlot: number }): void;
     (e: 'member-input', payload: { name: string; teamSlot: number }): void;
@@ -43,39 +44,39 @@ const { teamInfoPair } = storeToRefs(teamInfoStore);
 const { utilityZones, banZones, leftPickZones, rightPickZones, maxNumberOfUtilityPerRow, maxNumberOfBanPerRow, maxNumberOfPickPerColumn } =
     useBoardZonesLayout(props.roomSetting, teamInfoPair.value!);
 
-function handleImageDrop({ zoneId, imgId }: { zoneId: number; imgId: string }) {
-    console.debug(`[BAN PICK BOARD] Handle image drop`, { zoneId, imgId });
-    emit('image-drop', { zoneId, imgId });
+function handleImageDrop(payload: { zoneId: number; imgId: string }) {
+    console.debug(`[BAN PICK BOARD] Handle image drop`, payload);
+    emit('image-drop', payload);
 }
 
-function handleImageRestore({ zoneId }: { zoneId: number }) {
-    console.debug(`[BAN PICK BOARD] Handle image restore`, { zoneId });
-    emit('image-restore', { zoneId });
+function handleImageRestore(payload: { zoneId: number }) {
+    console.debug(`[BAN PICK BOARD] Handle image restore`, payload);
+    emit('image-restore', payload);
 }
 
-function handleSelectorFilterChange(filteredCharacterKeys: string[]) {
-    console.debug(`[BAN PICK BOARD] Handle selector filter change`, filteredCharacterKeys);
-    emit('filter-change', filteredCharacterKeys);
+function handleSelectorFilterChange(payload: { filteredCharacterKeys: string[]; characterFilter: Record<CharacterFilterKey, string[]> }) {
+    console.debug(`[BAN PICK BOARD] Handle selector filter change`, payload);
+    emit('filter-change', payload);
 }
 
-function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
-    console.debug(`[BAN PICK BOARD] Handle selector random button click`, { zoneType });
-    emit('random-pull', { zoneType });
+function handleRandomPull(payload: { zoneType: ZoneType }) {
+    console.debug(`[BAN PICK BOARD] Handle selector random button click`, payload);
+    emit('random-pull', payload);
 }
 
-function handleMemberInput({ name, teamSlot }: { name: string; teamSlot: number }) {
-    console.debug(`[BAN PICK BOARD] Handle member input`, { name, teamSlot });
-    emit('member-input', { name, teamSlot });
+function handleMemberInput(payload: { name: string; teamSlot: number }) {
+    console.debug(`[BAN PICK BOARD] Handle member input`, payload);
+    emit('member-input', payload);
 }
 
-function handleMemberDrop({ identityKey, teamSlot }: { identityKey: string; teamSlot: number }) {
-    console.debug(`[BAN PICK BOARD] Handle member drop`, { identityKey, teamSlot });
-    emit('member-drop', { identityKey, teamSlot });
+function handleMemberDrop(payload: { identityKey: string; teamSlot: number }) {
+    console.debug(`[BAN PICK BOARD] Handle member drop`, payload);
+    emit('member-drop', payload);
 }
 
-function handleMemberRestore({ member, teamSlot }: { member: TeamMember; teamSlot: number }) {
-    console.debug(`[BAN PICK BOARD] Handle member restore`, { member, teamSlot });
-    emit('member-restore', { member, teamSlot });
+function handleMemberRestore(payload: { member: TeamMember; teamSlot: number }) {
+    console.debug(`[BAN PICK BOARD] Handle member restore`, payload);
+    emit('member-restore', payload);
 }
 </script>
 

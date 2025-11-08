@@ -24,7 +24,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    (e: 'filter-change', filteredCharacterKeys: string[]): void;
+    (e: 'filter-change',  payload: { filteredCharacterKeys: string[]; characterFilter: Record<CharacterFilterKey, string[]> }): void;
     (e: 'random-pull', payload: { zoneType: ZoneType }): void;
 }>();
 
@@ -40,7 +40,7 @@ const characterFilter = reactive<Record<CharacterFilterKey, string[]>>({
 });
 const filteredCharacterKeys = useFilteredCharacters(props.characterMap, characterFilter);
 
-watch(filteredCharacterKeys, (ids) => emit('filter-change', ids));
+watch(filteredCharacterKeys, (ids) => emit('filter-change', {filteredCharacterKeys: ids, characterFilter}));
 
 watch(characterFilter, () => normalizeAllSelection(characterFilter, selectorOptions), { deep: true });
 

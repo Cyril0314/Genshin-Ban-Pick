@@ -65,6 +65,7 @@ function handleImageRestore({ teamSlot, cellId }: { teamSlot: number, cellId: nu
   flex-direction: column;
   width: 100%;
   height: 100%;
+  padding: var(--space-lg);
   gap: var(--space-md);
 }
 

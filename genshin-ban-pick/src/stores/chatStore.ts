@@ -4,6 +4,7 @@ import type { IChatMessage } from '@/types/IChatMessage';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
+
 export const useChatStore = defineStore('chat', () => {
     const messages = ref<IChatMessage[]>([]);
 

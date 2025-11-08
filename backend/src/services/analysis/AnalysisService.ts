@@ -1,6 +1,9 @@
 // backend/src/services/AnalysisService.ts
 
 import { PrismaClient } from '@prisma/client/extension';
+import { Matrix } from 'ml-matrix';
+import kmeans from 'ml-kmeans';
+import PCA from 'ml-pca';
 import { createLogger } from '../../utils/logger.ts';
 import { log } from 'console';
 
@@ -38,6 +41,26 @@ export default class AnalysisService {
         };
     }
 
+    async getBanPickUtilityStats() {
+        const result = await this.prisma.matchMove.groupBy({
+            by: ['characterKey', 'type'],
+            _count: true,
+        });
+
+        const stats: Record<string, { pick: number; ban: number; utility: number }> = {};
+
+        for (const row of result) {
+            const key = row.characterKey;
+            stats[key] ??= { pick: 0, ban: 0, utility: 0 };
+
+            if (row.type === 'Ban') stats[key].ban += row._count;
+            if (row.type === 'Pick') stats[key].pick += row._count;
+            if (row.type === 'Utility') stats[key].utility += row._count;
+        }
+
+        return stats;
+    }
+
     async getPreference() {
         const usages = await this.prisma.matchTacticalUsage.findMany({
             include: {
@@ -69,7 +92,7 @@ export default class AnalysisService {
         // console.dir(playerPreferences)
         logger.info('playerPreferences =\n' + JSON.stringify(playerPreferences, null, 2));
 
-        return playerPreferences
+        return playerPreferences;
     }
 
     async getSynergy() {
@@ -112,18 +135,67 @@ export default class AnalysisService {
         }
         logger.info('synergy =\n' + JSON.stringify(synergy, null, 2));
 
-        return synergy
+        return synergy;
     }
 
-    async getArchetypes() {
+    async getArchetypes(k = 4) {
+        const synergy = await this.getSynergy();
+        const chars = Object.keys(synergy).sort();
 
+        // → NxN Matrix
+        const vectors = chars.map((char) => chars.map((other) => synergy[char]?.[other] ?? 0));
+
+        let matrix = new Matrix(vectors);
+
+        // 計算每列平均 & 標準差（回傳 number[]）
+        const rowMeans = matrix.mean('row');
+        const rowStds = matrix.standardDeviation('row');
+
+        // 轉成 row 向量（matrix）
+        const meanMatrix = Matrix.rowVector(rowMeans);
+        const stdMatrix = Matrix.rowVector(rowStds);
+
+        // ✅ 逐行標準化： (matrix - mean) / std
+        const colMeans = matrix.mean('column');
+        const colStds = matrix.standardDeviation('column');
+
+        matrix = matrix.subColumnVector(Matrix.columnVector(colMeans)).divColumnVector(Matrix.columnVector(colStds));
+
+        // @ts-ignore
+        const result = kmeans.kmeans(matrix.to2DArray(), k, { initialization: 'kmeans++' });
+
+        return chars.map((characterKey, index) => ({
+            characterKey,
+            clusterId: result.clusters[index],
+        }));
+    }
+
+    async getArchetypeMap(k = 4) {
+        const synergy = await this.getSynergy();
+        const chars = Object.keys(synergy).sort();
+
+        const vectors = chars.map((char) => chars.map((other) => synergy[char]?.[other] ?? 0));
+
+        let matrix = new Matrix(vectors);
+
+        const colMeans = matrix.mean('column');
+        const colStds = matrix.standardDeviation('column');
+
+        // ✅ 標準化（這一步很重要，否則 PCA 會被高出場率角色主導）
+        matrix = matrix.subColumnVector(Matrix.columnVector(colMeans)).divColumnVector(Matrix.columnVector(colStds));
+
+        // @ts-ignore
+        const pca = new PCA.PCA(matrix.to2DArray());
+        const projected = pca.predict(matrix.to2DArray(), { nComponents: 2 }).to2DArray();
+
+        // ✅ Cluster 標記
+        const clusters = await this.getArchetypes(k);
+
+        return chars.map((char, i) => ({
+            characterKey: char,
+            clusterId: clusters.find((c) => c.characterKey === char)!.clusterId,
+            x: projected[i][0],
+            y: projected[i][1],
+        }));
     }
 }
-
-// function normalizeMatrix(matrix: number[][]) {
-//   const X = tf.tensor2d(matrix);
-//   const mean = X.mean(0);
-//   const std = X.sub(mean).square().mean(0).sqrt();
-//   const normalized = X.sub(mean).div(std);
-//   return normalized;
-// }

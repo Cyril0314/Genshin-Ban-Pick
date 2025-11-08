@@ -29,16 +29,11 @@ const emit = defineEmits<{
 </template>
 
 <style scoped>
-.drawer {
-    background-color: var(--md-sys-color-primary-container);
-}
-
 .layout__panel {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100%;
-    padding: var(--space-lg);
 }
 
 </style>

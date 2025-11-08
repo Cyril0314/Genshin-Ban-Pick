@@ -43,10 +43,10 @@ function normalizeRole(r: string): CharacterRole {
             weapon: raw.weapon as Weapon,
             region: normalizeRegion(raw.region),
             modelType: normalizeModelType(raw.model_type),
-            releaseDate: new Date(raw.release_date),
-            version: raw.version,
             role: normalizeRole(raw.role),
             wish: normalizeWish(raw.wish),
+            releaseDate: new Date(raw.release_date),
+            version: raw.version,
         }))
         .sort((a: any, b: any) => a.releaseDate.getTime() - b.releaseDate.getTime());
 

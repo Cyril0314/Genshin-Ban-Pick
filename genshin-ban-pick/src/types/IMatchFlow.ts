@@ -8,5 +8,5 @@ export interface IMatchFlow {
 export interface IMatchStep {
     index: number;
     zoneId: number;
-    teamSlot: number;
+    teamSlot: number | null;
 }

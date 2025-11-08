@@ -23,6 +23,12 @@ export class RoomStatePersistenceService {
         private roomStateManager: RoomStateManager,
     ) {}
 
+    async delete({ matchId }: { matchId: number }) {
+        return await this.prisma.match.delete({
+            where: { id: matchId },
+        });
+    }
+
     async save({ roomId, roomSetting }: { roomId: string; roomSetting: IRoomSetting }, dryRun = true) {
         const roomState = this.roomStateManager.get(roomId);
         if (!roomState) {
@@ -70,9 +76,9 @@ export class RoomStatePersistenceService {
                     teams.map((team) =>
                         tx.matchTeam.create({
                             data: {
-                                matchId: match.id,
                                 teamSlot: team.slot,
                                 name: team.name,
+                                matchId: match.id,
                             },
                         }),
                     ),
@@ -92,8 +98,8 @@ export class RoomStatePersistenceService {
                         data: teamMembers.map((teamMember) => {
                             const resolved = resolveIdentity(teamMember);
                             return {
-                                teamId: matchTeamId,
                                 name: resolved.name,
+                                teamId: matchTeamId,
                                 memberRef: resolved.memberRef,
                                 guestRef: resolved.guestRef,
                             };
@@ -106,22 +112,36 @@ export class RoomStatePersistenceService {
                 const steps = roomSetting.matchFlow.steps;
                 const zoneMetaTable = roomSetting.zoneMetaTable;
                 const boardImageMap = roomState.boardImageMap;
-                const matchMoves = await Promise.all(
-                    steps.map((step) => {
-                        const matchTeamId = matchTeamIdMap[step.teamSlot];
-                        const zone = zoneMetaTable[step.zoneId];
-                        const characterKey = boardImageMap[step.zoneId];
-                        return tx.matchMove.create({
+
+                const matchMoves = [];
+                for (const step of steps) {
+                    const matchTeamId = step.teamSlot === null ? null : matchTeamIdMap[step.teamSlot];
+                    const zone = zoneMetaTable[step.zoneId];
+                    const characterKey = boardImageMap[step.zoneId];
+
+                    const randomContext = roomState.characterRandomContextMap[characterKey] ?? null;
+                    const matchMove = await tx.matchMove.create({
+                        data: {
+                            order: step.index,
+                            type: zone.type,
+                            source: randomContext ? 'Random' : 'Manual',
+                            matchId: match.id,
+                            teamId: matchTeamId,
+                            characterKey,
+                        },
+                    });
+
+                    if (randomContext) {
+                        await tx.randomMoveContext.create({
                             data: {
-                                matchId: match.id,
-                                teamId: matchTeamId,
-                                characterKey: characterKey,
-                                order: step.index,
-                                type: zone.type,
+                                filters: randomContext.characterFilter,
+                                matchMoveId: matchMove.id,
                             },
                         });
-                    }),
-                );
+                    }
+
+                    matchMoves.push(matchMove);
+                }
 
                 // 5. MatchTacticalUsage: 戰術版
 
@@ -152,9 +172,10 @@ export class RoomStatePersistenceService {
 
                             return {
                                 modelVersion: tacticalVersion,
+                                setupNumber, // 0,1,2,3 對應該隊員的第幾格
+
                                 teamMemberId: targetMember.id,
                                 characterKey,
-                                setupNumber, // 0,1,2,3 對應該隊員的第幾格
                             };
                         })
                         .filter((entry) => entry !== null);
