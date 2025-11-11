@@ -57,7 +57,7 @@ model Match {
 model MatchTeam {
   id Int @id @default(autoincrement())
 
-  teamSlot Int
+  slot     Int
   name     String?
 
   matchId Int
@@ -72,7 +72,7 @@ model MatchTeamMember {
 
   slot Int
   name String
-  
+
   teamId    Int
   memberRef Int?
   guestRef  Int?
@@ -135,14 +135,13 @@ model MatchMove {
 }
 
 model RandomMoveContext {
-  id          Int       @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
-  filters     Json?
+  filters Json?
 
-  matchMoveId Int       @unique
-  
-  matchMove   MatchMove @relation(fields: [matchMoveId], references: [id], onDelete: Cascade)
-  
+  matchMoveId Int @unique
+
+  matchMove MatchMove @relation(fields: [matchMoveId], references: [id], onDelete: Cascade)
 }
 
 enum Rarity {
@@ -208,13 +207,13 @@ model Character {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  key       String   @unique
-  name      String
-  rarity    Rarity
-  element   Element
-  weapon    Weapon
-  region    Region
-  modelType ModelType
+  key         String         @unique
+  name        String
+  rarity      Rarity
+  element     Element
+  weapon      Weapon
+  region      Region
+  modelType   ModelType
   role        CharacterRole?
   wish        Wish?
   releaseDate DateTime?
