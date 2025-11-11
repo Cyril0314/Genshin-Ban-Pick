@@ -18,10 +18,11 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     (e: 'member-drop', payload: { identityKey: string; teamSlot: number; memberSlot: number }): void;
-    (e: 'member-input', payload: { name: string; teamSlot: number }): void;
+    (e: 'member-input', payload: { name: string; teamSlot: number; memberSlot: number }): void;
     (e: 'member-restore', payload: { teamSlot: number; memberSlot: number }): void;
 }>();
 
+const numberOfReservedSlot = 1
 const inputValue = ref('');
 
 const { themeVars } = useTeamTheme(props.teamInfo.slot);
@@ -41,8 +42,14 @@ function handleInput(e: Event) {
 
     const name = inputValue.value.trim();
     if (!name) return;
-    emit('member-input', { name, teamSlot: props.teamInfo.slot });
-    inputValue.value = '';
+    for (let i = 0; i < props.numberOfSetupCharacter; i++) {
+        const member = getTeamMember(i);
+        if(!member) {
+            emit('member-input', { name, teamSlot: props.teamInfo.slot, memberSlot: i });
+            inputValue.value = '';
+            break;
+        }
+    }
 }
 
 function handleRemoveMemberButtonClick(memberSlot: number) {
@@ -78,14 +85,10 @@ function handleDropEvent(event: DragEvent, memberSlot: number) {
                 @drop.prevent="() => {}"
             />
             <div class="layout__team-member-names">
-                <div class="team-member" v-for="memberSlot in props.numberOfSetupCharacter + 1"  @dragover.prevent @drop="(e) => handleDropEvent(e, memberSlot)">
+                <div class="team-member" v-for="(_, memberSlot) in Array.from({ length: props.numberOfSetupCharacter + numberOfReservedSlot })"  @dragover.prevent @drop="(e) => handleDropEvent(e, memberSlot)">
                     <span class="team-member__name">{{ getTeamMemberName(memberSlot) }}</span>
                     <button class="team-member__remove" @click="handleRemoveMemberButtonClick(memberSlot)">✕</button>
                 </div>
-                <!-- <div class="team-member" v-for="teamMember in props.teamInfo.members">
-                    <span class="team-member__name">{{ teamMember.type === 'Manual' ? teamMember.name : teamMember.user.nickname }}</span>
-                    <button class="team-member__remove" @click="handleRemoveMemberButtonClick(teamMember)">✕</button>
-                </div> -->
             </div>
         </div>
     </div>

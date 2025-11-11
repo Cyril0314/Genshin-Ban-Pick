@@ -32,13 +32,12 @@ export function useTeamInfoSync() {
         socket.on(`${TeamEvent.MemberRemoveBroadcast}`, handleTeamMemberRemoveBroadcast);
     }
 
-    function handleMemberInput({ name, teamSlot }: { name: string; teamSlot: number }) {
+    function handleMemberInput({ name, teamSlot, memberSlot }: { name: string; teamSlot: number; memberSlot: number }) {
         const teamMembers = Object.values(teamMembersMap.value[teamSlot]);
         if (teamMembers.some((m) => m.type === 'Manual' && m.name === name)) {
             return;
         }
         let teamMember = createManualMember(name);
-        const memberSlot = teamMembers.length
         addTeamMember(teamSlot, memberSlot, teamMember);
     }
 

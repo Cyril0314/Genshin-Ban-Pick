@@ -34,7 +34,7 @@ const emit = defineEmits<{
     (e: 'filter-change', payload: { filteredCharacterKeys: string[]; characterFilter: Record<CharacterFilterKey, string[]> }): void;
     (e: 'random-pull', payload: { zoneType: ZoneType }): void;
     (e: 'member-drop', payload: { identityKey: string; teamSlot: number; memberSlot: number }): void;
-    (e: 'member-input', payload: { name: string; teamSlot: number }): void;
+    (e: 'member-input', payload: { name: string; teamSlot: number; memberSlot: number }): void;
     (e: 'member-restore', payload: { teamSlot: number; memberSlot: number }): void;
 }>();
 
@@ -64,7 +64,7 @@ function handleRandomPull(payload: { zoneType: ZoneType }) {
     emit('random-pull', payload);
 }
 
-function handleMemberInput(payload: { name: string; teamSlot: number }) {
+function handleMemberInput(payload: { name: string; teamSlot: number; memberSlot: number }) {
     console.debug(`[BAN PICK BOARD] Handle member input`, payload);
     emit('member-input', payload);
 }

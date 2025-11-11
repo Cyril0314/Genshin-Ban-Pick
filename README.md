@@ -1,8 +1,11 @@
 ## Prisma
 
 ### 本地建立新的 migration
-
+#### Schema 有變動時
 -   npx prisma migrate dev --name init
+#### 需要資料庫資料回填：
+-   手動新增 SQL Migration 檔案！
+-   npx prisma migrate dev
 
 ### 遠端套用 migration
 
@@ -62,8 +65,6 @@ psql -h localhost -p 5432 -U postgres -d postgres -c "CREATE DATABASE genshin_ba
 ### 匯入正式資料 → 本機
 pg_restore -h localhost -p 5432 -U postgres -d genshin_banpick -F c prod_dump.backup
 pg_restore -h localhost -p 5432 -U wangxiaoyu -d genshin_banpick -F c /Users/wangxiaoyu/Desktop/prod_dump.backup 
-
-
 
 ### 檢查備份檔案
 

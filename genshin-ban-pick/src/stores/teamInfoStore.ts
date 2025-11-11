@@ -29,7 +29,7 @@ export const useTeamInfoStore = defineStore('teamInfo', () => {
     }
 
     function addTeamMember(teamSlot: number, memberSlot: number, member: TeamMember) {
-        console.debug('[TEAM INFO STORE] Add team member', teamSlot, member);
+        console.debug('[TEAM INFO STORE] Add team member', teamSlot, memberSlot, member);
         teamMembersMap.value[teamSlot][memberSlot] = member
     }
 
