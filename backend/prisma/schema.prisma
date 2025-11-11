@@ -70,7 +70,7 @@ model MatchTeam {
 model MatchTeamMember {
   id Int @id @default(autoincrement())
 
-  slot Int?
+  slot Int
   name String
   
   teamId    Int
