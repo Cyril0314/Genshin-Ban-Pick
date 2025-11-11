@@ -73,6 +73,7 @@ async function handleRegisterMemberSubmit() {
 /* 容器置中，並使用 Chat 風格背景 */
 .register__view {
     --base-size: 1.2vw;
+    --size-card-lg: calc(var(--base-size) * 20);
     display: flex;
     justify-content: center;
     align-items: center;

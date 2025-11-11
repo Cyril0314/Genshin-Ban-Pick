@@ -37,6 +37,7 @@ export class RoomStatePersistenceService {
         }
 
         for (const [teamSlotString, teamMembers] of Object.entries(roomState.teamMembersMap)) {
+            // fix member slot should add
             if (teamMembers.length !== roomSetting.numberOfTeamSetup) {
                 logger.error('Team members are inconsistent with numberOfTeamSetup', teamSlotString, teamMembers, roomSetting.numberOfTeamSetup);
                 throw new InvalidFieldsError();
@@ -93,18 +94,17 @@ export class RoomStatePersistenceService {
                 for (const [teamSlotString, teamMembers] of Object.entries(roomState.teamMembersMap)) {
                     const teamSlot = Number(teamSlotString);
                     const matchTeamId = matchTeamIdMap[teamSlot];
-
-                    await tx.matchTeamMember.createMany({
-                        data: teamMembers.map((teamMember) => {
-                            const resolved = resolveIdentity(teamMember);
-                            return {
+                    for (const member of Object.values(teamMembers)) {
+                        const resolved = resolveIdentity(member);
+                        await tx.matchTeamMember.createMany({
+                            data: {
                                 name: resolved.name,
                                 teamId: matchTeamId,
                                 memberRef: resolved.memberRef,
                                 guestRef: resolved.guestRef,
-                            };
-                        }),
-                    });
+                            },
+                        });
+                    }
                 }
 
                 // 4. MatchMove: Ban/Pick/Utility 移動順序
@@ -156,7 +156,7 @@ export class RoomStatePersistenceService {
                     // 找該隊所有隊員
                     const targetMembers = await tx.matchTeamMember.findMany({
                         where: { teamId: matchTeamId },
-                        orderBy: { id: 'asc' }, // 加入隊員順序與 board index 一致
+                        orderBy: { id: 'asc' }, // 加入隊員順序與 board index 一致 // fix member slot
                     });
 
                     const usages = Object.entries(tacticalCellImageMap)

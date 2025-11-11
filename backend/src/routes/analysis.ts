@@ -9,6 +9,14 @@ export default function analysisRoutes(analysisService: AnalysisService) {
     const router = express.Router();
 
     router.get(
+        '/analysis/tactical-usages',
+        asyncHandler(async (req, res) => {
+            const tacticalUsages = await analysisService.getTacticalUsages();
+            res.status(200).json(tacticalUsages);
+        }),
+    )
+
+    router.get(
         '/analysis/meta',
         asyncHandler(async (req, res) => {
             const meta = await analysisService.getMeta();

@@ -33,9 +33,9 @@ const emit = defineEmits<{
     (e: 'image-restore', payload: { zoneId: number }): void;
     (e: 'filter-change', payload: { filteredCharacterKeys: string[]; characterFilter: Record<CharacterFilterKey, string[]> }): void;
     (e: 'random-pull', payload: { zoneType: ZoneType }): void;
-    (e: 'member-drop', payload: { identityKey: string; teamSlot: number }): void;
+    (e: 'member-drop', payload: { identityKey: string; teamSlot: number; memberSlot: number }): void;
     (e: 'member-input', payload: { name: string; teamSlot: number }): void;
-    (e: 'member-restore', payload: { member: TeamMember; teamSlot: number }): void;
+    (e: 'member-restore', payload: { teamSlot: number; memberSlot: number }): void;
 }>();
 
 const teamInfoStore = useTeamInfoStore();
@@ -69,12 +69,12 @@ function handleMemberInput(payload: { name: string; teamSlot: number }) {
     emit('member-input', payload);
 }
 
-function handleMemberDrop(payload: { identityKey: string; teamSlot: number }) {
+function handleMemberDrop(payload: { identityKey: string; teamSlot: number; memberSlot: number }) {
     console.debug(`[BAN PICK BOARD] Handle member drop`, payload);
     emit('member-drop', payload);
 }
 
-function handleMemberRestore(payload: { member: TeamMember; teamSlot: number }) {
+function handleMemberRestore(payload: { teamSlot: number; memberSlot: number }) {
     console.debug(`[BAN PICK BOARD] Handle member restore`, payload);
     emit('member-restore', payload);
 }
@@ -85,7 +85,7 @@ function handleMemberRestore(payload: { member: TeamMember; teamSlot: number }) 
     <div class="layout__main"
         :style="{ '--max-number-of-pick-per-column': maxNumberOfPickPerColumn, '--max-number-of-ban-per-row': maxNumberOfBanPerRow, '--max-number-of-utility-per-row': maxNumberOfUtilityPerRow }">
         <div class="layout__side layout__side--left">
-            <TeamInfo v-if="teamInfoPair" side="left" :teamInfo="teamInfoPair.left" @member-input="handleMemberInput"
+            <TeamInfo v-if="teamInfoPair" side="left" :teamInfo="teamInfoPair.left" :numberOfSetupCharacter="roomSetting.numberOfSetupCharacter" @member-input="handleMemberInput"
                 @member-drop="handleMemberDrop" @member-restore="handleMemberRestore" />
             <PickZones v-if="leftPickZones" :zones="leftPickZones" :maxPerColumn="maxNumberOfPickPerColumn" side="left"
                 :boardImageMap="props.boardImageMap" @image-drop="handleImageDrop"
@@ -111,7 +111,7 @@ function handleMemberRestore(payload: { member: TeamMember; teamSlot: number }) 
             </div>
         </div>
         <div class="layout__side layout__side--right">
-            <TeamInfo v-if="teamInfoPair" side="right" :teamInfo="teamInfoPair.right" @member-input="handleMemberInput"
+            <TeamInfo v-if="teamInfoPair" side="right" :teamInfo="teamInfoPair.right" :numberOfSetupCharacter="roomSetting.numberOfSetupCharacter" @member-input="handleMemberInput"
                 @member-drop="handleMemberDrop" @member-restore="handleMemberRestore" />
             <PickZones v-if="rightPickZones" :zones="rightPickZones" :maxPerColumn="maxNumberOfPickPerColumn"
                 side="right" :boardImageMap="props.boardImageMap" @image-drop="handleImageDrop"

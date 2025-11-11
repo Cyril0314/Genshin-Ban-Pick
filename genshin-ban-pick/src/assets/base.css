@@ -74,8 +74,6 @@
   --box-shadow: 0 calc(var(--space-xs) / 2) calc(var(--space-xs) / 2) var(--md-sys-color-shadow-alpha);
   --box-shadow-hover: 0 calc(var(--space-xs)) calc(var(--space-xs)) var(--md-sys-color-shadow-alpha);
   --box-shadow-lg: 0 var(--space-xs) var(--space-xs) var(--md-sys-color-shadow-alpha);
-
-  --size-card-lg: calc(var(--base-size) * 20);
 }
 
 html {

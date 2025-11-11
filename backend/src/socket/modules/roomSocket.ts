@@ -56,20 +56,21 @@ export function registerRoomSocket(io: Server, socket: Socket, roomStateManager:
         }
 
         const userTeamSlot = Object.entries(roomState.teamMembersMap).find(([teamSlot, members]) => {
-            if (members.some((m) => m.type === 'Online' && m.user.identityKey === identityKey)) {
+            const memberValues = Object.values(members);
+            if (memberValues.some((m) => m.type === 'Online' && m.user.identityKey === identityKey)) {
                 return true;
             } else {
-                return false
+                return false;
             }
-        })?.[0]
+        })?.[0];
 
         syncRoomUsersStateAll(io, roomId, roomStateManager);
 
         syncBoardImageMapStateSelf(socket, roomId, roomStateManager);
         syncStepStateSelf(socket, roomId, roomStateManager);
         syncTeamMembersMapStateSelf(socket, roomId, roomStateManager);
-        syncChatMessagesStateSelf(socket, roomId, roomStateManager)
-        syncTacticalCellImageMapStateSelf(socket, roomId, roomStateManager, Number(userTeamSlot))
+        syncChatMessagesStateSelf(socket, roomId, roomStateManager);
+        syncTacticalCellImageMapStateSelf(socket, roomId, roomStateManager, Number(userTeamSlot));
     });
 
     socket.on(RoomEvent.UserLeaveRequest, (roomId: string) => {
@@ -94,11 +95,6 @@ export function handleRoomUserLeave(io: Server, socket: Socket, roomId: string, 
         logger.info(`Sent ${RoomEvent.UserLeaveBroadcast} leavingUser:`, leavingUser);
     }
 
-    for (const [teamSlot, members] of Object.entries(roomState.teamMembersMap)) {
-        roomState.teamMembersMap[Number(teamSlot)] = members.filter((m) => m.type !== 'Online' || m.user.identityKey !== identityKey);
-    }
-    
-    syncTeamMembersMapStateAll(io, roomId, roomStateManager);
     syncRoomUsersStateAll(io, roomId, roomStateManager);
 }
 

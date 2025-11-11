@@ -3,6 +3,11 @@
 import { analysisService } from "@/network/analysisService";
 
 export function useAnalysisDomain() {
+    async function fetchTacticalUsages() {
+        const response = await analysisService.getTacticalUsages();
+        return response.data;
+    }
+
     async function fetchMeta() {
         const response = await analysisService.getMeta();
         return response.data;
@@ -34,6 +39,7 @@ export function useAnalysisDomain() {
     }
 
     return {
+        fetchTacticalUsages,
         fetchMeta,
         fetchBanPickUtilityStats,
         fetchPreference,

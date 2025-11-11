@@ -85,8 +85,10 @@
 --md-sys-color-on-background: rgb(227, 226, 233);
 --md-sys-color-surface: rgb(18, 19, 24);
 --md-sys-color-on-surface: rgb(255, 255, 255);
+--md-sys-color-on-surface-alpha: rgba(255, 255, 255, 0.7);
 --md-sys-color-surface-variant: rgb(68, 70, 81);
---md-sys-color-on-surface-variant: rgb(218, 219, 233);
+--md-sys-color-on-surface-variant: rgb(241, 241, 241);
+--md-sys-color-on-surface-variant-alpha: rgba(241, 241, 241, 0.7);
 --md-sys-color-outline: rgb(176, 177, 190);
 --md-sys-color-outline-variant: rgb(142, 144, 156);
 --md-sys-color-shadow: rgb(0, 0, 0);

@@ -70,8 +70,9 @@ model MatchTeam {
 model MatchTeamMember {
   id Int @id @default(autoincrement())
 
+  slot Int?
   name String
-
+  
   teamId    Int
   memberRef Int?
   guestRef  Int?

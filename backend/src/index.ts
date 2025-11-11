@@ -80,6 +80,9 @@ const roomService = new RoomService(roomStatePersistenceService);
 const characterService = new CharacterService(prisma);
 const analysisService = new AnalysisService(prisma)
 
+// const results = await analysisService.getTacticalUsages()
+// console.info(`getTacticalUsage`, results)
+
 // ---------------------------------------------------------
 // 🧩 7. Routes 註冊
 // ---------------------------------------------------------

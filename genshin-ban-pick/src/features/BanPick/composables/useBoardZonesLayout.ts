@@ -8,7 +8,7 @@ import type { IRoomSetting } from "@/types/IRoomSetting";
 import type { IZone } from "@/types/IZone";
 import type { TeamMember } from '@/types/TeamMember';
 
-export function useBoardZonesLayout(roomSetting: IRoomSetting, teamInfoPair: { left: { members: TeamMember[]; slot: number; name: string; }; right: { name: string; members: TeamMember[]; slot: number; } }) {
+export function useBoardZonesLayout(roomSetting: IRoomSetting, teamInfoPair: { left: { name: string; members: Record<number, TeamMember>; slot: number; }; right: { name: string; members: Record<number, TeamMember>; slot: number; } }) {
     const maxNumberOfPickPerColumn: number = 8
     const maxNumberOfUtilityPerRow: number = 6
     const maxNumberOfBanPerRow: number = 6

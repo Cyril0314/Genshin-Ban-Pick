@@ -15,7 +15,7 @@ export class RoomStateManager implements IRoomStateManager {
                 chatMessages: [],
                 boardImageMap: {},
                 characterRandomContextMap: {},
-                teamMembersMap: Object.fromEntries(teams.map(t => [t.slot, []])) as TeamMembersMap,
+                teamMembersMap: Object.fromEntries(teams.map(t => [t.slot, {}])) as TeamMembersMap,
                 teamTacticalBoardMap: Object.fromEntries(teams.map(t => [t.slot, {}])) as TeamTacticalBoardMap,
                 stepIndex: 0,
             };

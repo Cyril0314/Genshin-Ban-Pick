@@ -20,15 +20,15 @@ enum TeamEvent {
 }
 
 export function registerTeamSocket(io: Server, socket: Socket, roomStateManager: IRoomStateManager) {
-    socket.on(`${TeamEvent.MemberAddRequest}`, ({ teamSlot, member }: { teamSlot: number; member: TeamMember }) => {
+    socket.on(`${TeamEvent.MemberAddRequest}`, ({ teamSlot, memberSlot, member }: { teamSlot: number; memberSlot: number; member: TeamMember  }) => {
         logger.info(`Received ${TeamEvent.MemberAddRequest} teamSlot: ${teamSlot}`, member);
         const roomId = (socket as any).roomId;
         if (!roomId) return;
 
         const roomState = roomStateManager.ensure(roomId);
-        roomState.teamMembersMap[teamSlot].push(member);
-        socket.to(roomId).emit(`${TeamEvent.MemberAddBroadcast}`, { teamSlot, member });
-        logger.info(`Sent ${TeamEvent.MemberAddBroadcast} teamSlot: ${teamSlot}`, member);
+        roomState.teamMembersMap[teamSlot][memberSlot] = member;
+        socket.to(roomId).emit(`${TeamEvent.MemberAddBroadcast}`, { teamSlot, memberSlot, member });
+        logger.info(`Sent ${TeamEvent.MemberAddBroadcast} teamSlot: ${teamSlot}`, memberSlot, member);
 
         const user = roomState.users.find((user) => (member.type === 'Online' && member.user.identityKey === user.identityKey));
         if (user) {
@@ -36,27 +36,16 @@ export function registerTeamSocket(io: Server, socket: Socket, roomStateManager:
         }
     });
 
-    socket.on(`${TeamEvent.MemberRemoveRequest}`, ({ teamSlot, member }: { teamSlot: number; member: TeamMember }) => {
-        logger.info(`Received ${TeamEvent.MemberRemoveRequest} teamSlot: ${teamSlot}`, member);
+    socket.on(`${TeamEvent.MemberRemoveRequest}`, ({ teamSlot, memberSlot }: { teamSlot: number; memberSlot: number }) => {
+        logger.info(`Received ${TeamEvent.MemberRemoveRequest} teamSlot: ${teamSlot}`, memberSlot);
         const roomId = (socket as any).roomId;
         if (!roomId) return;
 
         const roomState = roomStateManager.ensure(roomId);
+        delete roomState.teamMembersMap[teamSlot][memberSlot];
 
-        const index = roomState.teamMembersMap[teamSlot].findIndex((m) => {
-            return (
-                (m.type === 'Manual' && member.type === 'Manual' && m.name === member.name) ||
-                (m.type === 'Online' && member.type === 'Online' && m.user.identityKey === member.user.identityKey)
-            );
-        });
-
-        if (index !== -1) {
-            logger.debug('index', index);
-            roomState.teamMembersMap[teamSlot].splice(index, 1);
-        }
-
-        socket.to(roomId).emit(`${TeamEvent.MemberRemoveBroadcast}`, { teamSlot, member });
-        logger.info(`Sent ${TeamEvent.MemberRemoveBroadcast} teamSlot: ${teamSlot}`, member);
+        socket.to(roomId).emit(`${TeamEvent.MemberRemoveBroadcast}`, { teamSlot, memberSlot });
+        logger.info(`Sent ${TeamEvent.MemberRemoveBroadcast} teamSlot: ${teamSlot}`, memberSlot);
     });
 }
 

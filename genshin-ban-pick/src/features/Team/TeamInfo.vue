@@ -11,19 +11,30 @@ const props = defineProps<{
     teamInfo: {
         slot: number;
         name: string;
-        members: TeamMember[];
+        members: Record<number, TeamMember>;
     };
+    numberOfSetupCharacter: number;
 }>();
 
 const emit = defineEmits<{
-    (e: 'member-drop', payload: { identityKey: string; teamSlot: number }): void;
+    (e: 'member-drop', payload: { identityKey: string; teamSlot: number; memberSlot: number }): void;
     (e: 'member-input', payload: { name: string; teamSlot: number }): void;
-    (e: 'member-restore', payload: { member: TeamMember; teamSlot: number }): void;
+    (e: 'member-restore', payload: { teamSlot: number; memberSlot: number }): void;
 }>();
 
 const inputValue = ref('');
 
 const { themeVars } = useTeamTheme(props.teamInfo.slot);
+
+function getTeamMember(memberSlot: number): TeamMember | null {
+    return props.teamInfo.members[memberSlot] ??　null
+}
+
+function getTeamMemberName(memberSlot: number): string | null {
+    const member = getTeamMember(memberSlot)
+    if (!member) return null;
+    return member.type === 'Manual' ? member.name : member.user.nickname
+}
 
 function handleInput(e: Event) {
     console.debug(`[TEAM INFO] Handle input`);
@@ -34,18 +45,20 @@ function handleInput(e: Event) {
     inputValue.value = '';
 }
 
-function handleRemoveMemberButtonClick(member: TeamMember) {
-    console.debug('[TEAM INFO] Remove member button click', member);
-    emit('member-restore', { member, teamSlot: props.teamInfo.slot });
+function handleRemoveMemberButtonClick(memberSlot: number) {
+    console.debug('[TEAM INFO] Remove member button click', memberSlot);
+    const member = getTeamMember(memberSlot)
+    if (!member) return;
+    emit('member-restore', { teamSlot: props.teamInfo.slot, memberSlot });
 }
 
-function handleDropEvent(event: DragEvent) {
+function handleDropEvent(event: DragEvent, memberSlot: number) {
     console.debug(`[TEAM INFO] Handle drop event`);
     event.preventDefault();
     // isOver.value = false
     const identityKey = event.dataTransfer?.getData(DragTypes.ROOM_USER);
     if (identityKey === undefined) return;
-    emit('member-drop', { identityKey, teamSlot: props.teamInfo.slot });
+    emit('member-drop', { identityKey, teamSlot: props.teamInfo.slot, memberSlot });
 }
 </script>
 
@@ -54,7 +67,7 @@ function handleDropEvent(event: DragEvent) {
         <span class="team__name" :class="`team__name--${side}`">
             {{ teamInfo.name }}
         </span>
-        <div class="layout__team-members" :class="`layout__team-members--${side}`" @dragover.prevent @drop="handleDropEvent">
+        <div class="layout__team-members" :class="`layout__team-members--${side}`">
             <input
                 class="team__member-input"
                 type="text"
@@ -65,10 +78,14 @@ function handleDropEvent(event: DragEvent) {
                 @drop.prevent="() => {}"
             />
             <div class="layout__team-member-names">
-                <div class="team-member" v-for="teamMember in props.teamInfo.members">
+                <div class="team-member" v-for="memberSlot in props.numberOfSetupCharacter + 1"  @dragover.prevent @drop="(e) => handleDropEvent(e, memberSlot)">
+                    <span class="team-member__name">{{ getTeamMemberName(memberSlot) }}</span>
+                    <button class="team-member__remove" @click="handleRemoveMemberButtonClick(memberSlot)">✕</button>
+                </div>
+                <!-- <div class="team-member" v-for="teamMember in props.teamInfo.members">
                     <span class="team-member__name">{{ teamMember.type === 'Manual' ? teamMember.name : teamMember.user.nickname }}</span>
                     <button class="team-member__remove" @click="handleRemoveMemberButtonClick(teamMember)">✕</button>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
@@ -76,7 +93,7 @@ function handleDropEvent(event: DragEvent) {
 
 <style scoped>
 .team__info {
-    --size-team-member-height: calc(var(--base-size) * 1);
+    --size-team-member-height: calc(var(--base-size) * 1.25);
 
     display: flex;
     flex-direction: row;
@@ -156,10 +173,8 @@ function handleDropEvent(event: DragEvent) {
 .layout__team-member-names {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-xs);
-    flex: 2;
+    flex: 3;
     width: 100%;
-    padding: var(--space-xs);
     background-color: var(--md-sys-color-surface-container-alpha);
     backdrop-filter: var(--backdrop-filter);
     box-shadow: var(--box-shadow);
@@ -171,13 +186,12 @@ function handleDropEvent(event: DragEvent) {
 .team-member {
     display: flex;
     background-color: var(--md-sys-color-surface-container-alpha);
-    box-shadow: var(--box-shadow);
     height: var(--size-team-member-height);
-    border-radius: var(--border-radius-xs);
     gap: var(--space-xs);
     padding: 0 var(--space-xs);
     align-items: center;
     justify-content: space-between;
+    
     color: var(--md-sys-color-on-surface-variant);
     overflow: hidden;
 }

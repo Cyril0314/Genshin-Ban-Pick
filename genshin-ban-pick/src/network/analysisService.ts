@@ -5,7 +5,10 @@ import api from './httpClient';
 import type { HttpClient } from './httpClient';
 
 export function createAnalysisService(client: HttpClient = api) {
-    
+    async function getTacticalUsages() {
+        return client.get(`/analysis/tactical-usages`);
+    }
+
     async function getMeta() {
         return client.get(`/analysis/meta`);
     }
@@ -31,6 +34,7 @@ export function createAnalysisService(client: HttpClient = api) {
     }
 
     return {
+        getTacticalUsages,
         getMeta,
         getBanPickUtilityStats,
         getPreference,

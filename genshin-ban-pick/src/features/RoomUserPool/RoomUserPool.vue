@@ -36,7 +36,8 @@ function handleDragStartEvent(event: DragEvent, roomUser: IRoomUser) {
 function findUserTeamSlot(roomUser: IRoomUser): number | null {
     console.debug(`[ROOM USER POOL] Find user team slot`, roomUser);
     for (const [teamSlot, members] of Object.entries(teamMembersMap.value)) {
-        if (members.some(
+        const memberValues = Object.values(members);
+        if (memberValues.some(
             (m) => m.type === 'Online' && m.user.identityKey === roomUser.identityKey
         )) {
             return Number(teamSlot);
