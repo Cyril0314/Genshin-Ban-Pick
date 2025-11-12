@@ -1,4 +1,4 @@
-// src/features/Analysis/components/composables/useTacticalUsages.ts
+// src/features/Analysis/components/composables/useCharacterTacticalUsagesChart.ts
 
 import { computed, onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
@@ -12,31 +12,11 @@ import { useDesignTokens } from '@/composables/useDesignTokens';
 import { ElementColors } from '@/constants/useElementColor';
 import { useEchartTheme } from '@/composables/useEchartTheme';
 
-interface TacticalUsageItem {
-    characterKey: string;
-    tacticalUsage: number;
-    globalUsage: number;
-    effectiveUsage: number;
-    validMatchCount: number;
-    context: WeightContext;
-}
+import type { ITacticalUsages } from '../../types/ITacticalUsages';
 
-interface WeightContext {
-    pick: number;
-    ban: number;
-    utility: number;
-    randomPick: number;
-    randomBan: number;
-    randomUtility: number;
-    pickNotUsed: number;
-    utilityUsedOneSide: number;
-    utilityUsedBothSides: number;
-}
-
-export function useCharacterTacticalUsageStats(topN = 120) {
+export function useCharacterTacticalUsagesChart(topN = 120) {
     const designTokens = useDesignTokens();
     const { gridStyle, xAxisStyle, yAxisStyle, legendStyle, tooltipStyle, dataZoomStyle } = useEchartTheme();
-    // console.log(`xAxis`, theme.xAxis)
     const analysisDomain = useAnalysisDomain();
     const { fetchTacticalUsages } = analysisDomain;
     const characterDomain = useCharacterDomain();
@@ -44,15 +24,13 @@ export function useCharacterTacticalUsageStats(topN = 120) {
     const characterStore = useCharacterStore();
     const { characterMap } = storeToRefs(characterStore);
 
-    const data = ref<TacticalUsageItem[] | null>(null);
+    const data = ref<ITacticalUsages[] | null>(null);
 
     onMounted(async () => {
         data.value = await fetchTacticalUsages();
     });
 
     const option = computed(() => {
-        console.log(`designTokens.borderRadiusXs.value`, designTokens.borderRadiusXs.value);
-
         if (!data.value || !characterMap.value) return null;
         const sorted = [...data.value].sort((a, b) => b.tacticalUsage - a.tacticalUsage);
         const top = sorted.slice(0, topN);
@@ -63,28 +41,28 @@ export function useCharacterTacticalUsageStats(topN = 120) {
                     const d = top[p.dataIndex];
                     return `
                         <b>${getDisplayName(d.characterKey)}</b><br/>
-                        綜合使用權重: <b>${d.tacticalUsage.toFixed(2)}</b><br/>
-                        有效使用權重: ${d.effectiveUsage.toFixed(2)}<br/>
-                        實際使用權重: ${d.globalUsage.toFixed(2)}<br/>
-                        <b>上線後場數: ${d.validMatchCount}</b><br/>
-                        非隨機Pick次數: ${d.context.pick - d.context.randomPick}<br/>
-                        隨機Pick次數: ${d.context.randomPick}<br/>
-                        非隨機Ban次數: ${d.context.ban - d.context.randomBan}<br/>
-                        隨機Ban次數: ${d.context.randomBan}<br/>
-                        非隨機Utility次數: ${d.context.utility - d.context.randomUtility}<br/>
-                        隨機Utility次數: ${d.context.randomUtility}<br/>
-                        Pick被Utility取代次數: ${d.context.pickNotUsed}<br/>
-                        Utility取代Pick次數(只有單隊): ${d.context.utilityUsedOneSide}<br/>
-                        Utility取代Pick次數(兩隊同時): ${d.context.utilityUsedBothSides}
+                        <b>綜合全期平均與有效權重: ${d.tacticalUsage.toFixed(2)}</b><br/>
+                        僅計算登場後的有效權重: ${d.effectiveUsage.toFixed(2)}<br/>
+                        在全部場次中的平均權重: ${d.globalUsage.toFixed(2)}<br/>
+                        <b>登場後參與場數: ${d.validMatchCount}</b><br/>
+                        非隨機Pick次數: ${d.context.pick.manualNotUsed + d.context.pick.manualUsed}<br/>
+                        隨機Pick次數: ${d.context.pick.randomNotUsed + d.context.pick.randomUsed}<br/>
+                        非隨機Ban次數: ${d.context.ban.manual}<br/>
+                        隨機Ban次數: ${d.context.ban.random}<br/>
+                        非隨機Utility次數: ${d.context.utility.manualNotUsed + d.context.utility.manualUsedOneSide + d.context.utility.manualUsedBothSides}<br/>
+                        隨機Utility次數: ${d.context.utility.randomNotUsed + d.context.utility.randomUsedOneSide + d.context.utility.randomUsedBothSides}<br/>
+                        Pick被Utility取代次數: ${d.context.pick.randomNotUsed + d.context.pick.manualNotUsed}<br/>
+                        Utility取代Pick次數(只有單隊): ${d.context.utility.manualUsedOneSide + d.context.utility.randomUsedOneSide}<br/>
+                        Utility取代Pick次數(兩隊同時): ${d.context.utility.manualUsedBothSides + d.context.utility.randomUsedBothSides}
                     `;
                 },
             },
             grid: {
-                ...gridStyle('tight', true)
+                ...gridStyle('tight', true),
             },
             xAxis: {
                 ...xAxisStyle(),
-                name: '使用權重',
+                name: '權重',
                 type: 'value',
             },
             yAxis: {
@@ -95,13 +73,13 @@ export function useCharacterTacticalUsageStats(topN = 120) {
             legend: {
                 ...legendStyle('top'),
                 data: [
-                    { 
-                        name: '綜合使用權重(指數加權有效和真實使用權重)', 
+                    {
+                        name: '綜合全期平均與有效權重',
                         icon: 'roundRect',
-                        itemStyle: { color: ElementColors['Pyro']!.main } 
+                        itemStyle: { color: ElementColors['Pyro']!.main },
                     },
                     {
-                        name: '有效使用權重(僅計算實際能上場的場次)',
+                        name: '僅計算登場後的有效權重',
                         icon: 'roundRect',
                         itemStyle: { color: tinycolor(ElementColors['Pyro']!.light).setAlpha(0.45).toRgbString() },
                     },
@@ -118,7 +96,7 @@ export function useCharacterTacticalUsageStats(topN = 120) {
             ],
             series: [
                 {
-                    name: '綜合使用權重(指數加權有效和真實使用權重)',
+                    name: '綜合全期平均與有效權重',
                     type: 'bar',
                     data: top.map((d) => d.tacticalUsage.toFixed(3)),
                     barWidth: parseFloat(designTokens.borderRadiusMd.value),
@@ -144,9 +122,8 @@ export function useCharacterTacticalUsageStats(topN = 120) {
                     },
                     z: 1,
                 },
-                // 內層 — 有效使用權重
                 {
-                    name: '有效使用權重(僅計算實際能上場的場次)',
+                    name: '僅計算登場後的有效權重',
                     type: 'bar',
                     data: top.map((d) => d.effectiveUsage),
                     barWidth: parseFloat(designTokens.borderRadiusLg.value),

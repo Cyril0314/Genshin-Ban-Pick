@@ -8,6 +8,7 @@ import type { BoardImageMap, CharacterRandomContextMap, IRoomState, TeamTactical
 
 export interface IRoomStateManager {
   ensure(roomId: string): IRoomState;
+  setRoomState(roomId: string, roomState: IRoomState): void;
   get(roomId: string): IRoomState | undefined;
   remove(roomId: string): void;
 

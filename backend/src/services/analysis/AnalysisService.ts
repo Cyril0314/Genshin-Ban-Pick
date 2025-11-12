@@ -17,6 +17,7 @@ import {
     ModelType,
     CharacterRole,
     Wish,
+    Prisma,
 } from '@prisma/client';
 import { Matrix } from 'ml-matrix';
 import kmeans from 'ml-kmeans';
@@ -26,105 +27,148 @@ import { log } from 'console';
 
 const logger = createLogger('ANALYSIS SERVICE');
 
-interface MoveContext {
+interface IMoveContext {
     type: MoveType;
     source: MoveSource;
     wasUsed?: boolean; // 是否實際上場
     usedByBothTeams?: boolean; // 雙方皆使用 (for Utility)
 }
 
-interface WeightContext {
-    pick: number;
-    ban: number;
-    utility: number;
-    randomPick: number;
-    randomBan: number;
-    randomUtility: number;
-    pickNotUsed: number;
-    utilityUsedOneSide: number;
-    utilityUsedBothSides: number;
+interface IPickContext {
+    total: number;
+    manualUsed: number;
+    manualNotUsed: number;
+    randomUsed: number;
+    randomNotUsed: number;
 }
 
-interface TacticalCoefficients {
-    base: {
-        pick: number;
-        ban: number;
-        utility: number;
-    };
-    randomFactor: {
-        pick: number;
-        ban: number;
-        utility: number;
-        utilityUsed: number;
-    };
-    pickNotUsedFactor: number;
-    utilityUsed: {
-        oneSide: number;
-        bothSides: number;
-    };
+interface IBanContext {
+    total: number;
+    manual: number;
+    random: number;
+}
+
+interface IUtilityContext {
+    total: number;
+    manualNotUsed: number;
+    manualUsedOneSide: number;
+    manualUsedBothSides: number;
+    randomNotUsed: number;
+    randomUsedOneSide: number;
+    randomUsedBothSides: number;
+}
+
+interface IWeightContext {
+    pick: IPickContext;
+    ban: IBanContext;
+    utility: IUtilityContext;
+}
+
+interface IPickCoefficients {
+    base: number;
+    random: number;
+    randomFactor: number;
+    notUsedFactor: number;
+}
+
+interface IBanCoefficients {
+    base: number;
+    random: number;
+    randomFactor: number;
+}
+
+interface IUtilityCoefficients {
+    base: number;
+    random: number;
+    randomFactor: number;
+    usedOneSideFactor: number;
+    usedBothSidesFactor: number;
+}
+
+interface ITacticalCoefficients {
+    pick: IPickCoefficients;
+    ban: IBanCoefficients;
+    utility: IUtilityCoefficients;
     clampRange: [number, number];
 }
 
 // 🧮 預設係數
-export const DEFAULT_TACTICAL_COEFFICIENTS: TacticalCoefficients = {
-    base: { pick: 1.0, ban: 0.75, utility: 0.5 },
-    randomFactor: {
-        pick: 0.6, // 隨機 Pick 保留部分策略價值
-        ban: 0.4, // 隨機 Ban 幾乎無意圖
-        utility: 0.3, // 隨機 Utility 基礎值
-        utilityUsed: 0.5, // 隨機 Utility 但被使用，衰減 50%
+export const DEFAULT_TACTICAL_COEFFICIENTS: ITacticalCoefficients = {
+    pick: {
+        base: 1.0,
+        random: 0.6,
+        randomFactor: 0.1,
+        notUsedFactor: 0.35,
     },
-    pickNotUsedFactor: 0.35, // 被替代的 Pick 價值衰減
-    utilityUsed: {
-        oneSide: 1.0,
-        bothSides: 1.5,
+
+    ban: {
+        base: 0.8,
+        random: 0.6,
+        randomFactor: 0.05,
     },
+
+    utility: {
+        base: 0.5,
+        random: 0.3,
+        randomFactor: 0.2,
+        usedOneSideFactor: 2,
+        usedBothSidesFactor: 3,
+    },
+
     clampRange: [0, 1.5],
 };
 
 export default class AnalysisService {
     constructor(private prisma: PrismaClient) {}
 
-    getWeightContext(moveContext: MoveContext): WeightContext {
-        const weightContext: WeightContext = {
-            pick: 0,
-            ban: 0,
-            utility: 0,
-            randomPick: 0,
-            randomBan: 0,
-            randomUtility: 0,
-            pickNotUsed: 0,
-            utilityUsedOneSide: 0,
-            utilityUsedBothSides: 0,
+    getWeightContext(moveContext: IMoveContext): IWeightContext {
+        const weightContext: IWeightContext = {
+            pick: {
+                total: 0,
+                manualUsed: 0,
+                manualNotUsed: 0,
+                randomUsed: 0,
+                randomNotUsed: 0,
+            },
+            ban: {
+                total: 0,
+                manual: 0,
+                random: 0,
+            },
+            utility: {
+                total: 0,
+                manualNotUsed: 0,
+                manualUsedOneSide: 0,
+                manualUsedBothSides: 0,
+                randomNotUsed: 0,
+                randomUsedOneSide: 0,
+                randomUsedBothSides: 0,
+            },
         };
         const { type, source, wasUsed, usedByBothTeams } = moveContext;
         const isRandom = source === MoveSource.Random;
         switch (type) {
             case MoveType.Ban:
-                weightContext.ban += 1;
-                if (isRandom) {
-                    weightContext.randomBan += 1;
-                }
+                weightContext.ban.total++;
+                if (isRandom) weightContext.ban.random++;
+                else weightContext.ban.manual++;
                 break;
             case MoveType.Pick:
-                weightContext.pick += 1;
-                if (isRandom) {
-                    weightContext.randomPick += 1;
-                }
-                if (!wasUsed) {
-                    weightContext.pickNotUsed += 1;
-                }
+                weightContext.pick.total++;
+                if (!isRandom && wasUsed) weightContext.pick.manualUsed++;
+                else if (!isRandom && !wasUsed) weightContext.pick.manualNotUsed++;
+                else if (isRandom && wasUsed) weightContext.pick.randomUsed++;
+                else if (isRandom && !wasUsed) weightContext.pick.randomNotUsed++;
                 break;
             case MoveType.Utility:
-                weightContext.utility += 1;
-                if (isRandom) {
-                    weightContext.randomUtility += 1;
-                }
-                if (usedByBothTeams) {
-                    weightContext.utilityUsedBothSides += 1;
-                } else {
-                    weightContext.utilityUsedOneSide += 1;
-                }
+                weightContext.utility.total++;
+                if (!isRandom && !wasUsed) weightContext.utility.manualNotUsed++;
+                else if (!isRandom && wasUsed && !usedByBothTeams) weightContext.utility.manualUsedOneSide++;
+                else if (!isRandom && wasUsed && usedByBothTeams) weightContext.utility.manualUsedBothSides++;
+                else if (isRandom && !wasUsed) weightContext.utility.randomNotUsed++;
+                else if (isRandom && wasUsed && !usedByBothTeams) weightContext.utility.randomUsedOneSide++;
+                else if (isRandom && wasUsed && usedByBothTeams) weightContext.utility.randomUsedBothSides++;
+
                 break;
             default:
                 const _exhaustiveCheck: never = type;
@@ -133,67 +177,59 @@ export default class AnalysisService {
         return weightContext;
     }
 
-    calculateTacticalWeight(weightContext: WeightContext, coefficients: TacticalCoefficients = DEFAULT_TACTICAL_COEFFICIENTS): number {
-        if (weightContext.ban > 0) return this.calcBanWeight(weightContext, coefficients);
-        if (weightContext.pick > 0) return this.calcPickWeight(weightContext, coefficients);
-        if (weightContext.utility > 0) return this.calcUtilityWeight(weightContext, coefficients);
+    calculateTacticalWeight(weightContext: IWeightContext, coefficients: ITacticalCoefficients = DEFAULT_TACTICAL_COEFFICIENTS): number {
+        if (weightContext.ban.total > 0) return this.calcBanWeight(weightContext.ban, coefficients);
+        if (weightContext.pick.total > 0) return this.calcPickWeight(weightContext.pick, coefficients);
+        if (weightContext.utility.total > 0) return this.calcUtilityWeight(weightContext.utility, coefficients);
         return 0;
     }
 
     // 🧱 Ban 權重邏輯
-    private calcBanWeight(ctx: WeightContext, c: TacticalCoefficients): number {
-        let weight = c.base.ban;
-        const isRandom = ctx.randomBan > 0;
+    private calcBanWeight(ctx: IBanContext, c: ITacticalCoefficients): number {
+        let weight = c.ban.base;
+        const isRandom = ctx.random > 0;
         if (isRandom) {
-            const rf = 0.05; // 可選：微小平滑，防止極端
-            weight = weight * (1 - rf) + c.base.ban * rf;
+            const rf = c.ban.randomFactor;
+            weight = weight * (1 - rf) + c.ban.random * rf;
         }
         return Math.max(c.clampRange[0] ?? 0, Math.min(weight, c.clampRange[1] ?? 1.5));
     }
 
     // 🧱 Pick 權重邏輯
-    private calcPickWeight(ctx: WeightContext, c: TacticalCoefficients): number {
-        let weight = c.base.pick;
-        const isRandom = ctx.randomPick > 0;
+    private calcPickWeight(ctx: IPickContext, c: ITacticalCoefficients): number {
+        let weight = c.pick.base;
 
-        // 被隨機抽中但沒被使用 → 降權
-        if (isRandom && ctx.pickNotUsed === 0) {
-            weight *= c.randomFactor.pick;
+        const isRandom = ctx.randomUsed + ctx.randomNotUsed > 0;
+        if (isRandom) {
+            const rf = c.pick.randomFactor;
+            weight = weight * (1 - rf) + c.pick.random * rf;
         }
 
-        // 被替代 (not used)
-        if (ctx.pickNotUsed > 0) {
-            weight *= c.pickNotUsedFactor;
+        const isNotUsed = ctx.manualNotUsed + ctx.randomNotUsed > 0;
+        if (isNotUsed) {
+            weight *= c.pick.notUsedFactor;
         }
 
         return Math.max(c.clampRange[0] ?? 0, Math.min(weight, c.clampRange[1] ?? 1.5));
     }
 
     // 🧱 Utility 權重邏輯
-    private calcUtilityWeight(ctx: WeightContext, c: TacticalCoefficients): number {
-        const isRandom = ctx.randomUtility > 0;
-        const usedBoth = ctx.utilityUsedBothSides > 0;
-        const usedOne = ctx.utilityUsedOneSide > 0;
+    private calcUtilityWeight(ctx: IUtilityContext, c: ITacticalCoefficients): number {
+        const isRandom = ctx.randomNotUsed + ctx.randomUsedOneSide + ctx.randomUsedBothSides > 0;
+        const usedOneSide = ctx.manualUsedOneSide + ctx.randomUsedOneSide > 0;
+        const usedBothSides = ctx.manualUsedBothSides + ctx.randomUsedBothSides > 0;
 
-        // 基礎
-        let weight = c.base.utility;
+        let weight = c.utility.base;
 
-        // 被使用 → 提升價值
-        if (usedBoth || usedOne) {
-            const usedWeight = usedBoth ? c.utilityUsed.bothSides : c.utilityUsed.oneSide;
-            if (isRandom) {
-                const rf = c.randomFactor.utilityUsed ?? c.randomFactor.utility;
-                weight = usedWeight * (1 - rf) + c.base.utility * rf; // 平滑，不重懲
-            } else {
-                weight = usedWeight;
-            }
+        if (isRandom) {
+            const rf = c.utility.randomFactor;
+            weight = weight * (1 - rf) + c.utility.random * rf;
         }
-        // 未使用但隨機抽中 → 輕微降權
-        else if (isRandom) {
-            const rf = c.randomFactor.utility ?? 0.8;
-            weight = weight * (1 - rf) + c.base.utility * rf;
+        if (usedOneSide) {
+            weight *= c.utility.usedOneSideFactor;
+        } else if (usedBothSides) {
+            weight *= c.utility.usedBothSidesFactor;
         }
-
         return Math.max(c.clampRange[0] ?? 0, Math.min(weight, c.clampRange[1] ?? 1.5));
     }
 
@@ -240,7 +276,7 @@ export default class AnalysisService {
             usageCountByMatch.set(key, (usageCountByMatch.get(key) ?? 0) + 1);
         }
         const weights = new Map<string, number>();
-        const weightContextMap = new Map<string, WeightContext>();
+        const weightContextMap = new Map<string, IWeightContext>();
         const releaseMap = new Map<string, Date | null>();
 
         for (const move of moves) {
@@ -271,19 +307,38 @@ export default class AnalysisService {
             weights.set(key, prevWeight + weight);
 
             const prevCtx = weightContextMap.get(key) ?? {
-                pick: 0,
-                ban: 0,
-                utility: 0,
-                randomPick: 0,
-                randomBan: 0,
-                randomUtility: 0,
-                pickNotUsed: 0,
-                utilityUsedOneSide: 0,
-                utilityUsedBothSides: 0,
+                pick: {
+                    total: 0,
+                    manualUsed: 0,
+                    manualNotUsed: 0,
+                    randomUsed: 0,
+                    randomNotUsed: 0,
+                },
+                ban: {
+                    total: 0,
+                    manual: 0,
+                    random: 0,
+                },
+                utility: {
+                    total: 0,
+                    manualNotUsed: 0,
+                    manualUsedOneSide: 0,
+                    manualUsedBothSides: 0,
+                    randomNotUsed: 0,
+                    randomUsedOneSide: 0,
+                    randomUsedBothSides: 0,
+                },
             };
-            for (const k of Object.keys(prevCtx) as (keyof WeightContext)[]) {
-                prevCtx[k] += weightContext[k];
+            for (const type of Object.keys(weightContext) as (keyof IWeightContext)[]) {
+                const subCtx = weightContext[type];
+                const prevSub = prevCtx[type];
+
+                for (const field of Object.keys(subCtx) as (keyof typeof subCtx)[]) {
+                    // @ts-ignore: dynamic numeric add
+                    prevSub[field] = (prevSub[field] ?? 0) + (subCtx[field] ?? 0);
+                }
             }
+
             weightContextMap.set(key, prevCtx);
         }
 
@@ -307,7 +362,7 @@ export default class AnalysisService {
             const globalUsage = totalWeight / matchCount;
             const effectiveUsage = totalWeight / safeValidMatchCount;
 
-            const priorCount = 0; // 先不假設前面有 pseudo 
+            const priorCount = 0; // 先不假設前面有 pseudo
             const priorUsage = globalUsage;
             const adjustedUsage = (effectiveUsage * validMatchCount + priorUsage * priorCount) / (validMatchCount + priorCount);
             const stabilityFactor = 1 - Math.exp(-validMatchCount / 30); // 0 ~ 1
@@ -324,55 +379,6 @@ export default class AnalysisService {
         });
 
         return results.sort((a, b) => b.tacticalUsage - a.tacticalUsage);
-    }
-
-    async getMeta() {
-        const metaPickCharacters = await this.prisma.matchMove.groupBy({
-            by: ['characterKey'],
-            where: { type: 'Pick' },
-            _count: true,
-            orderBy: { _count: { characterKey: 'desc' } },
-        });
-
-        const metaBanCharacters = await this.prisma.matchMove.groupBy({
-            by: ['characterKey'],
-            where: { type: 'Ban' },
-            _count: true,
-            orderBy: { _count: { characterKey: 'desc' } },
-        });
-
-        const metaUtilityCharacters = await this.prisma.matchMove.groupBy({
-            by: ['characterKey'],
-            where: { type: 'Utility' },
-            _count: true,
-            orderBy: { _count: { characterKey: 'desc' } },
-        });
-
-        return {
-            metaPickCharacters,
-            metaBanCharacters,
-            metaUtilityCharacters,
-        };
-    }
-
-    async getBanPickUtilityStats() {
-        const result = await this.prisma.matchMove.groupBy({
-            by: ['characterKey', 'type'],
-            _count: true,
-        });
-
-        const stats: Record<string, { pick: number; ban: number; utility: number }> = {};
-
-        for (const row of result) {
-            const key = row.characterKey;
-            stats[key] ??= { pick: 0, ban: 0, utility: 0 };
-
-            if (row.type === 'Ban') stats[key].ban += row._count;
-            if (row.type === 'Pick') stats[key].pick += row._count;
-            if (row.type === 'Utility') stats[key].utility += row._count;
-        }
-
-        return stats;
     }
 
     async getPreference() {
@@ -409,8 +415,17 @@ export default class AnalysisService {
         return playerPreferences;
     }
 
-    async getSynergy() {
-        const usages = await this.prisma.matchTacticalUsage.findMany({
+    async getSynergy(mode: 'match' | 'team' | 'setup' = 'setup') {
+        type MatchTacticalUsageWithTeam = Prisma.MatchTacticalUsageGetPayload<{
+            include: {
+                teamMember: {
+                    include: {
+                        team: true;
+                    };
+                };
+            };
+        }>;
+        const usages: MatchTacticalUsageWithTeam[] = await this.prisma.matchTacticalUsage.findMany({
             include: {
                 teamMember: {
                     include: {
@@ -420,20 +435,30 @@ export default class AnalysisService {
             },
         });
 
-        // matchTeamId → 角色列表
-        const teamToCharacters: Record<number, string[]> = {};
+        const groupKey = (u: MatchTacticalUsageWithTeam) => {
+            switch (mode) {
+                case 'match':
+                    return `${u.teamMember.team.matchId}`;
+                case 'team':
+                    return `${u.teamMember.teamId}`;
+                case 'setup':
+                    return `${u.teamMember.team.matchId}:${u.teamMember.teamId}:${u.setupNumber}`;
+            }
+        };
+
+        const groupToCharacters: Record<string, string[]> = {};
 
         for (const u of usages) {
-            const teamId = u.teamMember.teamId;
-            if (!teamToCharacters[teamId]) teamToCharacters[teamId] = [];
-            teamToCharacters[teamId].push(u.characterKey);
+            const key = groupKey(u);
+            if (!groupToCharacters[key]) groupToCharacters[key] = [];
+            groupToCharacters[key].push(u.characterKey);
         }
 
         // 建 Synergy Matrix
         const synergy: Record<string, Record<string, number>> = {};
 
-        for (const characters of Object.values(teamToCharacters)) {
-            const uniq = [...new Set(characters)]; // 避免同人重複
+        for (const characters of Object.values(groupToCharacters)) {
+            const uniq = [...new Set(characters)]; // 避免重複角色
             for (let i = 0; i < uniq.length; i++) {
                 for (let j = i + 1; j < uniq.length; j++) {
                     const a = uniq[i];
@@ -447,12 +472,11 @@ export default class AnalysisService {
                 }
             }
         }
-        logger.info('synergy =\n' + JSON.stringify(synergy, null, 2));
 
         return synergy;
     }
 
-    async getArchetypes(k = 4) {
+    async getArchetypes(k = 6) {
         const synergy = await this.getSynergy();
         const chars = Object.keys(synergy).sort();
 
@@ -484,7 +508,7 @@ export default class AnalysisService {
         }));
     }
 
-    async getArchetypeMap(k = 4) {
+    async getArchetypeMap(k = 6) {
         const synergy = await this.getSynergy();
         const chars = Object.keys(synergy).sort();
 
@@ -500,8 +524,9 @@ export default class AnalysisService {
 
         // @ts-ignore
         const pca = new PCA.PCA(matrix.to2DArray());
+        console.log(`pca`, pca)
         const projected = pca.predict(matrix.to2DArray(), { nComponents: 2 }).to2DArray();
-
+        console.log(`projected`, projected)
         // ✅ Cluster 標記
         const clusters = await this.getArchetypes(k);
 

@@ -112,22 +112,23 @@ function handleDropEvent(event: DragEvent, memberSlot: number) {
 }
 
 .team__name--left {
-    --text-align: left;
+    --text-align: center;
 }
 
 .team__name--right {
-    --text-align: right;
+    --text-align: center;
 }
 
 .team__name {
     display: flex;
     flex: 1;
-    align-items: start;
+    align-items: center;
     padding: var(--space-xs) var(--space-sm);
     text-align: var(--text-align);
     font-weight: var(--font-weight-heavy);
     font-size: var(--font-size-md);
     font-family: var(--font-family-tech-title);
+    line-height: var(--line-height-loose);
     color: var(--team-on-bg);
     background-color: var(--team-bg);
 
@@ -142,11 +143,9 @@ function handleDropEvent(event: DragEvent, memberSlot: number) {
 .layout__team-members {
     display: flex;
     flex-direction: column;
-    flex: 3;
+    flex: 4;
     background-color: var(--team-alpha);
     color: var(--md-sys-color-on-surface);
-    min-height: calc(var(--font-size-sm) * var(--line-height-tightest) * 4 + var(--space-sm) * 2);
-    height: auto;
     resize: none;
 }
 
@@ -176,8 +175,8 @@ function handleDropEvent(event: DragEvent, memberSlot: number) {
 .layout__team-member-names {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    flex: 3;
     width: 100%;
+    height: calc(var(--size-team-member-height) * 2);
     background-color: var(--md-sys-color-surface-container-alpha);
     backdrop-filter: var(--backdrop-filter);
     box-shadow: var(--box-shadow);

@@ -10,7 +10,7 @@ import type { TeamMember } from '@/types/TeamMember';
 
 export function useBoardZonesLayout(roomSetting: IRoomSetting, teamInfoPair: { left: { name: string; members: Record<number, TeamMember>; slot: number; }; right: { name: string; members: Record<number, TeamMember>; slot: number; } }) {
     const maxNumberOfPickPerColumn: number = 8
-    const maxNumberOfUtilityPerRow: number = 6
+    const maxNumberOfUtilityPerRow: number = 8
     const maxNumberOfBanPerRow: number = 6
 
     const utilityZones = computed(() => {

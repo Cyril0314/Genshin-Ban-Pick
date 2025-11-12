@@ -8,7 +8,7 @@ import { storeToRefs } from 'pinia';
 
 import type { TeamMember } from '@/types/TeamMember';
 
-const props = defineProps<{ teamSlot: number; teamMembers: TeamMember[] }>();
+const props = defineProps<{ teamSlot: number; teamMembers: Record<number, TeamMember> }>();
 
 const emit = defineEmits<{
     (e: 'image-drop', payload: { teamSlot: number; cellId: number; imgId: string }): void;

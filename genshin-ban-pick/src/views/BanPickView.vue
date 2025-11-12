@@ -55,8 +55,9 @@ const { characterMap, loaded } = storeToRefs(characterStore);
 function adjustScale() {
     const wrapper = document.getElementsByClassName('viewport-wrapper')![0];
     const content = wrapper.querySelector('.viewport-content') as HTMLElement;
-    const W = 1600;
-    const H = 900;
+    // 1535 905
+    const W = 1535;
+    const H = 905;
     document.documentElement.style.setProperty('--layout-width', `${W}px`);
     document.documentElement.style.setProperty('--layout-height', `${H}px`);
     const scale = Math.min(window.innerWidth / W, window.innerHeight / H);
@@ -179,11 +180,10 @@ async function handleBoardRecord() {
     --size-top-bar: calc(var(--base-size) * 2.5);
     --size-drop-zone-width: calc(var(--base-size) * 7);
     --size-drop-zone-height: calc(var(--size-drop-zone-width) * 9 / 16);
-    --size-ban-pick-common-space: var(--space-lg);
-    --size-ban-row-spacer: calc(var(--size-drop-zone-item-space) * 2);
+    /* --size-ban-row-spacer: var(--size-drop-zone-item-space); */
     --size-drop-zone-line-space: var(--space-lg);
     --size-drop-zone-item-space: var(--space-md);
-    --size-step-indicator: calc(var(--size-drop-zone-width) * 2 + calc(var(--size-drop-zone-item-space) * 4));
+    --size-step-indicator: calc(var(--size-drop-zone-width) * 2 + calc(var(--size-drop-zone-item-space) * 2));
 }
 
 .background-image {

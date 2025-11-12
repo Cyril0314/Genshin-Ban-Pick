@@ -127,11 +127,11 @@ function handleMemberRestore(payload: { teamSlot: number; memberSlot: number }) 
     --layout-main-height: calc((var(--pick-per-column-count) + 1) * var(--size-drop-zone-height) + var(--pick-per-column-count) * var(--size-drop-zone-item-space));
 
     --ban-per-row-count: var(--max-number-of-ban-per-row);
-    --layout-center-width: calc(var(--ban-per-row-count) * var(--size-drop-zone-width) + var(--ban-per-row-count) * var(--size-drop-zone-item-space) + var(--size-ban-row-spacer));
+    --layout-center-width: calc(var(--ban-per-row-count) * var(--size-drop-zone-width) + var(--ban-per-row-count) * var(--size-drop-zone-item-space));
 
     display: flex;
-    justify-content: space-evenly;
-    gap: var(--space-xl);
+    justify-content: center;
+    gap: var(--space-lg);
     min-height: 0;
     height: var(--layout-main-height);
 }

@@ -7,6 +7,7 @@ import CharacterBanPickUtilityStatsChart from './components/CharacterBanPickUtil
 import CharacterArchetypeMapChart from './components/CharacterArchetypeMapChart.vue';
 import CharacterSynergyChart from './components/CharacterSynergyChart.vue';
 import CharacterTacticalUsagesChart from './components/CharacterTacticalUsagesChart.vue';
+import CharacterTacticalUsageCompositionChart from './components/CharacterTacticalUsageCompositionChart.vue';
 
 const props = defineProps<{}>();
 
@@ -14,9 +15,11 @@ const emit = defineEmits<{}>();
 
 const tabs = [
     { name: '角色使用權重', component: CharacterTacticalUsagesChart },
-    { name: '角色Meta', component: CharacterBanPickUtilityStatsChart },
-    { name: '角色原型圖', component: CharacterArchetypeMapChart },
+    { name: '角色使用構成', component: CharacterTacticalUsageCompositionChart },
     { name: '角色共現熱圖', component: CharacterSynergyChart },
+    // { name: '角色Meta', component: CharacterBanPickUtilityStatsChart },
+    { name: '角色群聚圖', component: CharacterArchetypeMapChart },
+    
     // { name: '角色出場頻率', component: CharacterUsageChart },
     // { name: '隊伍 Archetype 雷達圖', component: TeamArchetypeRadar },
 ];
@@ -25,7 +28,7 @@ const currentTabIndex = ref<number>(0);
 </script>
 
 <template>
-    <div class="layout">
+    <div class="layout__analysis">
         <div class="tab__bar">
             <button v-for="(t, i) in tabs" :key="i" class="tab" :class="{ 'tab--active': currentTabIndex === i }"
                 @click="currentTabIndex = i">
@@ -39,7 +42,7 @@ const currentTabIndex = ref<number>(0);
 </template>
 
 <style scoped>
-.layout {
+.layout__analysis {
     display: flex;
     flex-direction: row;
     width: 100%;

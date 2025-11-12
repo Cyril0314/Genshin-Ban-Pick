@@ -1,44 +1,46 @@
-<!-- src/features/Analysis/components/CharacterSynergyChart.vue -->
-
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 
 import VChart from 'vue-echarts';
 import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
-import { HeatmapChart } from 'echarts/charts';
-import { GridComponent, TooltipComponent, VisualMapComponent } from 'echarts/components';
-import { useCharacterSynergy } from './composables/useCharacterSynergy';
+import { BarChart } from 'echarts/charts';
+import { GridComponent, TooltipComponent, VisualMapComponent, LegendComponent, DataZoomComponent } from 'echarts/components';
+import { useCharacterTacticalUsageCompositionChart } from './composables/useCharacterTacticalUsageCompositionChart';
 
-use([CanvasRenderer, HeatmapChart, GridComponent, TooltipComponent, VisualMapComponent]);
+use([CanvasRenderer, BarChart, GridComponent, TooltipComponent, VisualMapComponent, LegendComponent, DataZoomComponent]);
 
 const props = defineProps<{}>();
 
 const emit = defineEmits<{}>();
 
-const { scope, option } = useCharacterSynergy();
+const { isPercentage, activeType, option } = useCharacterTacticalUsageCompositionChart();
 </script>
 
 <template>
     <div class="layout__chart">
         <header class="chart__header">
             <div class="chart__title">
-                <h2>角色共現熱圖</h2>
-                <p class="chart-desc">本圖顯示角色間的共現頻率矩陣。顏色越深代表兩個角色越常在同一配置中同時出現。可切換分析範圍（同場 / 同組 / 同隊）以觀察角色之間的搭配傾向。</p>
+                <h2>角色使用組成分析</h2>
+                <p class="chart-desc">每個橫條代表角色的行為組成。可切換為顯示比例或次數，觀察角色在 Ban / Pick / Utility 階段的出場特性。</p>
             </div>
             <div class="chart__modes">
-                <span class="chart-mode__text">範圍：</span>
-                <select v-model="scope" class="chart-mode__select" :class="['chart-mode__select--' + (scope),]">
-                    <option value="match">同場</option>
-                    <option value="team">同組</option>
-                    <option value="setup">同隊</option>
+                <span class="chart-mode__text">顯示模式：</span>
+                <button class="chart-mode__switch" :class="[{ 'chart-mode__switch--percentage': isPercentage },]"
+                    @click="isPercentage = !isPercentage">
+                    {{ isPercentage ? '比例 (%)' : '絕對值 (次數)' }}
+                </button>
+                <select v-model="activeType" class="chart-mode__select" :class="['chart-mode__select--' + (activeType),]">
+                    <option value="All">All</option>
+                    <option value="Pick">Pick</option>
+                    <option value="Ban">Ban</option>
+                    <option value="Utility">Utility</option>
                 </select>
             </div>
         </header>
         <div class="chart">
             <VChart v-if="option" :option="option" />
         </div>
-
         <footer class="chart__footer">
             <small>
 
@@ -49,6 +51,7 @@ const { scope, option } = useCharacterSynergy();
 
 <style scoped>
 .layout__chart {
+    --size-chart-switch: calc(var(--base-size) * 6);
     --size-chart-select: calc(var(--base-size) * 3);
     display: flex;
     flex-direction: column;
@@ -83,6 +86,27 @@ const { scope, option } = useCharacterSynergy();
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-medium);
     color: var(--md-sys-color-on-surface);
+}
+
+.chart-mode__switch {
+    font-size: var(--font-size-md);
+    color: var(--md-sys-color-on-surface);
+    background-color: var(--md-sys-color-surface-container-high);
+    font-weight: var(--font-weight-medium);
+    box-shadow: var(--box-shadow);
+    width: var(--size-chart-switch);
+    border: none;
+    border-radius: var(--border-radius-xs);
+    align-items: center;
+    justify-content: center;
+}
+
+.chart-mode__switch:hover {
+    transform: scale(1.05);
+}
+
+.chart-mode__switch--percentage {
+    
 }
 
 .chart-mode__select {
@@ -120,5 +144,4 @@ const { scope, option } = useCharacterSynergy();
     padding: var(--space-sm);
     font-size: var(--font-size-md);
 }
-
 </style>

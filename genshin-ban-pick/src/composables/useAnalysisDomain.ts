@@ -8,23 +8,13 @@ export function useAnalysisDomain() {
         return response.data;
     }
 
-    async function fetchMeta() {
-        const response = await analysisService.getMeta();
-        return response.data;
-    }
-
-    async function fetchBanPickUtilityStats() {
-        const response = await analysisService.getBanPickUtilityStats();
-        return response.data;
-    }
-
     async function fetchPreference() {
         const response = await analysisService.getPreference();
         return response.data;
     }
 
-    async function fetchSynergy() {
-        const response = await analysisService.getSynergy();
+    async function fetchSynergy(payload: { mode: 'match' | 'team' | 'setup' }) {
+        const response = await analysisService.getSynergy(payload);
         return response.data;
     }
 
@@ -40,8 +30,6 @@ export function useAnalysisDomain() {
 
     return {
         fetchTacticalUsages,
-        fetchMeta,
-        fetchBanPickUtilityStats,
         fetchPreference,
         fetchSynergy,
         fetchArchetypes,

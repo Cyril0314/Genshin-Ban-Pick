@@ -8,7 +8,7 @@ import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { BarChart } from 'echarts/charts';
 import { GridComponent, TooltipComponent, VisualMapComponent, LegendComponent, DataZoomComponent } from 'echarts/components';
-import { useCharacterTacticalUsageStats } from './composables/useTacticalUsages';
+import { useCharacterTacticalUsagesChart } from './composables/useCharacterTacticalUsagesChart';
 
 use([CanvasRenderer, BarChart, GridComponent, TooltipComponent, VisualMapComponent, LegendComponent, DataZoomComponent]);
 
@@ -16,29 +16,31 @@ const props = defineProps<{}>();
 
 const emit = defineEmits<{}>();
 
-const { option } = useCharacterTacticalUsageStats();
+const { option } = useCharacterTacticalUsagesChart();
 </script>
 
 <template>
-    <div class="layout__tactical-usages-chart">
+    <div class="layout__chart">
         <header class="chart__header">
-            <h2>角色戰術使用權重分析</h2>
-            <p class="chart-desc">結合角色在比賽中的 <b>有效使用次數</b> 與 <b>全域使用頻率</b>， 綜合反映角色的「穩定上場價值」。</p>
+            <h2>角色使用權重分析</h2>
+            <p class="chart-desc">綜合全期平均與有效期表現，平衡穩定性與即戰力。</p>
         </header>
         <div class="chart">
             <VChart v-if="option" :option="option" />
         </div>
         <footer class="chart__footer">
             <small>
-                綜合使用權重 = 有效使用率 × 穩定係數 + 全域使用率 × (1 - 穩定係數)<br />
-                當角色樣本場數少於 10 場時，穩定係數會降低以矯正極端樣本。
+                每場比賽依動作類型（Wc）給予權重，隨機（Random）行動或未使用（Not Used）時會降權。<br />
+                GlobalUsage = AllMatches / Wc​, EffectiveUsage = ValidMatches / Wc<br />
+                StabilityFactor = 1 − e ^ (−30 / ValidMatches)​<br />
+                TacticalUsage​ = GlobalUsage × StabilityFactor + EffectiveUsage × (1 − StabilityFactor)
             </small>
         </footer>
     </div>
 </template>
 
 <style scoped>
-.layout__tactical-usages-chart {
+.layout__chart {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -55,7 +57,6 @@ const { option } = useCharacterTacticalUsageStats();
 .chart {
     display: flex;
     width: 100%;
-    /* min-height: 0; */
     height: 100%;
 }
 

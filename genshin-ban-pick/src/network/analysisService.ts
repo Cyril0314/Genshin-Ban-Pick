@@ -9,20 +9,12 @@ export function createAnalysisService(client: HttpClient = api) {
         return client.get(`/analysis/tactical-usages`);
     }
 
-    async function getMeta() {
-        return client.get(`/analysis/meta`);
-    }
-
-    async function getBanPickUtilityStats() {
-        return client.get('/analysis/ban-pick-utility-stats');
-    }
-
     async function getPreference() {
         return client.get('/analysis/preference');
     }
 
-    async function getSynergy() {
-        return client.get(`/analysis/synergy`);
+    async function getSynergy(payload: { mode: 'match' | 'team' | 'setup' }) {
+        return client.get(`/analysis/synergy`, { params: payload });
     }
 
     async function getArchetypes() {
@@ -35,8 +27,6 @@ export function createAnalysisService(client: HttpClient = api) {
 
     return {
         getTacticalUsages,
-        getMeta,
-        getBanPickUtilityStats,
         getPreference,
         getSynergy,
         getArchetypes,

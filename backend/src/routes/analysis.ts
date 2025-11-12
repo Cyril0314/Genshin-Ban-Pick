@@ -17,23 +17,6 @@ export default function analysisRoutes(analysisService: AnalysisService) {
     )
 
     router.get(
-        '/analysis/meta',
-        asyncHandler(async (req, res) => {
-            const meta = await analysisService.getMeta();
-            res.status(200).json(meta);
-        }),
-    );
-
-    router.get(
-        '/analysis/ban-pick-utility-stats',
-        asyncHandler(async (req, res) => {
-            const stats = await analysisService.getBanPickUtilityStats();
-            res.status(200).json(stats);
-        }),
-    );
-
-
-    router.get(
         '/analysis/preference',
         asyncHandler(async (req, res) => {
             const preference = await analysisService.getPreference();
@@ -44,7 +27,8 @@ export default function analysisRoutes(analysisService: AnalysisService) {
     router.get(
         '/analysis/synergy',
         asyncHandler(async (req, res) => {
-            const synergy = await analysisService.getSynergy();
+            const { mode, } = req.query;
+            const synergy = await analysisService.getSynergy(mode as 'team' | 'match' | 'setup');
             res.status(200).json(synergy);
         }),
     );

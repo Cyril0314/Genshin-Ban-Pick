@@ -17,11 +17,11 @@ const props = defineProps<{}>();
 
 const emit = defineEmits<{}>();
 
-const { option } = useCharacterBanPickUtilityStats();
+// const { option } = useCharacterBanPickUtilityStats();
 </script>
 
 <template>
-    <VChart v-if="option" :option="option" style="width: 100%; height: 100%" />
+    <!-- <VChart v-if="option" :option="option" style="width: 100%; height: 100%" /> -->
 </template>
 
 <style scoped></style>

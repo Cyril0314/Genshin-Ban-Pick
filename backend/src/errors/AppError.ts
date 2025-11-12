@@ -71,8 +71,10 @@ export class InvalidFieldsError extends AppError {
 }
 
 export class DryRunError extends AppError {
-    constructor(cause?: Error) {
+    data?: any
+    constructor(data?: any, cause?: Error) {
         super('DRY_RUN', cause);
+        this.data = data
     }
 }
 

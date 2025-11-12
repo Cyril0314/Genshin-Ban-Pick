@@ -23,6 +23,10 @@ export class RoomStateManager implements IRoomStateManager {
         return roomStates[roomId];
     }
 
+    setRoomState(roomId: string, roomState: IRoomState) {
+        roomStates[roomId] = roomState;
+    }
+
     get(roomId: string) {
         return roomStates[roomId];
     }
