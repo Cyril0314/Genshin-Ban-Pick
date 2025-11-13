@@ -1,4 +1,4 @@
-// backend/src/services/AnalysisService.ts
+// backend/src/services/analysis/AnalysisService.ts
 
 import { PrismaClient } from '@prisma/client/extension';
 import {
@@ -22,8 +22,20 @@ import {
 import { Matrix } from 'ml-matrix';
 import kmeans from 'ml-kmeans';
 import PCA from 'ml-pca';
+import { UndirectedGraph } from 'graphology';
+import louvain from 'graphology-communities-louvain';
+// @ts-ignore
+import modularity from 'graphology-metrics/graph/modularity';
 import { createLogger } from '../../utils/logger.ts';
-import { log } from 'console';
+import { DataNotFoundError } from '../../errors/AppError.ts';
+import { normalizeSynergy, SynergyMatrix } from './synergyNormalization.ts';
+import { IBanContext, IPickContext, IUtilityContext, IWeightContext } from './types/IWeightContext.ts';
+import { ITacticalCoefficients, DEFAULT_TACTICAL_COEFFICIENTS } from './types/ITacticalCoefficients.ts';
+import { SynergyMode } from './types/SynergyMode.ts';
+import { IRawTacticalUsage } from './types/IRawTacticalUsage.ts';
+import { ISynergyMatrix } from './types/ISynergyMatrix.ts';
+import { ICommunityScanResult } from './types/ICommunityScanResult.ts';
+import { computeBridgeScores } from './computeBridgeScores.ts';
 
 const logger = createLogger('ANALYSIS SERVICE');
 
@@ -33,90 +45,6 @@ interface IMoveContext {
     wasUsed?: boolean; // 是否實際上場
     usedByBothTeams?: boolean; // 雙方皆使用 (for Utility)
 }
-
-interface IPickContext {
-    total: number;
-    manualUsed: number;
-    manualNotUsed: number;
-    randomUsed: number;
-    randomNotUsed: number;
-}
-
-interface IBanContext {
-    total: number;
-    manual: number;
-    random: number;
-}
-
-interface IUtilityContext {
-    total: number;
-    manualNotUsed: number;
-    manualUsedOneSide: number;
-    manualUsedBothSides: number;
-    randomNotUsed: number;
-    randomUsedOneSide: number;
-    randomUsedBothSides: number;
-}
-
-interface IWeightContext {
-    pick: IPickContext;
-    ban: IBanContext;
-    utility: IUtilityContext;
-}
-
-interface IPickCoefficients {
-    base: number;
-    random: number;
-    randomFactor: number;
-    notUsedFactor: number;
-}
-
-interface IBanCoefficients {
-    base: number;
-    random: number;
-    randomFactor: number;
-}
-
-interface IUtilityCoefficients {
-    base: number;
-    random: number;
-    randomFactor: number;
-    usedOneSideFactor: number;
-    usedBothSidesFactor: number;
-}
-
-interface ITacticalCoefficients {
-    pick: IPickCoefficients;
-    ban: IBanCoefficients;
-    utility: IUtilityCoefficients;
-    clampRange: [number, number];
-}
-
-// 🧮 預設係數
-export const DEFAULT_TACTICAL_COEFFICIENTS: ITacticalCoefficients = {
-    pick: {
-        base: 1.0,
-        random: 0.6,
-        randomFactor: 0.1,
-        notUsedFactor: 0.35,
-    },
-
-    ban: {
-        base: 0.8,
-        random: 0.6,
-        randomFactor: 0.05,
-    },
-
-    utility: {
-        base: 0.5,
-        random: 0.3,
-        randomFactor: 0.2,
-        usedOneSideFactor: 2,
-        usedBothSidesFactor: 3,
-    },
-
-    clampRange: [0, 1.5],
-};
 
 export default class AnalysisService {
     constructor(private prisma: PrismaClient) {}
@@ -415,50 +343,171 @@ export default class AnalysisService {
         return playerPreferences;
     }
 
-    async getSynergy(mode: 'match' | 'team' | 'setup' = 'setup') {
-        type MatchTacticalUsageWithTeam = Prisma.MatchTacticalUsageGetPayload<{
-            include: {
+    async getSynergy(mode: SynergyMode = 'setup') {
+        const raw = await this.fetchRawTacticalUsages();
+        const groups = this.buildCooccurrenceGroups(raw, mode);
+        const synergy = this.buildSynergyMatrix(groups);
+        return synergy;
+    }
+
+    async getArchetypes() {
+        const synergy = await this.getSynergy();
+
+        const k = await this.findBestClusterCount();
+        const { chars, matrix } = this.normalizeSynergyMatrix(synergy);
+        const clusterIds = this.clusterCharacters(matrix, k);
+
+        return chars.map((characterKey, i) => ({
+            characterKey,
+            clusterId: clusterIds[i],
+        }));
+    }
+
+    async getArchetypeMap() {
+        const synergy = await this.getSynergy();
+
+        const k = await this.findBestClusterCount();
+        const { chars, matrix } = this.normalizeSynergyMatrix(synergy);
+        const projected = this.projectCharacters2D(matrix, 2);
+        const clusterIds = this.clusterCharacters(matrix, k);
+
+        const clusterMedoids = this.computeClusterMedoids(chars, clusterIds, projected);
+        console.log(`clusterMedoids`, clusterMedoids);
+
+        return chars.map((char, i) => ({
+            characterKey: char,
+            clusterId: clusterIds[i],
+            x: projected[i][0],
+            y: projected[i][1],
+        }));
+    }
+
+    async getBridgeScores() {
+        const graph = await this.buildSynergyGraph();
+        const synergy = await this.getSynergy();
+
+        const { chars, matrix } = this.normalizeSynergyMatrix(synergy);
+        const projected = this.projectCharacters2D(matrix, 2);
+        const clusterIds = this.clusterCharacters(matrix, await this.findBestClusterCount());
+
+        return computeBridgeScores(graph, projected, chars, clusterIds);
+    }
+
+    async getCharacterMap() {
+        type Character = Prisma.CharacterGetPayload<{
+            select: {
+                key: true;
+                name: true;
+                rarity: true;
+                element: true;
+                weapon: true;
+                region: true;
+                modelType: true;
+                role: true;
+                wish: true;
+                releaseDate: true;
+            };
+        }>;
+        try {
+            const characters: Character[] = await this.prisma.character.findMany({
+                select: {
+                    key: true,
+                    name: true,
+                    rarity: true,
+                    element: true,
+                    weapon: true,
+                    region: true,
+                    modelType: true,
+                    role: true,
+                    wish: true,
+                    releaseDate: true,
+                },
+                orderBy: { id: 'asc' }, // 可按需求排序
+            });
+            if (!characters || characters.length === 0) {
+                throw new DataNotFoundError();
+            }
+            return Object.fromEntries(characters.map((character) => [character.key, character]));
+        } catch (error) {
+            console.error('[CharacterService] Failed to fetch characters:', error);
+            throw new DataNotFoundError();
+        }
+    }
+
+    private async fetchRawTacticalUsages(): Promise<IRawTacticalUsage[]> {
+        type MatchTacticalUsage = Prisma.MatchTacticalUsageGetPayload<{
+            select: {
+                setupNumber: true;
+                characterKey: true;
                 teamMember: {
-                    include: {
-                        team: true;
+                    select: {
+                        teamId: true;
+                        team: {
+                            select: {
+                                matchId: true;
+                            };
+                        };
                     };
                 };
             };
         }>;
-        const usages: MatchTacticalUsageWithTeam[] = await this.prisma.matchTacticalUsage.findMany({
-            include: {
+
+        const rows: MatchTacticalUsage[] = await this.prisma.matchTacticalUsage.findMany({
+            select: {
+                setupNumber: true,
+                characterKey: true,
                 teamMember: {
-                    include: {
-                        team: true, // matchTeamId
+                    select: {
+                        teamId: true,
+                        team: {
+                            select: { matchId: true },
+                        },
                     },
                 },
             },
         });
 
-        const groupKey = (u: MatchTacticalUsageWithTeam) => {
-            switch (mode) {
-                case 'match':
-                    return `${u.teamMember.team.matchId}`;
-                case 'team':
-                    return `${u.teamMember.teamId}`;
-                case 'setup':
-                    return `${u.teamMember.team.matchId}:${u.teamMember.teamId}:${u.setupNumber}`;
-            }
-        };
+        return rows.map((r) => ({
+            matchId: r.teamMember.team.matchId,
+            teamId: r.teamMember.teamId,
+            setupNumber: r.setupNumber,
+            characterKey: r.characterKey,
+        }));
+    }
 
-        const groupToCharacters: Record<string, string[]> = {};
+    private getCooccurrenceGroupKey(rawTacticalUsage: IRawTacticalUsage, mode: SynergyMode): string {
+        switch (mode) {
+            case 'match':
+                // 一場比賽當作一個 group
+                return `${rawTacticalUsage.matchId}`;
+            case 'team':
+                // 同一個隊伍（整體）當作一個 group
+                return `${rawTacticalUsage.teamId}`;
+            case 'setup':
+                // 一場比賽 + 一隊 + 一個編成（setup）當作一個 group
+                return `${rawTacticalUsage.matchId}:${rawTacticalUsage.teamId}:${rawTacticalUsage.setupNumber}`;
+        }
+    }
+
+    private buildCooccurrenceGroups(usages: IRawTacticalUsage[], mode: SynergyMode): Record<string, string[]> {
+        const groups: Record<string, string[]> = {};
 
         for (const u of usages) {
-            const key = groupKey(u);
-            if (!groupToCharacters[key]) groupToCharacters[key] = [];
-            groupToCharacters[key].push(u.characterKey);
+            const key = this.getCooccurrenceGroupKey(u, mode);
+            if (!groups[key]) groups[key] = [];
+            groups[key].push(u.characterKey);
         }
 
-        // 建 Synergy Matrix
-        const synergy: Record<string, Record<string, number>> = {};
+        return groups;
+    }
 
-        for (const characters of Object.values(groupToCharacters)) {
-            const uniq = [...new Set(characters)]; // 避免重複角色
+    private buildSynergyMatrix(groups: Record<string, string[]>): ISynergyMatrix {
+        const synergy: ISynergyMatrix = {};
+
+        for (const characters of Object.values(groups)) {
+            // 去重，避免同一 group 同一角色被算兩次
+            const uniq = [...new Set(characters)];
+
             for (let i = 0; i < uniq.length; i++) {
                 for (let j = i + 1; j < uniq.length; j++) {
                     const a = uniq[i];
@@ -476,65 +525,141 @@ export default class AnalysisService {
         return synergy;
     }
 
-    async getArchetypes(k = 6) {
-        const synergy = await this.getSynergy();
+    private normalizeSynergyMatrix(synergy: ISynergyMatrix): { chars: string[]; matrix: Matrix } {
         const chars = Object.keys(synergy).sort();
 
-        // → NxN Matrix
-        const vectors = chars.map((char) => chars.map((other) => synergy[char]?.[other] ?? 0));
+        // 1) 轉成 NxN raw matrix
+        let matrix = new Matrix(chars.map((a) => chars.map((b) => synergy[a]?.[b] ?? 0)));
 
-        let matrix = new Matrix(vectors);
-
-        // 計算每列平均 & 標準差（回傳 number[]）
-        const rowMeans = matrix.mean('row');
-        const rowStds = matrix.standardDeviation('row');
-
-        // 轉成 row 向量（matrix）
-        const meanMatrix = Matrix.rowVector(rowMeans);
-        const stdMatrix = Matrix.rowVector(rowStds);
-
-        // ✅ 逐行標準化： (matrix - mean) / std
+        // 2) 計算 column 平均、標準差
         const colMeans = matrix.mean('column');
         const colStds = matrix.standardDeviation('column');
 
-        matrix = matrix.subColumnVector(Matrix.columnVector(colMeans)).divColumnVector(Matrix.columnVector(colStds));
+        const colMeanVec = Matrix.columnVector(colMeans);
+        const colStdVec = Matrix.columnVector(colStds);
 
-        // @ts-ignore
-        const result = kmeans.kmeans(matrix.to2DArray(), k, { initialization: 'kmeans++' });
+        // 3) 標準化：Z = (M - mean) / std
+        matrix = matrix.subColumnVector(colMeanVec).divColumnVector(colStdVec);
 
-        return chars.map((characterKey, index) => ({
-            characterKey,
-            clusterId: result.clusters[index],
-        }));
+        return { chars, matrix: matrix };
     }
 
-    async getArchetypeMap(k = 6) {
-        const synergy = await this.getSynergy();
-        const chars = Object.keys(synergy).sort();
-
-        const vectors = chars.map((char) => chars.map((other) => synergy[char]?.[other] ?? 0));
-
-        let matrix = new Matrix(vectors);
-
-        const colMeans = matrix.mean('column');
-        const colStds = matrix.standardDeviation('column');
-
-        // ✅ 標準化（這一步很重要，否則 PCA 會被高出場率角色主導）
-        matrix = matrix.subColumnVector(Matrix.columnVector(colMeans)).divColumnVector(Matrix.columnVector(colStds));
-
+    private projectCharacters2D(matrix: Matrix, nComponents = 2): number[][] {
         // @ts-ignore
         const pca = new PCA.PCA(matrix.to2DArray());
-        console.log(`pca`, pca)
-        const projected = pca.predict(matrix.to2DArray(), { nComponents: 2 }).to2DArray();
-        console.log(`projected`, projected)
-        // ✅ Cluster 標記
-        const clusters = await this.getArchetypes(k);
+        const projected = pca.predict(matrix.to2DArray(), { nComponents }).to2DArray();
 
-        return chars.map((char, i) => ({
-            characterKey: char,
-            clusterId: clusters.find((c) => c.characterKey === char)!.clusterId,
-            x: projected[i][0],
-            y: projected[i][1],
-        }));
+        return projected;
+    }
+
+    private clusterCharacters(matrix: Matrix, k: number): number[] {
+        // @ts-ignore
+        const result = kmeans.kmeans(matrix.to2DArray(), k, {
+            initialization: 'kmeans++',
+        });
+        return result.clusters; // 長度 = chars.length
+    }
+
+    private async buildSynergyGraph(): Promise<UndirectedGraph> {
+        const characterMap = await this.getCharacterMap();
+        const synergy = await this.getSynergy();
+        const graph = new UndirectedGraph();
+
+        const normSynergy = normalizeSynergy(synergy, 'jaccard');
+
+        const chars = Object.keys(synergy);
+        for (const char of chars) graph.addNode(char, characterMap[char]);
+
+        for (const a of chars) {
+            for (const b of chars) {
+                if (a >= b) continue; // 避免重複兩邊（字典序避免）
+                const w = normSynergy[a]?.[b] ?? 0;
+                if (w > 0) {
+                    graph.addUndirectedEdgeWithKey(`${a}-${b}`, a, b, { weight: w });
+                }
+            }
+        }
+
+        return graph;
+    }
+
+    private async findBestClusterCount(resolutions: number[] = [0.5, 0.8, 1.0, 1.2, 1.5]): Promise<number> {
+        const graph = await this.buildSynergyGraph();
+        const scan = this.runLouvainOnGraph(graph, resolutions);
+        const best = scan.reduce((a, b) => (a.modularity > b.modularity ? a : b));
+        return best.clusters;
+    }
+
+    private runLouvainOnGraph(graph: UndirectedGraph, resolutions: number[]): ICommunityScanResult[] {
+        const result: ICommunityScanResult[] = [];
+
+        for (const gamma of resolutions) {
+            // @ts-ignore: graphology-communities-louvain 型別 issue
+            const mapping = louvain(graph, {
+                resolution: gamma,
+                nodeCommunityAttribute: 'community',
+            });
+            for (const node of graph.nodes()) {
+                graph.setNodeAttribute(node, 'community', mapping[node]);
+            }
+            const clusters = new Set(Object.values(mapping)).size;
+            const Q = modularity(graph, mapping);
+
+            result.push({
+                resolution: gamma,
+                clusters,
+                modularity: Q,
+            });
+        }
+
+        return result;
+    }
+
+    computeClusterMedoids(chars: string[], clusterIds: number[], pcaPoints: number[][]) {
+        const clusters: Record<number, number[]> = {};
+
+        // 1) 分群
+        clusterIds.forEach((cid, i) => {
+            if (!clusters[cid]) clusters[cid] = [];
+            clusters[cid].push(i);
+        });
+
+        const medoids: Record<number, { characterKey: string; x: number; y: number }> = {};
+
+        // 2) 對每群分別計算 medoid
+        for (const [cidStr, indices] of Object.entries(clusters)) {
+            const cid = Number(cidStr);
+
+            let bestIndex = -1;
+            let bestScore = Infinity;
+
+            // 對群內每個角色計算「與其他成員的距離總和」
+            for (const i of indices) {
+                let totalDist = 0;
+                const [xi, yi] = pcaPoints[i];
+
+                for (const j of indices) {
+                    if (i === j) continue;
+
+                    const [xj, yj] = pcaPoints[j];
+                    const dx = xi - xj;
+                    const dy = yi - yj;
+                    totalDist += Math.sqrt(dx * dx + dy * dy);
+                }
+
+                if (totalDist < bestScore) {
+                    bestScore = totalDist;
+                    bestIndex = i;
+                }
+            }
+
+            medoids[cid] = {
+                characterKey: chars[bestIndex],
+                x: pcaPoints[bestIndex][0],
+                y: pcaPoints[bestIndex][1],
+            };
+        }
+
+        return medoids;
     }
 }

@@ -32,6 +32,9 @@ export function useCharacterArchetypeMap() {
         '#ffe74c',
         '#FF922B',
         '#65def1',
+        '#df4be4ff',
+        '#b1e022ff',
+        '#e02248ff',
     ];
     const tacticalUsages = ref<ITacticalUsages[] | null>(null);       
     const archetypeMap = ref<IArchetypePoint[] | null>(null);
