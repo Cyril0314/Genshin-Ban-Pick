@@ -1,4 +1,4 @@
-// backend/src/services/analysis/types/IRawTacticalUsage.ts
+// backend/src/services/analysis/synergy/types/IRawTacticalUsage.ts
 
 export interface IRawTacticalUsage {
     matchId: number;

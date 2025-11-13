@@ -3,8 +3,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-import CharacterBanPickUtilityStatsChart from './components/CharacterBanPickUtilityStatsChart.vue';
-import CharacterArchetypeMapChart from './components/CharacterArchetypeMapChart.vue';
+import CharacterClusters from './components/CharacterClusters.vue';
 import CharacterSynergyChart from './components/CharacterSynergyChart.vue';
 import CharacterTacticalUsagesChart from './components/CharacterTacticalUsagesChart.vue';
 import CharacterTacticalUsageCompositionChart from './components/CharacterTacticalUsageCompositionChart.vue';
@@ -17,8 +16,7 @@ const tabs = [
     { name: '角色使用權重', component: CharacterTacticalUsagesChart },
     { name: '角色使用構成', component: CharacterTacticalUsageCompositionChart },
     { name: '角色共現熱圖', component: CharacterSynergyChart },
-    // { name: '角色Meta', component: CharacterBanPickUtilityStatsChart },
-    { name: '角色群聚圖', component: CharacterArchetypeMapChart },
+    { name: '角色群聚圖', component: CharacterClusters },
     
     // { name: '角色出場頻率', component: CharacterUsageChart },
     // { name: '隊伍 Archetype 雷達圖', component: TeamArchetypeRadar },

@@ -1,4 +1,4 @@
-// backend/src/services/analysis/types/IWeightContext.ts
+// backend/src/services/analysis/tactical/types/IWeightContext.ts
 
 export interface IWeightContext {
     pick: IPickContext;

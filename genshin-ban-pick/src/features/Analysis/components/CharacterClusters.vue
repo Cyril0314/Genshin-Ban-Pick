@@ -8,14 +8,14 @@ import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { ScatterChart } from 'echarts/charts';
 import { GridComponent, TooltipComponent, VisualMapComponent, LegendComponent } from 'echarts/components';
-import { useCharacterArchetypeMap } from './composables/useCharacterArchetypeMap';
+import { useCharacterClusters } from './composables/useCharacterClusters';
 
 use([CanvasRenderer, ScatterChart, GridComponent, TooltipComponent, VisualMapComponent, LegendComponent]);
 
 const props = defineProps<{}>();
 const emit = defineEmits<{}>();
 
-const { option } = useCharacterArchetypeMap()
+const { option } = useCharacterClusters()
 
 </script>
 

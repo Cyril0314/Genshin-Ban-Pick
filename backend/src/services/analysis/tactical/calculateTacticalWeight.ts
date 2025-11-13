@@ -1,7 +1,16 @@
-import { ITacticalCoefficients, DEFAULT_TACTICAL_COEFFICIENTS } from '../types/ITacticalCoefficients.ts';
-import { IBanContext, IPickContext, IUtilityContext, IWeightContext } from '../types/IWeightContext.ts';
+// backend/src/services/analysis/tactical/calculateTacticalWeight.ts
 
-export function calcBanWeight(ctx: IBanContext, c: ITacticalCoefficients): number {
+import { ITacticalCoefficients, DEFAULT_TACTICAL_COEFFICIENTS } from './types/ITacticalCoefficients.ts';
+import { IBanContext, IPickContext, IUtilityContext, IWeightContext } from './types/IWeightContext.ts';
+
+export function calculateTacticalWeight(ctx: IWeightContext, c: ITacticalCoefficients = DEFAULT_TACTICAL_COEFFICIENTS): number {
+    if (ctx.ban.total > 0) return calcBanWeight(ctx.ban, c);
+    if (ctx.pick.total > 0) return calcPickWeight(ctx.pick, c);
+    if (ctx.utility.total > 0) return calcUtilityWeight(ctx.utility, c);
+    return 0;
+}
+
+function calcBanWeight(ctx: IBanContext, c: ITacticalCoefficients): number {
     let w = c.ban.base;
     if (ctx.random > 0) {
         const rf = c.ban.randomFactor;
@@ -10,7 +19,7 @@ export function calcBanWeight(ctx: IBanContext, c: ITacticalCoefficients): numbe
     return clamp(w, c.clampRange);
 }
 
-export function calcPickWeight(ctx: IPickContext, c: ITacticalCoefficients): number {
+function calcPickWeight(ctx: IPickContext, c: ITacticalCoefficients): number {
     let w = c.pick.base;
 
     if (ctx.randomUsed + ctx.randomNotUsed > 0) {
@@ -25,7 +34,7 @@ export function calcPickWeight(ctx: IPickContext, c: ITacticalCoefficients): num
     return clamp(w, c.clampRange);
 }
 
-export function calcUtilityWeight(ctx: IUtilityContext, c: ITacticalCoefficients): number {
+function calcUtilityWeight(ctx: IUtilityContext, c: ITacticalCoefficients): number {
     let w = c.utility.base;
 
     const isRandom = ctx.randomNotUsed + ctx.randomUsedOneSide + ctx.randomUsedBothSides > 0;
@@ -45,14 +54,4 @@ export function calcUtilityWeight(ctx: IUtilityContext, c: ITacticalCoefficients
 
 function clamp(val: number, [min, max] = [0, 1.5]) {
     return Math.max(min, Math.min(max, val));
-}
-
-export function calculateTacticalWeight(
-    ctx: IWeightContext,
-    c: ITacticalCoefficients = DEFAULT_TACTICAL_COEFFICIENTS,
-): number {
-    if (ctx.ban.total > 0) return calcBanWeight(ctx.ban, c);
-    if (ctx.pick.total > 0) return calcPickWeight(ctx.pick, c);
-    if (ctx.utility.total > 0) return calcUtilityWeight(ctx.utility, c);
-    return 0;
 }

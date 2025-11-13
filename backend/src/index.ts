@@ -66,7 +66,7 @@ const __dirname = path.dirname(__filename);
 // Express 提供前端的靜態檔案 (非常重要!)
 app.use(express.static(path.resolve(__dirname, '../public')));
 app.use(express.json());
-
+// app.disable('etag');
 // ---------------------------------------------------------
 // 🧩 6. Service 實例化
 // ---------------------------------------------------------
@@ -78,9 +78,9 @@ const roomStateManager = new RoomStateManager()
 const roomStatePersistenceService = new RoomStatePersistenceService(prisma, roomStateManager)
 const roomService = new RoomService(roomStatePersistenceService);
 const characterService = new CharacterService(prisma);
-const analysisService = new AnalysisService(prisma)
+const analysisService = new AnalysisService(prisma, characterService)
 
-// const results = await analysisService.getBridgeScores()
+// const results = await analysisService.getCharacterClusters()
 // console.info(`getBridgeScores`, results)
 
 // ---------------------------------------------------------

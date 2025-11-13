@@ -17,20 +17,15 @@ export function createAnalysisService(client: HttpClient = api) {
         return client.get(`/analysis/synergy`, { params: payload });
     }
 
-    async function getArchetypes() {
-        return client.get(`/analysis/archetypes`);
-    }
-
-    async function getArchetypeMap() {
-        return client.get(`/analysis/archetypeMap`);
+    async function getCharacterClusters() {
+        return client.get(`/analysis/character-clusters`);
     }
 
     return {
         getTacticalUsages,
         getPreference,
         getSynergy,
-        getArchetypes,
-        getArchetypeMap
+        getCharacterClusters
     };
 }
 

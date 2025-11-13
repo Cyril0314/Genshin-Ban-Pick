@@ -1,36 +1,92 @@
+// backend/src/services/analysis/tactical/computeTacticalUsage.ts
+
+import { Prisma } from '@prisma/client';
 import { PrismaClient } from '@prisma/client/extension';
 import { getWeightContext } from './getWeightContext.ts';
 import { calculateTacticalWeight } from './calculateTacticalWeight.ts';
 
 export async function computeTacticalUsage(prisma: PrismaClient) {
-    const matches = await prisma.match.findMany({
-        select: { id: true, createdAt: true },
-    });
-    const matchCount = matches.length;
-
-    const moves = await prisma.matchMove.findMany({
+    type Match = Prisma.MatchGetPayload<{ select: { id: true; createdAt: true } }>;
+    
+    type MatchMove = Prisma.MatchMoveGetPayload<{ 
         select: {
             type: true,
             source: true,
             matchId: true,
             characterKey: true,
-            match: { select: { createdAt: true } },
-            character: { select: { releaseDate: true } },
+            match: { 
+                select: { 
+                    createdAt: true 
+                } 
+            },
+            character: { 
+                select: {
+                     releaseDate: true 
+                    } 
+                },
+            randomMoveContext: true,
+        },
+     }>;
+    
+    type MatchTacticalUsage = Prisma.MatchTacticalUsageGetPayload<{ 
+        select: {
+            characterKey: true,
+            teamMember: {
+                select: {
+                    team: {
+                        select: {
+                            matchId: true,
+                        },
+                    },
+                },
+            },
+        }
+     }>;
+
+    const matches: Match[] = await prisma.match.findMany({
+        select: { id: true, createdAt: true },
+    });
+    const matchCount = matches.length;
+
+    const matchMoves: MatchMove[] = await prisma.matchMove.findMany({
+        select: {
+            type: true,
+            source: true,
+            matchId: true,
+            characterKey: true,
+            match: { 
+                select: {
+                     createdAt: true
+                    }
+                },
+            character: { 
+                select: { 
+                    releaseDate: true 
+                } 
+            },
             randomMoveContext: true,
         },
     });
 
-    const usages = await prisma.matchTacticalUsage.findMany({
+    const matchTacticalUsages: MatchTacticalUsage[] = await prisma.matchTacticalUsage.findMany({
         select: {
             characterKey: true,
-            teamMember: { select: { team: { select: { matchId: true } } } },
+            teamMember: {
+                select: {
+                    team: {
+                        select: {
+                            matchId: true,
+                        },
+                    },
+                },
+            },
         },
     });
 
-    const usedSet = new Set(usages.map((u) => `${u.teamMember.team.matchId}:${u.characterKey}`));
+    const usedSet = new Set(matchTacticalUsages.map((u) => `${u.teamMember.team.matchId}:${u.characterKey}`));
 
     const usageCountByMatch = new Map<string, number>();
-    for (const u of usages) {
+    for (const u of matchTacticalUsages) {
         const key = `${u.teamMember.team.matchId}:${u.characterKey}`;
         usageCountByMatch.set(key, (usageCountByMatch.get(key) ?? 0) + 1);
     }
@@ -39,20 +95,21 @@ export async function computeTacticalUsage(prisma: PrismaClient) {
     const contextMap = new Map<string, any>();
     const releaseMap = new Map<string, Date | null>();
 
-    for (const move of moves) {
-        const key = move.characterKey;
-        const matchId = move.matchId;
-
+    for (const matchMove of matchMoves) {
+        const key = matchMove.characterKey;
+        const matchId = matchMove.matchId;
+        const matchDate = matchMove.match.createdAt;
+        const releaseDate = matchMove.character.releaseDate;
         const wasUsed = usedSet.has(`${matchId}:${key}`);
         const usedBoth = (usageCountByMatch.get(`${matchId}:${key}`) ?? 0) >= 2;
 
-        releaseMap.set(key, move.character.releaseDate ?? null);
+        releaseMap.set(key, matchMove.character.releaseDate ?? null);
 
-        if (move.character.releaseDate && move.character.releaseDate > move.match.createdAt) continue;
+        if (releaseDate && releaseDate > matchDate) continue;
 
         const ctx = getWeightContext({
-            type: move.type,
-            source: move.source,
+            type: matchMove.type,
+            source: matchMove.source,
             wasUsed,
             usedByBothTeams: usedBoth,
         });

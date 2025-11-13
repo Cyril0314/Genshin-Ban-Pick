@@ -1,4 +1,4 @@
-// backend/src/services/analysis/types/ICommunityScanResult.ts
+// backend/src/services/analysis/clustering/types/ICommunityScanResult.ts
 
 export interface ICommunityScanResult {
     resolution: number;

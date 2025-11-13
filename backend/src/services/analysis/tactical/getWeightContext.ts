@@ -1,12 +1,8 @@
-import { MoveType, MoveSource } from '@prisma/client';
-import { IWeightContext } from '../types/IWeightContext.ts';
+// backend/src/services/analysis/tactical/getWeightContext.ts
 
-export interface IMoveContext {
-    type: MoveType;
-    source: MoveSource;
-    wasUsed?: boolean;
-    usedByBothTeams?: boolean;
-}
+import { MoveType, MoveSource } from '@prisma/client';
+import { IWeightContext } from './types/IWeightContext.ts';
+import { IMoveContext } from './types/IMoveContext.ts';
 
 export function getWeightContext(move: IMoveContext): IWeightContext {
     const ctx: IWeightContext = {
