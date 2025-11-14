@@ -69,6 +69,8 @@ export function useCharacterTacticalUsageCompositionChart(topN = 120) {
             },
             legend: {
                 ...legendStyle('top'),
+                itemWidth: parseFloat(designTokens.baseSize.value) * 10,
+                itemHeight: parseFloat(designTokens.baseSize.value) * 4,
             },
             dataZoom: [
                 {

@@ -72,6 +72,8 @@ export function useCharacterTacticalUsagesChart(topN = 120) {
             },
             legend: {
                 ...legendStyle('top'),
+                itemWidth: parseFloat(designTokens.baseSize.value) * 10,
+                itemHeight: parseFloat(designTokens.baseSize.value) * 4,
                 data: [
                     {
                         name: '綜合全期平均與有效權重',

@@ -80,8 +80,6 @@ export default class AnalysisService {
 
         const { archetypes, projected, clusterMedoids, bridgeScores } = await this.clusteringService.computeClusters(synergy, characterMap);
 
-        console.log(`clusterMedoids`, clusterMedoids);
-        console.log(`bridgeScores`, bridgeScores);
         const archetypePoints = archetypes.map((archetype, i) => ({
                 characterKey: archetype.characterKey,
                 clusterId: archetype.clusterId,

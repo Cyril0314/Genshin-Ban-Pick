@@ -17,10 +17,14 @@ import { ISynergyMatrix } from '../synergy/types/ISynergyMatrix.ts';
 import { IBridgeScoreResult } from './types/IBridgeScoreResult.ts';
 
 export class ClusteringService {
+    private rng: () => number;
     constructor(
         private projectionService: ProjectionService,
         private synergyNormalizationService: SynergyNormalizationService,
-    ) {}
+        seed: number = 20251114
+    ) {
+        this.rng = createSeededRandom(seed);
+    }
 
     async computeClusters(synergy: ISynergyMatrix, characterMap: Record<string, any>) {
         const graph = await this.buildSynergyGraph(synergy, characterMap);
@@ -38,7 +42,6 @@ export class ClusteringService {
 
         const clusterMedoids = this.computeClusterMedoids(chars, clusterIds, projected);
         const bridgeScores = this.computeBridgeScores(graph, chars, clusterIds, projected);
-
         return {
             archetypes,
             matrix,
@@ -59,6 +62,7 @@ export class ClusteringService {
         // @ts-ignore
         const result = kmeans.kmeans(matrix.to2DArray(), k, {
             initialization: 'kmeans++',
+            seed: this.rng(),
         });
         return result.clusters;
     }
@@ -251,6 +255,7 @@ export class ClusteringService {
             const mapping = louvain(graph, {
                 resolution: gamma,
                 nodeCommunityAttribute: 'community',
+                rng: this.rng,
             });
             for (const node of graph.nodes()) {
                 graph.setNodeAttribute(node, 'community', mapping[node]);
@@ -267,4 +272,12 @@ export class ClusteringService {
 
         return result;
     }
+}
+
+function createSeededRandom(seed = 123456) {
+    let state = seed;
+    return function random() {
+        state = (state * 16807) % 2147483647;
+        return Math.floor((state - 1) / 2147483646);
+    };
 }

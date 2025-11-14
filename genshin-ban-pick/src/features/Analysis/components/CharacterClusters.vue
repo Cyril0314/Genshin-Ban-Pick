@@ -24,7 +24,7 @@ const { option } = useCharacterClusters()
         <header class="chart__header">
             <div class="chart__title">
                 <h2>角色群聚圖</h2>
-                <p class="chart-desc">不同顏色代表角色所屬的組隊原型群。點的位置顯示他們在組隊上的頻繁程度，點越大代表該角色在比賽中被採用得越頻繁。</p>
+                <p class="chart-desc">不同顏色代表角色所屬的組隊原型群。點的位置顯示他們在組隊上的頻繁程度，點越大代表該角色在比賽中被採用得越頻繁。群中心表示該群中最典型「代表該玩法」的角色。有白框表示為邊界角色適配多種隊伍</p>
             </div>
             <div class="chart__modes">
                 <!-- <span class="chart-mode__text">範圍：</span> -->

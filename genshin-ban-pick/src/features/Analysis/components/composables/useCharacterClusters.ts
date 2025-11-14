@@ -10,6 +10,7 @@ import { useDesignTokens } from '@/composables/useDesignTokens';
 import type { CallbackDataParams } from 'echarts/types/dist/shared';
 import type { ITacticalUsages } from '../../types/ITacticalUsages';
 import type { IArchetypePoint, ICharacterClusters } from '../../types/ICharacterClusters';
+import tinycolor from 'tinycolor2';
 
 export function useCharacterClusters() {
     const designTokens = useDesignTokens();
@@ -26,9 +27,9 @@ export function useCharacterClusters() {
     const tacticalUsageMap = computed(() => Object.fromEntries((tacticalUsages.value ?? []).map((u) => [u.characterKey, u.tacticalUsage])));
     const archetypePoints = computed(() => characterClusters.value?.archetypePoints);
     const medoidPoints = computed(() => characterClusters.value?.clusterMedoids);
-    const bridgeScoreMap = computed(() =>
-        Object.fromEntries((characterClusters.value?.bridgeScores ?? []).map((s) => [s.characterKey, s.bridgeScore])),
-    );
+    const topBridges = computed(() => {
+            return [...(characterClusters.value?.bridgeScores ?? [])].sort((a, b) => b.bridgeScore - a.bridgeScore).slice(0, 5)
+    });
 
     onMounted(async () => {
         tacticalUsages.value = await fetchTacticalUsages();
@@ -37,10 +38,7 @@ export function useCharacterClusters() {
     });
 
     const option = computed(() => {
-        if (!archetypePoints.value || !tacticalUsages.value || !medoidPoints.value) return null;
-        const topBridges = computed(() => {
-            return [...(characterClusters.value?.bridgeScores ?? [])].sort((a, b) => b.bridgeScore - a.bridgeScore).slice(0, 10); // 前 10 個橋接角色
-        });
+        if (!archetypePoints.value || !tacticalUsages.value || !medoidPoints.value || !topBridges.value) return null;
         return {
             tooltip: {
                 ...tooltipStyle('single'),
@@ -50,6 +48,7 @@ export function useCharacterClusters() {
                 ...gridStyle('tight', true),
                 borderWidth: 1, // 外框線寬
                 borderColor: designTokens.colorOnSurface.value, // 外框顏色
+                top: parseFloat(designTokens.baseSize.value) * 30,
                 show: true,
             },
             xAxis: {
@@ -80,13 +79,23 @@ export function useCharacterClusters() {
             },
             legend: {
                 ...legendStyle('top'),
+                itemHeight: parseFloat(designTokens.baseSize.value) * 12,
                 data: [
                     ...clusterLegendItems.value.map((i) => ({
                         name: i.name,
                         icon: i.icon,
                         itemStyle: i.itemStyle,
                     })),
-                    { name: '群中心', icon: 'diamond' },
+                    {
+                        name: '群中心',
+                        icon: 'pin',
+                        itemStyle: {
+                            // itemHeight: parseFloat(designTokens.baseSize.value) * 10,
+                            color: designTokens.colorSurfaceContainerHighest.value,
+                            borderColor: designTokens.colorOnSurface.value,
+                            borderWidth: 1,
+                        },
+                    },
                 ],
             },
             dataZoom: [
@@ -109,46 +118,29 @@ export function useCharacterClusters() {
                     data: medoidPoints.value.map((m) => ({
                         value: [m.x, m.y],
                         name: `群中心-${getDisplayName(m.characterKey)}`,
-                        symbol: 'diamond',
+                        symbol: 'pin',
                         itemStyle: {
-                            color: '#ffffff',
+                            color: designTokens.colorSurfaceContainerHighest.value,
                             borderColor: clusterColors[m.clusterId],
                             borderWidth: 2,
+                            position: 'top',
+                            distance: 10,
                         },
-                        symbolSize: parseFloat(designTokens.fontSizeMd.value) * 2, // 比較大一點
+                        symbolSize: parseFloat(designTokens.fontSizeMd.value) * 4,
                         label: {
-                            show: true,
-                            formatter: '中心',
+                            show: false,
+                            // formatter: '中心',
                             color: clusterColors[m.clusterId],
                             fontWeight: 'bold',
                         },
                     })),
-                    z: 10, // 在最上層
-                },
-                {
-                    type: 'scatter',
-                    data: topBridges.value.map((b) => {
-                        const p = archetypePoints.value!.find((x) => x.characterKey === b.characterKey)!;
-                        return {
-                            name: getDisplayName(p.characterKey),
-                            value: [p.x, p.y],
-                            itemStyle: {
-                                color: '#ffffff',
-                                borderWidth: 3,
-                                borderColor: clusterColors[p.clusterId],
-                                shadowColor: clusterColors[p.clusterId],
-                                shadowBlur: 25 + b.bridgeScore * 40,
-                            },
-                        };
-                    }),
-                    symbolSize: parseFloat(designTokens.fontSizeMd.value) * 2.2,
-                    z: 9,
+                    z: 10,
                 },
             ],
         };
     });
 
-    function jitter(v: number, factor = 0.0) {
+    function jitter(v: number, factor = 0.05) {
         return v + (Math.random() - 0.5) * factor;
     }
 
@@ -177,21 +169,30 @@ export function useCharacterClusters() {
                 type: 'scatter',
                 data: archetypePoints.value
                     .filter((p) => p.clusterId === cid)
-                    .map((p) => ({
-                        name: getDisplayName(p.characterKey),
-                        characterKey: p.characterKey,
-                        value: [jitter(p.x), jitter(p.y)],
-                    })),
-                itemStyle: { color: clusterColors[cid] },
+                    .map((p) => {
+                        const isBridgeCharacter = topBridges.value.find((topBridge) => (topBridge.characterKey === p.characterKey)) !== undefined
+                        return {
+                            name: getDisplayName(p.characterKey),
+                            characterKey: p.characterKey,
+                            isBridgeCharacter,
+                            value: [jitter(p.x), jitter(p.y)],
+                            itemStyle: {
+                                borderWidth: 3,
+                                borderColor: isBridgeCharacter ? '#ffffff' : clusterColors[cid] 
+                            }
+                        }
+                }),
+                itemStyle: { 
+                    color: clusterColors[cid] 
+                },
                 symbolSize: (value: any, params: any) => {
                     const tacticalUsage = tacticalUsageMap.value[params.data?.characterKey as string];
-                    console.log(`tacticalUsage`, params.data?.characterKey);
                     return parseFloat(designTokens.fontSizeSm.value) + tacticalUsage * parseFloat(designTokens.fontSizeMd.value);
                 },
                 label: {
                     show: true,
-                    position: 'top',
-                    distance: 6,
+                    position: 'left',
+                    distance: 0,
                     formatter: (params: CallbackDataParams) => params.name,
                     color: designTokens.colorOnSurface.value,
                     fontSize: designTokens.fontSizeSm.value,
