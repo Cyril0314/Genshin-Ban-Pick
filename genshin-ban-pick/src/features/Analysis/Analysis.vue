@@ -3,10 +3,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-import CharacterClusters from './components/CharacterClusters.vue';
+import CharacterClustersChart from './components/CharacterClustersChart.vue';
 import CharacterSynergyChart from './components/CharacterSynergyChart.vue';
 import CharacterTacticalUsagesChart from './components/CharacterTacticalUsagesChart.vue';
 import CharacterTacticalUsageCompositionChart from './components/CharacterTacticalUsageCompositionChart.vue';
+import PlayerCharacterChart from './components/PlayerCharacterChart.vue';
 
 const props = defineProps<{}>();
 
@@ -16,9 +17,9 @@ const tabs = [
     { name: '角色使用權重', component: CharacterTacticalUsagesChart },
     { name: '角色使用構成', component: CharacterTacticalUsageCompositionChart },
     { name: '角色共現熱圖', component: CharacterSynergyChart },
-    { name: '角色群聚圖', component: CharacterClusters },
+    { name: '角色群聚圖', component: CharacterClustersChart },
     
-    // { name: '角色出場頻率', component: CharacterUsageChart },
+    { name: '玩家偏好角色', component: PlayerCharacterChart },
     // { name: '隊伍 Archetype 雷達圖', component: TeamArchetypeRadar },
 ];
 

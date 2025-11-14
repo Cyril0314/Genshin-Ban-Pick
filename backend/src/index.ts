@@ -80,8 +80,8 @@ const roomService = new RoomService(roomStatePersistenceService);
 const characterService = new CharacterService(prisma);
 const analysisService = new AnalysisService(prisma, characterService)
 
-// const results = await analysisService.getCharacterClusters()
-// console.info(`getBridgeScores`, results)
+const results = await analysisService.getPreference()
+console.info(`getBridgeScores`, JSON.stringify(results, null, 2))
 
 // ---------------------------------------------------------
 // 🧩 7. Routes 註冊

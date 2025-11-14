@@ -8,14 +8,14 @@ import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { ScatterChart } from 'echarts/charts';
 import { GridComponent, TooltipComponent, VisualMapComponent, LegendComponent } from 'echarts/components';
-import { useCharacterClusters } from './composables/useCharacterClusters';
+import { useCharacterClustersChart } from './composables/useCharacterClustersChart';
 
 use([CanvasRenderer, ScatterChart, GridComponent, TooltipComponent, VisualMapComponent, LegendComponent]);
 
 const props = defineProps<{}>();
 const emit = defineEmits<{}>();
 
-const { option } = useCharacterClusters()
+const { option } = useCharacterClustersChart()
 
 </script>
 

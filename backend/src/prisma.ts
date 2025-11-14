@@ -11,4 +11,4 @@ export const prisma =
   });
 
 // 在開發環境避免 hot-reload 重複 new PrismaClient
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma; 

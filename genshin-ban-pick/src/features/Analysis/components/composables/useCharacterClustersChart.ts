@@ -1,4 +1,4 @@
-// src/features/Analysis/components/composables/useCharacterArchetypeMap.ts
+// src/features/Analysis/components/composables/useCharacterClustersChart.ts
 
 import { computed, onMounted, ref } from 'vue';
 
@@ -12,7 +12,7 @@ import type { ITacticalUsages } from '../../types/ITacticalUsages';
 import type { IArchetypePoint, ICharacterClusters } from '../../types/ICharacterClusters';
 import tinycolor from 'tinycolor2';
 
-export function useCharacterClusters() {
+export function useCharacterClustersChart() {
     const designTokens = useDesignTokens();
     const { gridStyle, xAxisStyle, yAxisStyle, tooltipStyle, dataZoomStyle, legendStyle } = useEchartTheme();
     const analysisDomain = useAnalysisDomain();

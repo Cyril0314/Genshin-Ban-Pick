@@ -8,7 +8,7 @@ import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { HeatmapChart } from 'echarts/charts';
 import { GridComponent, TooltipComponent, VisualMapComponent } from 'echarts/components';
-import { useCharacterSynergy } from './composables/useCharacterSynergy';
+import { useCharacterSynergyChart } from './composables/useCharacterSynergyChart';
 
 use([CanvasRenderer, HeatmapChart, GridComponent, TooltipComponent, VisualMapComponent]);
 
@@ -16,7 +16,7 @@ const props = defineProps<{}>();
 
 const emit = defineEmits<{}>();
 
-const { scope, option } = useCharacterSynergy();
+const { scope, option } = useCharacterSynergyChart();
 </script>
 
 <template>

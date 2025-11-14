@@ -20,7 +20,7 @@ export function createAnalysisService(client: HttpClient = api) {
     async function getCharacterClusters() {
         return client.get(`/analysis/character-clusters`);
     }
-
+    
     return {
         getTacticalUsages,
         getPreference,
