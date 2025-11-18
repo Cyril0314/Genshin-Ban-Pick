@@ -12,6 +12,6 @@ export default class RoomService {
     }
 
     async save(payload: { roomId: string, roomSetting: IRoomSetting }) {
-        return await this.persistenceService.save(payload, true)
+        return await this.persistenceService.save(payload, false)
     }
 }

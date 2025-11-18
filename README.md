@@ -73,3 +73,10 @@ dir prod_dump.backup
 ## 下載 npm ipv4 優先
 
 NODE_OPTIONS=--dns-result-order=ipv4first npm install
+
+## pm2
+
+pm2 ls 列出所有 pm2 的程序
+pm2 start --name xxx.js 啟動服務
+pm2 stop --name 暫停服務
+pm2 restart --name 重啟服務
