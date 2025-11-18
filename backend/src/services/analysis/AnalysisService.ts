@@ -1,5 +1,6 @@
 // backend/src/services/analysis/AnalysisService.ts
 
+import { Prisma } from '@prisma/client';
 import { PrismaClient } from '@prisma/client/extension';
 import { createLogger } from '../../utils/logger.ts';
 import { SynergyMode } from './synergy/types/SynergyMode.ts';
@@ -33,9 +34,25 @@ export default class AnalysisService {
     }
 
     async getPreference() {
+        type MatchTacticalUsage = Prisma.MatchTacticalUsageGetPayload<{
+            include: {
+                teamMember: {
+                    include: {
+                        member: true;
+                        guest: true;
+                    };
+                };
+            };
+        }>;
+
         const usages = await this.prisma.matchTacticalUsage.findMany({
             include: {
-                teamMember: true, // 拿到 name, memberRef, guestRef
+                teamMember: {
+                    include: {
+                        member: true,
+                        guest: true,
+                    },
+                },
             },
         });
 
@@ -43,7 +60,7 @@ export default class AnalysisService {
         const preferenceMap: Record<string, Record<string, number>> = {};
 
         for (const u of usages) {
-            const playerName = u.teamMember.name;
+            const playerName = u.teamMember.member?.nickname ?? u.teamMember.guest?.nickname ?? u.teamMember.name;
             const charKey = u.characterKey;
 
             if (!preferenceMap[playerName]) preferenceMap[playerName] = {};
@@ -81,11 +98,11 @@ export default class AnalysisService {
         const { archetypes, projected, clusterMedoids, bridgeScores } = await this.clusteringService.computeClusters(synergy, characterMap);
 
         const archetypePoints = archetypes.map((archetype, i) => ({
-                characterKey: archetype.characterKey,
-                clusterId: archetype.clusterId,
-                x: projected[i][0],
-                y: projected[i][1],
-            }))
+            characterKey: archetype.characterKey,
+            clusterId: archetype.clusterId,
+            x: projected[i][0],
+            y: projected[i][1],
+        }));
         return {
             archetypePoints,
             bridgeScores,
