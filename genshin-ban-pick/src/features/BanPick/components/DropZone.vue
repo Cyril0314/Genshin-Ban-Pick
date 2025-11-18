@@ -7,14 +7,14 @@ import { useMatchStepStore } from '@/stores/matchStepStore';
 import { getWishImagePath } from '@/utils/imageRegistry'
 import { DragTypes } from '@/constants/customMIMETypes'
 
-import type { IZone } from '@/types/IZone';
+import type { IZone } from '@/features/BanPick/types/IZone';
 import { storeToRefs } from 'pinia';
+import { useTeamTheme } from '@/composables/useTeamTheme';
 
 const props = defineProps<{
   zone: IZone
   boardImageMap: Record<number, string>
   label?: string
-  labelColor?: string
 }>()
 
 const emit = defineEmits<{
@@ -28,6 +28,14 @@ const imageId = computed(() => props.boardImageMap[props.zone.id] ?? '')
 
 const matchStepStore = useMatchStepStore()
 const { currentStep } = storeToRefs(matchStepStore)
+
+const highlightColor = computed(() => {
+  const teamSlot = currentStep.value?.teamSlot ?? null
+  if (teamSlot === null) {
+    return `var(--md-sys-color-on-surface-rgb)`
+  }
+  return useTeamTheme(teamSlot).themeVars.value['--team-color-rgb']
+})
 
 function handleDragStartEvent(event: DragEvent) {
   console.debug(`[DROP ZONE] Handle drag start event`);
@@ -48,9 +56,8 @@ function handleDropEvent(event: DragEvent) {
 
 function handleClickEvent(event: MouseEvent) {
   console.debug(`[DROP ZONE] Handle click event`, props.zone);
-  const target = event.target as HTMLElement
-  if (target.tagName === 'IMG' && imageId) {
-    emit('image-restore', { zoneId: props.zone.id })
+  if (imageId.value) {
+    emit('image-restore', { zoneId: props.zone.id });
   }
 }
 
@@ -58,16 +65,20 @@ const isHighlighted = computed(() => props.zone.id === currentStep.value?.zoneId
 </script>
 
 <template>
-  <div class="drop-zone" :class="[
-    'drop-zone--' + (props.zone.type || 'default'),
-    { 'drop-zone--active': isOver, highlight: isHighlighted },
-  ]" @dragover.prevent="isOver = true" @dragleave="isOver = false" @dragstart="handleDragStartEvent"
-    @drop="handleDropEvent" @click="handleClickEvent">
+  <div 
+    class="drop-zone" 
+    :class="['drop-zone--' + (props.zone.type || 'default'), { 'drop-zone--active': isOver, highlight: isHighlighted },]"
+    :style="{'--highlight-color-rgb': highlightColor }"
+    @dragover.prevent="isOver = true" 
+    @dragleave="isOver = false" 
+    @dragstart="handleDragStartEvent"
+    @drop="handleDropEvent" 
+    @click="handleClickEvent">
     <template v-if="imageId">
       <img class="drop-zone__background" :src="getWishImagePath(imageId)" aria-hidden="true" />
       <img class="drop-zone__image" :src="getWishImagePath(imageId)" />
     </template>
-    <span v-else class="drop-zone__label" :style="{ color: props.labelColor || '#888' }">{{
+    <span v-else class="drop-zone__label">{{
       label
     }}</span>
   </div>
@@ -78,16 +89,14 @@ const isHighlighted = computed(() => props.zone.id === currentStep.value?.zoneId
   position: relative;
   width: var(--size-drop-zone-width);
   aspect-ratio: 16 / 9;
-  background-color: var(--md-sys-color-surface-container-high-alpha);
-  border-radius: var(--border-radius-xs);
-  box-shadow: var(--box-shadow);
+  background-color: var(--md-sys-color-surface-container-low);
+  color: var(--md-sys-color-on-surface);
+  border-radius: var(--radius-md);
   display: flex;
   justify-content: center;
   align-items: center;
   transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-  backdrop-filter: var(--backdrop-filter);
+    transform 0.2s ease;
   overflow: hidden;
 }
 
@@ -103,7 +112,6 @@ const isHighlighted = computed(() => props.zone.id === currentStep.value?.zoneId
   z-index: 1;
   animation: subtleMove 4s ease-in-out infinite alternate;
 }
-
 
 @keyframes subtleMove {
   0% {
@@ -124,39 +132,57 @@ const isHighlighted = computed(() => props.zone.id === currentStep.value?.zoneId
   height: 100%;
   object-fit: cover;
   z-index: 10;
+  transition: 
+    filter 0.18s ease,
+    transform 0.18s ease,;
+  filter: saturate(0.95) brightness(0.95);
+}
+
+.drop-zone__background {
+  pointer-events: none;
+}
+
+.drop-zone__image {
+  pointer-events: auto; /* 允許拖曳 */
 }
 
 .drop-zone--active,
 .drop-zone.highlight.drop-zone--active {
-  outline: calc(var(--space-xs) / 2) solid var(--md-sys-color-secondary-container);
+  outline: 2px solid rgba(var(--highlight-color-rgb) / 0.55);
 }
 
 .drop-zone:hover {
-  transform: scale(1.05);
-  box-shadow: var(--box-shadow-hover);
+  background-color: var(--md-sys-color-surface-container);
+  transform: scale(1.03); 
+  filter: initial;
 }
+
+.drop-zone:focus {
+  background-color: var(--md-sys-color-surface-container-higher);
+  filter: none;
+}
+
 
 .drop-zone.highlight {
-  outline: var(--space-xs) var(--md-sys-color-secondary-container);
-  background-color: var(--md-sys-color-surface-container-highest-alpha);
   box-shadow:
-    0 0 var(--space-xs) var(--md-sys-color-tertiary-container),
-    0 0 var(--space-sm) var(--md-sys-color-secondary-container);
-  animation: highlightGlow 1.2s ease-in-out infinite;
-  transform: scale(1.05);
+    0 0 8px rgba(var(--highlight-color-rgb) / 0.8),
+    0 0 16px rgba(var(--highlight-color-rgb) / 0.32),
+    0 0 32px rgba(var(--highlight-color-rgb) / 0.16);
+
+  outline: 2px solid rgba(var(--highlight-color-rgb) / 0.55);
+  transform: scale(1.06);
+  animation: zonePulse 1.6s ease-in-out infinite;
 }
 
-@keyframes highlightGlow {
+@keyframes zonePulse {
   0% {
-    box-shadow: 0 0 var(--space-lg) var(--md-sys-color-tertiary-container);
+    filter: brightness(1);
   }
-
   50% {
-    box-shadow: 0 0 var(--space-sm) var(--md-sys-color-secondary-container);
+    filter: brightness(1.35);
   }
-
   100% {
-    box-shadow: 0 0 var(--space-lg) var(--md-sys-color-tertiary-container);
+    filter: brightness(1);
   }
 }
 

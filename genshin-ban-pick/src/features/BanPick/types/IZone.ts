@@ -1,4 +1,4 @@
-// src/types/ZoneType.ts
+// src/features/BanPick/types/ZoneType.ts
 
 export interface IZone {
     id: number;

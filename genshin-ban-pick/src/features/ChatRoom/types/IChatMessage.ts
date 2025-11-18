@@ -1,4 +1,4 @@
-// src/types/IChatMessage.ts
+// src/features/ChatRoom/types/IChatMessage.ts
 
 export interface IChatMessage {
     nickname: string

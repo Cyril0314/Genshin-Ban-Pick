@@ -3,7 +3,7 @@
 <script setup lang="ts">
 import DropZone from './DropZone.vue';
 
-import type { IZone } from '@/types/IZone';
+import type { IZone } from '@/features/BanPick/types/IZone';
 
 const props = defineProps<{
     zones: IZone[];
@@ -45,7 +45,6 @@ function handleImageRestore({ zoneId }: { zoneId: number }) {
                     :zone="zone"
                     :boardImageMap="props.boardImageMap"
                     :label="`Ban ${zone.order + 1}`"
-                    :labelColor="'var(--md-sys-color-error)'"
                     @image-drop="handleImageDrop"
                     @image-restore="handleImageRestore"
                 />
@@ -60,13 +59,17 @@ function handleImageRestore({ zoneId }: { zoneId: number }) {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--size-drop-zone-line-space);
+    padding: var(--size-drop-zone-space);
+    gap: var(--size-drop-zone-space);
+    border-radius: var(--radius-lg);
+    background-color: color-mix(in srgb, var(--md-sys-color-surface-container) 68%, var(--md-sys-color-error) 32%);
+    background-color: var(--md-sys-color-surface-container-high);
 }
 
 .grid__row {
     display: flex;
     flex-direction: row;
-    gap: var(--size-drop-zone-item-space);
+    gap: var(--size-drop-zone-space);
 }
 
 .grid__spacer {

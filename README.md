@@ -69,3 +69,7 @@ pg_restore -h localhost -p 5432 -U wangxiaoyu -d genshin_banpick -F c /Users/wan
 ### 檢查備份檔案
 
 dir prod_dump.backup
+
+## 下載 npm ipv4 優先
+
+NODE_OPTIONS=--dns-result-order=ipv4first npm install

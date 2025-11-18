@@ -2,10 +2,10 @@
 
 import { computed } from "vue";
 
-import { ZoneType } from "@/types/IZone";
+import { ZoneType } from "@/features/BanPick/types/IZone";
 
 import type { IRoomSetting } from "@/types/IRoomSetting";
-import type { IZone } from "@/types/IZone";
+import type { IZone } from "@/features/BanPick/types/IZone";
 import type { TeamMember } from '@/types/TeamMember';
 
 export function useBoardZonesLayout(roomSetting: IRoomSetting, teamInfoPair: { left: { name: string; members: Record<number, TeamMember>; slot: number; }; right: { name: string; members: Record<number, TeamMember>; slot: number; } }) {

@@ -49,7 +49,7 @@ const { option } = useCharacterTacticalUsagesChart();
 .chart__header {
     display: flex;
     flex-direction: column;
-    padding: var(--space-sm);
+    padding: var(--space-md);
     color: var(--md-sys-color-on-surface);
     font-size: var(--font-size-md);
 }
@@ -63,7 +63,7 @@ const { option } = useCharacterTacticalUsagesChart();
 .chart__footer {
     display: flex;
     color: var(--md-sys-color-on-surface-variant);
-    padding: var(--space-sm);
+    padding: var(--space-md);
     font-size: var(--font-size-md);
 }
 </style>

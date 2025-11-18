@@ -4,21 +4,20 @@
 import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
 
-import ImageOptions from '../ImageOptions/ImageOptions.vue';
-import CharacterSelector from '@/features/CharacterSelector/CharacterSelector.vue';
+import ImageOptions from './ImageOptions/ImageOptions.vue';
+import CharacterSelector from './CharacterSelector/CharacterSelector.vue';
 import TeamInfo from '@/features/Team/TeamInfo.vue';
 import BanZones from './components/BanZones.vue';
 import PickZones from './components/PickZones.vue';
 import UtilityZones from './components/UtilityZones.vue';
 
-import { ZoneType } from '@/types/IZone';
+import { ZoneType } from '@/features/BanPick/types/IZone';
 import { useBoardZonesLayout } from './composables/useBoardZonesLayout';
 import { useTeamInfoStore } from '@/stores/teamInfoStore';
 
 import type { ICharacter } from '@/types/ICharacter';
 import type { IRoomSetting } from '@/types/IRoomSetting';
-import type { TeamMember } from '@/types/TeamMember';
-import type { CharacterFilterKey } from '@/types/CharacterFilterKey';
+import type { CharacterFilterKey } from '@/features/BanPick/types/CharacterFilterKey';
 
 const props = defineProps<{
     roomSetting: IRoomSetting;
@@ -124,16 +123,18 @@ function handleMemberRestore(payload: { teamSlot: number; memberSlot: number }) 
 <style scoped>
 .layout__main {
     --pick-per-column-count: var(--max-number-of-pick-per-column);
-    --layout-main-height: calc((var(--pick-per-column-count) + 1) * var(--size-drop-zone-height) + var(--pick-per-column-count) * var(--size-drop-zone-item-space));
-
+    --layout-main-height: calc(var(--space-lg) + var(--size-team-info-height) + var(--space-md) + var(--pick-per-column-count) * var(--size-drop-zone-height) + (var(--pick-per-column-count) + 1) * var(--size-drop-zone-space) + var(--space-lg));
     --ban-per-row-count: var(--max-number-of-ban-per-row);
-    --layout-center-width: calc(var(--ban-per-row-count) * var(--size-drop-zone-width) + var(--ban-per-row-count) * var(--size-drop-zone-item-space));
+    --layout-center-width: calc(var(--ban-per-row-count) * var(--size-drop-zone-width) + (var(--ban-per-row-count) + 2) * var(--size-drop-zone-space));
 
     display: flex;
     justify-content: center;
-    gap: var(--space-lg);
+    padding: var(--space-lg);
+    gap: var(--space-xl);
     min-height: 0;
     height: var(--layout-main-height);
+    background-color: var(--md-sys-color-surface);
+    border-radius: var(--radius-xl);
 }
 
 .layout__side {
@@ -147,7 +148,7 @@ function handleMemberRestore(payload: { teamSlot: number; memberSlot: number }) 
 .layout__center {
     display: flex;
     flex-direction: column;
-    gap: var(--space-lg);
+    gap: var(--space-xl);
     min-height: 0;
     height: 100%;
     width: var(--layout-center-width);
@@ -163,7 +164,7 @@ function handleMemberRestore(payload: { teamSlot: number; memberSlot: number }) 
     flex: 1;
     flex-direction: column;
     align-items: stretch;
-    gap: var(--space-md);
+    gap: var(--space-xl);
     min-height: 0;
     width: 100%;
 }

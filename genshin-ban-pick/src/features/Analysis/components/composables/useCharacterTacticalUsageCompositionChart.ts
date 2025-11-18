@@ -12,7 +12,7 @@ import { useDesignTokens } from '@/composables/useDesignTokens';
 import { useEchartTheme } from '@/composables/useEchartTheme';
 
 import type { ITacticalUsages } from '../../types/ITacticalUsages';
-import { ZoneType } from '@/types/IZone';
+import { ZoneType } from '@/features/BanPick/types/IZone';
 
 export function useCharacterTacticalUsageCompositionChart(topN = 120) {
     const designTokens = useDesignTokens();
@@ -69,6 +69,8 @@ export function useCharacterTacticalUsageCompositionChart(topN = 120) {
             },
             legend: {
                 ...legendStyle('top'),
+                itemWidth: parseFloat(designTokens.baseSize.value) * 10,
+                itemHeight: parseFloat(designTokens.baseSize.value) * 4,
             },
             dataZoom: [
                 {
@@ -105,7 +107,7 @@ export function useCharacterTacticalUsageCompositionChart(topN = 120) {
             name: label,
             type: 'bar',
             stack: 'usage',
-            barWidth: parseFloat(designTokens.borderRadiusMd.value),
+            barWidth: parseFloat(designTokens.baseSize.value!) * 8,
             data: data,
             itemStyle: { color },
         };

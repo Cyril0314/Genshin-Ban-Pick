@@ -4,11 +4,11 @@
 import { reactive, watch } from 'vue';
 
 import { useSelectorOptions } from './composables/useSelectorOptions';
-import { useFilteredCharacters } from '@/features/CharacterSelector/composables/useFilteredCharacters';
+import { useFilteredCharacters } from '@/features/BanPick/CharacterSelector/composables/useFilteredCharacters';
 
 import type { ICharacter } from '@/types/ICharacter';
 
-import { ZoneType } from '@/types/IZone';
+import { ZoneType } from '@/features/BanPick/types/IZone';
 
 import 'vue-select/dist/vue-select.css';
 // @ts-ignore
@@ -16,7 +16,7 @@ import vSelect from 'vue-select';
 
 import { CommonOption } from './composables/useSelectorOptions';
 
-import type { CharacterFilterKey } from '@/types/CharacterFilterKey';
+import type { CharacterFilterKey } from '@/features/BanPick/types/CharacterFilterKey';
 import type { SelectorOption } from './composables/useSelectorOptions';
 
 const props = defineProps<{
@@ -115,14 +115,12 @@ function handleRandomButtonClick(zoneType: ZoneType) {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
     /* justify-content: center; */
-    column-gap: var(--space-md);
-    row-gap: var(--space-md);
+    column-gap: var(--space-sm);
+    row-gap: var(--space-sm);
     width: 100%;
-    padding: var(--space-md);
-    border-radius: var(--border-radius-xs);
-    background-color: var(--md-sys-color-surface-container-alpha);
-    backdrop-filter: var(--backdrop-filter);
-    box-shadow: var(--box-shadow);
+    padding: var(--space-sm);
+    border-radius: var(--radius-md);
+    background-color: var(--md-sys-color-surface-container-low);
 }
 
 .selector__row {
@@ -135,24 +133,25 @@ function handleRandomButtonClick(zoneType: ZoneType) {
 
 .v-select {
     flex-grow: 1;
-    --vs-font-size: var(--font-size-md);
+    --vs-font-size: var(--font-size-sm);
     --vs-font-family: var(--font-family-tech-ui);
-    background-color: var(--md-sys-color-surface-container-high-alpha);
-    color: var(--md-sys-color-on-surface-variant);
-    box-shadow: var(--box-shadow);
-    border-radius: var(--border-radius-xs);
+    background-color: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-on-surface);
+    border-radius: var(--radius-sm);
     cursor: pointer;
     transition: all 0.2s ease;
     gap: var(--space-xs);
 }
 
 .v-select:hover {
-    background-color: var(--md-sys-color-surface-container-highest-alpha);
+    background-color: color-mix(in srgb,
+        var(--md-sys-color-surface-container-high),
+        white 6%);
     transform: scale(1.02);
 }
 
 :deep(.vs__search) {
-    font-weight: var(--font-weight-bold);
+    font-weight: var(--font-weight-regular);
     text-align: start;
     padding: 0px;
 }
@@ -171,9 +170,9 @@ function handleRandomButtonClick(zoneType: ZoneType) {
 }
 
 .selector__open-indicator {
-    font-size: var(--font-size-md);
-    font-weight: var(--font-weight-medium);
-    color: var(--md-sys-color-on-surface-variant);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-regular);
+    color: var(--md-sys-color-on-surface);
 }
 
 :deep(.v-select.vs--open) {
@@ -181,17 +180,16 @@ function handleRandomButtonClick(zoneType: ZoneType) {
 }
 
 :deep(.vs__dropdown-menu) {
-    background-color: var(--md-sys-color-surface-container-highest);
+    background-color: var(--md-sys-color-surface-container);
 }
 
 :deep(.vs__dropdown-option) {
-    background-color: var(--md-sys-color-surface-container-highest);
-    color: var(--md-sys-color-on-surface-variant);
+    color: var(--md-sys-color-on-surface);
 }
 
 :deep(.vs__dropdown-option--highlight) {
-    background-color: var(--md-sys-color-primary-container);
-    color: var(--md-sys-color-on-primary-container);
+    /* background-color: var(--md-sys-color-neutral-focus); */
+    background-color: var(--md-sys-color-state-focus);
     transition:
         background-color 0.3s ease,
         transform 0.2s ease;
@@ -201,10 +199,10 @@ function handleRandomButtonClick(zoneType: ZoneType) {
     display: flex;
     width: 100%;
     cursor: pointer;
-    color: var(--md-sys-color-on-surface-variant);
+    color: var(--md-sys-color-on-surface);
     font-size: var(--font-size-sm);
     font-family: var(--font-family-tech-ui);
-    font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-regular);
 }
 
 :deep(.vs__selected-options) {
@@ -221,9 +219,9 @@ function handleRandomButtonClick(zoneType: ZoneType) {
     justify-content: center;
     cursor: pointer;
     padding: calc(var(--space-xs) / 2) 0;
-    color: var(--md-sys-color-on-primary-container);
-    background-color: var(--md-sys-color-surface-tint);
-    border-radius: var(--border-radius-xs);
+    color: var(--md-sys-color-on-surface);
+    background-color: var(--md-sys-color-surface-container-highest);
+    border-radius: var(--radius-xs);
 }
 
 .selector__selected-option-label {
@@ -231,15 +229,15 @@ function handleRandomButtonClick(zoneType: ZoneType) {
     padding: 0 0 0 var(--space-sm);
     font-size: var(--font-size-sm);
     font-family: var(--font-family-tech-ui);
-    font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-regular);
 }
 
 .selector__remove-btn {
     cursor: pointer;
-    color: var(--md-sys-color-on-primary-container);
+    color: var(--md-sys-color-on-surface);
     padding: 0 var(--space-xs);
     font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-regular);
     transition: color 0.2s ease;
 }
 
@@ -253,7 +251,7 @@ function handleRandomButtonClick(zoneType: ZoneType) {
 
 .container__selector label {
     font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-regular);
     font-family: var(--font-family-tech-ui);
     white-space: nowrap;
 }
@@ -272,16 +270,15 @@ function handleRandomButtonClick(zoneType: ZoneType) {
     justify-content: center;
     flex: 1;
     z-index: 50;
-    background-color: var(--md-sys-color-primary-container);
-    color: var(--md-sys-color-on-primary-container);
+    background-color: var(--md-sys-color-tertiary-container);
+    color: var(--md-sys-color-on-tertiary-container);
     border: none;
-    border-radius: var(--border-radius-xs);
+    border-radius: var(--radius-sm);
     padding: var(--space-sm);
     cursor: pointer;
     transition:
         background-color 0.3s ease,
         transform 0.2s ease;
-    box-shadow: var(--box-shadow);
     text-align: center;
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-regular);
@@ -289,7 +286,7 @@ function handleRandomButtonClick(zoneType: ZoneType) {
 }
 
 .selector__button:hover {
-    background-color: var(--md-sys-color-surface-tint);
+    background-color: var(--tertiary-filled-hover);
     transform: scale(1.05);
 }
 

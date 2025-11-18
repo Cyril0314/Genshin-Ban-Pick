@@ -77,7 +77,7 @@ const { isPercentage, activeType, option } = useCharacterTacticalUsageCompositio
     flex-direction: row;
     align-items: top;
     height: fit-content;
-    gap: var(--space-sm);
+    gap: var(--space-md);
     color: var(--md-sys-color-on-surface);
     font-size: var(--font-size-md);
 }
@@ -93,7 +93,6 @@ const { isPercentage, activeType, option } = useCharacterTacticalUsageCompositio
     color: var(--md-sys-color-on-surface);
     background-color: var(--md-sys-color-surface-container-high);
     font-weight: var(--font-weight-medium);
-    box-shadow: var(--box-shadow);
     width: var(--size-chart-switch);
     border: none;
     border-radius: var(--border-radius-xs);
@@ -114,7 +113,6 @@ const { isPercentage, activeType, option } = useCharacterTacticalUsageCompositio
     background-color: var(--md-sys-color-surface-container-high);
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-medium);
-    box-shadow: var(--box-shadow);
     width: var(--size-chart-select);
     border: none;
     border-radius: var(--border-radius-xs);
@@ -125,7 +123,6 @@ const { isPercentage, activeType, option } = useCharacterTacticalUsageCompositio
 
 .chart-mode__select:focus {
     outline: none;
-    box-shadow: none;
 }
 
 .chart-mode__select:hover {
@@ -141,7 +138,7 @@ const { isPercentage, activeType, option } = useCharacterTacticalUsageCompositio
 .chart__footer {
     display: flex;
     color: var(--md-sys-color-on-surface-variant);
-    padding: var(--space-sm);
+    padding: var(--space-md);
     font-size: var(--font-size-md);
 }
 </style>

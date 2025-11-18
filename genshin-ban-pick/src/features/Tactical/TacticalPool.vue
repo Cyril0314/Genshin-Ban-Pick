@@ -24,25 +24,40 @@ function handleDragStartEvent(event: DragEvent, id: string) {
 
 <style scoped>
 .tactical__pool {
-  --size-image-tactical-pool: calc(var(--base-size) * 2.9);
-  --gap: var(--space-sm);
+  --size-image-tactical-pool: calc(var(--base-size) * 4);
   display: grid;
   grid-template-columns: repeat(auto-fit, var(--size-image-tactical-pool));
   align-content: start;
   justify-content: start;
-  background: var(--md-sys-color-surface-container);
-  min-height: calc(var(--size-image-tactical-pool) * 4 + var(--gap) * 5);
+  background-color: var(--md-sys-color-surface-container);
+  min-height: calc(var(--size-image-tactical-pool) * 3);
   /* 維持最小高度 */
-  border-radius: var(--border-radius-xs);
-  gap: var(--gap);
-  padding: var(--gap);
+  border-radius: var(--radius-lg);
   overflow-y: scroll;
   scrollbar-width: none;
+  outline: 2px solid var(--md-sys-color-outline);
 }
 
 .tactical__pool img {
   width: 100%;
   aspect-ratio: 1 / 1;
+  padding: var(--space-sm);
+  border-radius: var(--radius-sm);
   cursor: grab;
+  transition: 
+    filter 0.18s ease,
+    transform 0.18s ease,;
+  filter: saturate(0.8) brightness(0.9);
+}
+
+.tactical__pool img:hover {
+  background-color: var(--md-sys-color-state-hover);
+  transform: scale(1.05);
+  filter: initial;
+}
+
+.tactical__pool img:focus {
+  background-color: var(--md-sys-color-state-focus);
+  filter: none;
 }
 </style>

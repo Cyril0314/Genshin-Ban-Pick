@@ -98,8 +98,6 @@ export function useEchartTheme(selector = '.scale-context') {
     function legendStyle(legendPosition: LegendPosition = 'top'): LegendComponentOption {
         const common = {
             show: true,
-            itemWidth: parseFloat(tokens.baseSize.value) * 10,
-            itemHeight: parseFloat(tokens.baseSize.value) * 4,
             textStyle: {
                 color: tokens.colorOnSurface.value,
                 fontSize: parseFloat(tokens.fontSizeSm.value),

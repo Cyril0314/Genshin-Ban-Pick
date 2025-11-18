@@ -3,7 +3,7 @@
 <script setup lang="ts">
 import DropZone from './DropZone.vue';
 
-import type { IZone } from '@/types/IZone';
+import type { IZone } from '@/features/BanPick/types/IZone';
 
 const props = defineProps<{
     zones: IZone[];
@@ -43,7 +43,6 @@ function handleImageRestore({ zoneId }: { zoneId: number }) {
         <div class="grid__column grid__column--side" v-for="(zones, columnIndex) in zoneMatrix" :key="columnIndex">
             <template v-for="(zone, rowIndex) in zones" :key="rowIndex">
                 <DropZone :zone="zone" :boardImageMap="props.boardImageMap" :label="`Pick ${zone.order + 1}`"
-                    :labelColor="side === 'left' ? 'var(--md-sys-color-secondary-container)' : 'var(--md-sys-color-tertiary-container)'"
                     @image-drop="handleImageDrop" @image-restore="handleImageRestore" />
             </template>
         </div>
@@ -53,23 +52,29 @@ function handleImageRestore({ zoneId }: { zoneId: number }) {
 <style scoped>
 .pick-zone--left {
     --flex-direction: row;
+    background-color: color-mix(in srgb, var(--md-sys-color-surface-container) 68%, var(--team-first-color) 32%);
+
 }
 
 .pick-zone--right {
     --flex-direction: row-reverse;
+    background-color: color-mix(in srgb, var(--md-sys-color-surface-container) 68%, var(--team-second-color) 32%);
 }
 
 .pick-zone {
     display: flex;
     flex-direction: var(--flex-direction);
     align-items: start;
-    gap: var(--size-drop-zone-line-space);
+    padding: var(--size-drop-zone-space);
+    gap: var(--size-drop-zone-space);
+    border-radius: var(--radius-lg);
+    background-color: var(--md-sys-color-surface-container-high);
 }
 
 .grid__column {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--size-drop-zone-item-space);
+    gap: var(--size-drop-zone-space);
 }
 </style>

@@ -24,7 +24,7 @@ function handleAfterEnter() {
 <template>
     <n-drawer class="drawer" :show="props.open" @after-enter="handleAfterEnter"
         @update:show="emit('update:open', $event)" placement="bottom" height="undefined" content-class="scale-context"
-        content-style="background-color: var(--md-sys-color-surface-container-low); --base-size: 2.2vh;">
+        content-style="background-color: var(--md-sys-color-surface-container); --base-size: 2.2vh;">
         <Analysis />
     </n-drawer>
 </template>

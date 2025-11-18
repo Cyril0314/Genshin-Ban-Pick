@@ -20,7 +20,7 @@ const emit = defineEmits<{
         placement="right"
         width="undefined"
         content-class="scale-context"
-        content-style="background-color: var(--md-sys-color-surface-container-low); --base-size: 1.2vw;"
+        content-style="background-color: var(--md-sys-color-surface-container-high); --base-size: 1.2vw;"
     >
         <TacticalBoardPanel />
     </n-drawer>

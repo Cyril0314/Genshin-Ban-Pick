@@ -50,7 +50,7 @@ function getStyleForUser(roomUser: IRoomUser) {
     const teamSlot = findUserTeamSlot(roomUser);
     if (teamSlot === null) {
         return {
-            '--team-bg': `var(--md-sys-color-surface-container-low)`, '--team-on-bg': `var(--md-sys-color-on-surface-variant)`
+            '--team-color-bg': `var(--md-sys-color-surface-container-high)`, '--team-on-color-bg': `var(--md-sys-color-on-surface-variant)`
         };
     }
     const { themeVars } = useTeamTheme(teamSlot);
@@ -80,11 +80,8 @@ function getStyleForUser(roomUser: IRoomUser) {
     flex-wrap: nowrap;
     width: 100%;
     padding: var(--space-md);
-    gap: var(--space-lg);
-    border-radius: var(--border-radius-xs);
-    background-color: var(--md-sys-color-surface-container-low-alpha);
-    backdrop-filter: var(--backdrop-filter);
-    box-shadow: var(--box-shadow);
+    border-radius: var(--radius-sm);
+    background-color: var(--md-sys-color-surface-container);
     overflow-x: auto;
     overflow-y: hidden;
     scrollbar-width: none;
@@ -92,11 +89,10 @@ function getStyleForUser(roomUser: IRoomUser) {
 
 .container__user {
     display: inline-flex;
-    background: var(--team-bg);
-    color: var(--team-on-bg);
-    box-shadow: var(--box-shadow);
+    background-color: var(--team-color-bg);
+    color: var(--team-on-color-bg);
     height: var(--size-room-user-height);
-    border-radius: var(--border-radius-sm);
+    border-radius: var(--radius-sm);
     width: fit-content;
     max-width: none;
     align-items: center;
@@ -113,14 +109,14 @@ function getStyleForUser(roomUser: IRoomUser) {
     font-weight: var(--font-weight-medium);
     font-family: var(--font-family-sans);
     padding: 0 var(--space-sm);
-    color: var(--team-on-bg);
+    color: var(--team-on-color-bg);
     text-align: center;
 }
 
 /* 過場容器避免造成 layout 問題 */
 .users__inner {
     display: flex;
-    gap: var(--space-lg);
+    gap: var(--space-md);
 }
 
 /* 進場前狀態 */

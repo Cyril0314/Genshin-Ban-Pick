@@ -8,7 +8,7 @@ import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { HeatmapChart } from 'echarts/charts';
 import { GridComponent, TooltipComponent, VisualMapComponent } from 'echarts/components';
-import { useCharacterSynergy } from './composables/useCharacterSynergy';
+import { useCharacterSynergyChart } from './composables/useCharacterSynergyChart';
 
 use([CanvasRenderer, HeatmapChart, GridComponent, TooltipComponent, VisualMapComponent]);
 
@@ -16,7 +16,7 @@ const props = defineProps<{}>();
 
 const emit = defineEmits<{}>();
 
-const { scope, option } = useCharacterSynergy();
+const { scope, option } = useCharacterSynergyChart();
 </script>
 
 <template>
@@ -59,7 +59,7 @@ const { scope, option } = useCharacterSynergy();
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    padding: var(--space-sm);
+    padding: var(--space-md);
 }
 
 .chart__title {
@@ -90,7 +90,6 @@ const { scope, option } = useCharacterSynergy();
     background-color: var(--md-sys-color-surface-container-high);
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-medium);
-    box-shadow: var(--box-shadow);
     width: var(--size-chart-select);
     border: none;
     border-radius: var(--border-radius-xs);
@@ -101,7 +100,6 @@ const { scope, option } = useCharacterSynergy();
 
 .chart-mode__select:focus {
     outline: none;
-    box-shadow: none;
 }
 
 .chart-mode__select:hover {
@@ -117,7 +115,7 @@ const { scope, option } = useCharacterSynergy();
 .chart__footer {
     display: flex;
     color: var(--md-sys-color-on-surface-variant);
-    padding: var(--space-sm);
+    padding: var(--space-md);
     font-size: var(--font-size-md);
 }
 

@@ -37,10 +37,10 @@ function handleDragStartEvent(event: DragEvent, id: string) {
 
 <style scoped>
 .container__images {
-  --size-image: calc(var(--base-size) * 3.60);
+  --size-image: calc(var(--base-size) * 4.0);
   --min-row: 2;
   --max-row: 5;
-  --gap: var(--space-md);
+  --gap: var(--space-sm);
   display: grid;
   padding: var(--gap);
   gap: var(--gap);
@@ -50,8 +50,8 @@ function handleDragStartEvent(event: DragEvent, id: string) {
   width: 100%;
   align-content: start;
   justify-content: center;
-  border-radius: var(--border-radius-xs);
-  background: var(--md-sys-color-surface-container-highest-alpha);
+  border-radius: var(--radius-lg);
+  background-color: var(--md-sys-color-surface-container);
   overflow-y: auto;
   scrollbar-width: none;
 }
@@ -59,11 +59,30 @@ function handleDragStartEvent(event: DragEvent, id: string) {
 .container__images img {
   width: 100%;
   aspect-ratio: 1 / 1;
+  padding: var(--space-sm);
   cursor: grab;
+  border-radius: var(--radius-sm);
+  transition: 
+    filter 0.18s ease,
+    transform 0.18s ease,;
+  filter: saturate(0.8) brightness(0.9);
 }
 
 .container__images img.dimmed {
   opacity: 0.3;
-  filter: grayscale(100%);
+  filter: grayscale(100%) brightness(0.6);
+  /* background-color: var(--md-sys-color-neutral-disabled); */
 }
+
+.container__images img:not(.dimmed):hover {
+  background-color: var(--md-sys-color-state-hover);
+  transform: scale(1.05);
+  filter: initial;
+}
+
+.container__images img:not(.dimmed):focus {
+  background-color: var(--md-sys-color-state-focus);
+  filter: none;
+}
+
 </style>

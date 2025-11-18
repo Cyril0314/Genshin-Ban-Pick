@@ -8,14 +8,14 @@ import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { ScatterChart } from 'echarts/charts';
 import { GridComponent, TooltipComponent, VisualMapComponent, LegendComponent } from 'echarts/components';
-import { useCharacterArchetypeMap } from './composables/useCharacterArchetypeMap';
+import { useCharacterClustersChart } from './composables/useCharacterClustersChart';
 
 use([CanvasRenderer, ScatterChart, GridComponent, TooltipComponent, VisualMapComponent, LegendComponent]);
 
 const props = defineProps<{}>();
 const emit = defineEmits<{}>();
 
-const { option } = useCharacterArchetypeMap()
+const { option } = useCharacterClustersChart()
 
 </script>
 
@@ -24,7 +24,7 @@ const { option } = useCharacterArchetypeMap()
         <header class="chart__header">
             <div class="chart__title">
                 <h2>角色群聚圖</h2>
-                <p class="chart-desc">不同顏色代表角色所屬的組隊原型群。點的位置顯示他們在組隊上的頻繁程度，點越大代表該角色在比賽中被採用得越頻繁。</p>
+                <p class="chart-desc">不同顏色代表角色所屬的組隊原型群。點的位置顯示他們在組隊上的頻繁程度，點越大代表該角色在比賽中被採用得越頻繁。群中心表示該群中最典型「代表該玩法」的角色。有白框表示為邊界角色適配多種隊伍</p>
             </div>
             <div class="chart__modes">
                 <!-- <span class="chart-mode__text">範圍：</span> -->
@@ -75,7 +75,7 @@ const { option } = useCharacterArchetypeMap()
     flex-direction: row;
     align-items: top;
     height: fit-content;
-    gap: var(--space-sm);
+    gap: var(--space-md);
     color: var(--md-sys-color-on-surface);
     font-size: var(--font-size-md);
 }
@@ -91,7 +91,6 @@ const { option } = useCharacterArchetypeMap()
     background-color: var(--md-sys-color-surface-container-high);
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-medium);
-    box-shadow: var(--box-shadow);
     width: var(--size-chart-select);
     border: none;
     border-radius: var(--border-radius-xs);
@@ -102,7 +101,6 @@ const { option } = useCharacterArchetypeMap()
 
 .chart-mode__select:focus {
     outline: none;
-    box-shadow: none;
 }
 
 .chart-mode__select:hover {
@@ -118,7 +116,7 @@ const { option } = useCharacterArchetypeMap()
 .chart__footer {
     display: flex;
     color: var(--md-sys-color-on-surface-variant);
-    padding: var(--space-sm);
+    padding: var(--space-md);
     font-size: var(--font-size-md);
 }
 

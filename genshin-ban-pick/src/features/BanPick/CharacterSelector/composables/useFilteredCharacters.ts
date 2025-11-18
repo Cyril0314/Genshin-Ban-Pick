@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 
 import type { ICharacter } from '@/types/ICharacter'
-import type { CharacterFilterKey } from '@/types/CharacterFilterKey'
+import type { CharacterFilterKey } from '@/features/BanPick/types/CharacterFilterKey'
 
 type FilterKey = keyof ICharacter
 

@@ -7,6 +7,7 @@ import { useTacticalBoardStore } from '@/stores/tacticalBoardStore';
 import { storeToRefs } from 'pinia';
 
 import type { TeamMember } from '@/types/TeamMember';
+import { useTeamTheme } from '@/composables/useTeamTheme';
 
 const props = defineProps<{ teamSlot: number; teamMembers: Record<number, TeamMember> }>();
 
@@ -47,6 +48,10 @@ const cells = computed(() => {
     });
 });
 
+const themeVars = computed(() => {
+  return useTeamTheme(props.teamSlot).themeVars.value
+})
+
 const imageId = (cellId: number) => tacticalBoardPanel.value.cellImageMap[cellId] ?? null;
 
 function handleImageDrop({ cellId, imgId }: { cellId: number; imgId: string }) {
@@ -61,7 +66,7 @@ function handleImageRestore({ cellId }: { cellId: number }) {
 </script>
 
 <template>
-    <div class="tactical__board" :style="{ '--number-of-team-setup': numberOfTeamSetup, '--number-of-setup-character': numberOfSetupCharacter }">
+    <div class="tactical__board" :style="{ '--number-of-team-setup': numberOfTeamSetup, '--number-of-setup-character': numberOfSetupCharacter, ...themeVars }">
         <div class="tactical__member-names">
             <div class="tactical__header"></div>
             <div v-for="(memberName, index) in memberNames" :key="index" class="tactical__member-name">
@@ -76,8 +81,12 @@ function handleImageRestore({ cellId }: { cellId: number }) {
             </div>
             <div class="tactical__grid">
                 <template v-for="cell in cells">
-                    <TacticalCell :cellId="cell.id" :imageId="imageId(cell.id)" @image-drop="handleImageDrop"
-                        @image-restore="handleImageRestore" />
+                    <TacticalCell 
+                    :cellId="cell.id" 
+                    :imageId="imageId(cell.id)" 
+                    :teamSlot="props.teamSlot"
+                    @image-drop="handleImageDrop"
+                    @image-restore="handleImageRestore" />
                 </template>
             </div>
         </div>
@@ -87,11 +96,14 @@ function handleImageRestore({ cellId }: { cellId: number }) {
 <style scoped>
 .tactical__board {
     --size-setup-number: calc(var(--base-size) * 1.5);
-    --size-tactical-cell: calc(var(--base-size) * 5);
+    --size-tactical-cell: calc(var(--base-size) * 5.5);
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: var(--space-sm);
+    padding: var(--space-md);
+    background-color: var(--md-sys-color-surface-container-low);
+    border-radius: var(--radius-lg);
+    /* outline: 2px solid var(--team-color); */
 }
 
 .tactical__member-names {
@@ -153,12 +165,12 @@ function handleImageRestore({ cellId }: { cellId: number }) {
     text-overflow: ellipsis;
     white-space: normal;
     overflow: hidden;
-
+    
     text-align: center;
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-medium);
     font-family: var(--font-family-tech-ui);
-    color: var(--md-sys-color-on-surface);
+    color: var(--team-color);
     z-index: 11;
 }
 

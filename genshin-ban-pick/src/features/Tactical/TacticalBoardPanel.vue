@@ -16,7 +16,7 @@ const { teamInfoPair } = storeToRefs(teamInfoStore);
 const tacticalBoardSync = useTacticalBoardSync();
 const { userTeamSlot, handleTacticalCellImagePlace, handleTacticalCellImageRemove } = tacticalBoardSync
 
-const currentTeamSlot = ref<number>( userTeamSlot.value ?? teamInfoPair.value!.left.slot)
+const currentTeamSlot = ref<number>(userTeamSlot.value ?? teamInfoPair.value!.left.slot)
 
 function handleImageDrop({ teamSlot, cellId, imgId }: { teamSlot: number, cellId: number; imgId: string }) {
   console.debug(`[TATICAL BOARD PANEL] Handle image drop`, { teamSlot, cellId, imgId });
@@ -66,37 +66,43 @@ function handleImageRestore({ teamSlot, cellId }: { teamSlot: number, cellId: nu
   width: 100%;
   height: 100%;
   padding: var(--space-lg);
-  gap: var(--space-md);
+  gap: var(--space-lg);
 }
 
 .tactical__board-tabs {
   display: flex;
   width: 100%;
   justify-content: space-between;
-  gap: var(--space-sm);
+  gap: var(--space-md);
 }
 
 .tactical__tab {
   flex: 1;
-  padding: var(--space-sm);
+  padding: var(--space-md);
   color: var(--md-sys-color-on-surface);
-  background: var(--md-sys-color-surface-container-highest-alpha);
+  background-color: var(--md-sys-color-surface-container-highest);
   border: none;
-  border-radius: var(--border-radius-xs);
-  cursor: pointer;
+  border-radius: var(--radius-md);
   font-size: var(--font-size-md);
   font-weight: var(--font-weight-bold);
   font-family: var(--font-family-tech-title);
-  transition: background 0.3s ease;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .tactical__tab:hover {
-  background: var(--team-hover);
+  background-color: color-mix(in srgb,
+      var(--md-sys-color-surface-container-highest),
+      white 6%);
 }
 
 .tactical__tab--active {
-  background: var(--team-bg);
-  color: var(--team-on-bg);
+  background-color: var(--team-color);
+  color: var(--team-on-color);
+}
+
+.tactical__tab--active:hover {
+  background-color: var(--team-color-hover);
 }
 
 .tactical__board-content {
@@ -108,6 +114,6 @@ function handleImageRestore({ teamSlot, cellId }: { teamSlot: number, cellId: nu
 .tactical__board-section {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: var(--space-lg);
 }
 </style>

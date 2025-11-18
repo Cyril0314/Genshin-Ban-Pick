@@ -2,6 +2,7 @@
 
 import './assets/main.css';
 import '@/assets/styles/semantic-colors.css';
+import '@/assets/styles/alpha.css';
 
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';

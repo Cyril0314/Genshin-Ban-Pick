@@ -72,6 +72,8 @@ export function useCharacterTacticalUsagesChart(topN = 120) {
             },
             legend: {
                 ...legendStyle('top'),
+                itemWidth: parseFloat(designTokens.baseSize.value) * 10,
+                itemHeight: parseFloat(designTokens.baseSize.value) * 4,
                 data: [
                     {
                         name: '綜合全期平均與有效權重',
@@ -99,7 +101,7 @@ export function useCharacterTacticalUsagesChart(topN = 120) {
                     name: '綜合全期平均與有效權重',
                     type: 'bar',
                     data: top.map((d) => d.tacticalUsage.toFixed(3)),
-                    barWidth: parseFloat(designTokens.borderRadiusMd.value),
+                    barWidth: parseFloat(designTokens.baseSize.value!) * 8,
                     itemStyle: {
                         color: (params: CallbackDataParams) => {
                             const d = top[params.dataIndex];
@@ -110,7 +112,7 @@ export function useCharacterTacticalUsagesChart(topN = 120) {
                             // return tinycolor(base).setAlpha(alpha).toRgbString();
                             return base;
                         },
-                        borderRadius: [0, parseFloat(designTokens.borderRadiusSm.value), parseFloat(designTokens.borderRadiusSm.value), 0],
+                        borderRadius: [0, parseFloat(designTokens.radiusSm.value!), parseFloat(designTokens.radiusSm.value!), 0],
                     },
                     label: {
                         show: true,
@@ -126,7 +128,7 @@ export function useCharacterTacticalUsagesChart(topN = 120) {
                     name: '僅計算登場後的有效權重',
                     type: 'bar',
                     data: top.map((d) => d.effectiveUsage),
-                    barWidth: parseFloat(designTokens.borderRadiusLg.value),
+                    barWidth: parseFloat(designTokens.baseSize.value!) * 12,
                     barGap: '-125%',
                     itemStyle: {
                         color: (params: CallbackDataParams) => {
@@ -135,12 +137,12 @@ export function useCharacterTacticalUsagesChart(topN = 120) {
                             const base = ElementColors[element]?.light ?? '#fff';
                             return tinycolor(base).setAlpha(0.45).toRgbString();
                         },
-                        borderRadius: [0, parseFloat(designTokens.borderRadiusMd.value), parseFloat(designTokens.borderRadiusMd.value), 0],
+                        borderRadius: [0, parseFloat(designTokens.radiusMd.value!), parseFloat(designTokens.radiusMd.value!), 0],
                     },
                     label: {
                         show: true,
                         position: 'right',
-                        color: designTokens.colorOnSurfaceVariantAlpha.value,
+                        color: designTokens.colorOnSurface.value,
                         fontSize: designTokens.fontSizeSm.value,
 
                         formatter: (p: any) => `${top[p.dataIndex].effectiveUsage.toFixed(2)}`,

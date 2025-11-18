@@ -1,7 +1,7 @@
 // src/features/CharacterSelector/composables/useSelectorOptions.ts
 import { Element, Weapon, Region, ModelType, CharacterRole, Wish, Rarity } from '@/types/ICharacter';
 
-import { CharacterFilterKey } from '@/types/CharacterFilterKey';
+import { CharacterFilterKey } from '@/features/BanPick/types/CharacterFilterKey';
 import type { ICharacter } from '@/types/ICharacter';
 
 export interface SelectorOption {

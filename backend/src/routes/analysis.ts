@@ -34,18 +34,10 @@ export default function analysisRoutes(analysisService: AnalysisService) {
     );
 
     router.get(
-        '/analysis/archetypes',
+        '/analysis/character-clusters',
         asyncHandler(async (req, res) => {
-            const archetypes = await analysisService.getArchetypes();
-            res.status(200).json(archetypes);
-        }),
-    );
-
-    router.get(
-        '/analysis/archetypeMap',
-        asyncHandler(async (req, res) => {
-            const archetypeMap = await analysisService.getArchetypeMap();
-            res.status(200).json(archetypeMap);
+            const characterClusters = await analysisService.getCharacterClusters();
+            res.status(200).json(characterClusters);
         }),
     );
 

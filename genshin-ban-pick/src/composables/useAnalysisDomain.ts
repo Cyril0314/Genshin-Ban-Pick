@@ -18,13 +18,9 @@ export function useAnalysisDomain() {
         return response.data;
     }
 
-    async function fetchArchetypes() {
-        const response = await analysisService.getArchetypes();
-        return response.data;
-    }
 
-    async function fetchArchetypeMap() {
-        const response = await analysisService.getArchetypeMap();
+    async function fetchCharacterClusters() {
+        const response = await analysisService.getCharacterClusters();
         return response.data;
     }
 
@@ -32,7 +28,6 @@ export function useAnalysisDomain() {
         fetchTacticalUsages,
         fetchPreference,
         fetchSynergy,
-        fetchArchetypes,
-        fetchArchetypeMap
+        fetchCharacterClusters
     }
 }

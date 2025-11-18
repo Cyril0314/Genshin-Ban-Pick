@@ -7,8 +7,8 @@ import { useMatchStepSync } from '../../StepIndicator/composables/useMatchStepSy
 import { useSocketStore } from '@/stores/socketStore';
 import { useBoardImageStore } from '@/stores/boardImageStore';
 import { useTacticalBoardSync } from '@/features/Tactical/composables/useTacticalBoardSync';
-import { ZoneType } from '@/types/IZone';
-import type { ICharacterRandomContext } from '@/types/ICharacterRandomContext';
+import { ZoneType } from '@/features/BanPick/types/IZone';
+import type { ICharacterRandomContext } from '@/features/BanPick/types/ICharacterRandomContext';
 
 enum BoardEvent {
     ImageDropRequest = 'board.image.drop.request',

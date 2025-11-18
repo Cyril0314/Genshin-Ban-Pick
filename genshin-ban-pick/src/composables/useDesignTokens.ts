@@ -20,24 +20,20 @@ export function useDesignTokens(selector: string = '.scale-context') {
     const { cssVar: spaceLg } = useScopedCssVar('--space-lg', selector);
     const { cssVar: spaceXl } = useScopedCssVar('--space-xl', selector);
 
-    // 🎨 圓角
-    const { cssVar: borderRadiusXs } = useScopedCssVar('--border-radius-xs', selector);
-    const { cssVar: borderRadiusSm } = useScopedCssVar('--border-radius-sm', selector);
-    const { cssVar: borderRadiusMd } = useScopedCssVar('--border-radius-md', selector);
-    const { cssVar: borderRadiusLg } = useScopedCssVar('--border-radius-lg', selector);
-    const { cssVar: borderRadiusXl } = useScopedCssVar('--border-radius-xl', selector);
-
-    // 🌫️ 陰影
-    const { cssVar: boxShadow } = useScopedCssVar('--box-shadow', selector);
-    const { cssVar: boxShadowHover } = useScopedCssVar('--box-shadow-hover', selector);
-    const { cssVar: boxShadowLg } = useScopedCssVar('--box-shadow-lg', selector);
-
     // ⚙️ 基準值
     const { cssVar: baseSize } = useScopedCssVar('--base-size', selector);
 
     // ===============================
     // ✍️ 文字行高 / 字重 / 字體家族
     // ===============================
+    
+    // 🎨 圓角
+    const radiusXs = useCssVar('--radius-xs');
+    const radiusSm = useCssVar('--radius-sm');
+    const radiusMd = useCssVar('--radius-md');
+    const radiusLg = useCssVar('--radius-lg');
+    const radiusXl = useCssVar('--radius-xl');
+
     // 行高
     const lineHeightTightest = useCssVar('--line-height-tightest');
     const lineHeightTight = useCssVar('--line-height-tight');
@@ -86,21 +82,11 @@ export function useDesignTokens(selector: string = '.scale-context') {
 
     const colorSurface = useCssVar('--md-sys-color-surface');
     const colorOnSurface = useCssVar('--md-sys-color-on-surface');
-    const colorOnSurfaceAlpha = useCssVar('--md-sys-color-on-surface-alpha');
     const colorSurfaceVariant = useCssVar('--md-sys-color-surface-variant');
     const colorOnSurfaceVariant = useCssVar('--md-sys-color-on-surface-variant');
-    const colorOnSurfaceVariantAlpha = useCssVar('--md-sys-color-on-surface-variant-alpha');
 
     const colorOutline = useCssVar('--md-sys-color-outline');
     const colorOutlineVariant = useCssVar('--md-sys-color-outline-variant');
-
-    const colorShadow = useCssVar('--md-sys-color-shadow');
-    const colorShadowAlpha = useCssVar('--md-sys-color-shadow-alpha');
-    const colorScrim = useCssVar('--md-sys-color-scrim');
-
-    const colorInverseSurface = useCssVar('--md-sys-color-inverse-surface');
-    const colorInverseOnSurface = useCssVar('--md-sys-color-inverse-on-surface');
-    const colorInversePrimary = useCssVar('--md-sys-color-inverse-primary');
 
     // ===============================
     // 🪟 透明容器層級
@@ -110,11 +96,6 @@ export function useDesignTokens(selector: string = '.scale-context') {
     const colorSurfaceContainer = useCssVar('--md-sys-color-surface-container');
     const colorSurfaceContainerHigh = useCssVar('--md-sys-color-surface-container-high');
     const colorSurfaceContainerHighest = useCssVar('--md-sys-color-surface-container-highest');
-
-    const colorSurfaceContainerAlpha = useCssVar('--md-sys-color-surface-container-alpha');
-    const colorSurfaceContainerLowAlpha = useCssVar('--md-sys-color-surface-container-low-alpha');
-    const colorSurfaceContainerHighAlpha = useCssVar('--md-sys-color-surface-container-high-alpha');
-    const colorSurfaceContainerHighestAlpha = useCssVar('--md-sys-color-surface-container-highest-alpha');
 
     return {
         // 🔠 字體
@@ -131,15 +112,11 @@ export function useDesignTokens(selector: string = '.scale-context') {
         spaceLg,
         spaceXl,
         // 🧱 圓角
-        borderRadiusXs,
-        borderRadiusSm,
-        borderRadiusMd,
-        borderRadiusLg,
-        borderRadiusXl,
-        // 🌫 陰影
-        boxShadow,
-        boxShadowHover,
-        boxShadowLg,
+        radiusXs,
+        radiusSm,
+        radiusMd,
+        radiusLg,
+        radiusXl,
         // ⚙️ 基礎比例
         baseSize,
 
@@ -184,26 +161,14 @@ export function useDesignTokens(selector: string = '.scale-context') {
         colorOnBackground,
         colorSurface,
         colorOnSurface,
-        colorOnSurfaceAlpha,
         colorSurfaceVariant,
         colorOnSurfaceVariant,
-        colorOnSurfaceVariantAlpha,
         colorOutline,
         colorOutlineVariant,
-        colorShadow,
-        colorShadowAlpha,
-        colorScrim,
-        colorInverseSurface,
-        colorInverseOnSurface,
-        colorInversePrimary,
         colorSurfaceContainerLowest,
         colorSurfaceContainerLow,
         colorSurfaceContainer,
         colorSurfaceContainerHigh,
         colorSurfaceContainerHighest,
-        colorSurfaceContainerAlpha,
-        colorSurfaceContainerLowAlpha,
-        colorSurfaceContainerHighAlpha,
-        colorSurfaceContainerHighestAlpha,
     };
 }

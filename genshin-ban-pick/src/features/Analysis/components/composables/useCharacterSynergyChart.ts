@@ -1,4 +1,4 @@
-// src/features/Analysis/components/composables/useCharacterSynergy.ts
+// src/features/Analysis/components/composables/useCharacterSynergyChart.ts
 
 import { computed, onMounted, ref, watch } from 'vue';
 
@@ -7,7 +7,7 @@ import { useCharacterDomain } from '@/composables/useCharacterDomain';
 import { useDesignTokens } from '@/composables/useDesignTokens';
 import { useEchartTheme } from '@/composables/useEchartTheme';
 
-export function useCharacterSynergy() {
+export function useCharacterSynergyChart() {
     const designTokens = useDesignTokens();
     const { gridStyle, tooltipStyle, dataZoomStyle } = useEchartTheme();
     const analysisDomain = useAnalysisDomain();
@@ -19,11 +19,11 @@ export function useCharacterSynergy() {
     const synergy = ref<Record<string, Record<string, number>> | null>(null);
 
     onMounted(async () => {
-        synergy.value = await fetchSynergy({'mode': scope.value});
+        synergy.value = await fetchSynergy({ mode: scope.value });
     });
 
     watch(scope, async () => {
-        synergy.value = await fetchSynergy({'mode': scope.value});
+        synergy.value = await fetchSynergy({ mode: scope.value });
     });
 
     const option = computed(() => {
@@ -42,17 +42,17 @@ export function useCharacterSynergy() {
                 formatter: (params: { value: [number, number, number] }) => {
                     const [x, y, count] = params.value;
                     if (count === 0) return '無明顯搭配';
-                    let scopeTitle: string
+                    let scopeTitle: string;
                     switch (scope.value) {
                         case 'match':
-                            scopeTitle = '同場'
-                            break
+                            scopeTitle = '同場';
+                            break;
                         case 'team':
-                            scopeTitle = '同組'
-                            break
+                            scopeTitle = '同組';
+                            break;
                         case 'setup':
-                            scopeTitle = '同隊'
-                            break
+                            scopeTitle = '同隊';
+                            break;
                     }
                     return `${getDisplayName(chars[x])} + ${getDisplayName(chars[y])}<br/>${scopeTitle}使用：${count} 次`;
                 },
@@ -61,18 +61,18 @@ export function useCharacterSynergy() {
                 ...gridStyle('tight', true),
                 top: 0,
             },
-            xAxis: { 
-                type: 'category', 
+            xAxis: {
+                type: 'category',
                 data: chars.map((char) => getDisplayName(char)),
-                axisLabel: { 
+                axisLabel: {
                     rotate: 60,
                     color: designTokens.colorOnSurface.value,
                 },
             },
             yAxis: {
-                type: 'category', 
+                type: 'category',
                 data: chars.map((char) => getDisplayName(char)),
-                axisLabel: { 
+                axisLabel: {
                     color: designTokens.colorOnSurface.value,
                 },
             },
@@ -84,7 +84,7 @@ export function useCharacterSynergy() {
                     end: 25,
                     yAxisIndex: 0,
                 },
-                 {
+                {
                     ...dataZoomStyle,
                     type: 'inside',
                     start: 0,
@@ -99,17 +99,25 @@ export function useCharacterSynergy() {
                 orient: 'vertical',
                 right: 0,
                 top: 'center',
-                inRange: { color: ['#e0f3f8', '#abd9e9', '#74add1', '#4575b4', '#313695'] },
+                inRange: {
+                    color: [
+                        '#FBEDCA',
+                        '#F2C255',
+                        '#E88C18',
+                        '#AA4913',
+                        '#723015',
+                    ],
+                },
             },
             series: [
                 {
                     type: 'heatmap',
                     data: matrix,
-                    emphasis: { 
-                        itemStyle: { 
+                    emphasis: {
+                        itemStyle: {
                             borderColor: designTokens.colorOutlineVariant.value,
-                            borderWidth: 1
-                        } 
+                            borderWidth: 1,
+                        },
                     },
                 },
             ],

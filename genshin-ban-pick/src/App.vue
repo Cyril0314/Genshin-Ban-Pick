@@ -27,6 +27,7 @@ onMounted(() => {
 
 <style scoped>
 #app {}
+
 /* 
 header {
   line-height: 1.5;
