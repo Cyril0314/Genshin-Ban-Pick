@@ -18,12 +18,12 @@ import { useTeamInfoStore } from '@/stores/teamInfoStore';
 import { useMatchStepStore } from '@/stores/matchStepStore';
 import { useBoardImageStore } from '@/stores/boardImageStore';
 import { useTacticalBoardStore } from '@/stores/tacticalBoardStore';
-import { ZoneType } from '@/types/IZone';
+import { ZoneType } from '@/features/BanPick/types/IZone';
 import { useRoomUserSync } from '@/features/RoomUserPool/composables/useRoomUserSync';
 
 import type { IRoomSetting } from '@/types/IRoomSetting';
-import type { CharacterFilterKey } from '@/types/CharacterFilterKey';
-import type { ICharacterRandomContext } from '@/types/ICharacterRandomContext';
+import type { CharacterFilterKey } from '@/features/BanPick/types/CharacterFilterKey';
+import type { ICharacterRandomContext } from '@/features/BanPick/types/ICharacterRandomContext';
 
 const roomSetting = shallowRef<IRoomSetting | null>(null);
 
@@ -55,8 +55,9 @@ const { characterMap, loaded } = storeToRefs(characterStore);
 function adjustScale() {
     const wrapper = document.getElementsByClassName('viewport-wrapper')![0];
     const content = wrapper.querySelector('.viewport-content') as HTMLElement;
-    const W = 1600;
-    const H = 900;
+    // 1650 1000
+    const W = 1650;
+    const H = 1000;
     document.documentElement.style.setProperty('--layout-width', `${W}px`);
     document.documentElement.style.setProperty('--layout-height', `${H}px`);
     const scale = Math.min(window.innerWidth / W, window.innerHeight / H);
@@ -179,17 +180,19 @@ async function handleBoardRecord() {
     --size-top-bar: calc(var(--base-size) * 2.5);
     --size-drop-zone-width: calc(var(--base-size) * 7);
     --size-drop-zone-height: calc(var(--size-drop-zone-width) * 9 / 16);
-    --size-ban-pick-common-space: var(--space-lg);
-    --size-ban-row-spacer: calc(var(--size-drop-zone-item-space) * 2);
-    --size-drop-zone-line-space: var(--space-lg);
-    --size-drop-zone-item-space: var(--space-md);
-    --size-step-indicator: calc(var(--size-drop-zone-width) * 2 + calc(var(--size-drop-zone-item-space) * 4));
+    /* --size-ban-row-spacer: var(--size-drop-zone-space); */
+    --size-drop-zone-space: var(--space-md);
+    --size-step-indicator: calc(var(--size-drop-zone-width) * 2 + calc(var(--size-drop-zone-space) * 2));
+    --size-team-info-height: calc(var(--size-drop-zone-height) + 2 * var(--size-drop-zone-space));
 }
 
 .background-image {
     position: absolute;
     z-index: -1000;
-    background: url('@/assets/images/background/5.7.png') no-repeat center center;
+    /* background: url('@/assets/images/background/5.7.png') no-repeat center center; */
+    /* background: url('@/assets/images/background/LunaI.webp') no-repeat center center; */
+    /* filter: brightness(0.2) saturate(0.1); */
+    background-color: var(--md-sys-color-background);
     background-size: cover;
     width: 100%;
     height: 100vh;
@@ -200,7 +203,6 @@ async function handleBoardRecord() {
     z-index: -999;
     width: 100%;
     height: 100vh;
-    backdrop-filter: blur(8px);
 }
 
 .viewport-wrapper {
@@ -225,7 +227,8 @@ async function handleBoardRecord() {
     flex-direction: column;
     width: 100%;
     height: 100%;
-    padding: var(--space-sm);
+    padding: var(--space-xl);
+    background-color: var(--md-sys-color-surface-dim);
     /* align-items: stretch; */
 }
 
@@ -240,15 +243,20 @@ async function handleBoardRecord() {
 
 .layout__top {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr var(--size-step-indicator) 1fr;
+    background-color: var(--md-sys-color-surface-container-high);
     width: 100%;
-    height: var(--size-top-bar);
+    /* height: var(--size-top-bar); */
+    border-radius: var(--radius-lg);
+    padding: var(--space-md) var(--space-lg);
+    gap: var(--space-lg)
 }
 
 .layout__room-user-pool {
     display: flex;
     align-items: center;
     justify-content: start;
+    height: 100%;
 }
 
 .layout__step-indicator {

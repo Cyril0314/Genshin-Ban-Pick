@@ -1,6 +1,6 @@
 // src/stores/chatStore.ts
 
-import type { IChatMessage } from '@/types/IChatMessage';
+import type { IChatMessage } from '@/features/ChatRoom/types/IChatMessage';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 

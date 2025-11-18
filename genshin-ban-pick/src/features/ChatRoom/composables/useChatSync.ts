@@ -1,8 +1,8 @@
 // src/features/ChatRoom/composables/useChatSync.ts
 import { storeToRefs } from 'pinia';
 
-import type { IChatMessage } from '@/types/IChatMessage';
-import type { IChatMessageDTO } from '@/types/IChatMessageDTO';
+import type { IChatMessage } from '@/features/ChatRoom/types/IChatMessage';
+import type { IChatMessageDTO } from '@/features/ChatRoom/types/IChatMessageDTO';
 
 import { useSocketStore } from '@/stores/socketStore';
 import { useAuthStore } from '@/stores/authStore';

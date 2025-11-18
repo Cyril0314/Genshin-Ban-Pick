@@ -7,7 +7,7 @@ import { useTeamTheme } from '@/composables/useTeamTheme';
 import { useBoardImageStore } from '@/stores/boardImageStore';
 import { useTeamInfoStore } from '@/stores/teamInfoStore';
 import { useMatchStepStore } from '@/stores/matchStepStore';
-import { ZoneType } from '@/types/IZone';
+import { ZoneType } from '@/features/BanPick/types/IZone';
 
 const active = ref(false);
 const matchStepStore = useMatchStepStore();
@@ -19,6 +19,20 @@ const { teams } = storeToRefs(teamInfoStore);
 
 const currentTeam = computed(() => {
     return teams.value.find((team) => team.slot === currentStep.value?.teamSlot);
+});
+
+const currentTeamTheme = computed(() => {
+    if (!currentTeam.value) {
+        return null
+    }
+    return useTeamTheme(currentTeam.value.slot).themeVars.value;
+});
+
+const teamColorRGB = computed(() => {
+    if (currentTeamTheme.value === null) {
+        return 'var(--md-sys-color-on-surface-rgb)';
+    }
+    return currentTeamTheme.value['--team-color-rgb'];
 });
 
 const displayText = computed(() => {
@@ -49,7 +63,8 @@ watch(currentTeam, () => {
 </script>
 
 <template>
-    <div class="step-indicator" :class="{ active }" :style="useTeamTheme(currentTeam?.slot ?? 0).themeVars.value" @animationend="active = false">
+    <div class="step-indicator" :class="{ active }" :style="{ '--team-color-rgb': teamColorRGB, }"
+        @animationend="active = false">
         <span class="step-label">{{ displayText }}</span>
     </div>
 </template>
@@ -60,53 +75,45 @@ watch(currentTeam, () => {
     align-items: center;
     width: var(--size-step-indicator);
     height: 100%;
-    /* padding: var(--space-xs) var(--space-xs); */
-    border-radius: var(--border-radius-xs);
-    backdrop-filter: var(--backdrop-filter);
-    background-color: var(--md-sys-color-surface-container-highest-alpha);
+    border-radius: var(--radius-md);
+    background-color: var(--md-sys-color-surface-container-highest);
     white-space: pre-line;
     transition: all 0.3s ease;
-    animation: steadyGlow 2s ease-in-out infinite alternate;
+    
+    box-shadow:
+        0 0 8px rgba(var(--team-color-rgb) / 0.8),
+        0 0 16px rgba(var(--team-color-rgb) / 0.32),
+        0 0 32px rgba(var(--team-color-rgb) / 0.16);
+
+    outline: 2px solid rgba(var(--team-color-rgb) / 0.55);
+    animation: zonePulse 1.6s ease-in-out infinite;
 }
 
-/* 預設沒有光 */
-.step-indicator {
-    box-shadow: none;
+@keyframes zonePulse {
+  0% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.35);
+  }
+  100% {
+    filter: brightness(1);
+  }
 }
 
-.step-indicator.active {
-    animation:
-        indicatorPulse 1.2s ease-in-out 1,
-        steadyGlow 2s ease-in-out infinite alternate;
+.step-indicator::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+
+    pointer-events: none;
+
+    opacity: 0;
 }
 
-@keyframes indicatorPulse {
-    0% {
-        transform: scale(1);
-        opacity: 0.6;
-    }
-
-    50% {
-        transform: scale(1.05);
-        opacity: 1;
-    }
-
-    100% {
-        transform: scale(1);
-        opacity: 0.95;
-    }
-}
-
-@keyframes steadyGlow {
-    0% {
-        box-shadow: 0 0 4px 1px var(--team-bg, rgba(255, 255, 255, 0.3));
-    }
-    50% {
-        box-shadow: 0 0 10px 3px var(--team-bg, rgba(255, 255, 255, 0.5));
-    }
-    100% {
-        box-shadow: 0 0 6px 2px var(--team-bg, rgba(255, 255, 255, 0.4));
-    }
+.step-indicator.active::after {
+    animation: indicatorPulse 0.9s ease-out;
 }
 
 .step-label {
@@ -117,6 +124,6 @@ watch(currentTeam, () => {
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-bold);
     font-family: var(--font-family-tech-title);
-    
+
 }
 </style>

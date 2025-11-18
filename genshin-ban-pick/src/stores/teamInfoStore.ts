@@ -14,8 +14,8 @@ export const useTeamInfoStore = defineStore('teamInfo', () => {
         if (teams.value.length < 2) return null;
         const [firstTeam, secondTeam] = teams.value;
         return {
-            left: { ...firstTeam, members: map[firstTeam.slot] ?? [] },
-            right: { ...secondTeam, name: secondTeam.name, members: map[secondTeam.slot] ?? [] },
+            left: { ...firstTeam, members: map[firstTeam.slot] ?? {} },
+            right: { ...secondTeam, members: map[secondTeam.slot] ?? {} },
         };
     });
 
@@ -28,23 +28,14 @@ export const useTeamInfoStore = defineStore('teamInfo', () => {
         teams.value = newTeams;
     }
 
-    function addTeamMember(teamSlot: number, member: TeamMember) {
-        console.debug('[TEAM INFO STORE] Add team member', teamSlot, member);
-        teamMembersMap.value[teamSlot].push(member);
+    function addTeamMember(teamSlot: number, memberSlot: number, member: TeamMember) {
+        console.debug('[TEAM INFO STORE] Add team member', teamSlot, memberSlot, member);
+        teamMembersMap.value[teamSlot][memberSlot] = member
     }
 
-    function removeTeamMember(teamSlot: number, member: TeamMember) {
-        console.debug('[TEAM INFO STORE] Remove team member', teamSlot, member);
-        const teamMembers = teamMembersMap.value[teamSlot];
-        const index = teamMembers.findIndex((m) => {
-            return (
-                (m.type === 'Manual' && member.type === 'Manual' && m.name === member.name) ||
-                (m.type === 'Online' && member.type === 'Online' && m.user.identityKey === member.user.identityKey)
-            );
-        });
-        if (index !== -1) {
-            teamMembersMap.value[teamSlot].splice(index, 1);
-        }
+    function removeTeamMember(teamSlot: number, memberSlot: number) {
+        console.debug('[TEAM INFO STORE] Remove team member', teamSlot, memberSlot);
+        delete teamMembersMap.value[teamSlot][memberSlot];
     }
 
     function setTeamMembersMap(newTeamMembersMap: TeamMembersMap) {

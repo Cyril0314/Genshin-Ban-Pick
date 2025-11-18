@@ -1,13 +1,15 @@
 <!-- src/features/Tactical/TacticalCell.vue -->
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 import { getWishImagePath } from '@/utils/imageRegistry'
 import { DragTypes } from '@/constants/customMIMETypes'
+import { useTeamTheme } from '@/composables/useTeamTheme';
 
 const props = defineProps<{
   cellId: number
   imageId?: string
+  teamSlot: number
 }>()
 
 const emit = defineEmits<{
@@ -16,6 +18,11 @@ const emit = defineEmits<{
 }>()
 
 const isOver = ref(false)
+
+const highlightColor = computed(() => {
+  return useTeamTheme(props.teamSlot).themeVars.value['--team-color-rgb']
+})
+
 
 function handleDragStartEvent(event: DragEvent) {
   console.debug(`[TATICAL CELL] Handle drag start event`);
@@ -41,8 +48,14 @@ function handleClickEvent() {
 
 <template>
   
-  <div class="tactical__cell"  @dragover.prevent="isOver = true"
-    @dragleave="isOver = false" @dragstart="handleDragStartEvent" @drop="handleDropEvent" @click="handleClickEvent">
+  <div 
+  class="tactical__cell"
+  :style="{'--highlight-color-rgb': highlightColor }"
+  @dragover.prevent="isOver = true"
+  @dragleave="isOver = false" 
+  @dragstart="handleDragStartEvent" 
+  @drop="handleDropEvent" 
+  @click="handleClickEvent">
       <div class="image__container" :class="{ 'image__container--active': isOver }">
       <template v-if="imageId">
         <img class="image" :src="getWishImagePath(imageId)" />
@@ -57,32 +70,29 @@ function handleClickEvent() {
   align-items: center;
   justify-content: center;
   transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+    transform 0.2s ease,;
   overflow: hidden;
-  padding: var(--space-lg) var(--space-sm);
+  padding: var(--space-md) var(--space-sm);
   
 }
 
 .image__container {
-  background: var(--md-sys-color-surface-container-highest-alpha);
-  border-radius: var(--border-radius-xs);
+  background-color: var(--md-sys-color-surface-container);
+  border-radius: var(--radius-md);
   width: var(--size-tactical-cell);
   aspect-ratio: 16 / 9;
   object-fit: cover;
   z-index: 10;
   cursor: grab;
-  box-shadow: var(--box-shadow);
   overflow: hidden;
 }
 
 .image__container--active {
-  outline: calc(var(--space-xs) / 2) solid var(--md-sys-color-secondary-container);
+  outline: 2px solid rgba(var(--highlight-color-rgb));
 }
 
 .image__container:hover {
-  transform: scale(1.03);
-  box-shadow: var(--box-shadow-hover);
+  transform: scale(1.05);
 }
 
 .image {

@@ -3,13 +3,8 @@
 import { analysisService } from "@/network/analysisService";
 
 export function useAnalysisDomain() {
-    async function fetchMeta() {
-        const response = await analysisService.getMeta();
-        return response.data;
-    }
-
-    async function fetchBanPickUtilityStats() {
-        const response = await analysisService.getBanPickUtilityStats();
+    async function fetchTacticalUsages() {
+        const response = await analysisService.getTacticalUsages();
         return response.data;
     }
 
@@ -18,27 +13,21 @@ export function useAnalysisDomain() {
         return response.data;
     }
 
-    async function fetchSynergy() {
-        const response = await analysisService.getSynergy();
+    async function fetchSynergy(payload: { mode: 'match' | 'team' | 'setup' }) {
+        const response = await analysisService.getSynergy(payload);
         return response.data;
     }
 
-    async function fetchArchetypes() {
-        const response = await analysisService.getArchetypes();
-        return response.data;
-    }
 
-    async function fetchArchetypeMap() {
-        const response = await analysisService.getArchetypeMap();
+    async function fetchCharacterClusters() {
+        const response = await analysisService.getCharacterClusters();
         return response.data;
     }
 
     return {
-        fetchMeta,
-        fetchBanPickUtilityStats,
+        fetchTacticalUsages,
         fetchPreference,
         fetchSynergy,
-        fetchArchetypes,
-        fetchArchetypeMap
+        fetchCharacterClusters
     }
 }

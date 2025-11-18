@@ -33,7 +33,8 @@ export function useTacticalBoardSync() {
 
     const userTeamSlot = computed(() => {
         for (const [teamSlot, members] of Object.entries(teamMembersMap.value)) {
-            if (members.some((m) => m.type === 'Online' && m.user.identityKey === identityKey.value)) {
+            const memberValues = Object.values(members);
+            if (memberValues.some((m) => m.type === 'Online' && m.user.identityKey === identityKey.value)) {
                 return Number(teamSlot);
             }
         }

@@ -3,7 +3,7 @@
 import { defineStore, } from 'pinia';
 import { ref, computed, watch, shallowRef} from 'vue';
 
-import type { IZone } from '@/types/IZone';
+import type { IZone } from '@/features/BanPick/types/IZone';
 
 type BoardImageMap = Record<number, string>;
 

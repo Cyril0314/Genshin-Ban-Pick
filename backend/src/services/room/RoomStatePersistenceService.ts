@@ -36,9 +36,11 @@ export class RoomStatePersistenceService {
             throw new DataNotFoundError();
         }
 
+        console.log(`roomState.teamMembersMap`, roomState.teamMembersMap)
         for (const [teamSlotString, teamMembers] of Object.entries(roomState.teamMembersMap)) {
-            if (teamMembers.length !== roomSetting.numberOfTeamSetup) {
-                logger.error('Team members are inconsistent with numberOfTeamSetup', teamSlotString, teamMembers, roomSetting.numberOfTeamSetup);
+            console.log(`Object.values(teamMembers).length`, Object.values(teamMembers).length)
+            if (Object.values(teamMembers).length !== roomSetting.numberOfTeamSetup) {
+                logger.error('Team members are inconsistent with number of team setup', teamSlotString, teamMembers, roomSetting.numberOfTeamSetup);
                 throw new InvalidFieldsError();
             }
         }
@@ -61,7 +63,7 @@ export class RoomStatePersistenceService {
         }
 
         try {
-            return await this.prisma.$transaction(async (tx: any) => {
+            return await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
                 const flowVersion = roomSetting.matchFlow.version;
                 // 1. Match: 對局
                 const match = await tx.match.create({
@@ -76,7 +78,7 @@ export class RoomStatePersistenceService {
                     teams.map((team) =>
                         tx.matchTeam.create({
                             data: {
-                                teamSlot: team.slot,
+                                slot: team.slot,
                                 name: team.name,
                                 matchId: match.id,
                             },
@@ -86,25 +88,26 @@ export class RoomStatePersistenceService {
 
                 const matchTeamIdMap: Record<number, number> = {};
                 matchTeams.forEach((team) => {
-                    matchTeamIdMap[team.teamSlot] = team.id;
+                    matchTeamIdMap[team.slot] = team.id;
                 });
 
                 // 3. MatchTeamMember: 隊伍成員
                 for (const [teamSlotString, teamMembers] of Object.entries(roomState.teamMembersMap)) {
                     const teamSlot = Number(teamSlotString);
                     const matchTeamId = matchTeamIdMap[teamSlot];
-
-                    await tx.matchTeamMember.createMany({
-                        data: teamMembers.map((teamMember) => {
-                            const resolved = resolveIdentity(teamMember);
-                            return {
+                    for (const [memberSlotString, member] of Object.entries(teamMembers)) {
+                        const memberSlot = Number(memberSlotString);
+                        const resolved = resolveIdentity(member);
+                        await tx.matchTeamMember.create({
+                            data: {
+                                slot: memberSlot,
                                 name: resolved.name,
                                 teamId: matchTeamId,
                                 memberRef: resolved.memberRef,
                                 guestRef: resolved.guestRef,
-                            };
-                        }),
-                    });
+                            },
+                        });
+                    }
                 }
 
                 // 4. MatchMove: Ban/Pick/Utility 移動順序
@@ -156,7 +159,7 @@ export class RoomStatePersistenceService {
                     // 找該隊所有隊員
                     const targetMembers = await tx.matchTeamMember.findMany({
                         where: { teamId: matchTeamId },
-                        orderBy: { id: 'asc' }, // 加入隊員順序與 board index 一致
+                        orderBy: { slot: 'asc' },
                     });
 
                     const usages = Object.entries(tacticalCellImageMap)
@@ -183,12 +186,41 @@ export class RoomStatePersistenceService {
                     await tx.matchTacticalUsage.createMany({ data: usages });
                 }
 
-                if (dryRun) throw new DryRunError();
-                return match.id;
+                const matchQuery = {
+                    where: { id: match.id },
+                    include: {
+                        teams: {
+                            include: {
+                                teamMembers: {
+                                    include: {
+                                        tacticalUsages: {
+                                            include: {
+                                                character: true,
+                                            },
+                                        },
+                                        member: true,
+                                        guest: true,
+                                    },
+                                },
+                            },
+                        },
+                        moves: {
+                            include: {
+                                randomMoveContext: true,
+                                character: true,
+                            },
+                        },
+                    },
+                } satisfies Prisma.MatchFindUniqueArgs;
+
+                const allMatchData = await tx.match.findUnique(matchQuery);
+
+                if (dryRun) throw new DryRunError(allMatchData);
+                return allMatchData;
             });
         } catch (err: any) {
             if (err instanceof DryRunError) {
-                logger.warn('Block dry run', err);
+                logger.warn('Block dry run data', err.data);
                 return null;
             }
             if (err instanceof Prisma.PrismaClientKnownRequestError) {
@@ -206,9 +238,30 @@ export class RoomStatePersistenceService {
     }
 }
 
-function resolveIdentity(teamMember: TeamMember) {
+type ResolvedIdentity =
+    | {
+          kind: 'Manual';
+          name: string;
+          memberRef: null;
+          guestRef: null;
+      }
+    | {
+          kind: 'Member';
+          name: string;
+          memberRef: number;
+          guestRef: null;
+      }
+    | {
+          kind: 'Guest';
+          name: string;
+          memberRef: null;
+          guestRef: number;
+      };
+
+function resolveIdentity(teamMember: TeamMember): ResolvedIdentity {
     if (teamMember.type === 'Manual') {
         return {
+            kind: "Manual",
             name: teamMember.name,
             memberRef: null,
             guestRef: null,
@@ -222,6 +275,7 @@ function resolveIdentity(teamMember: TeamMember) {
 
     if (type === 'Member') {
         return {
+            kind: "Member",
             name: nickname,
             memberRef: id,
             guestRef: null,
@@ -230,6 +284,7 @@ function resolveIdentity(teamMember: TeamMember) {
 
     if (type === 'Guest') {
         return {
+            kind: "Guest",
             name: nickname,
             memberRef: null,
             guestRef: id,

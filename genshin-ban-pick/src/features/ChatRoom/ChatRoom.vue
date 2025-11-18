@@ -68,14 +68,14 @@ function scrollToBottom() {
 
 .chat__window button {
   border: none;
-  border-radius: var(--border-radius-xs);
+  border-radius: var(--radius-md);
   padding: var(--space-sm);
   cursor: pointer;
   font-size: var(--font-size-md);
   font-weight: var(--font-weight-bold);
   font-family: var(--font-family-tech-ui);
-  background: var(--md-sys-color-primary-container);
-  color: var(--md-sys-color-on-primary-container);
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
   transition:
     background-color 0.3s ease,
     transform 0.2s ease;
@@ -83,7 +83,7 @@ function scrollToBottom() {
 }
 
 .chat__window button:hover {
-  background-color: var(--md-sys-color-surface-tint);
+  background-color: var(--primary-filled-hover);
   transform: scale(1.05);
 }
 
@@ -97,7 +97,7 @@ function scrollToBottom() {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
   font-family: var(--font-family-sans);
-  color: var(--md-sys-color-on-primary-container);
+  color: var(--md-sys-color-on-surface);
   flex: 1;
   min-width: 50px;
 }
@@ -107,8 +107,10 @@ function scrollToBottom() {
   flex-grow: 1;
   flex-direction: column;
   overflow-y: auto;
+  background-color: var(--md-sys-color-surface-container);
   color: var(--md-sys-color-on-primary-container);
-  padding: var(--space-sm) 0;
+  border-radius: var(--radius-lg);
+  padding: var(--space-sm);
   gap: var(--space-xs);
 
   overflow-y: scroll;
@@ -133,20 +135,22 @@ function scrollToBottom() {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
+  
 }
 
 #chat-input {
   height: 100%;
   padding: var(--space-sm);
-  border-radius: var(--border-radius-xs);
+  border-radius: var(--radius-xs);
   font-size: var(--font-size-md);
   font-weight: var(--font-weight-regular);
   font-family: var(--font-family-sans);
   flex: 1;
-  background-color: var(--md-sys-color-surface-container-highest-alpha);
+  background-color: var(--md-sys-color-surface-container-highest);
   color: var(--md-sys-color-on-surface);
   border: none;
-  outline: none;
+  outline: 2px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--radius-md);
   /* 填滿剩餘空間 */
   /* 防止 overflow 溢出 */
 }
@@ -156,6 +160,7 @@ function scrollToBottom() {
 }
 
 #chat-input:focus {
-  outline: none;
+  outline: 2px solid var(--md-sys-color-outline);
+  border-radius: var(--radius-md);
 }
 </style>

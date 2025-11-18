@@ -5,7 +5,7 @@ import { ITeam, createAetherTeam, createLumineTeam } from "../types/ITeam.ts"
 export const flowVersion = 1
 export const totalRounds = 2
 export const numberOfUtility = 3
-export const numberOfBan = 8
+export const numberOfBan = 6
 export const numberOfPick = 32
 
 export const teams: ITeam[] = [createAetherTeam(), createLumineTeam()]

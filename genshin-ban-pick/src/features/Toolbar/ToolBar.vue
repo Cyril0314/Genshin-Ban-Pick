@@ -71,28 +71,32 @@ function handleRecordButtonClickEvent() {
     display: flex;
     flex-direction: row;
     justify-content: center;
+    background-color: var(--md-sys-color-surface-container);
     gap: var(--space-lg);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
 }
 
 .toolbar__button {
     width: var(--size-tool-button);
-    background-color: var(--md-sys-color-primary-container);
-    color: var(--md-sys-color-on-primary-container);
+    background-color: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-on-surface);  
     border: none;
-    border-radius: var(--border-radius-sm);
+    border-radius: var(--radius-sm);
     padding: var(--space-sm) var(--space-sm);
     cursor: pointer;
     transition:
         background-color 0.3s ease,
         transform 0.2s ease;
-    box-shadow: var(--box-shadow);
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-medium);
     font-family: var(--font-family-sans);
 }
 
 .toolbar__button:hover {
-    background-color: var(--md-sys-color-primary-container);
+    background-color: color-mix(in srgb,
+        var(--md-sys-color-surface-container-high),
+        white 6%);
     transform: scale(1.05);
 }
 

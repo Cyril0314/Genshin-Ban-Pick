@@ -11,41 +11,61 @@ const props = defineProps<{
     teamInfo: {
         slot: number;
         name: string;
-        members: TeamMember[];
+        members: Record<number, TeamMember>;
     };
+    numberOfSetupCharacter: number;
 }>();
 
 const emit = defineEmits<{
-    (e: 'member-drop', payload: { identityKey: string; teamSlot: number }): void;
-    (e: 'member-input', payload: { name: string; teamSlot: number }): void;
-    (e: 'member-restore', payload: { member: TeamMember; teamSlot: number }): void;
+    (e: 'member-drop', payload: { identityKey: string; teamSlot: number; memberSlot: number }): void;
+    (e: 'member-input', payload: { name: string; teamSlot: number; memberSlot: number }): void;
+    (e: 'member-restore', payload: { teamSlot: number; memberSlot: number }): void;
 }>();
 
+const numberOfReservedSlot = 1
 const inputValue = ref('');
 
 const { themeVars } = useTeamTheme(props.teamInfo.slot);
+
+function getTeamMember(memberSlot: number): TeamMember | null {
+    return props.teamInfo.members[memberSlot] ?? null
+}
+
+function getTeamMemberName(memberSlot: number): string | null {
+    const member = getTeamMember(memberSlot)
+    if (!member) return null;
+    return member.type === 'Manual' ? member.name : member.user.nickname
+}
 
 function handleInput(e: Event) {
     console.debug(`[TEAM INFO] Handle input`);
 
     const name = inputValue.value.trim();
     if (!name) return;
-    emit('member-input', { name, teamSlot: props.teamInfo.slot });
-    inputValue.value = '';
+    for (let i = 0; i < props.numberOfSetupCharacter; i++) {
+        const member = getTeamMember(i);
+        if (!member) {
+            emit('member-input', { name, teamSlot: props.teamInfo.slot, memberSlot: i });
+            inputValue.value = '';
+            break;
+        }
+    }
 }
 
-function handleRemoveMemberButtonClick(member: TeamMember) {
-    console.debug('[TEAM INFO] Remove member button click', member);
-    emit('member-restore', { member, teamSlot: props.teamInfo.slot });
+function handleRemoveMemberButtonClick(memberSlot: number) {
+    console.debug('[TEAM INFO] Remove member button click', memberSlot);
+    const member = getTeamMember(memberSlot)
+    if (!member) return;
+    emit('member-restore', { teamSlot: props.teamInfo.slot, memberSlot });
 }
 
-function handleDropEvent(event: DragEvent) {
+function handleDropEvent(event: DragEvent, memberSlot: number) {
     console.debug(`[TEAM INFO] Handle drop event`);
     event.preventDefault();
     // isOver.value = false
     const identityKey = event.dataTransfer?.getData(DragTypes.ROOM_USER);
     if (identityKey === undefined) return;
-    emit('member-drop', { identityKey, teamSlot: props.teamInfo.slot });
+    emit('member-drop', { identityKey, teamSlot: props.teamInfo.slot, memberSlot });
 }
 </script>
 
@@ -54,21 +74,18 @@ function handleDropEvent(event: DragEvent) {
         <span class="team__name" :class="`team__name--${side}`">
             {{ teamInfo.name }}
         </span>
-        <div class="layout__team-members" :class="`layout__team-members--${side}`" @dragover.prevent @drop="handleDropEvent">
-            <input
-                class="team__member-input"
-                type="text"
-                :class="`team__member-input--${side}`"
-                :placeholder="`輸入成員名稱`"
-                v-model="inputValue"
-                @keydown.enter.prevent="handleInput"
-                @drop.prevent="() => {}"
-            />
+        <div class="layout__team-members" :class="`layout__team-members--${side}`">
+
             <div class="layout__team-member-names">
-                <div class="team-member" v-for="teamMember in props.teamInfo.members">
-                    <span class="team-member__name">{{ teamMember.type === 'Manual' ? teamMember.name : teamMember.user.nickname }}</span>
-                    <button class="team-member__remove" @click="handleRemoveMemberButtonClick(teamMember)">✕</button>
+                <div class="team-member"
+                    v-for="(_, memberSlot) in Array.from({ length: props.numberOfSetupCharacter + numberOfReservedSlot })"
+                    @dragover.prevent @drop="(e) => handleDropEvent(e, memberSlot)">
+                    <span class="team-member__name">{{ getTeamMemberName(memberSlot) }}</span>
+                    <button class="team-member__remove" @click="handleRemoveMemberButtonClick(memberSlot)">✕</button>
                 </div>
+                <input class="team__member-input" type="text" :class="`team__member-input--${side}`"
+                    :placeholder="`輸入成員名稱`" v-model="inputValue" @keydown.enter.prevent="handleInput"
+                    @drop.prevent="() => { }" />
             </div>
         </div>
     </div>
@@ -76,14 +93,14 @@ function handleDropEvent(event: DragEvent) {
 
 <style scoped>
 .team__info {
-    --size-team-member-height: calc(var(--base-size) * 1);
+    --size-team-member-height: calc(var(--base-size) * 1.85);
 
     display: flex;
     flex-direction: row;
     width: 100%;
-    height: calc(var(--size-drop-zone-width) * 9 / 16);
-    border-radius: var(--border-radius-xs);
-    box-shadow: var(--box-shadow);
+    height: var(--size-team-info-height);
+    border-radius: var(--radius-lg);
+    outline: 2px solid var(--team-color);
     overflow: hidden;
 }
 
@@ -92,29 +109,25 @@ function handleDropEvent(event: DragEvent) {
 }
 
 .team__name--left {
-    --text-align: left;
+    --text-align: center;
 }
 
 .team__name--right {
-    --text-align: right;
+    --text-align: center;
 }
 
 .team__name {
     display: flex;
     flex: 1;
-    align-items: start;
+    align-items: center;
     padding: var(--space-xs) var(--space-sm);
     text-align: var(--text-align);
     font-weight: var(--font-weight-heavy);
     font-size: var(--font-size-md);
     font-family: var(--font-family-tech-title);
-    color: var(--team-on-bg);
-    background-color: var(--team-bg);
-
-    border-top-right-radius: var(--border-top-right-radius);
-    border-top-left-radius: var(--border-top-left-radius);
-    border-bottom-right-radius: var(--border-bottom-right-radius);
-    border-bottom-left-radius: var(--border-bottom-left-radius);
+    line-height: var(--line-height-loose);
+    color: var(--team-on-color-bg);
+    background-color: var(--team-color-bg);
 
     white-space: pre-line;
 }
@@ -122,21 +135,20 @@ function handleDropEvent(event: DragEvent) {
 .layout__team-members {
     display: flex;
     flex-direction: column;
-    flex: 3;
-    background-color: var(--team-alpha);
-    color: var(--md-sys-color-on-surface);
-    min-height: calc(var(--font-size-sm) * var(--line-height-tightest) * 4 + var(--space-sm) * 2);
-    height: auto;
+    flex: 4;
+    /* background-color: var(--team-surface-tinted); */
+    background-color: var(--md-sys-color-surface-container);
     resize: none;
 }
 
 .team__member-input {
     width: 100%;
-    flex: 1;
-    background: var(--md-sys-color-surface-container-high);
+    /* flex: 1; */
+    background-color: var(--md-sys-color-surface-container-high);
     color: var(--md-sys-color-on-surface);
     padding: var(--space-xs);
     border: none;
+    border-radius: var(--radius-sm);
     resize: none;
     font-size: var(--font-size-sm);
     line-height: var(--line-height-tightest);
@@ -151,18 +163,16 @@ function handleDropEvent(event: DragEvent) {
 
 .team__member-input:focus {
     outline: none;
+    /* outline: 2px solid rgba(var(--team-color-rgb) / 0.5); */
 }
 
 .layout__team-member-names {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-xs);
-    flex: 2;
+    gap: var(--space-md);
+    padding: var(--space-sm);
     width: 100%;
-    padding: var(--space-xs);
-    background-color: var(--md-sys-color-surface-container-alpha);
-    backdrop-filter: var(--backdrop-filter);
-    box-shadow: var(--box-shadow);
+    height: calc(var(--size-team-member-height) * 2 + var(--space-sm) * 2 + var(--space-md));
     overflow-y: scroll;
     scrollbar-width: none;
     align-content: start;
@@ -170,21 +180,21 @@ function handleDropEvent(event: DragEvent) {
 
 .team-member {
     display: flex;
-    background-color: var(--md-sys-color-surface-container-alpha);
-    box-shadow: var(--box-shadow);
     height: var(--size-team-member-height);
-    border-radius: var(--border-radius-xs);
     gap: var(--space-xs);
-    padding: 0 var(--space-xs);
+    padding: 0 var(--space-sm);
+    border-radius: var(--radius-sm);
     align-items: center;
     justify-content: space-between;
-    color: var(--md-sys-color-on-surface-variant);
+    color: var(--md-sys-color-on-surface);
+    /* background-color: var(--team-surface-high-tinted); */
+    background-color: var(--md-sys-color-surface-container-highest);
     overflow: hidden;
 }
 
 .team-member__name {
     flex: 1;
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-md);
     font-weight: var(--font-weight-medium);
     text-align: start;
     white-space: nowrap;
@@ -195,12 +205,18 @@ function handleDropEvent(event: DragEvent) {
 .team-member__remove {
     opacity: 0;
     cursor: pointer;
-    background: transparent;
     border: none;
-    color: var(--team-bg);
+    background: transparent;
+    color: var(--team-color);
     font-weight: bold;
     transition: opacity 0.15s ease;
-    margin-left: var(--space-2xs);
+    margin-left: var(--space-xs);
+}
+
+.team-member:hover {
+    background-color: color-mix(in srgb,
+            var(--md-sys-color-surface-container-highest),
+            white 6%);
 }
 
 .team-member:hover .team-member__remove {

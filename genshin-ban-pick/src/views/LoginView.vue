@@ -15,7 +15,7 @@ const accountInput = ref('');
 const passwordInput = ref('');
 
 async function handleLoginMemberSubmit() {
-    try { 
+    try {
         const { token } = await handleLoginMember({ account: accountInput.value, password: passwordInput.value })
         socketStore.connect(token)
         router.push('/');
@@ -25,7 +25,7 @@ async function handleLoginMemberSubmit() {
 }
 
 async function handleLoginGuestButtonClick() {
-    try { 
+    try {
         const { token } = await handleLoginGuest()
         socketStore.connect(token)
         router.push('/');
@@ -37,69 +37,76 @@ async function handleLoginGuestButtonClick() {
 
 <template>
     <div class="login__view scale-context">
-        <div class="login__card">
-            <div class="login__header">
-                <h2>使用者登入</h2>
-            </div>
-            <form class="login__form" @submit.prevent="handleLoginMemberSubmit">
-                <div class="form__group">
-                    <label for="account">帳號</label>
-                    <input id="account" v-model="accountInput" type="text" placeholder="請輸入帳號" required />
+        <div class="side__bar">
+            <div class="login__card">
+                <div class="login__header">
+                    <h2>使用者登入</h2>
                 </div>
+                <form class="login__form" @submit.prevent="handleLoginMemberSubmit">
+                    <div class="form__group">
+                        <label for="account">帳號</label>
+                        <input id="account" v-model="accountInput" type="text" placeholder="請輸入帳號" required />
+                    </div>
 
-                <div class="form__group">
-                    <label for="password">密碼</label>
-                    <input id="password" v-model="passwordInput" type="password" placeholder="請輸入密碼" required />
-                </div>
+                    <div class="form__group">
+                        <label for="password">密碼</label>
+                        <input id="password" v-model="passwordInput" type="password" placeholder="請輸入密碼" required />
+                    </div>
+                    <div class = "layout__actions">
+                        <button type="submit" class="btn__submit">登入</button>
 
-                <button type="submit" class="btn__submit">登入</button>
-            </form>
+                        <RouterLink to="/register" class="redirect__link">註冊</RouterLink>
 
-            <div class="alternative__actions">
-                <button class="btn__guest" @click="handleLoginGuestButtonClick">以訪客身份繼續</button>
-                <p class="redirect__text">
-                    還沒有帳號？
-                    <RouterLink to="/register" class="redirect__link">前往註冊</RouterLink>
-                </p>
+                        <button class="btn__guest" @click="handleLoginGuestButtonClick">以訪客身份繼續</button>
+                    </div>
+                </form>
+
+
             </div>
         </div>
+
     </div>
 </template>
 
 <style scoped>
-/* 容器置中，並使用 Chat 風格背景 */
 .login__view {
-    --base-size: 1.2vw;
+    --base-size: 1.6vw;
+    --size-card-lg: calc(var(--base-size) * 16);
     display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+    justify-content: end;
+    height: 100vh;
     background:
-        linear-gradient(var(--md-sys-color-surface-container-lowest-alpha), var(--md-sys-color-surface-container-lowest-alpha)),
-        url('@/assets/images/background/wallpaper4.jpg') no-repeat center center;
+        linear-gradient(to right,
+            rgba(var(--md-sys-color-background-rgb) / 0.1) 10%,
+            rgba(var(--md-sys-color-background-rgb) / 0.9) 65%),
+        url('@/assets/images/background/background.jpg') no-repeat center center;
     background-size: cover;
 }
 
-/* 卡片風格：圓角、陰影、內邊距 */
-.login__card {
-    width: 100%;
-    max-width: var(--size-card-lg);
-    background-color: var(--md-sys-color-surface-container-highest-alpha);
-    backdrop-filter: var(--backdrop-filter);
-    border-radius: var(--border-radius-md);
-    box-shadow: var(--box-shadow);
-    padding: var(--space-lg);
+.side__bar {
+    height: 100%;
     display: flex;
     flex-direction: column;
-    gap: var(--space-lg);
+    justify-content: center;
+    padding: var(--space-lg);
+    backdrop-filter: blur(12px) saturate(160%);
 }
 
-/* 標題置中，字體顏色與 Chat 風格一致 */
+.login__card {
+    display: flex;
+    flex-direction: column;
+    width: var(--size-card-lg);
+    padding: var(--space-lg);
+    gap: var(--space-lg);
+    
+}
+
 .login__header h2 {
-    font-size: var(--font-size-xl);
-    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
     text-align: center;
-    color: var(--md-sys-color-on-surface-variant);
+    line-height: var(--line-height-loosest);
+    color: var(--md-sys-color-on-surface);
 }
 
 /* 表單整體間距 */
@@ -116,22 +123,19 @@ async function handleLoginGuestButtonClick() {
     gap: var(--space-sm);
 }
 
-/* Label 使用深色文字 */
 .form__group label {
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-bold);
-    color: var(--md-sys-color-on-surface-variant);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--md-sys-color-on-surface);
 }
 
-/* Input 欄位風格類似聊天輸入框：圓角、內間距、背景半透明 */
 .form__group input {
-    padding: var(--space-md);
-    border-radius: var(--border-radius-sm);
-    border: 1px solid var(--md-sys-color-on-surface-variant);
-    background-color: var(--md-sys-color-surface-container-lowest-alpha);
+    padding: var(--space-sm);
+    border-radius: var(--radius-md);
+    background-color: transparent;
     color: var(--md-sys-color-on-surface);
-    font-size: var(--font-size-lg);
-    outline: none;
+    font-size: var(--font-size-sm);
+    outline: 1px solid var(--md-sys-color-on-surface-variant);
 }
 
 .form__group input::placeholder {
@@ -139,18 +143,24 @@ async function handleLoginGuestButtonClick() {
 }
 
 .form__group input:focus {
-    border-color: var(--md-sys-color-primary);
-    box-shadow: var(--box-shadow);
+    outline: 1px solid color-mix(in srgb,
+        var(--md-sys-color-on-surface-variant) 80%,
+        white 80%
+    );
 }
 
-/* 登入按鈕風格與 Chat 傳送按鈕保持一致：深色背景、白字、圓角 */
+.layout__actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
 .btn__submit {
-    padding: var(--space-md);
-    background-color: var(--md-sys-color-primary-container);
+    background-color: var(--md-sys-color-primary);
     color: var(--md-sys-color-on-primary);
-    border: none;
-    border-radius: var(--border-radius-sm);
-    font-size: var(--font-size-lg);
+    padding: var(--space-sm);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
     font-weight: var(--font-weight-bold);
     cursor: pointer;
     transition:
@@ -159,53 +169,48 @@ async function handleLoginGuestButtonClick() {
 }
 
 .btn__submit:hover {
-    background-color: var(--md-sys-color-primary);
+    background-color: var(--primary-filled-hover);
     transform: scale(1.02);
 }
 
-/* 其他操作：前往註冊與以訪客身份繼續 */
-.alternative__actions {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xl);
-    align-items: center;
-}
-
-.redirect__text {
-    text-align: center;
-    font-size: var(--font-size-lg);
-    color: var(--md-sys-color-on-surface-variant);
-}
-
 .redirect__link {
-    color: var(--md-sys-color-secondary);
-    text-decoration: none;
-    font-weight: var(--font-weight-medium);
-    transition: color 0.2s ease;
-}
-
-.redirect__link:hover {
-    color: var(--md-sys-color-secondary-container);
-}
-
-/* 訪客按鈕風格 */
-.btn__guest {
-    width: 100%;
-    padding: var(--space-md);
     background-color: var(--md-sys-color-secondary);
     color: var(--md-sys-color-on-secondary);
-    border: none;
-    border-radius: var(--border-radius-sm);
-    font-size: var(--font-size-lg);
+    padding: var(--space-sm);
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
     font-weight: var(--font-weight-bold);
     cursor: pointer;
+    text-align: center;
     transition:
         background-color 0.2s ease,
         transform 0.2s ease;
 }
 
+.redirect__link:hover {
+    background-color: var(--secondary-filled-hover);
+    transform: scale(1.02);
+}
+
+.btn__guest {
+    background-color: transparent;
+    border: none;
+    color: var(--md-sys-color-on-surface-variant);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-regular);
+    cursor: pointer;
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
 .btn__guest:hover {
-    background-color: var(--md-sys-color-secondary-container);
+    color: color-mix(in srgb,
+        var(--md-sys-color-on-surface-variant) 90%,
+        white 10%
+    );
     transform: scale(1.02);
 }
 </style>

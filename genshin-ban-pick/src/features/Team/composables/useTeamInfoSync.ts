@@ -32,34 +32,37 @@ export function useTeamInfoSync() {
         socket.on(`${TeamEvent.MemberRemoveBroadcast}`, handleTeamMemberRemoveBroadcast);
     }
 
-    function handleMemberInput({ name, teamSlot }: { name: string; teamSlot: number }) {
-        const teamMembers = teamMembersMap.value[teamSlot];
+    function handleMemberInput({ name, teamSlot, memberSlot }: { name: string; teamSlot: number; memberSlot: number }) {
+        const teamMembers = Object.values(teamMembersMap.value[teamSlot]);
         if (teamMembers.some((m) => m.type === 'Manual' && m.name === name)) {
             return;
         }
         let teamMember = createManualMember(name);
-        addTeamMember(teamSlot, teamMember);
+        addTeamMember(teamSlot, memberSlot, teamMember);
     }
 
-    function handleMemberDrop({ identityKey, teamSlot }: { identityKey: string; teamSlot: number }) {
+    function handleMemberDrop({ identityKey, teamSlot, memberSlot }: { identityKey: string; teamSlot: number; memberSlot: number }) {
         const roomUser = roomUsers.value.find((roomUser) => roomUser.identityKey === identityKey);
         if (!roomUser) return;
-        const teamMembers = teamMembersMap.value[teamSlot];
+        const teamMembers = Object.values(teamMembersMap.value[teamSlot]);
         if (teamMembers.some((m) => m.type === 'Online' && m.user.identityKey === roomUser.identityKey)) {
             return;
         }
         let teamMember = createOnlineMember(roomUser);
 
         for (const [teamSlot, members] of Object.entries(teamMembersMap.value)) {
-            teamMembersMap.value[Number(teamSlot)] = members.filter((m) => m.type !== 'Online' || m.user.identityKey !== identityKey);
-            removeTeamMember(Number(teamSlot), teamMember);
+            for (const [memberSlot, member] of Object.entries(members)) {
+                if (member.type === 'Online' && member.user.identityKey === identityKey) {
+                    removeTeamMember(Number(teamSlot), Number(memberSlot));
+                }
+            }
         }
 
-        addTeamMember(teamSlot, teamMember);
+        addTeamMember(teamSlot, memberSlot, teamMember);
     }
 
-    function handleMemberRestore({ member, teamSlot }: { member: TeamMember; teamSlot: number }) {
-        removeTeamMember(teamSlot, member);
+    function handleMemberRestore({ teamSlot, memberSlot }: { teamSlot: number; memberSlot: number }) {
+        removeTeamMember(teamSlot, memberSlot);
     }
 
     function createOnlineMember(user: IRoomUser): TeamMember {
@@ -70,28 +73,28 @@ export function useTeamInfoSync() {
         return { type: 'Manual', name };
     }
 
-    function addTeamMember(teamSlot: number, member: TeamMember) {
-        console.debug('[TEAM INFO SYNC] Add team member', teamSlot, member);
-        teamInfoStore.addTeamMember(teamSlot, member);
+    function addTeamMember(teamSlot: number, memberSlot: number, member: TeamMember) {
+        console.debug('[TEAM INFO SYNC] Add team member', teamSlot, member, memberSlot);
+        teamInfoStore.addTeamMember(teamSlot, memberSlot, member);
 
-        socket.emit(`${TeamEvent.MemberAddRequest}`, { teamSlot, member });
+        socket.emit(`${TeamEvent.MemberAddRequest}`, { teamSlot, memberSlot, member });
     }
 
-    function removeTeamMember(teamSlot: number, member: TeamMember) {
-        console.debug('[TEAM INFO SYNC] Remove team member', teamSlot, member);
-        teamInfoStore.removeTeamMember(teamSlot, member);
+    function removeTeamMember(teamSlot: number, memberSlot: number) {
+        console.debug('[TEAM INFO SYNC] Remove team member', teamSlot, memberSlot);
+        teamInfoStore.removeTeamMember(teamSlot, memberSlot);
 
-        socket.emit(`${TeamEvent.MemberRemoveRequest}`, { teamSlot, member });
+        socket.emit(`${TeamEvent.MemberRemoveRequest}`, { teamSlot, memberSlot });
     }
 
-    function handleTeamMemberAddBroadcast({ teamSlot, member }: { teamSlot: number; member: TeamMember }) {
+    function handleTeamMemberAddBroadcast({ teamSlot, memberSlot, member }: { teamSlot: number; memberSlot: number; member: TeamMember }) {
         console.debug(`[TEAM INFO SYNC] Handle team members add broadcast`, teamSlot, member);
-        teamInfoStore.addTeamMember(teamSlot, member);
+        teamInfoStore.addTeamMember(teamSlot, memberSlot, member);
     }
 
-    function handleTeamMemberRemoveBroadcast({ teamSlot, member }: { teamSlot: number; member: TeamMember }) {
-        console.debug(`[TEAM INFO SYNC] Handle team members remove broadcast`, teamSlot, member);
-        teamInfoStore.removeTeamMember(teamSlot, member);
+    function handleTeamMemberRemoveBroadcast({ teamSlot, memberSlot }: { teamSlot: number; memberSlot: number }) {
+        console.debug(`[TEAM INFO SYNC] Handle team members remove broadcast`, teamSlot, memberSlot);
+        teamInfoStore.removeTeamMember(teamSlot, memberSlot);
     }
 
     function handleTeamMembersMapStateSync(teamMembersMap: TeamMembersMap) {

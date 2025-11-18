@@ -5,38 +5,27 @@ import api from './httpClient';
 import type { HttpClient } from './httpClient';
 
 export function createAnalysisService(client: HttpClient = api) {
-    
-    async function getMeta() {
-        return client.get(`/analysis/meta`);
-    }
-
-    async function getBanPickUtilityStats() {
-        return client.get('/analysis/ban-pick-utility-stats');
+    async function getTacticalUsages() {
+        return client.get(`/analysis/tactical-usages`);
     }
 
     async function getPreference() {
         return client.get('/analysis/preference');
     }
 
-    async function getSynergy() {
-        return client.get(`/analysis/synergy`);
+    async function getSynergy(payload: { mode: 'match' | 'team' | 'setup' }) {
+        return client.get(`/analysis/synergy`, { params: payload });
     }
 
-    async function getArchetypes() {
-        return client.get(`/analysis/archetypes`);
+    async function getCharacterClusters() {
+        return client.get(`/analysis/character-clusters`);
     }
-
-    async function getArchetypeMap() {
-        return client.get(`/analysis/archetypeMap`);
-    }
-
+    
     return {
-        getMeta,
-        getBanPickUtilityStats,
+        getTacticalUsages,
         getPreference,
         getSynergy,
-        getArchetypes,
-        getArchetypeMap
+        getCharacterClusters
     };
 }
 

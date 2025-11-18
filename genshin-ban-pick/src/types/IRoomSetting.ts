@@ -2,7 +2,7 @@
 
 import type { IMatchFlow } from './IMatchFlow';
 import type { ITeam } from './ITeam';
-import type { IZone } from './IZone';
+import type { IZone } from '../features/BanPick/types/IZone';
 
 export interface IRoomSetting {
     zoneMetaTable: Record<number, IZone>;
