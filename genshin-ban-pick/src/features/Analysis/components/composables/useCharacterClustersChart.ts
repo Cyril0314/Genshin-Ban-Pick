@@ -25,7 +25,7 @@ export function useCharacterClustersChart() {
     const tacticalUsages = ref<ITacticalUsages[] | null>(null);
     const characterClusters = ref<ICharacterClusters | null>(null);
 
-    const tacticalUsageMap = computed(() => Object.fromEntries((tacticalUsages.value ?? []).map((u) => [u.characterKey, u.tacticalUsage])));
+    const effectiveUsageMap = computed(() => Object.fromEntries((tacticalUsages.value ?? []).map((u) => [u.characterKey, u.effectiveUsage])));
     const archetypePoints = computed(() => characterClusters.value?.archetypePoints);
     const medoidPoints = computed(() => characterClusters.value?.clusterMedoids);
     const topBridges = computed(() => {
@@ -187,8 +187,8 @@ export function useCharacterClustersChart() {
                     color: clusterColors[cid] 
                 },
                 symbolSize: (value: any, params: any) => {
-                    const tacticalUsage = tacticalUsageMap.value[params.data?.characterKey as string];
-                    return parseFloat(designTokens.fontSizeSm.value) + tacticalUsage * parseFloat(designTokens.fontSizeMd.value);
+                    const effectiveUsage = effectiveUsageMap.value[params.data?.characterKey as string];
+                    return parseFloat(designTokens.fontSizeSm.value) + effectiveUsage * parseFloat(designTokens.fontSizeMd.value);
                 },
                 label: {
                     show: true,

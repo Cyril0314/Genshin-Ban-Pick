@@ -35,7 +35,7 @@ export function useCharacterTacticalUsageCompositionChart(topN = 120) {
 
     const option = computed(() => {
         if (!data.value || !characterMap.value) return null;
-        const sorted = [...data.value].sort((a, b) => b.tacticalUsage - a.tacticalUsage);
+        const sorted = [...data.value].sort((a, b) => b.effectiveUsage - a.effectiveUsage);
         const top = sorted.slice(0, topN);
         return {
             tooltip: {
@@ -107,7 +107,7 @@ export function useCharacterTacticalUsageCompositionChart(topN = 120) {
             name: label,
             type: 'bar',
             stack: 'usage',
-            barWidth: parseFloat(designTokens.baseSize.value!) * 8,
+            barCategoryGap: '40%',
             data: data,
             itemStyle: { color },
         };
