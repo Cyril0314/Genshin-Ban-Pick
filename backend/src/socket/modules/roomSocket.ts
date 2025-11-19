@@ -84,6 +84,7 @@ export function handleRoomUserLeave(io: Server, socket: Socket, roomId: string, 
     const identityKey = socket.data.identity.identityKey as string;
 
     const roomState = roomStateManager.ensure(roomId);
+
     const leavingUser = roomState.users.find((u) => u.identityKey === identityKey);
 
     roomState.users = roomState.users.filter((u) => u.identityKey !== identityKey);

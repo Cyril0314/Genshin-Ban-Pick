@@ -3,13 +3,15 @@ import { createRouter, createWebHistory } from 'vue-router'
 import BanPickView from '../views/BanPickView.vue'
 import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
+import RoomSettingView from '@/views/RoomSettingView.vue'
+import RoomListView from '@/views/RoomListView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      name: 'ban-pick',
+      path: '/ban-pick',
+      name: 'BanPick',
       component: BanPickView,
     },
     {
@@ -21,6 +23,16 @@ const router = createRouter({
       path: '/register',
       name: 'Register',
       component: RegisterView,
+    },
+    {
+      path: '/room-setting',
+      name: 'RoomSetting',
+      component: RoomSettingView,
+    },
+    {
+      path: '/room-list',
+      name: 'RoomList',
+      component: RoomListView,
     },
     {
       path: '/about',

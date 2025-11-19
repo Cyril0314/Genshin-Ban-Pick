@@ -12,11 +12,29 @@ const logger = createLogger('ROOM');
 
 export default function roomRoutes(roomService: RoomService) {
     const router = express.Router();
+    router.get(
+        '/rooms',
+        asyncHandler(async (req: Request, res: Response) => {
+            const rooms = roomService.fetchRooms();
+            res.json(rooms);
+        }),
+    )
+
+    router.post(
+        '/rooms/:roomId',
+        asyncHandler(async (req: Request, res: Response) => {
+            const { roomId } = req.params;
+            const payload = req.body;
+            const roomSetting = roomService.build(roomId, payload);
+            res.status(200).json(roomSetting);
+        }),
+    )
 
     router.get(
-        '/rooms/setting',
+        '/rooms/:roomId/setting',
         asyncHandler(async (req: Request, res: Response) => {
-            const roomSetting = roomService.getSetting();
+            const { roomId } = req.params;
+            const roomSetting = roomService.getSetting(roomId);
             res.json(roomSetting);
         }),
     );
@@ -25,8 +43,7 @@ export default function roomRoutes(roomService: RoomService) {
         '/rooms/:roomId/save',
         asyncHandler(async (req: Request, res: Response) => {
             const { roomId } = req.params;
-            const roomSetting = req.body;
-            const id = await roomService.save({ roomId, roomSetting });
+            const id = await roomService.save(roomId);
 
             res.status(200).send({ matchId: id });
         }),

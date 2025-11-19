@@ -157,6 +157,7 @@ function handleMemberRestore(payload: { teamSlot: number; memberSlot: number }) 
 .layout__ban-zone {
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 .layout__common {

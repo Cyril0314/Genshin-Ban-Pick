@@ -18,7 +18,7 @@ async function handleLoginMemberSubmit() {
     try {
         const { token } = await handleLoginMember({ account: accountInput.value, password: passwordInput.value })
         socketStore.connect(token)
-        router.push('/');
+        router.push(`/room-list`);
     } catch (error: any) {
         alert(`${error.response?.data?.message || '登入失敗，請確認帳密'}`);
     }
@@ -28,7 +28,7 @@ async function handleLoginGuestButtonClick() {
     try {
         const { token } = await handleLoginGuest()
         socketStore.connect(token)
-        router.push('/');
+        router.push(`/room-list`);
     } catch (error: any) {
         alert(`${error.response?.data?.message || '登入失敗，請確認帳密'}`);
     }
@@ -132,6 +132,7 @@ async function handleLoginGuestButtonClick() {
 .form__group input {
     padding: var(--space-sm);
     border-radius: var(--radius-md);
+    border: none;
     background-color: transparent;
     color: var(--md-sys-color-on-surface);
     font-size: var(--font-size-sm);
@@ -160,6 +161,7 @@ async function handleLoginGuestButtonClick() {
     color: var(--md-sys-color-on-primary);
     padding: var(--space-sm);
     border-radius: var(--radius-md);
+    border: none;
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-bold);
     cursor: pointer;
@@ -179,6 +181,7 @@ async function handleLoginGuestButtonClick() {
     padding: var(--space-sm);
     text-decoration: none;
     border-radius: var(--radius-md);
+    border: none;
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-bold);
     cursor: pointer;
@@ -198,6 +201,7 @@ async function handleLoginGuestButtonClick() {
     border: none;
     color: var(--md-sys-color-on-surface-variant);
     border-radius: var(--radius-md);
+    border: none;
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-regular);
     cursor: pointer;

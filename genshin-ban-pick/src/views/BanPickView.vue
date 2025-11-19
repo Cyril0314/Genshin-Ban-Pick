@@ -2,7 +2,7 @@
 
 <script setup lang="ts">
 import { ref, shallowRef, onMounted, onUnmounted, computed } from 'vue';
-import { onBeforeRouteLeave } from 'vue-router';
+import { onBeforeRouteLeave, useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
 
 import StepIndicator from '@/features/StepIndicator/StepIndicator.vue';
@@ -37,7 +37,8 @@ const characterFilter = ref<Record<CharacterFilterKey, string[]>>({
     role: [],
     wish: [],
 });
-
+const route = useRoute();
+const roomId = route.query.room as string || 'default-room';
 const roomDomain = useRoomDomain();
 
 const { boardImageMap, usedImageIds, handleBoardImageDrop, handleBoardImageRestore, handleBoardImageMapReset } = useBoardSync();
@@ -77,8 +78,7 @@ onMounted(async () => {
     console.debug('[BAN PICK VIEW] On mounted');
     try {
         await characterStore.loadCharacters();
-
-        roomSetting.value = await roomDomain.fetchSetting();
+        roomSetting.value = await roomDomain.fetchSetting(roomId);
         filteredCharacterKeys.value = Object.keys(characterMap.value).map((id) => id);
         boardImageStore.initZoneMetaTable(roomSetting.value.zoneMetaTable);
         teamInfoStore.initTeams(roomSetting.value.teams);
@@ -88,7 +88,7 @@ onMounted(async () => {
             roomSetting.value.numberOfTeamSetup,
             roomSetting.value.numberOfSetupCharacter,
         );
-        const roomId = getRoomId();
+        
         joinRoom(roomId);
     } catch (error) {
         console.error('[BAN PICK VIEW] Fetched character and room setting failed:', error);
@@ -97,19 +97,12 @@ onMounted(async () => {
 
 onBeforeRouteLeave(async (to, from) => {
     console.debug('[BAN PICK VIEW] On before route leave');
-    const roomId = getRoomId();
     leaveRoom(roomId);
 });
 
 onUnmounted(() => {
     console.debug('[BAN PICK VIEW] On unmounted');
 });
-
-function getRoomId(): string {
-    const roomId = new URLSearchParams(window.location.search).get('room') || 'default-room';
-    console.debug('[BAN PICK VIEW] Get roomId', roomId);
-    return roomId;
-}
 
 function handleFilterChange({ filteredCharacterKeys: newKeys, characterFilter: newFilter }: { filteredCharacterKeys: string[]; characterFilter: Record<CharacterFilterKey, string[]> }) {
     console.debug(`[BAN PICK VIEW] Handle filiter changed:`, { filteredCharacterKeys: newKeys, characterFilter: newFilter });
@@ -133,9 +126,7 @@ function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
 }
 
 async function handleBoardRecord() {
-    const roomId = getRoomId();
-    if (!roomSetting.value) return;
-    await roomDomain.save({ roomId, roomSetting: roomSetting.value });
+    await roomDomain.save(roomId);
 }
 </script>
 

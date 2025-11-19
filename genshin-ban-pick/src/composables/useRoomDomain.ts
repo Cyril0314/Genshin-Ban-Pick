@@ -2,21 +2,48 @@
 
 import { roomService } from '@/network/roomService';
 import type { IRoomSetting } from '@/types/IRoomSetting';
+import type { IRoomState } from '@/types/IRoomState';
+import type { ITeam } from '@/types/ITeam';
 
 export function useRoomDomain() {
-    async function fetchSetting(): Promise<IRoomSetting> {
-        const response = await roomService.getSetting();
+    async function fetchRooms(): Promise<Record<string, IRoomState>> {
+        const response = await roomService.get();
+        const rooms = response.data;
+        return rooms;
+    }
+
+    async function build(
+        roomId: string,
+        payload: {
+            numberOfUtility?: number;
+            numberOfBan?: number;
+            numberOfPick?: number;
+            totalRounds?: number;
+            teams?: ITeam[];
+            numberOfTeamSetup?: number;
+            numberOfSetupCharacter?: number;
+        },
+    ): Promise<IRoomSetting> {
+        const response = await roomService.post(roomId, payload);
         const roomSetting = response.data;
         return roomSetting;
     }
-    
-    async function save(payload: { roomId: string, roomSetting: IRoomSetting }) {
-        const response = await roomService.postSave(payload);
-        return response.data
+
+    async function fetchSetting(roomId: string): Promise<IRoomSetting> {
+        const response = await roomService.getSetting(roomId);
+        const roomSetting = response.data;
+        return roomSetting;
+    }
+
+    async function save(roomId: string) {
+        const response = await roomService.postSave(roomId);
+        return response.data;
     }
 
     return {
+        fetchRooms,
+        build,
         fetchSetting,
-        save
-    }
+        save,
+    };
 }

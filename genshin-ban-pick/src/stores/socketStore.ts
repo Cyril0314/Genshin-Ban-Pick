@@ -5,10 +5,11 @@ import { SocketNotConnected } from '@/errors/AppError';
 import { registerAllSyncModules } from '@/network/registerAllSyncModules';
 import { defineStore } from 'pinia';
 import { io, type Socket } from 'socket.io-client';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 export const useSocketStore = defineStore('socket', () => {
     const socket = ref<Socket | null>(null);
+    const connected = computed(() => socket.value?.connect ?? false)
 
     function connect(token: string) {
         console.info(`[SOCKET] Connecting`);
@@ -16,7 +17,6 @@ export const useSocketStore = defineStore('socket', () => {
             console.warn(`[SOCKET] Has Connected`);
             return;
         }
-
         const baseURL = import.meta.env.VITE_SOCKET_URL;
         socket.value = io(baseURL, { auth: { token } });
         registerAllSyncModules(socket.value as Socket)
@@ -56,6 +56,7 @@ export const useSocketStore = defineStore('socket', () => {
 
     return {
         socket,
+        connected,
         connect,
         disconnect,
         getSocket,

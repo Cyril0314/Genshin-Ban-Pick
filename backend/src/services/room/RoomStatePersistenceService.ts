@@ -1,8 +1,5 @@
 // backend/src/services/room/RoomStatePersistenceService.ts
 import { Prisma, PrismaClient } from '@prisma/client';
-
-import { RoomStateManager } from '../../socket/managers/RoomStateManager.ts';
-import { IRoomSetting } from '../../types/IRoomSetting.ts';
 import { TeamMember } from '../../types/TeamMember.ts';
 import {
     DataNotFoundError,
@@ -14,14 +11,12 @@ import {
     UserNotFoundError,
 } from '../../errors/AppError.ts';
 import { createLogger } from '../../utils/logger.ts';
+import { IRoomState } from '../../types/IRoomState.ts';
 
 const logger = createLogger('ROOM STATE PERSISTENCE SERVICE');
 
 export class RoomStatePersistenceService {
-    constructor(
-        private prisma: PrismaClient,
-        private roomStateManager: RoomStateManager,
-    ) {}
+    constructor(private prisma: PrismaClient) {}
 
     async delete({ matchId }: { matchId: number }) {
         return await this.prisma.match.delete({
@@ -29,8 +24,8 @@ export class RoomStatePersistenceService {
         });
     }
 
-    async save({ roomId, roomSetting }: { roomId: string; roomSetting: IRoomSetting }, dryRun = true) {
-        const roomState = this.roomStateManager.get(roomId);
+    async save(roomState: IRoomState, dryRun = true) {
+        const roomSetting = roomState.roomSetting;
         if (!roomState) {
             logger.error('Room state not found');
             throw new DataNotFoundError();

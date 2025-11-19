@@ -7,8 +7,9 @@ import { TeamMembersMap } from "../../types/TeamMember.ts";
 import type { BoardImageMap, CharacterRandomContextMap, IRoomState, TeamTacticalBoardMap } from "../../types/IRoomState.ts";
 
 export interface IRoomStateManager {
-  ensure(roomId: string): IRoomState;
+  getRoomStates(): Record<string, IRoomState>;
   setRoomState(roomId: string, roomState: IRoomState): void;
+  ensure(roomId: string): IRoomState;
   get(roomId: string): IRoomState | undefined;
   remove(roomId: string): void;
 

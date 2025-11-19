@@ -1,65 +1,75 @@
 // backend/src/socket/managers/RoomStateManager.ts
 
+import { createRoomSetting } from '../../factories/roomSettingFactory.ts';
 import { IRoomState, TeamTacticalBoardMap } from '../../types/IRoomState.ts';
-import { IRoomStateManager } from './IRoomStateManager.ts';
-import { teams } from "../../constants/constants.ts";
 import { TeamMembersMap } from '../../types/TeamMember.ts';
+import { createLogger } from '../../utils/logger.ts';
+import { IRoomStateManager } from './IRoomStateManager.ts';
 
-const roomStates: Record<string, IRoomState> = {};
+const logger = createLogger('ROOM STATE MANAGER');
 
 export class RoomStateManager implements IRoomStateManager {
+    roomStates: Record<string, IRoomState> = {};
+    getRoomStates() {
+        return this.roomStates;
+    }
+
+    setRoomState(roomId: string, roomState: IRoomState) {
+        this.roomStates[roomId] = roomState;
+    }
+
     ensure(roomId: string): IRoomState {
-        if (!roomStates[roomId]) {
-            roomStates[roomId] = {
+        if (!this.roomStates[roomId]) {
+            logger.warn(`roomId doesn't exist`, roomId)
+            const defaultPayload = {};
+            const defaultRoomSetting = createRoomSetting(defaultPayload);
+            this.roomStates[roomId] = {
                 users: [],
                 chatMessages: [],
                 boardImageMap: {},
                 characterRandomContextMap: {},
-                teamMembersMap: Object.fromEntries(teams.map(t => [t.slot, {}])) as TeamMembersMap,
-                teamTacticalBoardMap: Object.fromEntries(teams.map(t => [t.slot, {}])) as TeamTacticalBoardMap,
+                teamMembersMap: Object.fromEntries(defaultRoomSetting.teams.map((t) => [t.slot, {}])) as TeamMembersMap,
+                teamTacticalBoardMap: Object.fromEntries(defaultRoomSetting.teams.map((t) => [t.slot, {}])) as TeamTacticalBoardMap,
                 stepIndex: 0,
+                roomSetting: defaultRoomSetting,
             };
         }
-        return roomStates[roomId];
-    }
-
-    setRoomState(roomId: string, roomState: IRoomState) {
-        roomStates[roomId] = roomState;
+        return this.roomStates[roomId];
     }
 
     get(roomId: string) {
-        return roomStates[roomId];
+        return this.roomStates[roomId];
     }
 
     remove(roomId: string) {
-        delete roomStates[roomId];
+        delete this.roomStates[roomId];
     }
 
     getUsers(roomId: string) {
-        return this.ensure(roomId).users;
+        return this.get(roomId).users;
     }
 
     getChatMessages(roomId: string) {
-        return this.ensure(roomId).chatMessages;
+        return this.get(roomId).chatMessages;
     }
 
     getBoardImageMap(roomId: string) {
-        return this.ensure(roomId).boardImageMap;
+        return this.get(roomId).boardImageMap;
     }
 
     getCharacterRandomContextMap(roomId: string) {
-        return this.ensure(roomId).characterRandomContextMap;
+        return this.get(roomId).characterRandomContextMap;
     }
 
     getTeamMembersMap(roomId: string) {
-        return this.ensure(roomId).teamMembersMap;
+        return this.get(roomId).teamMembersMap;
     }
 
     getStepIndex(roomId: string) {
-        return this.ensure(roomId).stepIndex;
+        return this.get(roomId).stepIndex;
     }
 
     getTeamTacticalBoardMap(roomId: string) {
-        return this.ensure(roomId).teamTacticalBoardMap;
+        return this.get(roomId).teamTacticalBoardMap;
     }
 }

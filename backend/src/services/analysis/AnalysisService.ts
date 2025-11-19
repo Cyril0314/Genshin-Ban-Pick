@@ -78,7 +78,7 @@ export default class AnalysisService {
         });
 
         // console.dir(playerPreferences)
-        logger.info('playerPreferences =\n' + JSON.stringify(playerPreferences, null, 2));
+        // logger.info('playerPreferences =\n' + JSON.stringify(playerPreferences, null, 2));
 
         return playerPreferences;
     }

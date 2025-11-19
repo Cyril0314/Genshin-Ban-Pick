@@ -7,7 +7,11 @@ import type { IZone } from '../features/BanPick/types/IZone';
 export interface IRoomSetting {
     zoneMetaTable: Record<number, IZone>;
     matchFlow: IMatchFlow;
+    flowVersion: number;
     totalRounds: number;
+    numberOfUtility: number;
+    numberOfBan: number;
+    numberOfPick: number;
     teams: ITeam[];
     tacticalVersion: number;
     numberOfTeamSetup: number;

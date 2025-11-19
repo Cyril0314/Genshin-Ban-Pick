@@ -3,7 +3,6 @@
 import { Server, Socket } from "socket.io";
 
 import { createLogger } from '../../utils/logger.ts';
-import { RoomStateManager } from "../managers/RoomStateManager.ts";
 import { IRoomStateManager } from '../managers/IRoomStateManager.ts';
 
 const logger = createLogger('CHAT SOCKET')
@@ -24,6 +23,7 @@ export function registerChatSocket(io: Server, socket: Socket, roomStateManager:
       if (!roomId || !message) return;
 
       const roomState = roomStateManager.ensure(roomId);
+
       const identityKey = socket.data.identity.identityKey as string;
       const nickname = socket.data.identity.nickname as string;
       const newMsg = { identityKey, nickname, message, timestamp: Date.now() };
