@@ -71,17 +71,16 @@ app.use(express.json());
 // 🧩 6. Service 實例化
 // ---------------------------------------------------------
 logger.info('Init Services');
-const prisma = new PrismaClient();
+const prisma = new PrismaClient(); // DB
+const roomStateManager = new RoomStateManager(); // Disk
 const guestService = new GuestService(prisma)
 const memberService = new MemberService(prisma);
-const roomStateManager = new RoomStateManager()
-const roomStatePersistenceService = new RoomStatePersistenceService(prisma, roomStateManager)
-const roomService = new RoomService(roomStatePersistenceService);
+const roomService = new RoomService(prisma, roomStateManager);
 const characterService = new CharacterService(prisma);
 const analysisService = new AnalysisService(prisma, characterService)
 
-const results = await analysisService.getPreference()
-console.info(`getBridgeScores`, JSON.stringify(results, null, 2))
+// const results = await analysisService.getPreference()
+// console.info(`getBridgeScores`, JSON.stringify(results, null, 2))
 
 // ---------------------------------------------------------
 // 🧩 7. Routes 註冊

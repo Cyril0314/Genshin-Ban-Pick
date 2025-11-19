@@ -26,6 +26,7 @@ export function registerTeamSocket(io: Server, socket: Socket, roomStateManager:
         if (!roomId) return;
 
         const roomState = roomStateManager.ensure(roomId);
+
         roomState.teamMembersMap[teamSlot][memberSlot] = member;
         socket.to(roomId).emit(`${TeamEvent.MemberAddBroadcast}`, { teamSlot, memberSlot, member });
         logger.info(`Sent ${TeamEvent.MemberAddBroadcast} teamSlot: ${teamSlot}`, memberSlot, member);
@@ -42,6 +43,7 @@ export function registerTeamSocket(io: Server, socket: Socket, roomStateManager:
         if (!roomId) return;
 
         const roomState = roomStateManager.ensure(roomId);
+
         delete roomState.teamMembersMap[teamSlot][memberSlot];
 
         socket.to(roomId).emit(`${TeamEvent.MemberRemoveBroadcast}`, { teamSlot, memberSlot });

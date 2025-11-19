@@ -80,6 +80,7 @@ export function registerBoardSocket(io: Server, socket: Socket, roomStateManager
         if (!roomId) return;
 
         const roomState = roomStateManager.ensure(roomId);
+
         const imgId = roomState.boardImageMap[zoneId];
         delete roomState.boardImageMap[zoneId];
         delete roomState.characterRandomContextMap[imgId];
@@ -90,9 +91,9 @@ export function registerBoardSocket(io: Server, socket: Socket, roomStateManager
     socket.on(`${BoardEvent.ImageMapResetRequest}`, () => {
         logger.info(`Received ${BoardEvent.ImageMapResetRequest}`);
         const roomId = (socket as any).roomId;
-        if (!roomId) return;
-
+        
         const roomState = roomStateManager.ensure(roomId);
+
         roomState.boardImageMap = {};
         roomState.characterRandomContextMap = {};
         socket.to(roomId).emit(`${BoardEvent.ImageMapResetBroadcast}`);

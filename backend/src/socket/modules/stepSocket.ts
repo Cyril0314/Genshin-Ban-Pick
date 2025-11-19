@@ -25,6 +25,7 @@ export function registerStepSocket(io: Server, socket: Socket, roomStateManager:
         if (!roomId) return;
 
         const roomState = roomStateManager.ensure(roomId);
+
         roomState.stepIndex = roomState.stepIndex + 1;
         syncStepStateAll(io, roomId, roomStateManager);
     });
@@ -35,6 +36,7 @@ export function registerStepSocket(io: Server, socket: Socket, roomStateManager:
         if (!roomId) return;
 
         const roomState = roomStateManager.ensure(roomId);
+
         roomState.stepIndex = roomState.stepIndex - 1;
         syncStepStateAll(io, roomId, roomStateManager);
     });
@@ -45,6 +47,7 @@ export function registerStepSocket(io: Server, socket: Socket, roomStateManager:
         if (!roomId) return;
 
         const roomState = roomStateManager.ensure(roomId);
+
         roomState.stepIndex = 0;
         syncStepStateAll(io, roomId, roomStateManager);
     });

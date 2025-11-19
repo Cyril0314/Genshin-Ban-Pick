@@ -1,10 +1,10 @@
-// backend/src/types/IRoomState.ts
+// src/types/IRoomState.ts
 
-import { ICharacterRandomContext } from './ICharacterRandomContext.ts';
-import { IChatMessageDTO } from './IChatMessageDTO.ts';
-import { IRoomSetting } from './IRoomSetting.ts';
-import { IRoomUser } from './IRoomUser.ts';
-import { TeamMembersMap } from './TeamMember.ts';
+import type { ICharacterRandomContext } from "@/features/BanPick/types/ICharacterRandomContext";
+import type { IChatMessageDTO } from "@/features/ChatRoom/types/IChatMessageDTO";
+import type { TeamMembersMap } from "./TeamMember";
+import type { IRoomUser } from "./IRoomUser";
+import type { IRoomSetting } from "./IRoomSetting";
 
 export type BoardImageMap = Record<number, string>;
 export type TacticalCellImageMap = Record<number, string>;

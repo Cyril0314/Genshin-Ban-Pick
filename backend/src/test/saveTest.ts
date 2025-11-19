@@ -2,25 +2,20 @@ import { PrismaClient } from '@prisma/client';
 
 import { RoomStateManager } from '../socket/managers/RoomStateManager.ts';
 import { RoomStatePersistenceService } from '../services/room/RoomStatePersistenceService.ts';
-import { totalRounds } from '../constants/constants.ts';
 import { createRoomSetting } from '../factories/roomSettingFactory.ts';
 import { ZoneType } from '../types/IZone.ts';
 import { TeamMember, TeamMembersMap } from '../types/TeamMember.ts';
 import { IRoomUser } from '../types/IRoomUser.ts';
 import { IRoomState } from '../types/IRoomState.ts';
 
-// 你可以調整這些參數
-const roomId = 'test-room';
-
 async function main() {
     const prisma = new PrismaClient();
-    const roomStateManager = new RoomStateManager();
-    const service = new RoomStatePersistenceService(prisma, roomStateManager);
+    const service = new RoomStatePersistenceService(prisma);
     //
     // 1) 建立 roomSetting (模擬 UI 設定)
     //
 
-    const roomSetting = createRoomSetting();
+    const roomSetting = createRoomSetting({});
 
     //
     // 2) 建立 roomState (模擬拖曳後的結果)
@@ -113,14 +108,13 @@ async function main() {
         users: [],
         chatMessages: [],
         stepIndex: Object.values(roomSetting.zoneMetaTable).length,
+        roomSetting
     };
-    roomStateManager.setRoomState(roomId, roomState);
-    console.log(`roomsetting roomState`, roomStateManager.ensure(roomId));
 
     //
     // 3) 呼叫 save() 寫入資料庫
     //
-    const result = await service.save({ roomId, roomSetting }, true);
+    const result = await service.save(roomState, true);
 
     console.log('\n✅ Match saved successfully!');
     console.log('Match ID:', result?.id);

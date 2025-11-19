@@ -24,7 +24,7 @@ async function handleRegisterMemberSubmit() {
     try {
         const { token } = await handleRegisterMember({ account: accountInput.value, password: passwordInput.value, nickname: nicknameInput.value })
         socketStore.connect(token)
-        router.push('/');
+        router.push(`/room-list`);
     } catch (error: any) {
         alert(`${error.response?.data?.message || '註冊失敗'}`);
     }
@@ -137,6 +137,7 @@ async function handleRegisterMemberSubmit() {
 .form__group input {
     padding: var(--space-sm);
     border-radius: var(--radius-md);
+    border: none;
     background-color: transparent;
     color: var(--md-sys-color-on-surface);
     font-size: var(--font-size-sm);
@@ -165,6 +166,7 @@ async function handleRegisterMemberSubmit() {
     color: var(--md-sys-color-on-primary);
     padding: var(--space-sm);
     border-radius: var(--radius-md);
+    border: none;
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-bold);
     cursor: pointer;

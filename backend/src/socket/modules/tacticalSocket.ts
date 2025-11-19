@@ -29,6 +29,7 @@ export function registerTacticalSocket(io: Server, socket: Socket, roomStateMana
         if (!roomId) return;
 
         const roomState = roomStateManager.ensure(roomId);
+
         roomState.teamTacticalBoardMap[teamSlot][cellId] = imgId;
         socket.to(roomId).emit(`${TacticalEvent.CellImagePlaceBroadcast}`, { teamSlot, cellId, imgId });
         logger.info(`Sent ${TacticalEvent.CellImagePlaceBroadcast}`, { teamSlot, cellId, imgId });
@@ -40,6 +41,7 @@ export function registerTacticalSocket(io: Server, socket: Socket, roomStateMana
         if (!roomId) return;
 
         const roomState = roomStateManager.ensure(roomId);
+
         delete roomState.teamTacticalBoardMap[teamSlot][cellId];
         socket.to(roomId).emit(`${TacticalEvent.CellImageRemoveBroadcast}`, { teamSlot, cellId });
         logger.info(`Sent ${TacticalEvent.CellImageRemoveBroadcast}`, { teamSlot, cellId });
@@ -51,6 +53,7 @@ export function registerTacticalSocket(io: Server, socket: Socket, roomStateMana
         if (!roomId) return;
 
         const roomState = roomStateManager.ensure(roomId);
+
         roomState.teamTacticalBoardMap[teamSlot] = {};
         socket.to(roomId).emit(`${TacticalEvent.CellImageMapResetBroadcast}`, { teamSlot });
         logger.info(`Sent ${TacticalEvent.CellImageMapResetBroadcast}`, { teamSlot });
