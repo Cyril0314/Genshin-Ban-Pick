@@ -3,7 +3,7 @@
 import { computed, onMounted, ref } from 'vue';
 
 import { useAnalysisDomain } from '@/composables/useAnalysisDomain';
-import { useCharacterDomain } from '@/composables/useCharacterDomain';
+import { useCharacterDomain } from '@/modules/character/domain/useCharacterDomain';
 import { useEchartTheme } from '@/composables/useEchartTheme';
 import { useDesignTokens } from '@/composables/useDesignTokens';
 import type { CallbackDataParams } from 'echarts/types/dist/shared';

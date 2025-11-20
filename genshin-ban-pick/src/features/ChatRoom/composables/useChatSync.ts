@@ -5,7 +5,7 @@ import type { IChatMessage } from '@/features/ChatRoom/types/IChatMessage';
 import type { IChatMessageDTO } from '@/features/ChatRoom/types/IChatMessageDTO';
 
 import { useSocketStore } from '@/stores/socketStore';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/modules/auth/store/authStore';
 import { useChatStore } from '@/stores/chatStore';
 
 enum ChatEvent {

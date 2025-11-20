@@ -3,7 +3,7 @@
 import { computed, onMounted, ref, watch } from 'vue';
 
 import { useAnalysisDomain } from '@/composables/useAnalysisDomain';
-import { useCharacterDomain } from '@/composables/useCharacterDomain';
+import { useCharacterDomain } from '@/modules/character/domain/useCharacterDomain';
 import { useDesignTokens } from '@/composables/useDesignTokens';
 import { useEchartTheme } from '@/composables/useEchartTheme';
 

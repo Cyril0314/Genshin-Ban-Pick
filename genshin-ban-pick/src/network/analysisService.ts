@@ -1,8 +1,8 @@
 // src/network/analysisService.ts
 
-import api from './httpClient';
+import api from '../infrastructure/http/httpClient';
 
-import type { HttpClient } from './httpClient';
+import type { HttpClient } from '../infrastructure/http/httpClient';
 
 export function createAnalysisService(client: HttpClient = api) {
     async function getTacticalUsages() {
@@ -20,12 +20,12 @@ export function createAnalysisService(client: HttpClient = api) {
     async function getCharacterClusters() {
         return client.get(`/analysis/character-clusters`);
     }
-    
+
     return {
         getTacticalUsages,
         getPreference,
         getSynergy,
-        getCharacterClusters
+        getCharacterClusters,
     };
 }
 

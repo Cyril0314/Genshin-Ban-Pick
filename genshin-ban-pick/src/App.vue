@@ -2,6 +2,10 @@
 import { onMounted } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
 
+import { useAppInitializer } from './composables/useAppInitializer';
+
+const { isInitializing } = useAppInitializer();
+
 onMounted(() => {
   console.info('[APP] On mounted')
 })

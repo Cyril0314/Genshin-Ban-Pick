@@ -11,10 +11,6 @@ import naive from 'naive-ui';
 import App from './App.vue';
 import router from './router';
 
-import { useAuthDomain } from '@/composables/useAuthDomain';
-import { useSocketStore } from './stores/socketStore';
-import { useAuthStore } from './stores/authStore';
-
 const app = createApp(App);
 console.info('[MAIN] Create App');
 
@@ -22,6 +18,9 @@ app.use(createPinia());
 app.use(router);
 app.use(naive);
 
+app.mount('#app');
+
+/*
 const authDomain = useAuthDomain();
 const authStore = useAuthStore();
 const socketStore = useSocketStore();
@@ -78,3 +77,4 @@ router.beforeEach((to, from, next) => {
 
     return next();
 });
+*/

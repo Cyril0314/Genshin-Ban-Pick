@@ -4,36 +4,35 @@
 import { ref } from 'vue';
 import { storeToRefs } from 'pinia';
 
-
 import ChatRoomDrawer from '@/features/ChatRoom/ChatRoomDrawer.vue';
 import TacticalBoardPanelDrawer from '@/features/Tactical/TacticalBoardPanelDrawer.vue';
 import AnalysisDrawer from '../Analysis/AnalysisDrawer.vue';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/modules/auth/store/authStore';
 
 const emit = defineEmits<{
     (e: 'image-map-reset'): void;
     (e: 'board-record'): void;
 }>();
 
-const authStore = useAuthStore()
-const { isAdmin } = storeToRefs(authStore)
+const authStore = useAuthStore();
+const { isAdmin } = storeToRefs(authStore);
 const isTacticalDrawerOpen = ref(false);
 const isChatRoomDrawerOpen = ref(false);
 const isAnalysisDrawerOpen = ref(false);
 
 function handleTacticalButtonClickEvent() {
     console.debug('[TOOL BAR] Handle tactical button click event');
-    isTacticalDrawerOpen.value = !isTacticalDrawerOpen.value
+    isTacticalDrawerOpen.value = !isTacticalDrawerOpen.value;
 }
 
 function handleChatButtonClickEvent() {
     console.debug('[TOOL BAR] Handle chat button click event');
-    isChatRoomDrawerOpen.value = !isChatRoomDrawerOpen.value
+    isChatRoomDrawerOpen.value = !isChatRoomDrawerOpen.value;
 }
 
 function handleAnalysisButtonClickEvent() {
     console.debug('[TOOL BAR] Handle analysis button click event');
-    isAnalysisDrawerOpen.value = !isAnalysisDrawerOpen.value
+    isAnalysisDrawerOpen.value = !isAnalysisDrawerOpen.value;
 }
 
 function handleResetButtonClickEvent() {
@@ -50,13 +49,13 @@ function handleRecordButtonClickEvent() {
 <template>
     <div class="toolbar">
         <button class="toolbar__button toolbar__button--tactical" @click="handleTacticalButtonClickEvent">編隊</button>
-        <TacticalBoardPanelDrawer v-model:open="isTacticalDrawerOpen"/>
-        
+        <TacticalBoardPanelDrawer v-model:open="isTacticalDrawerOpen" />
+
         <button class="toolbar__button toolbar__button--chat" @click="handleChatButtonClickEvent">聊天</button>
-        <ChatRoomDrawer v-model:open="isChatRoomDrawerOpen"/>
+        <ChatRoomDrawer v-model:open="isChatRoomDrawerOpen" />
 
         <button class="toolbar__button toolbar__button--analysis" @click="handleAnalysisButtonClickEvent">報表</button>
-        <AnalysisDrawer v-model:open="isAnalysisDrawerOpen"/>
+        <AnalysisDrawer v-model:open="isAnalysisDrawerOpen" />
 
         <button v-if="isAdmin" class="toolbar__button toolbar__button--reset" @click="handleResetButtonClickEvent">重置</button>
 
@@ -80,7 +79,7 @@ function handleRecordButtonClickEvent() {
 .toolbar__button {
     width: var(--size-tool-button);
     background-color: var(--md-sys-color-surface-container-high);
-    color: var(--md-sys-color-on-surface);  
+    color: var(--md-sys-color-on-surface);
     border: none;
     border-radius: var(--radius-sm);
     padding: var(--space-sm) var(--space-sm);
@@ -94,9 +93,7 @@ function handleRecordButtonClickEvent() {
 }
 
 .toolbar__button:hover {
-    background-color: color-mix(in srgb,
-        var(--md-sys-color-surface-container-high),
-        white 6%);
+    background-color: color-mix(in srgb, var(--md-sys-color-surface-container-high), white 6%);
     transform: scale(1.05);
 }
 

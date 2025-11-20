@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import { getProfileImagePath } from '@/utils/imageRegistry'
 import { DragTypes } from '@/constants/customMIMETypes';
-import { useTacticalBoardStore } from '@/stores/tacticalBoardStore';
+import { useTacticalBoardStore } from '@/modules/board/store/tacticalBoardStore';
 
 const props = defineProps<{ teamSlot: number }>()
 

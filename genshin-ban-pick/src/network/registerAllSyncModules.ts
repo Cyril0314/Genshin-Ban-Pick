@@ -2,8 +2,8 @@
 
 import { useBoardSync } from '@/features/BanPick/composables/useBoardSync';
 import { useChatSync } from '@/features/ChatRoom/composables/useChatSync';
-import { useRoomUserSync } from '@/features/RoomUserPool/composables/useRoomUserSync';
-import { useMatchStepSync } from '@/features/StepIndicator/composables/useMatchStepSync';
+import { useRoomUserSync } from '@/modules/room/sync/useRoomUserSync';
+import { useMatchStepSync } from '@/modules/board/sync/useMatchStepSync';
 import { useTacticalBoardSync } from '@/features/Tactical/composables/useTacticalBoardSync';
 import { useTeamInfoSync } from '@/features/Team/composables/useTeamInfoSync';
 import type { Socket } from 'socket.io-client';

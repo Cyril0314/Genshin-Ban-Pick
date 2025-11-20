@@ -80,3 +80,319 @@ pm2 ls 列出所有 pm2 的程序
 pm2 start --name xxx.js 啟動服務
 pm2 stop --name 暫停服務
 pm2 restart --name 重啟服務
+
+```
+Genshin-Ban-Pick
+├─ .DS_Store
+├─ .prettierrc.json
+├─ README.md
+├─ backend
+│  ├─ .env
+│  ├─ dist
+│  │  ├─ constants
+│  │  └─ routes
+│  ├─ eslint.config.js
+│  ├─ package-lock.json
+│  ├─ package.json
+│  ├─ prisma
+│  │  ├─ characters.json
+│  │  ├─ migrations
+│  │  │  ├─ 20250513081454_init
+│  │  │  │  └─ migration.sql
+│  │  │  ├─ 20250514083431_add_user_model
+│  │  │  │  └─ migration.sql
+│  │  │  ├─ 20251102151051_add_role
+│  │  │  │  └─ migration.sql
+│  │  │  ├─ 20251102154054_add_guest
+│  │  │  │  └─ migration.sql
+│  │  │  ├─ 20251102184824_rename_user
+│  │  │  │  └─ migration.sql
+│  │  │  ├─ 20251105115425_refractor
+│  │  │  │  └─ migration.sql
+│  │  │  ├─ 20251105130019_model
+│  │  │  │  └─ migration.sql
+│  │  │  ├─ 20251105162328_add
+│  │  │  │  └─ migration.sql
+│  │  │  ├─ 20251108093141_add
+│  │  │  │  └─ migration.sql
+│  │  │  ├─ 20251108110607_enable_cascade_delete
+│  │  │  │  └─ migration.sql
+│  │  │  ├─ 20251108114629_delete_unused_fileds
+│  │  │  │  └─ migration.sql
+│  │  │  ├─ 20251111014228_add_slot_to_match_team_member
+│  │  │  │  └─ migration.sql
+│  │  │  ├─ 20251111015008_rename_slot_to_match_team_member
+│  │  │  │  └─ migration.sql
+│  │  │  ├─ 20251111020420_enforce_slot_to_match_team_member
+│  │  │  │  └─ migration.sql
+│  │  │  ├─ 20251111022046_rename_team_slot_to_slot
+│  │  │  │  └─ migration.sql
+│  │  │  ├─ 20251111022047_backfill_match_team_slot
+│  │  │  │  └─ migration.sql
+│  │  │  ├─ 20251111023456_enforce_team_slot
+│  │  │  │  └─ migration.sql
+│  │  │  └─ migration_lock.toml
+│  │  ├─ schema.prisma
+│  │  └─ seed.ts
+│  ├─ src
+│  │  ├─ constants
+│  │  │  └─ constants.ts
+│  │  ├─ errors
+│  │  │  └─ AppError.ts
+│  │  ├─ factories
+│  │  │  └─ roomSettingFactory.ts
+│  │  ├─ index.ts
+│  │  ├─ middlewares
+│  │  │  └─ errorHandler.ts
+│  │  ├─ prisma.ts
+│  │  ├─ routes
+│  │  │  ├─ analysis.ts
+│  │  │  ├─ auth.ts
+│  │  │  ├─ characters.ts
+│  │  │  └─ room.ts
+│  │  ├─ services
+│  │  │  ├─ CharacterService.ts
+│  │  │  ├─ analysis
+│  │  │  │  ├─ AnalysisService.ts
+│  │  │  │  ├─ clustering
+│  │  │  │  │  ├─ ClusteringService.ts
+│  │  │  │  │  └─ types
+│  │  │  │  │     ├─ IBridgeScoreResult.ts
+│  │  │  │  │     └─ ICommunityScanResult.ts
+│  │  │  │  ├─ projection
+│  │  │  │  │  └─ ProjectionService.ts
+│  │  │  │  ├─ synergy
+│  │  │  │  │  ├─ SynergyNormalizationService.ts
+│  │  │  │  │  ├─ SynergyService.ts
+│  │  │  │  │  └─ types
+│  │  │  │  │     ├─ IRawTacticalUsage.ts
+│  │  │  │  │     ├─ ISynergyMatrix.ts
+│  │  │  │  │     └─ SynergyMode.ts
+│  │  │  │  └─ tactical
+│  │  │  │     ├─ calculateTacticalWeight.ts
+│  │  │  │     ├─ computeTacticalUsages.ts
+│  │  │  │     ├─ getWeightContext.ts
+│  │  │  │     └─ types
+│  │  │  │        ├─ IMoveContext.ts
+│  │  │  │        ├─ ITacticalCoefficients.ts
+│  │  │  │        └─ IWeightContext.ts
+│  │  │  ├─ auth
+│  │  │  │  ├─ AuthPayload.ts
+│  │  │  │  ├─ GuestService.ts
+│  │  │  │  ├─ MemberService.ts
+│  │  │  │  └─ jwt.ts
+│  │  │  └─ room
+│  │  │     ├─ RoomService.ts
+│  │  │     └─ RoomStatePersistenceService.ts
+│  │  ├─ socket
+│  │  │  ├─ index.ts
+│  │  │  ├─ managers
+│  │  │  │  ├─ IRoomStateManager.ts
+│  │  │  │  └─ RoomStateManager.ts
+│  │  │  ├─ modules
+│  │  │  │  ├─ boardSocket.ts
+│  │  │  │  ├─ chatSocket.ts
+│  │  │  │  ├─ roomSocket.ts
+│  │  │  │  ├─ stepSocket.ts
+│  │  │  │  ├─ tacticalSocket.ts
+│  │  │  │  └─ teamSocket.ts
+│  │  │  ├─ socketAuth.ts
+│  │  │  └─ socketController.ts
+│  │  ├─ test
+│  │  │  └─ saveTest.ts
+│  │  ├─ types
+│  │  │  ├─ CharacterFilterKey.ts
+│  │  │  ├─ ICharacterRandomContext.ts
+│  │  │  ├─ IChatMessageDTO.ts
+│  │  │  ├─ IMatchFlow.ts
+│  │  │  ├─ IRoomSetting.ts
+│  │  │  ├─ IRoomState.ts
+│  │  │  ├─ IRoomUser.ts
+│  │  │  ├─ ITeam.ts
+│  │  │  ├─ IZone.ts
+│  │  │  └─ TeamMember.ts
+│  │  └─ utils
+│  │     ├─ asyncHandler.ts
+│  │     ├─ logger.ts
+│  │     ├─ matchFlow.ts
+│  │     └─ zoneMetaTable.ts
+│  ├─ tsconfig.json
+│  ├─ types
+│  │  ├─ ml-kmeans.d.ts
+│  │  ├─ ml-pca.d.ts
+│  │  └─ src
+│  └─ upload-node-modules.sh
+├─ genshin-ban-pick
+│  ├─ .editorconfig
+│  ├─ .env.development
+│  ├─ .env.production
+│  ├─ README.md
+│  ├─ deploy-dist-to-ec2.sh
+│  ├─ env.d.ts
+│  ├─ eslint.config.ts
+│  ├─ index.html
+│  ├─ package-lock.json
+│  ├─ package.json
+│  ├─ public
+│  │  ├─ favicon.ico
+│  │  └─ wish.png
+│  ├─ src
+│  │  ├─ App.vue
+│  │  ├─ application
+│  │  │  └─ useAuthUseCase.ts
+│  │  ├─ composables
+│  │  │  ├─ useAnalysisDomain.ts
+│  │  │  ├─ useAppInitializer.ts
+│  │  │  ├─ useCharacterDomain.ts
+│  │  │  ├─ useDesignTokens.ts
+│  │  │  ├─ useEchartTheme.ts
+│  │  │  ├─ useRoomDomain.ts
+│  │  │  ├─ useScopedCssVar.ts
+│  │  │  └─ useTeamTheme.ts
+│  │  ├─ constants
+│  │  │  ├─ characterNameMap.ts
+│  │  │  ├─ customMIMETypes.ts
+│  │  │  └─ useElementColor.ts
+│  │  ├─ domain
+│  │  │  └─ useAuthDomain.ts
+│  │  ├─ errors
+│  │  │  └─ AppError.ts
+│  │  ├─ features
+│  │  │  ├─ Analysis
+│  │  │  │  ├─ Analysis.vue
+│  │  │  │  ├─ AnalysisDrawer.vue
+│  │  │  │  ├─ components
+│  │  │  │  │  ├─ CharacterClustersChart.vue
+│  │  │  │  │  ├─ CharacterMetaChart.vue
+│  │  │  │  │  ├─ CharacterSynergyChart.vue
+│  │  │  │  │  ├─ CharacterTacticalUsageCompositionChart.vue
+│  │  │  │  │  ├─ CharacterTacticalUsagesChart.vue
+│  │  │  │  │  ├─ PlayerCharacterChart.vue
+│  │  │  │  │  └─ composables
+│  │  │  │  │     ├─ useCharacterClustersChart.ts
+│  │  │  │  │     ├─ useCharacterSynergyChart.ts
+│  │  │  │  │     ├─ useCharacterTacticalUsageCompositionChart.ts
+│  │  │  │  │     ├─ useCharacterTacticalUsagesChart.ts
+│  │  │  │  │     └─ usePlayerCharacterChart.ts
+│  │  │  │  ├─ composables
+│  │  │  │  │  └─ useAnalysis.ts
+│  │  │  │  └─ types
+│  │  │  │     ├─ ICharacterClusters.ts
+│  │  │  │     ├─ ITacticalUsages.ts
+│  │  │  │     └─ IWeightContext.ts
+│  │  │  ├─ BanPick
+│  │  │  │  ├─ BanPickBoard.vue
+│  │  │  │  ├─ CharacterSelector
+│  │  │  │  │  ├─ CharacterSelector.vue
+│  │  │  │  │  └─ composables
+│  │  │  │  │     ├─ useFilteredCharacters.ts
+│  │  │  │  │     └─ useSelectorOptions.ts
+│  │  │  │  ├─ ImageOptions
+│  │  │  │  │  └─ ImageOptions.vue
+│  │  │  │  ├─ components
+│  │  │  │  │  ├─ BanZones.vue
+│  │  │  │  │  ├─ DropZone.vue
+│  │  │  │  │  ├─ PickZones.vue
+│  │  │  │  │  └─ UtilityZones.vue
+│  │  │  │  ├─ composables
+│  │  │  │  │  ├─ useBoardSync.ts
+│  │  │  │  │  ├─ useBoardZonesLayout.ts
+│  │  │  │  │  └─ useRandomPull.ts
+│  │  │  │  └─ types
+│  │  │  │     ├─ CharacterFilterKey.ts
+│  │  │  │     ├─ ICharacterRandomContext.ts
+│  │  │  │     └─ IZone.ts
+│  │  │  ├─ ChatRoom
+│  │  │  │  ├─ ChatRoom.vue
+│  │  │  │  ├─ ChatRoomDrawer.vue
+│  │  │  │  ├─ composables
+│  │  │  │  │  └─ useChatSync.ts
+│  │  │  │  └─ types
+│  │  │  │     ├─ IChatMessage.ts
+│  │  │  │     └─ IChatMessageDTO.ts
+│  │  │  ├─ RoomUserPool
+│  │  │  │  ├─ RoomUserPool.vue
+│  │  │  │  └─ composables
+│  │  │  │     └─ useRoomUserSync.ts
+│  │  │  ├─ StepIndicator
+│  │  │  │  ├─ StepIndicator.vue
+│  │  │  │  └─ composables
+│  │  │  │     └─ useMatchStepSync.ts
+│  │  │  ├─ Tactical
+│  │  │  │  ├─ TacticalBoard.vue
+│  │  │  │  ├─ TacticalBoardPanel.vue
+│  │  │  │  ├─ TacticalBoardPanelDrawer.vue
+│  │  │  │  ├─ TacticalCell.vue
+│  │  │  │  ├─ TacticalPool.vue
+│  │  │  │  └─ composables
+│  │  │  │     └─ useTacticalBoardSync.ts
+│  │  │  ├─ Team
+│  │  │  │  ├─ TeamInfo.vue
+│  │  │  │  └─ composables
+│  │  │  │     └─ useTeamInfoSync.ts
+│  │  │  └─ Toolbar
+│  │  │     └─ ToolBar.vue
+│  │  ├─ infrastructure
+│  │  │  └─ storage
+│  │  │     └─ tokenStorage.ts
+│  │  ├─ main.ts
+│  │  ├─ network
+│  │  │  ├─ analysisService.ts
+│  │  │  ├─ authService.ts
+│  │  │  ├─ characterService.ts
+│  │  │  ├─ httpClient.ts
+│  │  │  ├─ registerAllSyncModules.ts
+│  │  │  └─ roomService.ts
+│  │  ├─ playground
+│  │  │  ├─ components
+│  │  │  │  ├─ HelloWorld.vue
+│  │  │  │  ├─ TheWelcome.vue
+│  │  │  │  ├─ WelcomeItem.vue
+│  │  │  │  └─ icons
+│  │  │  │     └─ IconTooling.vue
+│  │  │  ├─ stores
+│  │  │  │  └─ counter.ts
+│  │  │  └─ views
+│  │  │     └─ AboutView.vue
+│  │  ├─ router
+│  │  │  └─ index.ts
+│  │  ├─ stores
+│  │  │  ├─ authStore.ts
+│  │  │  ├─ boardImageStore.ts
+│  │  │  ├─ characterStore.ts
+│  │  │  ├─ chatStore.ts
+│  │  │  ├─ matchStepStore.ts
+│  │  │  ├─ roomUserStore.ts
+│  │  │  ├─ socketStore.ts
+│  │  │  ├─ tacticalBoardStore.ts
+│  │  │  └─ teamInfoStore.ts
+│  │  ├─ types
+│  │  │  ├─ ICharacter.ts
+│  │  │  ├─ IGuest.ts
+│  │  │  ├─ IMatchFlow.ts
+│  │  │  ├─ IMember.ts
+│  │  │  ├─ IRoomSetting.ts
+│  │  │  ├─ IRoomState.ts
+│  │  │  ├─ IRoomUser.ts
+│  │  │  ├─ ITeam.ts
+│  │  │  └─ TeamMember.ts
+│  │  ├─ utils
+│  │  │  └─ imageRegistry.ts
+│  │  └─ views
+│  │     ├─ BanPickView.vue
+│  │     ├─ LoginView.vue
+│  │     ├─ RegisterView.vue
+│  │     ├─ RoomListView.vue
+│  │     └─ RoomSettingView.vue
+│  ├─ tsconfig.app.json
+│  ├─ tsconfig.json
+│  ├─ tsconfig.node.json
+│  ├─ upload-node-modules.sh
+│  └─ vite.config.ts
+├─ package-lock.json
+└─ packages
+   └─ shared
+      └─ src
+         └─ types
+
+```

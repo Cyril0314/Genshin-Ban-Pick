@@ -1,9 +1,9 @@
 // src/features/BanPick/composables/useRandomizeImage.vue
-import { ZoneType } from '@/features/BanPick/types/IZone';
+import { ZoneType } from '@/modules/board/types/IZone';
 
-import type { IMatchStep } from '@/types/IMatchFlow';
+import type { IMatchStep } from '@/modules/board/types/IMatchFlow';
 import type { IRoomSetting } from '@/types/IRoomSetting';
-import type { IZone } from '@/features/BanPick/types/IZone';
+import type { IZone } from '@/modules/board/types/IZone';
 
 
 export function useRandomPull() {

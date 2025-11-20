@@ -3,7 +3,7 @@
 import { computed } from 'vue';
 
 import TacticalCell from './TacticalCell.vue';
-import { useTacticalBoardStore } from '@/stores/tacticalBoardStore';
+import { useTacticalBoardStore } from '@/modules/board/store/tacticalBoardStore';
 import { storeToRefs } from 'pinia';
 
 import type { TeamMember } from '@/types/TeamMember';

@@ -6,13 +6,13 @@ import tinycolor from 'tinycolor2';
 import type { CallbackDataParams } from 'echarts/types/dist/shared';
 
 import { useAnalysisDomain } from '@/composables/useAnalysisDomain';
-import { useCharacterDomain } from '@/composables/useCharacterDomain';
-import { useCharacterStore } from '@/stores/characterStore';
+import { useCharacterDomain } from '@/modules/character/domain/useCharacterDomain';
+import { useCharacterStore } from '@/modules/character/store/characterStore';
 import { useDesignTokens } from '@/composables/useDesignTokens';
 import { useEchartTheme } from '@/composables/useEchartTheme';
 
 import type { ITacticalUsages } from '../../types/ITacticalUsages';
-import { ZoneType } from '@/features/BanPick/types/IZone';
+import { ZoneType } from '@/modules/board/types/IZone';
 
 export function useCharacterTacticalUsageCompositionChart(topN = 120) {
     const designTokens = useDesignTokens();

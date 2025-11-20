@@ -3,7 +3,7 @@ import { storeToRefs } from 'pinia';
 
 import { useSocketStore } from '@/stores/socketStore';
 import { useTeamInfoStore } from '@/stores/teamInfoStore';
-import { useRoomUserStore } from '@/stores/roomUserStore';
+import { useRoomUserStore } from '@/modules/room/store/roomUserStore';
 
 import type { IRoomUser } from '@/types/IRoomUser';
 import type { TeamMember, TeamMembersMap } from '@/types/TeamMember';

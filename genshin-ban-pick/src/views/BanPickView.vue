@@ -5,23 +5,23 @@ import { ref, shallowRef, onMounted, onUnmounted, computed } from 'vue';
 import { onBeforeRouteLeave, useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
 
-import StepIndicator from '@/features/StepIndicator/StepIndicator.vue';
-import RoomUserPool from '@/features/RoomUserPool/RoomUserPool.vue';
-import BanPickBoard from '@/features/BanPick/BanPickBoard.vue';
+import StepIndicator from '@/modules/board/ui/components/StepIndicator.vue';
+import RoomUserPool from '@/modules/room/ui/components/RoomUserPool.vue';
+import BanPickBoard from '@/modules/board/ui/views/BanPickBoard.vue';
 import Toolbar from '@/features/Toolbar/ToolBar.vue';
-import { useRoomDomain } from '@/composables/useRoomDomain';
-import { useBoardSync } from '@/features/BanPick/composables/useBoardSync';
+import { useRoomUseCase } from '@/modules/room';
+import { useBoardSync } from '@/modules/board/useBoardSync';
 import { useTeamInfoSync } from '@/features/Team/composables/useTeamInfoSync';
 import { useRandomPull } from '@/features/BanPick/composables/useRandomPull';
-import { useCharacterStore } from '@/stores/characterStore'
+import { useCharacterStore } from '@/modules/character/store/characterStore';
 import { useTeamInfoStore } from '@/stores/teamInfoStore';
-import { useMatchStepStore } from '@/stores/matchStepStore';
-import { useBoardImageStore } from '@/stores/boardImageStore';
-import { useTacticalBoardStore } from '@/stores/tacticalBoardStore';
-import { ZoneType } from '@/features/BanPick/types/IZone';
-import { useRoomUserSync } from '@/features/RoomUserPool/composables/useRoomUserSync';
+import { useMatchStepStore } from '@/modules/board/store/matchStepStore';
+import { useBoardImageStore } from '@/modules/board/store/boardImageStore';
+import { useTacticalBoardStore } from '@/modules/board/store/tacticalBoardStore';
+import { ZoneType } from '@/modules/board/types/IZone';
+import { useRoomUserSync } from '@/modules/room/sync/useRoomUserSync';
 
-import type { IRoomSetting } from '@/types/IRoomSetting';
+import type { IRoomSetting } from '@/modules/room';
 import type { CharacterFilterKey } from '@/features/BanPick/types/CharacterFilterKey';
 import type { ICharacterRandomContext } from '@/features/BanPick/types/ICharacterRandomContext';
 
@@ -38,8 +38,8 @@ const characterFilter = ref<Record<CharacterFilterKey, string[]>>({
     wish: [],
 });
 const route = useRoute();
-const roomId = route.query.room as string || 'default-room';
-const roomDomain = useRoomDomain();
+const roomId = (route.query.room as string) || 'default-room';
+const roomUseCase = useRoomUseCase();
 
 const { boardImageMap, usedImageIds, handleBoardImageDrop, handleBoardImageRestore, handleBoardImageMapReset } = useBoardSync();
 const { randomPull } = useRandomPull();
@@ -78,17 +78,19 @@ onMounted(async () => {
     console.debug('[BAN PICK VIEW] On mounted');
     try {
         await characterStore.loadCharacters();
-        roomSetting.value = await roomDomain.fetchSetting(roomId);
+        roomSetting.value = await roomUseCase.fetchSetting(roomId);
         filteredCharacterKeys.value = Object.keys(characterMap.value).map((id) => id);
-        boardImageStore.initZoneMetaTable(roomSetting.value.zoneMetaTable);
-        teamInfoStore.initTeams(roomSetting.value.teams);
-        matchStepStore.initMatchSteps(roomSetting.value.matchFlow.steps);
-        tacticalBoardStore.initTeamTacticalBoardMap(
-            roomSetting.value.teams,
-            roomSetting.value.numberOfTeamSetup,
-            roomSetting.value.numberOfSetupCharacter,
-        );
-        
+        if (roomSetting.value) {
+            boardImageStore.initZoneMetaTable(roomSetting.value.zoneMetaTable);
+            teamInfoStore.initTeams(roomSetting.value.teams);
+            matchStepStore.initMatchSteps(roomSetting.value.matchFlow.steps);
+            tacticalBoardStore.initTeamTacticalBoardMap(
+                roomSetting.value.teams,
+                roomSetting.value.numberOfTeamSetup,
+                roomSetting.value.numberOfSetupCharacter,
+            );
+        }
+
         joinRoom(roomId);
     } catch (error) {
         console.error('[BAN PICK VIEW] Fetched character and room setting failed:', error);
@@ -104,10 +106,16 @@ onUnmounted(() => {
     console.debug('[BAN PICK VIEW] On unmounted');
 });
 
-function handleFilterChange({ filteredCharacterKeys: newKeys, characterFilter: newFilter }: { filteredCharacterKeys: string[]; characterFilter: Record<CharacterFilterKey, string[]> }) {
+function handleFilterChange({
+    filteredCharacterKeys: newKeys,
+    characterFilter: newFilter,
+}: {
+    filteredCharacterKeys: string[];
+    characterFilter: Record<CharacterFilterKey, string[]>;
+}) {
     console.debug(`[BAN PICK VIEW] Handle filiter changed:`, { filteredCharacterKeys: newKeys, characterFilter: newFilter });
     filteredCharacterKeys.value = newKeys;
-    characterFilter.value = newFilter
+    characterFilter.value = newFilter;
 }
 
 function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
@@ -121,12 +129,12 @@ function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
         console.warn(`[BAN PICK VIEW] Random pull does not get any result`);
         return;
     }
-    const randomContext: ICharacterRandomContext = { characterFilter: characterFilter.value }
+    const randomContext: ICharacterRandomContext = { characterFilter: characterFilter.value };
     handleBoardImageDrop({ ...result, randomContext });
 }
 
 async function handleBoardRecord() {
-    await roomDomain.save(roomId);
+    await roomUseCase.save(roomId);
 }
 </script>
 
@@ -146,17 +154,25 @@ async function handleBoardRecord() {
                                 <StepIndicator />
                             </div>
                             <div class="layout__toolbar">
-                                <Toolbar @image-map-reset="handleBoardImageMapReset"
-                                    @board-record="handleBoardRecord" />
+                                <Toolbar @image-map-reset="handleBoardImageMapReset" @board-record="handleBoardRecord" />
                             </div>
                         </div>
 
-                        <BanPickBoard v-if="roomSetting && characterMap" :roomSetting="roomSetting"
-                            :characterMap="characterMap" :boardImageMap="boardImageMap" :usedImageIds="usedImageIds"
-                            :filteredCharacterKeys="filteredCharacterKeys" @image-drop="handleBoardImageDrop"
-                            @image-restore="handleBoardImageRestore" @filter-change="handleFilterChange"
-                            @random-pull="handleRandomPull" @member-input="handleMemberInput"
-                            @member-drop="handleMemberDrop" @member-restore="handleMemberRestore" />
+                        <BanPickBoard
+                            v-if="roomSetting && characterMap"
+                            :roomSetting="roomSetting"
+                            :characterMap="characterMap"
+                            :boardImageMap="boardImageMap"
+                            :usedImageIds="usedImageIds"
+                            :filteredCharacterKeys="filteredCharacterKeys"
+                            @image-drop="handleBoardImageDrop"
+                            @image-restore="handleBoardImageRestore"
+                            @filter-change="handleFilterChange"
+                            @random-pull="handleRandomPull"
+                            @member-input="handleMemberInput"
+                            @member-drop="handleMemberDrop"
+                            @member-restore="handleMemberRestore"
+                        />
                         <div v-else class="loading">載入房間設定中...</div>
                     </div>
                 </div>
@@ -206,7 +222,6 @@ async function handleBoardRecord() {
     align-items: center;
 }
 
-/* 🎮 設定設計稿基準解析度（你可視覺上微調） */
 .viewport-content {
     width: var(--layout-width);
     height: var(--layout-height);
@@ -240,7 +255,7 @@ async function handleBoardRecord() {
     /* height: var(--size-top-bar); */
     border-radius: var(--radius-lg);
     padding: var(--space-md) var(--space-lg);
-    gap: var(--space-lg)
+    gap: var(--space-lg);
 }
 
 .layout__room-user-pool {

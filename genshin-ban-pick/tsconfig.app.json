@@ -19,7 +19,7 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "esModuleInterop": true,
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "target": "ESNext",
     "module": "ESNext",
     "jsx": "preserve",
