@@ -3,7 +3,7 @@
 <script setup lang="ts">
 import DropZone from './DropZone.vue';
 
-import type { IZone } from '@/modules/board/types/IZone';
+import type { IZone } from "../../types/IZone";
 
 const props = defineProps<{
     zones: IZone[];

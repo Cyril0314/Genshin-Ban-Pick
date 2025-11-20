@@ -1,7 +1,8 @@
 // src/modules/auth/infrastructure/authService.ts
 
-import api from '@/infrastructure/http/httpClient';
-import type { HttpClient } from '@/infrastructure/http/httpClient';
+import api from '@/app/infrastructure/http/httpClient';
+
+import type { HttpClient } from '@/app/infrastructure/http/httpClient';
 
 export function createAuthService(client: HttpClient = api) {
     async function postRegisterMember(payload: { account: string; password: string; nickname: string }) {

@@ -1,15 +1,15 @@
-<!-- src/features/RoomUserPool/RoomUserPool.vue -->
+<!-- src/modules/room/ui/components/RoomUserPool.vue -->
 
 <script setup lang="ts">
+import { onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 
-import { DragTypes } from '@/constants/customMIMETypes.ts';
+import { DragTypes } from '@/app/constants/customMIMETypes.ts';
+import { useTeamInfoStore } from '@/modules/team';
+import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme.ts';
 import { useRoomUserStore } from '../../store/roomUserStore';
-import { useTeamInfoStore } from '@/stores/teamInfoStore.ts';
-import { useTeamTheme } from '@/composables/useTeamTheme';
 
 import type { IRoomUser } from '../../types/IRoomUser.ts';
-import { onMounted, ref } from 'vue';
 
 const roomUserStore = useRoomUserStore();
 const { roomUsers } = storeToRefs(roomUserStore);

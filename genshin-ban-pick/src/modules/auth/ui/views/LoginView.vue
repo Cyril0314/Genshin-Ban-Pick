@@ -4,11 +4,11 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-import { useSocketStore } from '@/stores/socketStore';
-import { useAuthUseCase } from '../../application/useAuthUseCase';
+import { useSocketStore } from '@/app/stores/socketStore';
+import { authUseCase } from '../../application/authUseCase';
 
 const router = useRouter();
-const { loginMember, loginGuest } = useAuthUseCase();
+const { loginMember, loginGuest } = authUseCase();
 const socketStore = useSocketStore();
 
 const accountInput = ref('');

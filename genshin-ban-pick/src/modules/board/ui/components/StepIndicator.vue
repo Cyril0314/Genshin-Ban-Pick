@@ -3,11 +3,11 @@
 import { storeToRefs } from 'pinia';
 import { ref, computed, watch } from 'vue';
 
-import { useTeamTheme } from '@/composables/useTeamTheme';
-import { useBoardImageStore } from '@/modules/board/store/boardImageStore';
-import { useTeamInfoStore } from '@/stores/teamInfoStore';
-import { useMatchStepStore } from '@/modules/board/store/matchStepStore';
-import { ZoneType } from '@/modules/board/types/IZone';
+import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
+import { useTeamInfoStore } from '@/modules/team';
+import { useBoardImageStore } from '../../store/boardImageStore';
+import { useMatchStepStore } from '../../store/matchStepStore';
+import { ZoneType } from "../../types/IZone";
 
 const active = ref(false);
 const matchStepStore = useMatchStepStore();

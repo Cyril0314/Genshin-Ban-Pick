@@ -1,15 +1,16 @@
 <!-- src/modules/board/ui/components/DropZone.vue -->
+
 <script setup lang="ts">
 
 import { ref, computed } from 'vue'
-
-import { useMatchStepStore } from '@/modules/board/store/matchStepStore';
-import { getWishImagePath } from '@/utils/imageRegistry'
-import { DragTypes } from '@/constants/customMIMETypes'
-
-import type { IZone } from '@/modules/board/types/IZone';
 import { storeToRefs } from 'pinia';
-import { useTeamTheme } from '@/composables/useTeamTheme';
+
+import { DragTypes } from '@/app/constants/customMIMETypes'
+import { getWishImagePath } from '@/modules/shared/infrastructure/imageRegistry'
+import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
+import { useMatchStepStore } from '../../store/matchStepStore';
+
+import type { IZone } from "../../types/IZone";
 
 const props = defineProps<{
   zone: IZone

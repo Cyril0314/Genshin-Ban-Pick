@@ -1,8 +1,8 @@
 // src/modules/room/types/IRoomSetting.ts
 
-import type { IMatchFlow } from '@/modules/board/types/IMatchFlow';
-import type { ITeam } from '@/types/ITeam';
-import type { IZone } from '@/modules/board/types/IZone';
+import type { IMatchFlow } from '@/modules/board';
+import type { ITeam } from '@/modules/team';
+import type { IZone } from '@/modules/board';
 
 export interface IRoomSetting {
     zoneMetaTable: Record<number, IZone>;

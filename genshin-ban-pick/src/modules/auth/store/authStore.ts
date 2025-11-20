@@ -5,9 +5,11 @@ import { ref, computed, watch } from 'vue';
 
 import { MemberRole } from '../types/IMember';
 import { tokenStorage } from '../infrastructure/tokenStorage';
+
 import type { Identity, MaybeIdentity } from '../types/Identity';
 
 export const useAuthStore = defineStore('auth', () => {
+    const isInitialized = ref(false);
     const identity = ref<MaybeIdentity>(null);
     const isLoggedIn = computed(() => identity.value !== null);
     const isAdmin = computed(() => identity.value?.type === 'Member' && identity.value.user.role === MemberRole.Admin);
@@ -42,7 +44,6 @@ export const useAuthStore = defineStore('auth', () => {
         identity.value = newIdentity;
     }
 
-    const isInitialized = ref(false);
     function setInitialized(value: boolean) {
         isInitialized.value = value;
     }

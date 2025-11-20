@@ -4,10 +4,10 @@
 import { computed, onMounted, ref } from 'vue';
 import router from '@/router';
 
-import { useRoomUseCase } from '../../application/useRoomUseCase';
+import { roomUseCase } from '../../application/roomUseCase';
 import type { IRoomState } from '../../types/IRoomState';
 
-const { fetchRooms } = useRoomUseCase();
+const { fetchRooms } = roomUseCase();
 const rooms = ref<Record<string, IRoomState>>({});
 const loading = ref(true);
 const errorMessage = ref('');

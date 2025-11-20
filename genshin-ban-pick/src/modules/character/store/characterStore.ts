@@ -2,22 +2,18 @@
 
 import { defineStore } from 'pinia';
 
-import { useCharacterDomain } from '@/modules/character/domain/useCharacterDomain';
-
-import type { ICharacter } from '@/modules/character/types/ICharacter';
+import type { ICharacter } from '../types/ICharacter';
 
 export const useCharacterStore = defineStore('character', {
     state: () => ({
         characterMap: {} as Record<string, ICharacter>,
-        loaded: false,
+        isInitialized: false,
     }),
 
     actions: {
-        async loadCharacters() {
-            if (this.loaded) return;
-            const { fetchCharacterMap } = useCharacterDomain();
-            this.characterMap = await fetchCharacterMap();
-            this.loaded = true;
-        }
+        setCharacterMap(characterMap: Record<string, ICharacter>) {
+            this.characterMap = characterMap
+            this.isInitialized = true
+        },
     }
 })

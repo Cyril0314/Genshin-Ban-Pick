@@ -4,8 +4,8 @@ import { computed } from 'vue'
 
 import type { ICharacter } from '@/modules/character/types/ICharacter'
 
-import { getProfileImagePath } from '@/utils/imageRegistry'
-import { DragTypes } from '@/constants/customMIMETypes'
+import { getProfileImagePath } from '@/modules/shared/infrastructure/imageRegistry'
+import { DragTypes } from '@/app/constants/customMIMETypes'
 
 const props = defineProps<{
   characterMap: Record<string, ICharacter>

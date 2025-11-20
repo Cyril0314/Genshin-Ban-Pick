@@ -1,13 +1,13 @@
 // src/modules/room/types/IRoomState.ts
 
-import type { ICharacterRandomContext } from "@/features/BanPick/types/ICharacterRandomContext";
-import type { IChatMessageDTO } from "@/features/ChatRoom/types/IChatMessageDTO";
+import type { BoardImageMap, ICharacterRandomContext } from "@/modules/board";
+import type { IChatMessageDTO } from "@/modules/chat";
+import type { TeamMembersMap } from "@/modules/team";
+import type { TacticalCellImageMap } from "@/modules/tactical";
+
 import type { IRoomUser } from "./IRoomUser";
 import type { IRoomSetting } from "./IRoomSetting";
-import type { TeamMembersMap } from "@/types/TeamMember";
 
-export type BoardImageMap = Record<number, string>;
-export type TacticalCellImageMap = Record<number, string>;
 export type TeamTacticalBoardMap = Record<number, TacticalCellImageMap>;
 export type CharacterRandomContextMap = Record<string, ICharacterRandomContext>;
 

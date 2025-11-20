@@ -1,8 +1,9 @@
 // src/modules/room/infrastructure/roomService.ts
 
-import type { ITeam } from '@/types/ITeam';
-import api from '@/infrastructure/http/httpClient';
-import type { HttpClient } from '@/infrastructure/http/httpClient';
+import api from '@/app/infrastructure/http/httpClient';
+
+import type { HttpClient } from '@/app/infrastructure/http/httpClient';
+import type { ITeam } from '@/modules/team';
 
 export function createRoomService(client: HttpClient = api) {
     async function get() {

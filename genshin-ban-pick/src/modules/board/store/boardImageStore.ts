@@ -1,4 +1,4 @@
-// src/stores/boardImageStore.ts
+// src/modules/board/store/boardImageStore.ts
 
 import { defineStore, } from 'pinia';
 import { ref, computed, watch, shallowRef} from 'vue';

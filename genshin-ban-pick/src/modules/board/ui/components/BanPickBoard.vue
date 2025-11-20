@@ -6,18 +6,17 @@ import { storeToRefs } from 'pinia';
 
 import ImageOptions from './ImageOptions.vue';
 import CharacterSelector from '@/modules/character/ui/components/CharacterSelector.vue';
-import TeamInfo from '@/features/Team/TeamInfo.vue';
+import TeamInfo from '@/modules/team/ui/components/TeamInfo.vue';
 import BanZones from './BanZones.vue';
 import PickZones from './PickZones.vue';
 import UtilityZones from './UtilityZones.vue';
 
+import { useTeamInfoStore } from '@/modules/team';
 import { ZoneType } from '../../types/IZone';
-import { useBoardZonesLayout } from '../../domain/useBoardZonesLayout';
-import { useTeamInfoStore } from '@/stores/teamInfoStore';
+import { useBoardZonesLayout } from '../composables/useBoardZonesLayout';
 
-import type { ICharacter } from '@/modules/character/types/ICharacter';
+import type { ICharacter, CharacterFilterKey } from '@/modules/character';
 import type { IRoomSetting } from '@/modules/room';
-import type { CharacterFilterKey } from '@/features/BanPick/types/CharacterFilterKey';
 
 const props = defineProps<{
     roomSetting: IRoomSetting;

@@ -1,23 +1,17 @@
-<!-- src/features/CharacterSelector/CharacterSelector.vue -->
+<!-- src/modules/character/ui/components/CharacterSelector.vue -->
 
 <script setup lang="ts">
 import { reactive, watch } from 'vue';
-
-import { useSelectorOptions } from '../../domain/useSelectorOptions';
-import { useFilteredCharacters } from '@/modules/character/domain/useFilteredCharacters';
-
-import type { ICharacter } from '@/modules/character/types/ICharacter';
-
-import { ZoneType } from '@/modules/board/types/IZone';
-
-import 'vue-select/dist/vue-select.css';
 // @ts-ignore
 import vSelect from 'vue-select';
+import 'vue-select/dist/vue-select.css';
+import { useSelectorOptions, CommonOption } from '../composables/useSelectorOptions';
+import { useFilteredCharacters } from '../composables/useFilteredCharacters';
+import { ZoneType } from '@/modules/board';
 
-import { CommonOption } from '../../domain/useSelectorOptions';
-
-import type { CharacterFilterKey } from '@/features/BanPick/types/CharacterFilterKey';
-import type { SelectorOption } from '../../domain/useSelectorOptions';
+import type { ICharacter } from '@/modules/character/types/ICharacter';
+import type { CharacterFilterKey } from '@/modules/character/types/CharacterFilterKey';
+import type { SelectorOption } from '../composables/useSelectorOptions';
 
 const props = defineProps<{
     characterMap: Record<string, ICharacter>;

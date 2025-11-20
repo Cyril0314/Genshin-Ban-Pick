@@ -1,14 +1,15 @@
-// src/features/BanPick/composables/useBoardSync.vue
+// src/modules/board/sync/useBoardSync.ts
 
 import { readonly } from 'vue';
 import { storeToRefs } from 'pinia';
 
+import { useSocketStore } from '@/app/stores/socketStore';
+import { useBoardImageStore } from '../store/boardImageStore';
 import { useMatchStepSync } from './useMatchStepSync';
-import { useSocketStore } from '@/stores/socketStore';
-import { useBoardImageStore } from '@/modules/board/store/boardImageStore';
-import { useTacticalBoardSync } from '@/features/Tactical/composables/useTacticalBoardSync';
-import { ZoneType } from '@/modules/board/types/IZone';
-import type { ICharacterRandomContext } from '@/features/BanPick/types/ICharacterRandomContext';
+import { useTacticalBoardSync } from '@/modules/tactical';
+import { ZoneType } from '../types/IZone';
+
+import type { ICharacterRandomContext } from '../types/ICharacterRandomContext';
 
 enum BoardEvent {
     ImageDropRequest = 'board.image.drop.request',

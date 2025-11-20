@@ -1,9 +1,9 @@
-// src/stores/matchStepStore.ts
+// src/modules/board/store/matchStepStore.ts
 
 import { defineStore } from 'pinia';
 import { ref, computed, watch, shallowRef } from 'vue';
 
-import type { IMatchStep } from '@/modules/board/types/IMatchFlow';
+import type { IMatchStep } from '../types/IMatchFlow';
 
 export const useMatchStepStore = defineStore('matchStep', () => {
     const matchSteps = shallowRef<IMatchStep[]>([]);

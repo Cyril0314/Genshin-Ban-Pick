@@ -2,7 +2,7 @@
 import { onMounted } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
 
-import { useAppInitializer } from './composables/useAppInitializer';
+import { useAppInitializer } from './app/bootstrap/useAppInitializer';
 
 const { isInitializing } = useAppInitializer();
 

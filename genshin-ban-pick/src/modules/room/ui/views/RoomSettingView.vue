@@ -4,9 +4,9 @@
 import router from '@/router';
 import { ref } from 'vue';
 
-import { useRoomUseCase } from '../../application/useRoomUseCase';
+import { roomUseCase } from '../../application/roomUseCase';
 
-const { build } = useRoomUseCase();
+const { buildRoom } = roomUseCase();
 
 const roomIdInput = ref('default-room');
 const numberOfUtilityInput = ref(3);
@@ -20,7 +20,7 @@ async function handleSubmit() {
     const numberOfPick = numberOfPickInput.value;
 
     try {
-        const roomSetting = await build(rooId, { numberOfUtility, numberOfBan, numberOfPick });
+        const roomSetting = await buildRoom(rooId, { numberOfUtility, numberOfBan, numberOfPick });
         // router.push(`/ban-pick?room=${rooId}`);
         router.push(`/login`);
     } catch (error: any) {

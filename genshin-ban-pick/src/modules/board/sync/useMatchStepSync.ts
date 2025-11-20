@@ -1,9 +1,9 @@
-// src/features/StepIndicator/composables/useMatchStepSync.ts
+// src/modules/board/sync/useMatchStepSync.ts
 
 import { storeToRefs } from 'pinia'
 
-import { useSocketStore } from '@/stores/socketStore'
-import { useMatchStepStore } from '@/modules/board/store/matchStepStore'
+import { useSocketStore } from '@/app/stores/socketStore'
+import { useMatchStepStore } from '../store/matchStepStore'
 
 enum StepEvent {
     AdvanceRequest = 'step.advance.request',

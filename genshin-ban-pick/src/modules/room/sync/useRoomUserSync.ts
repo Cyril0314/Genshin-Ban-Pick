@@ -2,7 +2,7 @@
 
 import { storeToRefs } from 'pinia';
 
-import { useSocketStore } from '@/stores/socketStore';
+import { useSocketStore } from '@/app/stores/socketStore';
 
 import { useRoomUserStore } from '../store/roomUserStore';
 import type { IRoomUser } from '../types/IRoomUser';
