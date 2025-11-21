@@ -1,13 +1,9 @@
 // src/modules/board/sync/useBoardSync.ts
 
-import { readonly } from 'vue';
-import { storeToRefs } from 'pinia';
-
+import { boardUseCase } from '../application/boardUseCase';
 import { useSocketStore } from '@/app/stores/socketStore';
-import { useBoardImageStore } from '../store/boardImageStore';
 import { useMatchStepSync } from './useMatchStepSync';
 import { useTacticalBoardSync } from '@/modules/tactical';
-import { ZoneType } from '../types/IZone';
 
 import type { ICharacterRandomContext } from '../types/ICharacterRandomContext';
 
@@ -26,19 +22,10 @@ enum BoardEvent {
 
 export function useBoardSync() {
     const socket = useSocketStore().getSocket();
-    const boardImageStore = useBoardImageStore();
-    const { zoneMetaTable, boardImageMap, usedImageIds } = storeToRefs(boardImageStore);
-    const { setBoardImageMap, placeBoardImage, removeBoardImage, resetBoardImageMap, findZoneIdByImageId } = boardImageStore;
+    const { handleBoardImageDrop, handleBoardImageRestore, handleBoardImageMapReset, setBoardImageMap } = boardUseCase();
+    const { currentStep, advanceStep, resetStep } = useMatchStepSync();
 
-    const { currentStep, matchSteps, advanceStep, resetStep } = useMatchStepSync();
-
-    const {
-        handleAddImageToPool,
-        handleRemoveImageFromBoard,
-        handleAllTeamAddImageToPool,
-        handleAllTeamRemoveImageFromBoard,
-        handleAllTeamResetBoard,
-    } = useTacticalBoardSync();
+    const { handleAllTeamResetBoard } = useTacticalBoardSync();
 
     function registerBoardSync() {
         socket.on(`${BoardEvent.ImageMapStateSyncSelf}`, handleBoradImageMapStateSync);
@@ -47,24 +34,9 @@ export function useBoardSync() {
         socket.on(`${BoardEvent.ImageMapResetBroadcast}`, handleBoardImageMapResetBroadcast);
     }
 
-    function handleBoardImageDrop({ zoneId, imgId, randomContext }: { zoneId: number; imgId: string; randomContext?: ICharacterRandomContext }) {
+    function boardImageDrop({ zoneId, imgId, randomContext }: { zoneId: number; imgId: string; randomContext?: ICharacterRandomContext }) {
         console.log(`[BOARD SYNC] Handle image drop`, { zoneId, imgId, randomContext });
-        const previousZoneId = findZoneIdByImageId(imgId);
-        const displacedZoneImgId = boardImageMap.value[zoneId] ?? null;
-
-        if (previousZoneId !== null) {
-            removeImage(previousZoneId);
-        }
-
-        if (displacedZoneImgId !== null) {
-            removeImage(zoneId);
-        }
-
-        if (previousZoneId !== null && displacedZoneImgId !== null && previousZoneId !== zoneId) {
-            placeImage(previousZoneId, displacedZoneImgId);
-        }
-
-        placeImage(zoneId, imgId);
+        handleBoardImageDrop(zoneId, imgId);
 
         console.debug('[BOARD SYNC] Sent board image drop request', { zoneId, imgId });
         socket.emit(`${BoardEvent.ImageDropRequest}`, { zoneId, imgId, randomContext });
@@ -74,16 +46,17 @@ export function useBoardSync() {
         }
     }
 
-    function handleBoardImageRestore({ zoneId }: { zoneId: number }) {
-        console.debug('[BOARD SYNC] Handle board image restore broadcast', { zoneId });
-        removeImage(zoneId);
-        console.debug('[BOARD SYNC] Sent board image restore request', { zoneId });
+    function boardImageRestore({ zoneId }: { zoneId: number }) {
+        console.debug('[BOARD SYNC] Handle board image restore', zoneId);
+        handleBoardImageRestore(zoneId);
+
+        console.debug('[BOARD SYNC] Sent board image restore request', zoneId);
         socket.emit(`${BoardEvent.ImageRestoreRequest}`, { zoneId });
     }
 
-    function handleBoardImageMapReset() {
+    function boardImageMapReset() {
         console.debug('[BOARD SYNC] Handle board image reset');
-        resetBoardImageMap();
+        handleBoardImageMapReset();
         handleAllTeamResetBoard();
 
         console.debug('[BOARD SYNC] Sent board image reset request');
@@ -93,92 +66,29 @@ export function useBoardSync() {
 
     function handleBoardImageDropBroadcast({ zoneId, imgId }: { zoneId: number; imgId: string }) {
         console.debug('[BOARD SYNC] Handle board image drop broadcast', { zoneId, imgId });
-        placeImage(zoneId, imgId);
+        handleBoardImageDrop(zoneId, imgId);
     }
 
     function handleBoardImageRestoreBroadcast({ zoneId }: { zoneId: number }) {
         console.debug('[BOARD SYNC] Handle board image restore broadcast', { zoneId });
-        removeImage(zoneId);
+        handleBoardImageRestore(zoneId);
     }
 
     function handleBoardImageMapResetBroadcast() {
         console.debug('[BOARD SYNC] Handle board image reset broadcast');
-        resetBoardImageMap();
+        handleBoardImageMapReset();
         handleAllTeamResetBoard();
     }
 
     function handleBoradImageMapStateSync(imageMap: Record<number, string>) {
         console.debug('[BOARD SYNC] Handle board image map state sync', imageMap);
         setBoardImageMap(imageMap);
-        for (const [key, value] of Object.entries(boardImageMap.value)) {
-            const zoneId = Number(key);
-            cloneToTacticalPoolIfNeeded(zoneId, value);
-        }
-    }
-
-    function swapImages(zoneId: number, previousZoneId: number, imgId: string, displacedImgId: string) {
-        removeImage(previousZoneId);
-        removeImage(zoneId);
-        placeImage(zoneId, imgId);
-        placeImage(previousZoneId, displacedImgId);
-    }
-
-    function placeImage(zoneId: number, imgId: string) {
-        placeBoardImage(zoneId, imgId);
-        cloneToTacticalPoolIfNeeded(zoneId, imgId);
-    }
-
-    function removeImage(zoneId: number) {
-        const imgId = boardImageMap.value[zoneId];
-        removeBoardImage(zoneId);
-        removeFromTacticalBoardIfNeeded(zoneId, imgId);
-    }
-
-    function getTeamSlotFromZoneId(zoneId: number) {
-        const match = matchSteps.value.find((f) => f.zoneId === zoneId);
-        return match?.teamSlot ?? null;
-    }
-
-    function cloneToTacticalPoolIfNeeded(zoneId: number, imgId: string) {
-        const zone = zoneMetaTable.value[zoneId];
-        switch (zone.type) {
-            case ZoneType.Pick:
-                const teamSlot = getTeamSlotFromZoneId(zoneId);
-                if (teamSlot !== null) {
-                    handleAddImageToPool(teamSlot, imgId);
-                }
-                break;
-            case ZoneType.Ban:
-                break;
-            case ZoneType.Utility:
-                handleAllTeamAddImageToPool(imgId);
-                break;
-        }
-    }
-
-    function removeFromTacticalBoardIfNeeded(zoneId: number, imgId: string) {
-        const zone = zoneMetaTable.value[zoneId];
-        switch (zone.type) {
-            case ZoneType.Pick:
-                const teamSlot = getTeamSlotFromZoneId(zoneId);
-                if (teamSlot !== null) {
-                    handleRemoveImageFromBoard(teamSlot, imgId);
-                }
-                break;
-            case ZoneType.Ban:
-                break;
-            case ZoneType.Utility:
-                handleAllTeamRemoveImageFromBoard(imgId);
-                break;
-        }
     }
 
     return {
-        boardImageMap: readonly(boardImageMap),
-        usedImageIds,
         registerBoardSync,
-        handleBoardImageDrop,
-        handleBoardImageRestore,
-        handleBoardImageMapReset,
+        boardImageDrop,
+        boardImageRestore,
+        boardImageMapReset,
     };
 }

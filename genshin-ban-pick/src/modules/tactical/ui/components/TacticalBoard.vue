@@ -16,9 +16,9 @@ const emit = defineEmits<{
 }>();
 
 const tacticalBoardStore = useTacticalBoardStore();
-const { teamTacticalBoardPanelMap, numberOfTeamSetup, numberOfSetupCharacter } = storeToRefs(tacticalBoardStore);
+const { teamTacticalCellImageMap, numberOfTeamSetup, numberOfSetupCharacter } = storeToRefs(tacticalBoardStore);
 
-const tacticalBoardPanel = computed(() => teamTacticalBoardPanelMap.value[props.teamSlot]);
+const tacticalCellImageMap = computed(() => teamTacticalCellImageMap.value[props.teamSlot]);
 
 const rows = computed(() => numberOfTeamSetup.value);
 const cols = computed(() => numberOfSetupCharacter.value);
@@ -51,7 +51,7 @@ const themeVars = computed(() => {
   return useTeamTheme(props.teamSlot).themeVars.value
 })
 
-const imageId = (cellId: number) => tacticalBoardPanel.value.cellImageMap[cellId] ?? null;
+const imageId = (cellId: number) => tacticalCellImageMap.value[cellId] ?? null;
 
 function handleImageDrop({ cellId, imgId }: { cellId: number; imgId: string }) {
     console.debug(`[TATICAL BOARD] Handle image drop`, imgId, cellId);

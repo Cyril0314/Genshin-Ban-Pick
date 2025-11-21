@@ -48,7 +48,7 @@ export class RoomStatePersistenceService {
             throw new InvalidFieldsError();
         }
 
-        for (const tacticalCellImageMap of Object.values(roomState.teamTacticalBoardMap)) {
+        for (const tacticalCellImageMap of Object.values(roomState.teamTacticalCellImageMap)) {
             const totalCellsCount = roomSetting.numberOfSetupCharacter * roomSetting.numberOfTeamSetup;
             const selectedCount = Object.values(tacticalCellImageMap).length;
             if (selectedCount !== totalCellsCount) {
@@ -144,10 +144,10 @@ export class RoomStatePersistenceService {
                 // 5. MatchTacticalUsage: 戰術版
 
                 const tacticalVersion = roomSetting.tacticalVersion;
-                const teamTacticalBoardMap = roomState.teamTacticalBoardMap;
+                const teamTacticalCellImageMap = roomState.teamTacticalCellImageMap;
                 const numberOfTeamSetup = roomSetting.numberOfTeamSetup;
                 const numberOfSetupCharacter = roomSetting.numberOfSetupCharacter;
-                for (const [teamSlotString, tacticalCellImageMap] of Object.entries(teamTacticalBoardMap)) {
+                for (const [teamSlotString, tacticalCellImageMap] of Object.entries(teamTacticalCellImageMap)) {
                     const teamSlot = Number(teamSlotString);
                     const matchTeamId = matchTeamIdMap[teamSlot];
 

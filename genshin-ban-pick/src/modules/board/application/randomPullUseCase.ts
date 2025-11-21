@@ -2,9 +2,9 @@
 
 import type { IRoomSetting } from '@/modules/room';
 import type { ZoneType } from '../types/IZone';
-import { findNextMatchStepZoneId } from '../domain/findNextMatchStepZoneId';
-import { pickRandom } from '../domain/pickRandomImage';
-import { getAvailableImageIds } from '../domain/getAvailableImageIds';
+import { findNextMatchStepZoneIdDomain } from '../domain/findNextMatchStepZoneIdDomain';
+import { pickRandomImageDomain } from '../domain/pickRandomImageDomain';
+import { getAvailableImageIdsDomain } from '../domain/getAvailableImageIdsDomain';
 
 export function randomPullUseCase() {
     function randomPull(
@@ -13,13 +13,13 @@ export function randomPullUseCase() {
         boardImageMap: Record<number, string>,
         filteredCharacterKeys: string[],
     ): { zoneId: number; imgId: string } | null {
-        const zoneId = findNextMatchStepZoneId(zoneType, roomSetting.matchFlow.steps, roomSetting.zoneMetaTable, boardImageMap);
-        const availableImageIds = getAvailableImageIds(boardImageMap, filteredCharacterKeys);
-        const randomImgId = pickRandom(availableImageIds);
+        const zoneId = findNextMatchStepZoneIdDomain(zoneType, roomSetting.matchFlow.steps, roomSetting.zoneMetaTable, boardImageMap);
+        const availableImageIds = getAvailableImageIdsDomain(boardImageMap, filteredCharacterKeys);
+        const randomImgId = pickRandomImageDomain(availableImageIds);
         if (zoneId === null || randomImgId === null) return null;
         console.debug(`[RANDOM PULL] Get random image ${randomImgId} and find drop zoneId ${zoneId}`);
         return { zoneId, imgId: randomImgId };
     }
 
-    return { randomPull }
+    return { randomPull };
 }

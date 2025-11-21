@@ -1,14 +1,13 @@
 <!-- src/modules/tactical/ui/components/TacticalPool.vue -->
- 
+
 <script setup lang="ts">
 import { DragTypes } from '@/app/constants/customMIMETypes';
 import { getProfileImagePath } from '@/modules/shared/infrastructure/imageRegistry'
-import { useTacticalBoardStore } from '../../store/tacticalBoardStore';
+import { useTacticalPool } from '../composables/useTacticalPool';
 
 const props = defineProps<{ teamSlot: number }>()
 
-const tacticalBoardStore = useTacticalBoardStore()
-const { displayPoolImageIds } = tacticalBoardStore
+const { displayPoolImageIds } = useTacticalPool()
 
 function handleDragStartEvent(event: DragEvent, id: string) {
   console.debug(`[TATICAL POOL] Handle drag start event`, id);
@@ -45,9 +44,9 @@ function handleDragStartEvent(event: DragEvent, id: string) {
   padding: var(--space-sm);
   border-radius: var(--radius-sm);
   cursor: grab;
-  transition: 
+  transition:
     filter 0.18s ease,
-    transform 0.18s ease,;
+    transform 0.18s ease, ;
   filter: saturate(0.8) brightness(0.9);
 }
 

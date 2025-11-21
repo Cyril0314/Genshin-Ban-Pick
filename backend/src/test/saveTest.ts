@@ -93,7 +93,7 @@ async function main() {
     }
 
     const tacticalCellCount = roomSetting.numberOfTeamSetup * roomSetting.numberOfSetupCharacter;
-    const teamTacticalBoardMap: Record<number, Record<number, string>> = Object.fromEntries(
+    const teamTacticalCellImageMap: Record<number, Record<number, string>> = Object.fromEntries(
         roomSetting.teams.map((team) => [
             team.slot,
             Object.fromEntries(selectN(teamCharacterPools[team.slot], tacticalCellCount).map((key, i) => [i, key])),
@@ -104,7 +104,7 @@ async function main() {
         teamMembersMap,
         boardImageMap: boardImageMap,
         characterRandomContextMap: {},
-        teamTacticalBoardMap: teamTacticalBoardMap,
+        teamTacticalCellImageMap: teamTacticalCellImageMap,
         users: [],
         chatMessages: [],
         stepIndex: Object.values(roomSetting.zoneMetaTable).length,

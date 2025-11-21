@@ -38,8 +38,6 @@ export function registerBoardSocket(io: Server, socket: Socket, roomStateManager
             // 從別的格子拖曳進來
             if (previousZoneId !== null) {
                 delete roomState.boardImageMap[previousZoneId];
-                socket.to(roomId).emit(`${BoardEvent.ImageRestoreBroadcast}`, { zoneId: previousZoneId });
-                logger.info(`Sent ${BoardEvent.ImageRestoreBroadcast}`, { zoneId: previousZoneId });
             }
 
             const previousRandomContext = displacedZoneImgId === null ? null : roomState.characterRandomContextMap[displacedZoneImgId];
@@ -47,15 +45,11 @@ export function registerBoardSocket(io: Server, socket: Socket, roomStateManager
             // 拖曳進來的格子有圖片
             if (displacedZoneImgId !== null) {
                 delete roomState.boardImageMap[zoneId];
-                socket.to(roomId).emit(`${BoardEvent.ImageRestoreBroadcast}`, { zoneId });
-                logger.info(`Sent ${BoardEvent.ImageRestoreBroadcast}`, { zoneId });
             }
 
             // 將目標格子的圖片轉移到拖曳前的格子
             if (previousZoneId !== null && displacedZoneImgId !== null && previousZoneId !== zoneId) {
                 roomState.boardImageMap[previousZoneId] = displacedZoneImgId;
-                socket.to(roomId).emit(`${BoardEvent.ImageDropBroadcast}`, { zoneId: previousZoneId, imgId: displacedZoneImgId });
-                logger.info(`Sent ${BoardEvent.ImageDropBroadcast}`, { zoneId: previousZoneId, imgId: displacedZoneImgId });
             }
 
             roomState.boardImageMap[zoneId] = imgId;

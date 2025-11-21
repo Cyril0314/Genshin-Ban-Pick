@@ -18,6 +18,8 @@ import { useTacticalBoardStore } from '@/modules/tactical';
 import type { IRoomSetting } from '@/modules/room';
 import type { CharacterFilterKey } from '@/modules/character';
 import type { ICharacterRandomContext } from '@/modules/board';
+import { boardUseCase } from '@/modules/board/application/boardUseCase';
+import { tacticalUseCase } from '@/modules/tactical/application/tacticalUseCase';
 
 const roomSetting = shallowRef<IRoomSetting | null>(null);
 
@@ -37,15 +39,22 @@ const { fetchRoomSetting, saveRoom } = roomUseCase();
 
 const { fetchCharacterMap } = characterUseCase();
 
-const { boardImageMap, usedImageIds, handleBoardImageDrop, handleBoardImageRestore, handleBoardImageMapReset } = useBoardSync();
+const { initZoneMetaTable } = boardUseCase();
+
+const { initTeamTacticalCellImageMap } = tacticalUseCase();
+
+const { boardImageDrop, boardImageRestore, boardImageMapReset } = useBoardSync();
 const { randomPull } = randomPullUseCase();
 const { joinRoom, leaveRoom } = useRoomUserSync();
 const { handleMemberInput, handleMemberDrop, handleMemberRestore } = useTeamInfoSync();
 
 const boardImageStore = useBoardImageStore();
+const { boardImageMap, usedImageIds } = storeToRefs(boardImageStore);
+
 const teamInfoStore = useTeamInfoStore();
+
 const matchStepStore = useMatchStepStore();
-const tacticalBoardStore = useTacticalBoardStore();
+
 const characterStore = useCharacterStore();
 const { characterMap } = storeToRefs(characterStore)
 
@@ -77,10 +86,10 @@ onMounted(async () => {
         roomSetting.value = await fetchRoomSetting(roomId);
         filteredCharacterKeys.value = Object.keys(characterMap.value).map((id) => id);
         if (roomSetting.value) {
-            boardImageStore.initZoneMetaTable(roomSetting.value.zoneMetaTable);
+            initZoneMetaTable(roomSetting.value.zoneMetaTable);
             teamInfoStore.initTeams(roomSetting.value.teams);
             matchStepStore.initMatchSteps(roomSetting.value.matchFlow.steps);
-            tacticalBoardStore.initTeamTacticalBoardMap(
+            initTeamTacticalCellImageMap(
                 roomSetting.value.teams,
                 roomSetting.value.numberOfTeamSetup,
                 roomSetting.value.numberOfSetupCharacter,
@@ -126,7 +135,7 @@ function handleRandomPull({ zoneType }: { zoneType: ZoneType }) {
         return;
     }
     const randomContext: ICharacterRandomContext = { characterFilter: characterFilter.value };
-    handleBoardImageDrop({ ...result, randomContext });
+    boardImageDrop({ ...result, randomContext });
 }
 
 async function handleBoardRecord() {
@@ -150,15 +159,14 @@ async function handleBoardRecord() {
                                 <StepIndicator />
                             </div>
                             <div class="layout__toolbar">
-                                <Toolbar @image-map-reset="handleBoardImageMapReset"
-                                    @board-record="handleBoardRecord" />
+                                <Toolbar @image-map-reset="boardImageMapReset" @board-record="handleBoardRecord" />
                             </div>
                         </div>
 
                         <BanPickBoard v-if="roomSetting && characterMap" :roomSetting="roomSetting"
                             :characterMap="characterMap" :boardImageMap="boardImageMap" :usedImageIds="usedImageIds"
-                            :filteredCharacterKeys="filteredCharacterKeys" @image-drop="handleBoardImageDrop"
-                            @image-restore="handleBoardImageRestore" @filter-change="handleFilterChange"
+                            :filteredCharacterKeys="filteredCharacterKeys" @image-drop="boardImageDrop"
+                            @image-restore="boardImageRestore" @filter-change="handleFilterChange"
                             @random-pull="handleRandomPull" @member-input="handleMemberInput"
                             @member-drop="handleMemberDrop" @member-restore="handleMemberRestore" />
                         <div v-else class="loading">載入房間設定中...</div>

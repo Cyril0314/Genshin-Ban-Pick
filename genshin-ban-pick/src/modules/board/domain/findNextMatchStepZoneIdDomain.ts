@@ -1,9 +1,9 @@
-// src/modules/board/domain/findNextMatchStepZoneId.ts
+// src/modules/board/domain/findNextMatchStepZoneIdDomain.ts
 
 import type { IMatchStep } from '../types/IMatchFlow';
 import type { IZone, ZoneType } from '../types/IZone';
 
-export function findNextMatchStepZoneId(
+export function findNextMatchStepZoneIdDomain(
     zoneType: ZoneType,
     matchSteps: IMatchStep[],
     zoneMetaTable: Record<number, IZone>,

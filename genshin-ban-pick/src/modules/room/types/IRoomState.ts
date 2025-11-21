@@ -8,7 +8,7 @@ import type { TacticalCellImageMap } from "@/modules/tactical";
 import type { IRoomUser } from "./IRoomUser";
 import type { IRoomSetting } from "./IRoomSetting";
 
-export type TeamTacticalBoardMap = Record<number, TacticalCellImageMap>;
+export type TeamTacticalCellImageMap = Record<number, TacticalCellImageMap>;
 export type CharacterRandomContextMap = Record<string, ICharacterRandomContext>;
 
 export interface IRoomState {
@@ -16,7 +16,7 @@ export interface IRoomState {
     chatMessages: IChatMessageDTO[];
     boardImageMap: BoardImageMap;
     characterRandomContextMap: CharacterRandomContextMap;
-    teamTacticalBoardMap: TeamTacticalBoardMap;
+    teamTacticalCellImageMap: TeamTacticalCellImageMap;
     teamMembersMap: TeamMembersMap;
     stepIndex: number;
     roomSetting: IRoomSetting;
