@@ -27,6 +27,16 @@ export function registerTeamSocket(io: Server, socket: Socket, roomStateManager:
 
         const roomState = roomStateManager.ensure(roomId);
 
+        for (const [teamSlot, teamMembers] of Object.entries(roomState.teamMembersMap)) {
+            for (const [memberSlot, teamMember] of Object.entries(teamMembers)) {
+                if (teamMember.type === 'Online' && member.type === 'Online'  && teamMember.user.identityKey === member.user.identityKey) {
+                    delete roomState.teamMembersMap[Number(teamSlot)][Number(memberSlot)];
+                    socket.to(roomId).emit(`${TeamEvent.MemberRemoveBroadcast}`, { teamSlot, memberSlot });
+                    logger.info(`Sent ${TeamEvent.MemberRemoveBroadcast} teamSlot: ${teamSlot}`, memberSlot);
+                }
+            }
+        }
+
         roomState.teamMembersMap[teamSlot][memberSlot] = member;
         socket.to(roomId).emit(`${TeamEvent.MemberAddBroadcast}`, { teamSlot, memberSlot, member });
         logger.info(`Sent ${TeamEvent.MemberAddBroadcast} teamSlot: ${teamSlot}`, memberSlot, member);

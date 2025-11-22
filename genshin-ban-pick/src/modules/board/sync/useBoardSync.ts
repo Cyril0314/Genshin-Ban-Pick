@@ -6,6 +6,8 @@ import { useMatchStepSync } from './useMatchStepSync';
 import { useTacticalBoardSync } from '@/modules/tactical';
 
 import type { ICharacterRandomContext } from '../types/ICharacterRandomContext';
+import { useMatchStepStore } from '../store/matchStepStore';
+import { storeToRefs } from 'pinia';
 
 enum BoardEvent {
     ImageDropRequest = 'board.image.drop.request',
@@ -23,9 +25,11 @@ enum BoardEvent {
 export function useBoardSync() {
     const socket = useSocketStore().getSocket();
     const { handleBoardImageDrop, handleBoardImageRestore, handleBoardImageMapReset, setBoardImageMap } = boardUseCase();
-    const { currentStep, advanceStep, resetStep } = useMatchStepSync();
-
+    const { advanceStep, resetStep } = useMatchStepSync();
     const { handleAllTeamResetBoard } = useTacticalBoardSync();
+
+    const matchStepStore = useMatchStepStore();
+    const { currentStep } = storeToRefs(matchStepStore);
 
     function registerBoardSync() {
         socket.on(`${BoardEvent.ImageMapStateSyncSelf}`, handleBoradImageMapStateSync);

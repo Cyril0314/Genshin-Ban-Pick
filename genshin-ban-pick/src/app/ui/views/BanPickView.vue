@@ -20,6 +20,8 @@ import type { CharacterFilterKey } from '@/modules/character';
 import type { ICharacterRandomContext } from '@/modules/board';
 import { boardUseCase } from '@/modules/board/application/boardUseCase';
 import { tacticalUseCase } from '@/modules/tactical/application/tacticalUseCase';
+import { matchStepUseCase } from '@/modules/board/application/matchStepUseCase';
+import { teamUseCase } from '@/modules/team/application/teamUseCase';
 
 const roomSetting = shallowRef<IRoomSetting | null>(null);
 
@@ -41,19 +43,19 @@ const { fetchCharacterMap } = characterUseCase();
 
 const { initZoneMetaTable } = boardUseCase();
 
+const { initTeams } = teamUseCase();
+
 const { initTeamTacticalCellImageMap } = tacticalUseCase();
+
+const { initMatchSteps } = matchStepUseCase();
 
 const { boardImageDrop, boardImageRestore, boardImageMapReset } = useBoardSync();
 const { randomPull } = randomPullUseCase();
 const { joinRoom, leaveRoom } = useRoomUserSync();
-const { handleMemberInput, handleMemberDrop, handleMemberRestore } = useTeamInfoSync();
+const { memberInput, memberDrop, memberRestore } = useTeamInfoSync();
 
 const boardImageStore = useBoardImageStore();
 const { boardImageMap, usedImageIds } = storeToRefs(boardImageStore);
-
-const teamInfoStore = useTeamInfoStore();
-
-const matchStepStore = useMatchStepStore();
 
 const characterStore = useCharacterStore();
 const { characterMap } = storeToRefs(characterStore)
@@ -87,8 +89,8 @@ onMounted(async () => {
         filteredCharacterKeys.value = Object.keys(characterMap.value).map((id) => id);
         if (roomSetting.value) {
             initZoneMetaTable(roomSetting.value.zoneMetaTable);
-            teamInfoStore.initTeams(roomSetting.value.teams);
-            matchStepStore.initMatchSteps(roomSetting.value.matchFlow.steps);
+            initTeams(roomSetting.value.teams);
+            initMatchSteps(roomSetting.value.matchFlow.steps);
             initTeamTacticalCellImageMap(
                 roomSetting.value.teams,
                 roomSetting.value.numberOfTeamSetup,
@@ -167,8 +169,8 @@ async function handleBoardRecord() {
                             :characterMap="characterMap" :boardImageMap="boardImageMap" :usedImageIds="usedImageIds"
                             :filteredCharacterKeys="filteredCharacterKeys" @image-drop="boardImageDrop"
                             @image-restore="boardImageRestore" @filter-change="handleFilterChange"
-                            @random-pull="handleRandomPull" @member-input="handleMemberInput"
-                            @member-drop="handleMemberDrop" @member-restore="handleMemberRestore" />
+                            @random-pull="handleRandomPull" @member-input="memberInput"
+                            @member-drop="memberDrop" @member-restore="memberRestore" />
                         <div v-else class="loading">載入房間設定中...</div>
                     </div>
                 </div>

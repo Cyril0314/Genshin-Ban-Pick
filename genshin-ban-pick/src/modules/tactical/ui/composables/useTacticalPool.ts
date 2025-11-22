@@ -17,8 +17,6 @@ export function useTacticalPool() {
     const tacticalBoardStore = useTacticalBoardStore();
     const { teamTacticalCellImageMap } = storeToRefs(tacticalBoardStore);
 
-    
-
     const tacticalPoolMap = computed(() => {
         const tacticalPoolMap: Record<number, Array<string>> = {};
 
@@ -46,18 +44,26 @@ export function useTacticalPool() {
         return tacticalPoolMap;
     });
 
-    const displayPoolImageIds = (teamSlot: number) =>
-        computed(() => {
-            const tacticalPool = tacticalPoolMap.value[teamSlot];
-            if (!tacticalPool) return [];
-            const used = new Set(Object.values(teamTacticalCellImageMap.value[teamSlot]));
-            return tacticalPool.filter((id) => !used.has(id));
-        });
+    const displayPoolImageIdsMap = computed(() => {
+        const result: Record<number, string[]> = {};
+        for (const teamSlot in tacticalPoolMap.value) {
+            const slot = Number(teamSlot);
+            const tacticalPool = tacticalPoolMap.value[slot];
+            if (!tacticalPool) {
+                result[slot] = [];
+                continue;
+            }
+
+            const used = new Set(Object.values(teamTacticalCellImageMap.value[slot]));
+            result[slot] = tacticalPool.filter((id) => !used.has(id));
+        }
+        return result;
+    });
 
     function findTeamSlot(zoneId: number) {
         const match = matchSteps.value.find((f) => f.zoneId === zoneId);
         return match?.teamSlot ?? null;
     }
 
-    return { tacticalPoolMap, displayPoolImageIds };
+    return { tacticalPoolMap, displayPoolImageIdsMap };
 }

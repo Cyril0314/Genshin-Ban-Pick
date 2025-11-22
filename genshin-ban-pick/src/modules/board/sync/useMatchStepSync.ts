@@ -1,9 +1,7 @@
 // src/modules/board/sync/useMatchStepSync.ts
 
-import { storeToRefs } from 'pinia'
-
 import { useSocketStore } from '@/app/stores/socketStore'
-import { useMatchStepStore } from '../store/matchStepStore'
+import { matchStepUseCase } from '../application/matchStepUseCase'
 
 enum StepEvent {
     AdvanceRequest = 'step.advance.request',
@@ -16,9 +14,7 @@ enum StepEvent {
 
 export function useMatchStepSync() {
   const socket = useSocketStore().getSocket()
-  const matchStepStore = useMatchStepStore()
-  const { currentStep, matchSteps } = storeToRefs(matchStepStore)
-  const { setStepIndex } = matchStepStore
+  const { setStepIndex } = matchStepUseCase()
 
   function registerMatchStepSync() {
         socket.on(`${StepEvent.StateSyncSelf}`, handleStepStateSync)
@@ -46,8 +42,6 @@ export function useMatchStepSync() {
   }
 
   return {
-    currentStep,
-    matchSteps,
     registerMatchStepSync,
     advanceStep,
     rollbackStep,

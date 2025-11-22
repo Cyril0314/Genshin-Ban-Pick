@@ -19,23 +19,17 @@ export const useTeamInfoStore = defineStore('teamInfo', () => {
         };
     });
 
-    watch(teamInfoPair, (teamInfoPair) => {
-        console.debug('[TEAM INFO STORE] Watch team info pair', teamInfoPair)
-    }, { deep: true, immediate: true })
+    watch(
+        teamInfoPair,
+        (teamInfoPair) => {
+            console.debug('[TEAM INFO STORE] Watch team info pair', teamInfoPair);
+        },
+        { deep: true, immediate: true },
+    );
 
     function initTeams(newTeams: ITeam[]) {
         console.debug('[TEAM INFO STORE] Init teams', newTeams);
         teams.value = newTeams;
-    }
-
-    function addTeamMember(teamSlot: number, memberSlot: number, member: TeamMember) {
-        console.debug('[TEAM INFO STORE] Add team member', teamSlot, memberSlot, member);
-        teamMembersMap.value[teamSlot][memberSlot] = member
-    }
-
-    function removeTeamMember(teamSlot: number, memberSlot: number) {
-        console.debug('[TEAM INFO STORE] Remove team member', teamSlot, memberSlot);
-        delete teamMembersMap.value[teamSlot][memberSlot];
     }
 
     function setTeamMembersMap(newTeamMembersMap: TeamMembersMap) {
@@ -43,9 +37,9 @@ export const useTeamInfoStore = defineStore('teamInfo', () => {
         teamMembersMap.value = newTeamMembersMap;
     }
 
-    function resetTeamMembersMap() {
-        console.debug(`[TEAM INFO STORE] Reset team members map`);
-        teamMembersMap.value = {};
+    function setTeamMemberMap(teamSlot: number, newTeamMemberMap: Record<string, TeamMember>) {
+        console.debug(`[TEAM INFO STORE] Set team member map`, newTeamMemberMap);
+        teamMembersMap.value[teamSlot] = newTeamMemberMap;
     }
 
     return {
@@ -53,9 +47,7 @@ export const useTeamInfoStore = defineStore('teamInfo', () => {
         teamMembersMap,
         teamInfoPair,
         initTeams,
-        addTeamMember,
-        removeTeamMember,
         setTeamMembersMap,
-        resetTeamMembersMap,
+        setTeamMemberMap,
     };
 });

@@ -92,15 +92,18 @@ const { option } = useCharacterClustersChart()
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-medium);
     width: var(--size-chart-select);
-    border: none;
-    border-radius: var(--border-radius-xs);
+    border-radius: var(--radius-md);
+    
     align-items: center;
+    text-align: center;
     justify-content: center;
     outline: none;
+    border: none;
 }
 
 .chart-mode__select:focus {
     outline: none;
+    border: none;
 }
 
 .chart-mode__select:hover {

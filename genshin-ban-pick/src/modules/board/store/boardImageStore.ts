@@ -4,8 +4,7 @@ import { defineStore, } from 'pinia';
 import { ref, computed, watch, shallowRef} from 'vue';
 
 import type { IZone } from '../types/IZone';
-
-type BoardImageMap = Record<number, string>;
+import type { BoardImageMap } from '../types/BoardImageMap';
 
 export const useBoardImageStore = defineStore('boardImage', () => {
     const zoneMetaTable = shallowRef<Record<number, IZone>>({})

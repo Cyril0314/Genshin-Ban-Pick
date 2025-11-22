@@ -7,7 +7,7 @@ import { useTacticalPool } from '../composables/useTacticalPool';
 
 const props = defineProps<{ teamSlot: number }>()
 
-const { displayPoolImageIds } = useTacticalPool()
+const { displayPoolImageIdsMap } = useTacticalPool()
 
 function handleDragStartEvent(event: DragEvent, id: string) {
   console.debug(`[TATICAL POOL] Handle drag start event`, id);
@@ -17,7 +17,7 @@ function handleDragStartEvent(event: DragEvent, id: string) {
 
 <template>
   <div class="tactical__pool" :class="`tactical__pool--${props.teamSlot}`">
-    <img v-for="id in displayPoolImageIds(teamSlot).value" :key="id" :src="getProfileImagePath(id)" draggable="true"
+    <img v-for="id in displayPoolImageIdsMap[teamSlot]" :key="id" :src="getProfileImagePath(id)" draggable="true"
       @dragstart="handleDragStartEvent($event, id)" />
   </div>
 </template>
