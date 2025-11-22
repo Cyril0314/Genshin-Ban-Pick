@@ -1,7 +1,7 @@
 // backend/src/socket/managers/RoomStateManager.ts
 
 import { createRoomSetting } from '../../factories/roomSettingFactory.ts';
-import { IRoomState, TeamTacticalBoardMap } from '../../types/IRoomState.ts';
+import { IRoomState, TeamTacticalCellImageMap } from '../../types/IRoomState.ts';
 import { TeamMembersMap } from '../../types/TeamMember.ts';
 import { createLogger } from '../../utils/logger.ts';
 import { IRoomStateManager } from './IRoomStateManager.ts';
@@ -29,7 +29,7 @@ export class RoomStateManager implements IRoomStateManager {
                 boardImageMap: {},
                 characterRandomContextMap: {},
                 teamMembersMap: Object.fromEntries(defaultRoomSetting.teams.map((t) => [t.slot, {}])) as TeamMembersMap,
-                teamTacticalBoardMap: Object.fromEntries(defaultRoomSetting.teams.map((t) => [t.slot, {}])) as TeamTacticalBoardMap,
+                teamTacticalCellImageMap: Object.fromEntries(defaultRoomSetting.teams.map((t) => [t.slot, {}])) as TeamTacticalCellImageMap,
                 stepIndex: 0,
                 roomSetting: defaultRoomSetting,
             };
@@ -69,7 +69,7 @@ export class RoomStateManager implements IRoomStateManager {
         return this.get(roomId).stepIndex;
     }
 
-    getTeamTacticalBoardMap(roomId: string) {
-        return this.get(roomId).teamTacticalBoardMap;
+    getTeamTacticalCellImageMap(roomId: string) {
+        return this.get(roomId).teamTacticalCellImageMap;
     }
 }

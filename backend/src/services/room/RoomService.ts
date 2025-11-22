@@ -5,7 +5,7 @@ import { DataNotFoundError } from '../../errors/AppError.ts';
 import { createRoomSetting } from '../../factories/roomSettingFactory.ts';
 import { IRoomStateManager } from '../../socket/managers/IRoomStateManager.ts';
 import { IRoomSetting } from '../../types/IRoomSetting.ts';
-import { TeamTacticalBoardMap } from '../../types/IRoomState.ts';
+import { TeamTacticalCellImageMap } from '../../types/IRoomState.ts';
 import { ITeam } from '../../types/ITeam.ts';
 import { TeamMembersMap } from '../../types/TeamMember.ts';
 import { RoomStatePersistenceService } from './RoomStatePersistenceService.ts';
@@ -47,7 +47,7 @@ export default class RoomService {
             boardImageMap: {},
             characterRandomContextMap: {},
             teamMembersMap: Object.fromEntries(roomSetting.teams.map((t) => [t.slot, {}])) as TeamMembersMap,
-            teamTacticalBoardMap: Object.fromEntries(roomSetting.teams.map((t) => [t.slot, {}])) as TeamTacticalBoardMap,
+            teamTacticalCellImageMap: Object.fromEntries(roomSetting.teams.map((t) => [t.slot, {}])) as TeamTacticalCellImageMap,
             stepIndex: 0,
             roomSetting: roomSetting,
         };
