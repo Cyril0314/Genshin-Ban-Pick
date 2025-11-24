@@ -3,28 +3,14 @@
 <script setup lang="ts">
 import router from '@/router';
 import { ref } from 'vue';
+import { useRoomSetting } from '../composables/useRoomSetting';
 
-import { roomUseCase } from '../../application/roomUseCase';
-
-const { buildRoom } = roomUseCase();
-
-const roomIdInput = ref('default-room');
-const numberOfUtilityInput = ref(3);
-const numberOfBanInput = ref(6);
-const numberOfPickInput = ref(32);
+const { form, isLoading, errorMessage, submit } = useRoomSetting();
 
 async function handleSubmit() {
-    const rooId = roomIdInput.value;
-    const numberOfUtility = numberOfUtilityInput.value;
-    const numberOfBan = numberOfBanInput.value;
-    const numberOfPick = numberOfPickInput.value;
-
-    try {
-        const roomSetting = await buildRoom(rooId, { numberOfUtility, numberOfBan, numberOfPick });
-        // router.push(`/ban-pick?room=${rooId}`);
-        router.push(`/login`);
-    } catch (error: any) {
-        alert(`${error.response?.data?.message || '建立房間失敗'}`);
+    const ok = await submit();
+    if (ok) {
+        router.push({ name: 'BanPick', query: { room: form.roomId } });
     }
 }
 </script>
@@ -38,22 +24,24 @@ async function handleSubmit() {
             <form class="room-setting__form" @submit.prevent="handleSubmit">
                 <div class="form__group">
                     <label for="rooId">房間代號</label>
-                    <input id="rooId" v-model="roomIdInput" type="text" placeholder="請輸入房間代號" required />
+                    <input id="rooId" v-model="form.roomId" type="text" placeholder="請輸入房間代號" required />
                 </div>
 
                 <div class="form__group">
                     <label for="numberOfUtility">自由位數量</label>
-                    <input id="numberOfUtility" v-model="numberOfUtilityInput" type="number" placeholder="請輸入自由位數量" required />
+                    <input id="numberOfUtility" v-model="form.numberOfUtility" type="number" placeholder="請輸入自由位數量"
+                        required />
                 </div>
 
                 <div class="form__group">
                     <label for="numberOfBan">Ban位數量</label>
-                    <input id="numberOfBan" v-model="numberOfBanInput" type="number" placeholder="請輸入Ban位數量" required />
+                    <input id="numberOfBan" v-model="form.numberOfBan" type="number" placeholder="請輸入Ban位數量" required />
                 </div>
 
                 <div class="form__group">
                     <label for="numberOfPick">Pick位數量</label>
-                    <input id="numberOfPick" v-model="numberOfPickInput" type="number" placeholder="請輸入Pick位數量" required />
+                    <input id="numberOfPick" v-model="form.numberOfPick" type="number" placeholder="請輸入Pick位數量"
+                        required />
                 </div>
 
                 <div class="layout__actions">

@@ -28,15 +28,11 @@ export function createRoomService(client: HttpClient = api) {
     async function getSetting(roomId: string) {
         return client.get(`/rooms/${roomId}/setting`);
     }
-    async function postSave(roomId: string) {
-        return client.post(`/rooms/${roomId}/save`);
-    }
 
     return {
         get,
         post,
         getSetting,
-        postSave,
     };
 }
 

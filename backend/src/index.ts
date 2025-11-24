@@ -22,10 +22,11 @@ import MemberService from './services/auth/MemberService.ts';
 import GuestService from './services/auth/GuestService.ts';
 import { createSocketApp } from './socket/index.ts';
 import { RoomStateManager } from './socket/managers/RoomStateManager.ts';
-import { RoomStatePersistenceService } from './services/room/RoomStatePersistenceService.ts'
+import { MatchService } from './services/match/MatchService.ts'
 import AnalysisService from './services/analysis/AnalysisService.ts';
 
 import type { Request, Response } from 'express';
+import matchRoutes from './routes/match.ts';
 
 const logger = createLogger('INDEX')
 
@@ -76,6 +77,7 @@ const roomStateManager = new RoomStateManager(); // Disk
 const guestService = new GuestService(prisma)
 const memberService = new MemberService(prisma);
 const roomService = new RoomService(prisma, roomStateManager);
+const matchService = new MatchService(prisma, roomStateManager)
 const characterService = new CharacterService(prisma);
 const analysisService = new AnalysisService(prisma, characterService)
 
@@ -88,6 +90,7 @@ const analysisService = new AnalysisService(prisma, characterService)
 logger.info('Register Api Routes');
 app.use('/api', authRoutes(guestService, memberService));
 app.use('/api', roomRoutes(roomService));
+app.use('/api', matchRoutes(matchService));
 app.use('/api', characterRoutes(characterService));
 app.use('/api', analysisRoutes(analysisService));
 

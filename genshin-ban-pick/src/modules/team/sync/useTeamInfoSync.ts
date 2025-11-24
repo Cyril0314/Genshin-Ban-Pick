@@ -1,9 +1,7 @@
 // src/modules/team/sync/useTeamInfoSync.ts
-import { storeToRefs } from 'pinia';
 
 import { useSocketStore } from '@/app/stores/socketStore';
 import { useRoomUserStore } from '@/modules/room';
-import { useTeamInfoStore } from '../store/teamInfoStore';
 import { teamUseCase } from '../application/teamUseCase';
 
 import type { TeamMember, TeamMembersMap } from '../types/TeamMember';
@@ -20,10 +18,7 @@ enum TeamEvent {
 
 export function useTeamInfoSync() {
     const socket = useSocketStore().getSocket();
-    const teamInfoStore = useTeamInfoStore();
-    const { teamMembersMap } = storeToRefs(teamInfoStore);
     const roomUserStore = useRoomUserStore();
-    const { roomUsers } = storeToRefs(roomUserStore);
 
     const { handleMemberDrop, handleMemberInput, handleMemberRestore, addTeamMember, removeTeamMember, setTeamMembersMap } = teamUseCase();
 
@@ -41,7 +36,7 @@ export function useTeamInfoSync() {
     }
 
     function memberDrop({ identityKey, teamSlot, memberSlot }: { identityKey: string; teamSlot: number; memberSlot: number }) {
-        const teamMember = handleMemberDrop(roomUsers.value, identityKey, teamSlot, memberSlot);
+        const teamMember = handleMemberDrop(roomUserStore.roomUsers, identityKey, teamSlot, memberSlot);
         if (!teamMember) return;
         socket.emit(`${TeamEvent.MemberAddRequest}`, { teamSlot, memberSlot, member: teamMember });
     }

@@ -1,30 +1,25 @@
 // backend/src/services/room/RoomService.ts
 
 import { PrismaClient } from '@prisma/client/extension';
-import { DataNotFoundError } from '../../errors/AppError.ts';
 import { createRoomSetting } from '../../factories/roomSettingFactory.ts';
 import { IRoomStateManager } from '../../socket/managers/IRoomStateManager.ts';
 import { IRoomSetting } from '../../types/IRoomSetting.ts';
 import { TeamTacticalCellImageMap } from '../../types/IRoomState.ts';
 import { ITeam } from '../../types/ITeam.ts';
 import { TeamMembersMap } from '../../types/TeamMember.ts';
-import { RoomStatePersistenceService } from './RoomStatePersistenceService.ts';
 
 export default class RoomService {
-    private persistenceService: RoomStatePersistenceService;
     constructor(
         private prisma: PrismaClient,
         private roomStateManager: IRoomStateManager,
-    ) {
-        this.persistenceService = new RoomStatePersistenceService(this.prisma);
-    }
+    ) {}
 
     fetchRooms() {
-        const roomStates = this.roomStateManager.getRoomStates()
+        const roomStates = this.roomStateManager.getRoomStates();
         return roomStates;
     }
 
-    build(
+    buildRoom(
         roomId: string,
         payload: {
             numberOfUtility?: number;
@@ -55,16 +50,8 @@ export default class RoomService {
         return roomSetting;
     }
 
-    getSetting(roomId: string): IRoomSetting {
+    getRoomSetting(roomId: string): IRoomSetting {
         const roomState = this.roomStateManager.ensure(roomId);
         return roomState.roomSetting;
-    }
-
-    async save(roomId: string) {
-        const existing = this.roomStateManager.get(roomId);
-        if (!existing) {
-            throw new DataNotFoundError();
-        }
-        return await this.persistenceService.save(existing, false);
     }
 }

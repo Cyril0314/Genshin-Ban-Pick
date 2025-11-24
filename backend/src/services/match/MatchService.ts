@@ -1,4 +1,4 @@
-// backend/src/services/room/RoomStatePersistenceService.ts
+// backend/src/services/match/MatchService.ts
 import { Prisma, PrismaClient } from '@prisma/client';
 import { TeamMember } from '../../types/TeamMember.ts';
 import {
@@ -11,29 +11,33 @@ import {
     UserNotFoundError,
 } from '../../errors/AppError.ts';
 import { createLogger } from '../../utils/logger.ts';
-import { IRoomState } from '../../types/IRoomState.ts';
+import { IRoomStateManager } from '../../socket/managers/IRoomStateManager.ts';
 
 const logger = createLogger('ROOM STATE PERSISTENCE SERVICE');
 
-export class RoomStatePersistenceService {
-    constructor(private prisma: PrismaClient) {}
+export class MatchService {
+    constructor(
+        private prisma: PrismaClient,
+        private roomStateManager: IRoomStateManager,
+    ) {}
 
-    async delete({ matchId }: { matchId: number }) {
+    async deleteMatch({ matchId }: { matchId: number }) {
         return await this.prisma.match.delete({
             where: { id: matchId },
         });
     }
 
-    async save(roomState: IRoomState, dryRun = true) {
-        const roomSetting = roomState.roomSetting;
+    async saveMatch(roomId: string, dryRun = true) {
+        const roomState = this.roomStateManager.get(roomId);
         if (!roomState) {
             logger.error('Room state not found');
             throw new DataNotFoundError();
         }
+        const roomSetting = roomState.roomSetting;
 
-        console.log(`roomState.teamMembersMap`, roomState.teamMembersMap)
+        console.log(`roomState.teamMembersMap`, roomState.teamMembersMap);
         for (const [teamSlotString, teamMembers] of Object.entries(roomState.teamMembersMap)) {
-            console.log(`Object.values(teamMembers).length`, Object.values(teamMembers).length)
+            console.log(`Object.values(teamMembers).length`, Object.values(teamMembers).length);
             if (Object.values(teamMembers).length !== roomSetting.numberOfTeamSetup) {
                 logger.error('Team members are inconsistent with number of team setup', teamSlotString, teamMembers, roomSetting.numberOfTeamSetup);
                 throw new InvalidFieldsError();
@@ -216,7 +220,7 @@ export class RoomStatePersistenceService {
         } catch (err: any) {
             if (err instanceof DryRunError) {
                 logger.warn('Block dry run data', err.data);
-                return null;
+                return err.data;
             }
             if (err instanceof Prisma.PrismaClientKnownRequestError) {
                 if (err.code === 'P2002') {
@@ -256,7 +260,7 @@ type ResolvedIdentity =
 function resolveIdentity(teamMember: TeamMember): ResolvedIdentity {
     if (teamMember.type === 'Manual') {
         return {
-            kind: "Manual",
+            kind: 'Manual',
             name: teamMember.name,
             memberRef: null,
             guestRef: null,
@@ -270,7 +274,7 @@ function resolveIdentity(teamMember: TeamMember): ResolvedIdentity {
 
     if (type === 'Member') {
         return {
-            kind: "Member",
+            kind: 'Member',
             name: nickname,
             memberRef: id,
             guestRef: null,
@@ -279,7 +283,7 @@ function resolveIdentity(teamMember: TeamMember): ResolvedIdentity {
 
     if (type === 'Guest') {
         return {
-            kind: "Guest",
+            kind: 'Guest',
             name: nickname,
             memberRef: null,
             guestRef: id,

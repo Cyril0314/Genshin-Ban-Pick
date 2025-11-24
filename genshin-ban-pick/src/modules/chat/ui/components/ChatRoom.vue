@@ -4,11 +4,15 @@ import { ref, nextTick, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import { useAuthStore } from '@/modules/auth';
+import { useRelativeTime } from '@/modules/shared/ui/composables/useRelativeTime';
 import { useChatSync } from '../../sync/useChatSync.ts';
+import { useChatStore } from '../../store/chatStore.ts';
 
 const newMessage = ref('');
 const messagesContainer = ref<HTMLElement | null>(null);
-const { messages, sendMessage } = useChatSync();
+const chatStore = useChatStore();
+const { messages } = storeToRefs(chatStore)
+const { sendMessage } = useChatSync();
 const authStore = useAuthStore();
 const { nickname } = storeToRefs(authStore);
 
@@ -45,8 +49,11 @@ function scrollToBottom() {
         </div>
 
         <div ref="messagesContainer" class="chat__messages">
-            <div v-for="(msg, index) in messages" :key="index" class="chat__message" :class="[{ 'chat__message--self': msg.isSelf }]">
-                <strong>{{ msg.isSelf ? '' : `${msg.nickname}:` }}</strong> {{ msg.message }}
+            <div v-for="(msg, index) in messages" :key="index" class="message__container"
+                :class="[{ 'message__container--self': msg.isSelf }]">
+                <span v-if="!msg.isSelf" class = "message__name">{{ `${msg.nickname}:` }}</span> 
+                <div class ="message"> {{ msg.message }} </div>
+                <span class="message__time">{{ useRelativeTime(msg.timestamp ?? 0) }}</span>
             </div>
         </div>
 
@@ -59,7 +66,7 @@ function scrollToBottom() {
 
 <style scoped>
 .chat__window {
-    --size-chat-room: calc(var(--base-size) * 15);
+    --size-chat-room: calc(var(--base-size) * 16);
 
     display: flex;
     flex-direction: column;
@@ -113,25 +120,51 @@ function scrollToBottom() {
     background-color: var(--md-sys-color-surface-container);
     color: var(--md-sys-color-on-primary-container);
     border-radius: var(--radius-lg);
+    
+    gap: var(--space-sm);
     padding: var(--space-sm);
-    gap: var(--space-xs);
 
     overflow-y: scroll;
     scrollbar-width: none;
 }
 
-.chat__message {
-    max-width: 100%;
-    word-break: break-all;
-    overflow-wrap: break-word;
+.message__container {
+    display: flex;
+    flex-direction: row;
+    align-items: end;
+    gap: var(--space-sm);
+}
+
+.message__container--self {
+    flex-direction: row-reverse;
+}
+
+.message__name {
+    align-self: center;
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    color: var(--md-sys-color-on-surface);
+    flex-shrink: 0;
+}
+
+.message {
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-regular);
     font-family: var(--font-family-sans);
-    color: var(--md-sys-color-on-surface-variant);
+    color: var(--md-sys-color-on-surface);
+    background-color: var(--md-sys-color-surface-container-highest);
+    padding: var(--space-xs) var(--space-md);
+    border-radius: var(--radius-sm);
+    word-break: break-all;
+    overflow-wrap: break-word;
 }
 
-.chat__message--self {
-    text-align: end;
+.message__time {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-regular);
+    font-family: var(--font-family-sans);
+    color: var(--md-sys-color-neutral-60);
+    flex-shrink: 0;
 }
 
 .chat__footer {

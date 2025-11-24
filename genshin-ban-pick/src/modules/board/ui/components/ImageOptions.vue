@@ -20,18 +20,21 @@ const availableCharacterKeys = computed(() =>
     .map(([id]) => id)
 )
 
-const isFilitered = (id: string) => props.filteredCharacterKeys?.includes(id) ?? true
+const filteredSet = computed(() => new Set(props.filteredCharacterKeys ?? []))
 
-function handleDragStartEvent(event: DragEvent, id: string) {
+const isFiltered = (id: string) => filteredSet.value.has(id)
+
+function handleDragStartEvent(id: string, event: DragEvent) {
   console.debug(`[IMAGE OPTIONS] Handle drag start event`, id)
   event?.dataTransfer?.setData(DragTypes.CHARACTER_IMAGE, id)
 }
+
 </script>
 
 <template>
   <div class="container__images">
-    <img v-for="id in availableCharacterKeys" :class="{ dimmed: !isFilitered(id) }" :key="id" :id="id"
-      :src="getProfileImagePath(id)" draggable="true" @dragstart="handleDragStartEvent($event, id)" />
+    <img v-for="id in availableCharacterKeys" :class="{ dimmed: !isFiltered(id) }" :key="id" :id="id"
+      :src="getProfileImagePath(id)" draggable="true" @dragstart="handleDragStartEvent(id, $event)" />
   </div>
 </template>
 

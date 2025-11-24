@@ -25,7 +25,7 @@ export default function roomRoutes(roomService: RoomService) {
         asyncHandler(async (req: Request, res: Response) => {
             const { roomId } = req.params;
             const payload = req.body;
-            const roomSetting = roomService.build(roomId, payload);
+            const roomSetting = roomService.buildRoom(roomId, payload);
             res.status(200).json(roomSetting);
         }),
     )
@@ -34,18 +34,8 @@ export default function roomRoutes(roomService: RoomService) {
         '/rooms/:roomId/setting',
         asyncHandler(async (req: Request, res: Response) => {
             const { roomId } = req.params;
-            const roomSetting = roomService.getSetting(roomId);
+            const roomSetting = roomService.getRoomSetting(roomId);
             res.json(roomSetting);
-        }),
-    );
-
-    router.post(
-        '/rooms/:roomId/save',
-        asyncHandler(async (req: Request, res: Response) => {
-            const { roomId } = req.params;
-            const id = await roomService.save(roomId);
-
-            res.status(200).send({ matchId: id });
         }),
     );
 

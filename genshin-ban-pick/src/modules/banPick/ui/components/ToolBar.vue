@@ -11,7 +11,7 @@ import { useAuthStore } from '@/modules/auth';
 
 const emit = defineEmits<{
     (e: 'image-map-reset'): void;
-    (e: 'board-record'): void;
+    (e: 'match-save'): void;
 }>();
 
 const authStore = useAuthStore();
@@ -40,9 +40,9 @@ function handleResetButtonClickEvent() {
     emit('image-map-reset');
 }
 
-function handleRecordButtonClickEvent() {
-    console.debug('[TOOL BAR] Handle record button click event');
-    emit('board-record');
+function handleSaveButtonClickEvent() {
+    console.debug('[TOOL BAR] Handle save button click event');
+    emit('match-save');
 }
 </script>
 
@@ -60,8 +60,8 @@ function handleRecordButtonClickEvent() {
         <button v-if="isAdmin" class="toolbar__button toolbar__button--reset"
             @click="handleResetButtonClickEvent">重置</button>
 
-        <button v-if="isAdmin" class="toolbar__button toolbar__button--record"
-            @click="handleRecordButtonClickEvent">紀錄</button>
+        <button v-if="isAdmin" class="toolbar__button toolbar__button--save"
+            @click="handleSaveButtonClickEvent">紀錄</button>
     </div>
 </template>
 

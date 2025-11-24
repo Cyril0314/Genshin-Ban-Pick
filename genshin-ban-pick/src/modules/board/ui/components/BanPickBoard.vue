@@ -35,46 +35,35 @@ const emit = defineEmits<{
     (e: 'member-restore', payload: { teamSlot: number; memberSlot: number }): void;
 }>();
 
+const emitters = {
+    imageDrop: (payload: { zoneId: number; imgId: string }) =>
+        emit('image-drop', payload),
+
+    imageRestore: (payload: { zoneId: number }) =>
+        emit('image-restore', payload),
+
+    filterChange: (payload: { filteredCharacterKeys: string[]; characterFilter: Record<CharacterFilterKey, string[]> }) =>
+        emit('filter-change', payload),
+
+    randomPull: (payload: { zoneType: ZoneType }) =>
+        emit('random-pull', payload),
+
+    memberInput: (payload: { name: string; teamSlot: number; memberSlot: number }) =>
+        emit('member-input', payload),
+
+    memberDrop: (payload: { identityKey: string; teamSlot: number; memberSlot: number }) =>
+        emit('member-drop', payload),
+
+    memberRestore: (payload: { teamSlot: number; memberSlot: number }) =>
+        emit('member-restore', payload),
+};
+
 const teamInfoStore = useTeamInfoStore();
 const { teamInfoPair } = storeToRefs(teamInfoStore);
 
 const { utilityZones, banZones, leftPickZones, rightPickZones, maxNumberOfUtilityPerRow, maxNumberOfBanPerRow, maxNumberOfPickPerColumn } =
     useBoardZonesLayout(props.roomSetting, teamInfoPair.value!);
 
-function handleImageDrop(payload: { zoneId: number; imgId: string }) {
-    console.debug(`[BAN PICK BOARD] Handle image drop`, payload);
-    emit('image-drop', payload);
-}
-
-function handleImageRestore(payload: { zoneId: number }) {
-    console.debug(`[BAN PICK BOARD] Handle image restore`, payload);
-    emit('image-restore', payload);
-}
-
-function handleSelectorFilterChange(payload: { filteredCharacterKeys: string[]; characterFilter: Record<CharacterFilterKey, string[]> }) {
-    console.debug(`[BAN PICK BOARD] Handle selector filter change`, payload);
-    emit('filter-change', payload);
-}
-
-function handleRandomPull(payload: { zoneType: ZoneType }) {
-    console.debug(`[BAN PICK BOARD] Handle selector random button click`, payload);
-    emit('random-pull', payload);
-}
-
-function handleMemberInput(payload: { name: string; teamSlot: number; memberSlot: number }) {
-    console.debug(`[BAN PICK BOARD] Handle member input`, payload);
-    emit('member-input', payload);
-}
-
-function handleMemberDrop(payload: { identityKey: string; teamSlot: number; memberSlot: number }) {
-    console.debug(`[BAN PICK BOARD] Handle member drop`, payload);
-    emit('member-drop', payload);
-}
-
-function handleMemberRestore(payload: { teamSlot: number; memberSlot: number }) {
-    console.debug(`[BAN PICK BOARD] Handle member restore`, payload);
-    emit('member-restore', payload);
-}
 </script>
 
 <template>
@@ -82,37 +71,39 @@ function handleMemberRestore(payload: { teamSlot: number; memberSlot: number }) 
     <div class="layout__main"
         :style="{ '--max-number-of-pick-per-column': maxNumberOfPickPerColumn, '--max-number-of-ban-per-row': maxNumberOfBanPerRow, '--max-number-of-utility-per-row': maxNumberOfUtilityPerRow }">
         <div class="layout__side layout__side--left">
-            <TeamInfo v-if="teamInfoPair" side="left" :teamInfo="teamInfoPair.left" :numberOfSetupCharacter="roomSetting.numberOfSetupCharacter" @member-input="handleMemberInput"
-                @member-drop="handleMemberDrop" @member-restore="handleMemberRestore" />
+            <TeamInfo v-if="teamInfoPair" side="left" :teamInfo="teamInfoPair.left"
+                :numberOfSetupCharacter="roomSetting.numberOfSetupCharacter" @member-input="emitters.memberInput"
+                @member-drop="emitters.memberDrop" @member-restore="emitters.memberRestore" />
             <PickZones v-if="leftPickZones" :zones="leftPickZones" :maxPerColumn="maxNumberOfPickPerColumn" side="left"
-                :boardImageMap="props.boardImageMap" @image-drop="handleImageDrop"
-                @image-restore="handleImageRestore" />
+                :boardImageMap="props.boardImageMap" @image-drop="emitters.imageDrop"
+                @image-restore="emitters.imageRestore" />
         </div>
         <div class="layout__center">
             <div class="layout__ban-zone">
                 <BanZones :zones="banZones" :maxPerRow="maxNumberOfBanPerRow" :boardImageMap="props.boardImageMap"
-                    @image-drop="handleImageDrop" @image-restore="handleImageRestore" />
+                    @image-drop="emitters.imageDrop" @image-restore="emitters.imageRestore" />
             </div>
             <div class="layout__common">
                 <ImageOptions v-if="characterMap" :characterMap="characterMap" :usedImageIds="usedImageIds"
                     :filteredCharacterKeys="filteredCharacterKeys" />
 
 
-                <CharacterSelector :characterMap="props.characterMap" @filter-change="handleSelectorFilterChange"
-                    @random-pull="handleRandomPull" />
+                <CharacterSelector :characterMap="props.characterMap" @filter-change="emitters.filterChange"
+                    @random-pull="emitters.randomPull" />
             </div>
             <div class="layout__utility-zone">
                 <UtilityZones :zones="utilityZones" :maxPerRow="maxNumberOfUtilityPerRow"
-                    :boardImageMap="props.boardImageMap" @image-drop="handleImageDrop"
-                    @image-restore="handleImageRestore" />
+                    :boardImageMap="props.boardImageMap" @image-drop="emitters.imageDrop"
+                    @image-restore="emitters.imageRestore" />
             </div>
         </div>
         <div class="layout__side layout__side--right">
-            <TeamInfo v-if="teamInfoPair" side="right" :teamInfo="teamInfoPair.right" :numberOfSetupCharacter="roomSetting.numberOfSetupCharacter" @member-input="handleMemberInput"
-                @member-drop="handleMemberDrop" @member-restore="handleMemberRestore" />
+            <TeamInfo v-if="teamInfoPair" side="right" :teamInfo="teamInfoPair.right"
+                :numberOfSetupCharacter="roomSetting.numberOfSetupCharacter" @member-input="emitters.memberInput"
+                @member-drop="emitters.memberDrop" @member-restore="emitters.memberRestore" />
             <PickZones v-if="rightPickZones" :zones="rightPickZones" :maxPerColumn="maxNumberOfPickPerColumn"
-                side="right" :boardImageMap="props.boardImageMap" @image-drop="handleImageDrop"
-                @image-restore="handleImageRestore" />
+                side="right" :boardImageMap="props.boardImageMap" @image-drop="emitters.imageDrop"
+                @image-restore="emitters.imageRestore" />
         </div>
     </div>
     <!-- </div> -->

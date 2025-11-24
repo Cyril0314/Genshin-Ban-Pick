@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
 import { RoomStateManager } from '../socket/managers/RoomStateManager.ts';
-import { RoomStatePersistenceService } from '../services/room/RoomStatePersistenceService.ts';
+import { RoomStatePersistenceService } from '../services/match/MatchService.ts';
 import { createRoomSetting } from '../factories/roomSettingFactory.ts';
 import { ZoneType } from '../types/IZone.ts';
 import { TeamMember, TeamMembersMap } from '../types/TeamMember.ts';

@@ -222,9 +222,7 @@ Genshin-Ban-Pick
 │  ├─ .env.development
 │  ├─ .env.production
 │  ├─ deploy-dist-to-ec2.sh
-│  │  ├─ favicon.ico
-│  │  ├─ index.html
-│  │  └─ wish.png
+│  ├─ dist
 │  ├─ env.d.ts
 │  ├─ eslint.config.ts
 │  ├─ index.html
@@ -236,22 +234,32 @@ Genshin-Ban-Pick
 │  ├─ README.md
 │  ├─ src
 │  │  ├─ app
-│  │  │  └─ composables
-│  │  │     └─ useAppInitializer.ts
+│  │  │  ├─ bootstrap
+│  │  │  │  ├─ registerAllSyncModules.ts
+│  │  │  │  ├─ registerHttpClient.ts
+│  │  │  │  ├─ useAppInitializer.ts
+│  │  │  │  └─ useBanPickInitializer.ts
+│  │  │  ├─ constants
+│  │  │  │  └─ customMIMETypes.ts
+│  │  │  ├─ errors
+│  │  │  │  └─ AppError.ts
+│  │  │  ├─ infrastructure
+│  │  │  │  └─ http
+│  │  │  │     └─ httpClient.ts
+│  │  │  ├─ stores
+│  │  │  │  └─ socketStore.ts
+│  │  │  └─ ui
+│  │  │     ├─ components
+│  │  │     │  └─ ToolBar.vue
+│  │  │     ├─ composables
+│  │  │     │  ├─ useBanPickBoardActions.ts
+│  │  │     │  ├─ useBanPickFilters.ts
+│  │  │     │  ├─ useBanPickRandomPull.ts
+│  │  │     │  ├─ useBanPickTeamSync.ts
+│  │  │     │  └─ useViewportScale.ts
+│  │  │     └─ views
+│  │  │        └─ BanPickView.vue
 │  │  ├─ App.vue
-│  │  ├─ constants
-│  │  │  ├─ customMIMETypes.ts
-│  │  │  └─ useElementColor.ts
-│  │  ├─ errors
-│  │  │  └─ AppError.ts
-│  │  ├─ features
-│  │  │  └─ Toolbar
-│  │  │     └─ ToolBar.vue
-│  │  ├─ infrastructure
-│  │  │  ├─ http
-│  │  │  │  └─ httpClient.ts
-│  │  │  └─ socket
-│  │  │     └─ registerAllSyncModules.ts
 │  │  ├─ main.ts
 │  │  ├─ modules
 │  │  │  ├─ analysis
@@ -311,11 +319,19 @@ Genshin-Ban-Pick
 │  │  │  │        └─ RegisterView.vue
 │  │  │  ├─ board
 │  │  │  │  ├─ application
+│  │  │  │  │  ├─ boardUseCase.ts
+│  │  │  │  │  ├─ matchStepUseCase.ts
 │  │  │  │  │  └─ randomPullUseCase.ts
 │  │  │  │  ├─ domain
-│  │  │  │  │  ├─ findNextMatchStepZoneId.ts
-│  │  │  │  │  ├─ getAvailableImageIds.ts
-│  │  │  │  │  └─ pickRandomImage.ts
+│  │  │  │  │  ├─ findNextMatchStepZoneIdDomain.ts
+│  │  │  │  │  ├─ findZoneIdByImageIdDomain.ts
+│  │  │  │  │  ├─ getAvailableImageIdsDomain.ts
+│  │  │  │  │  ├─ handleBoardImageDropDomain.ts
+│  │  │  │  │  ├─ handleBoardImageMapResetDomain.ts
+│  │  │  │  │  ├─ handleBoardImageRestoreDomain.ts
+│  │  │  │  │  ├─ pickRandomImageDomain.ts
+│  │  │  │  │  ├─ placeImageDomain.ts
+│  │  │  │  │  └─ removeImageDomain.ts
 │  │  │  │  ├─ index.ts
 │  │  │  │  ├─ store
 │  │  │  │  │  ├─ boardImageStore.ts
@@ -324,17 +340,21 @@ Genshin-Ban-Pick
 │  │  │  │  │  ├─ useBoardSync.ts
 │  │  │  │  │  └─ useMatchStepSync.ts
 │  │  │  │  ├─ types
+│  │  │  │  │  ├─ BoardImageMap.ts
+│  │  │  │  │  ├─ ICharacterRandomContext.ts
+│  │  │  │  │  ├─ IMatchFlow.ts
+│  │  │  │  │  └─ IZone.ts
 │  │  │  │  └─ ui
-│  │  │  │     └─ components
-│  │  │  │        ├─ BanPickBoard.vue
-│  │  │  │        ├─ BanZones.vue
-│  │  │  │        ├─ composables
-│  │  │  │        │  └─ useBoardZonesLayout.ts
-│  │  │  │        ├─ DropZone.vue
-│  │  │  │        ├─ ImageOptions.vue
-│  │  │  │        ├─ PickZones.vue
-│  │  │  │        ├─ StepIndicator.vue
-│  │  │  │        └─ UtilityZones.vue
+│  │  │  │     ├─ components
+│  │  │  │     │  ├─ BanPickBoard.vue
+│  │  │  │     │  ├─ BanZones.vue
+│  │  │  │     │  ├─ DropZone.vue
+│  │  │  │     │  ├─ ImageOptions.vue
+│  │  │  │     │  ├─ PickZones.vue
+│  │  │  │     │  ├─ StepIndicator.vue
+│  │  │  │     │  └─ UtilityZones.vue
+│  │  │  │     └─ composables
+│  │  │  │        └─ useBoardZonesLayout.ts
 │  │  │  ├─ character
 │  │  │  │  ├─ application
 │  │  │  │  │  └─ characterUseCase.ts
@@ -346,22 +366,34 @@ Genshin-Ban-Pick
 │  │  │  │  ├─ store
 │  │  │  │  │  └─ characterStore.ts
 │  │  │  │  ├─ types
+│  │  │  │  │  ├─ CharacterFilterKey.ts
+│  │  │  │  │  └─ ICharacter.ts
 │  │  │  │  └─ ui
-│  │  │  │     └─ components
-│  │  │  │        ├─ CharacterSelector.vue
-│  │  │  │        └─ composables
-│  │  │  │           ├─ useFilteredCharacters.ts
-│  │  │  │           └─ useSelectorOptions.ts
+│  │  │  │     ├─ components
+│  │  │  │     │  └─ CharacterSelector.vue
+│  │  │  │     └─ composables
+│  │  │  │        ├─ useFilteredCharacters.ts
+│  │  │  │        └─ useSelectorOptions.ts
 │  │  │  ├─ chat
+│  │  │  │  ├─ application
+│  │  │  │  │  └─ chatUseCase.ts
+│  │  │  │  ├─ domain
+│  │  │  │  │  ├─ addMessageDomain.ts
+│  │  │  │  │  ├─ buildChatMessageDTODomain.ts
+│  │  │  │  │  ├─ sendMessageDomain.ts
+│  │  │  │  │  ├─ setMessagesDomain.ts
+│  │  │  │  │  └─ transformChatMessageDomain.ts
 │  │  │  │  ├─ index.ts
 │  │  │  │  ├─ store
 │  │  │  │  │  └─ chatStore.ts
 │  │  │  │  ├─ sync
 │  │  │  │  │  └─ useChatSync.ts
 │  │  │  │  ├─ types
-│  │  │  │  │  └─ IChatMessage.ts
+│  │  │  │  │  ├─ IChatMessage.ts
+│  │  │  │  │  └─ IChatMessageDTO.ts
 │  │  │  │  └─ ui
 │  │  │  │     ├─ components
+│  │  │  │     │  ├─ ChatFloating.vue
 │  │  │  │     │  ├─ ChatRoom.vue
 │  │  │  │     │  └─ ChatRoomDrawer.vue
 │  │  │  │     └─ composables
@@ -380,6 +412,10 @@ Genshin-Ban-Pick
 │  │  │  │  │  └─ roomUserStore.ts
 │  │  │  │  ├─ sync
 │  │  │  │  │  └─ useRoomUserSync.ts
+│  │  │  │  ├─ types
+│  │  │  │  │  ├─ IRoomSetting.ts
+│  │  │  │  │  ├─ IRoomState.ts
+│  │  │  │  │  └─ IRoomUser.ts
 │  │  │  │  └─ ui
 │  │  │  │     ├─ components
 │  │  │  │     │  └─ RoomUserPool.vue
@@ -393,68 +429,64 @@ Genshin-Ban-Pick
 │  │  │  │  │  └─ getCharacterDisplayName.ts
 │  │  │  │  ├─ infrastructure
 │  │  │  │  │  └─ imageRegistry.ts
-│  │  │  │  ├─ types
-│  │  │  │  │  ├─ board
-│  │  │  │  │  │  ├─ ICharacterRandomContext.ts
-│  │  │  │  │  │  ├─ IMatchFlow.ts
-│  │  │  │  │  │  └─ IZone.ts
-│  │  │  │  │  ├─ character
-│  │  │  │  │  │  ├─ CharacterFilterKey.ts
-│  │  │  │  │  │  └─ ICharacter.ts
-│  │  │  │  │  ├─ chat
-│  │  │  │  │  │  └─ IChatMessageDTO.ts
-│  │  │  │  │  ├─ room
-│  │  │  │  │  │  ├─ IRoomSetting.ts
-│  │  │  │  │  │  ├─ IRoomState.ts
-│  │  │  │  │  │  └─ IRoomUser.ts
-│  │  │  │  │  └─ team
-│  │  │  │  │     ├─ ITeam.ts
-│  │  │  │  │     └─ TeamMember.ts
 │  │  │  │  └─ ui
 │  │  │  │     └─ composables
 │  │  │  │        ├─ useDesignTokens.ts
 │  │  │  │        ├─ useEchartTheme.ts
+│  │  │  │        ├─ useElementColor.ts
+│  │  │  │        ├─ useRelativeTime.ts
 │  │  │  │        ├─ useScopedCssVar.ts
 │  │  │  │        └─ useTeamTheme.ts
 │  │  │  ├─ tactical
+│  │  │  │  ├─ application
+│  │  │  │  │  └─ tacticalUseCase.ts
+│  │  │  │  ├─ domain
+│  │  │  │  │  ├─ findCellIdByImageIdDomain.ts
+│  │  │  │  │  ├─ handleTacticalCellImageMapResetDomain.ts
+│  │  │  │  │  ├─ handleTacticalCellImagePlaceDomain.ts
+│  │  │  │  │  ├─ handleTacticalCellImageRemoveDomain.ts
+│  │  │  │  │  ├─ placeCellImageDomain.ts
+│  │  │  │  │  └─ removeCellImageDomain.ts
 │  │  │  │  ├─ index.ts
 │  │  │  │  ├─ store
 │  │  │  │  │  └─ tacticalBoardStore.ts
 │  │  │  │  ├─ sync
 │  │  │  │  │  └─ useTacticalBoardSync.ts
+│  │  │  │  ├─ types
+│  │  │  │  │  └─ TacticalCellImageMap.ts
 │  │  │  │  └─ ui
-│  │  │  │     └─ components
-│  │  │  │        ├─ TacticalBoard.vue
-│  │  │  │        ├─ TacticalBoardPanel.vue
-│  │  │  │        ├─ TacticalBoardPanelDrawer.vue
-│  │  │  │        ├─ TacticalCell.vue
-│  │  │  │        └─ TacticalPool.vue
+│  │  │  │     ├─ components
+│  │  │  │     │  ├─ TacticalBoard.vue
+│  │  │  │     │  ├─ TacticalBoardPanel.vue
+│  │  │  │     │  ├─ TacticalBoardPanelDrawer.vue
+│  │  │  │     │  ├─ TacticalCell.vue
+│  │  │  │     │  └─ TacticalPool.vue
+│  │  │  │     └─ composables
+│  │  │  │        └─ useTacticalPool.ts
 │  │  │  └─ team
+│  │  │     ├─ application
+│  │  │     │  └─ teamUseCase.ts
+│  │  │     ├─ domain
+│  │  │     │  ├─ addTeamMemberDomain.ts
+│  │  │     │  ├─ createManualMemberDomain.ts
+│  │  │     │  ├─ createOnlineMemberDomain.ts
+│  │  │     │  ├─ handleMemberDropDomain.ts
+│  │  │     │  ├─ handleMemberInputDomian.ts
+│  │  │     │  ├─ handleMemberRestoreDomain.ts
+│  │  │     │  └─ removeTeamMemberDomain.ts
 │  │  │     ├─ index.ts
 │  │  │     ├─ store
 │  │  │     │  └─ teamInfoStore.ts
 │  │  │     ├─ sync
 │  │  │     │  └─ useTeamInfoSync.ts
+│  │  │     ├─ types
+│  │  │     │  ├─ ITeam.ts
+│  │  │     │  └─ TeamMember.ts
 │  │  │     └─ ui
 │  │  │        └─ components
 │  │  │           └─ TeamInfo.vue
-│  │  ├─ playground
-│  │  │  ├─ components
-│  │  │  │  ├─ HelloWorld.vue
-│  │  │  │  ├─ icons
-│  │  │  │  │  └─ IconTooling.vue
-│  │  │  │  ├─ TheWelcome.vue
-│  │  │  │  └─ WelcomeItem.vue
-│  │  │  ├─ stores
-│  │  │  │  └─ counter.ts
-│  │  │  └─ views
-│  │  │     └─ AboutView.vue
-│  │  ├─ router
-│  │  │  └─ index.ts
-│  │  ├─ stores
-│  │  │  └─ socketStore.ts
-│  │  └─ views
-│  │     └─ BanPickView.vue
+│  │  └─ router
+│  │     └─ index.ts
 │  ├─ tsconfig.app.json
 │  ├─ tsconfig.json
 │  ├─ tsconfig.node.json

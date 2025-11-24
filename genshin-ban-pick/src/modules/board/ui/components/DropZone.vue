@@ -30,13 +30,15 @@ const imageId = computed(() => props.boardImageMap[props.zone.id] ?? '')
 const matchStepStore = useMatchStepStore()
 const { currentStep } = storeToRefs(matchStepStore)
 
+const teamTheme = computed(() => {
+  const slot = currentStep.value?.teamSlot ?? null;
+  return slot === null ? null : useTeamTheme(slot);
+});
+
 const highlightColor = computed(() => {
-  const teamSlot = currentStep.value?.teamSlot ?? null
-  if (teamSlot === null) {
-    return `var(--md-sys-color-on-surface-rgb)`
-  }
-  return useTeamTheme(teamSlot).themeVars.value['--team-color-rgb']
-})
+  if (!teamTheme.value) return `var(--md-sys-color-on-surface-rgb)`;
+  return teamTheme.value.themeVars.value['--team-color-rgb'];
+});
 
 function handleDragStartEvent(event: DragEvent) {
   console.debug(`[DROP ZONE] Handle drag start event`);
