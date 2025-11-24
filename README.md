@@ -84,9 +84,14 @@ pm2 restart --name 重啟服務
 
 ```
 Genshin-Ban-Pick
+├─ .DS_Store
 ├─ .prettierrc.json
+├─ README.md
 ├─ backend
 │  ├─ .env
+│  ├─ dist
+│  │  ├─ constants
+│  │  └─ routes
 │  ├─ eslint.config.js
 │  ├─ package-lock.json
 │  ├─ package.json
@@ -145,8 +150,10 @@ Genshin-Ban-Pick
 │  │  │  ├─ analysis.ts
 │  │  │  ├─ auth.ts
 │  │  │  ├─ characters.ts
+│  │  │  ├─ match.ts
 │  │  │  └─ room.ts
 │  │  ├─ services
+│  │  │  ├─ CharacterService.ts
 │  │  │  ├─ analysis
 │  │  │  │  ├─ AnalysisService.ts
 │  │  │  │  ├─ clustering
@@ -174,12 +181,12 @@ Genshin-Ban-Pick
 │  │  │  ├─ auth
 │  │  │  │  ├─ AuthPayload.ts
 │  │  │  │  ├─ GuestService.ts
-│  │  │  │  ├─ jwt.ts
-│  │  │  │  └─ MemberService.ts
-│  │  │  ├─ CharacterService.ts
+│  │  │  │  ├─ MemberService.ts
+│  │  │  │  └─ jwt.ts
+│  │  │  ├─ match
+│  │  │  │  └─ MatchService.ts
 │  │  │  └─ room
-│  │  │     ├─ RoomService.ts
-│  │  │     └─ RoomStatePersistenceService.ts
+│  │  │     └─ RoomService.ts
 │  │  ├─ socket
 │  │  │  ├─ index.ts
 │  │  │  ├─ managers
@@ -215,14 +222,15 @@ Genshin-Ban-Pick
 │  ├─ tsconfig.json
 │  ├─ types
 │  │  ├─ ml-kmeans.d.ts
-│  │  └─ ml-pca.d.ts
+│  │  ├─ ml-pca.d.ts
+│  │  └─ src
 │  └─ upload-node-modules.sh
-├─ Genshin-Ban-Pick
+├─ genshin-ban-pick
 │  ├─ .editorconfig
 │  ├─ .env.development
 │  ├─ .env.production
+│  ├─ README.md
 │  ├─ deploy-dist-to-ec2.sh
-│  ├─ dist
 │  ├─ env.d.ts
 │  ├─ eslint.config.ts
 │  ├─ index.html
@@ -231,14 +239,13 @@ Genshin-Ban-Pick
 │  ├─ public
 │  │  ├─ favicon.ico
 │  │  └─ wish.png
-│  ├─ README.md
 │  ├─ src
+│  │  ├─ App.vue
 │  │  ├─ app
 │  │  │  ├─ bootstrap
 │  │  │  │  ├─ registerAllSyncModules.ts
 │  │  │  │  ├─ registerHttpClient.ts
-│  │  │  │  ├─ useAppInitializer.ts
-│  │  │  │  └─ useBanPickInitializer.ts
+│  │  │  │  └─ useAppInitializer.ts
 │  │  │  ├─ constants
 │  │  │  │  └─ customMIMETypes.ts
 │  │  │  ├─ errors
@@ -246,20 +253,8 @@ Genshin-Ban-Pick
 │  │  │  ├─ infrastructure
 │  │  │  │  └─ http
 │  │  │  │     └─ httpClient.ts
-│  │  │  ├─ stores
-│  │  │  │  └─ socketStore.ts
-│  │  │  └─ ui
-│  │  │     ├─ components
-│  │  │     │  └─ ToolBar.vue
-│  │  │     ├─ composables
-│  │  │     │  ├─ useBanPickBoardActions.ts
-│  │  │     │  ├─ useBanPickFilters.ts
-│  │  │     │  ├─ useBanPickRandomPull.ts
-│  │  │     │  ├─ useBanPickTeamSync.ts
-│  │  │     │  └─ useViewportScale.ts
-│  │  │     └─ views
-│  │  │        └─ BanPickView.vue
-│  │  ├─ App.vue
+│  │  │  └─ stores
+│  │  │     └─ socketStore.ts
 │  │  ├─ main.ts
 │  │  ├─ modules
 │  │  │  ├─ analysis
@@ -310,13 +305,26 @@ Genshin-Ban-Pick
 │  │  │  │  ├─ store
 │  │  │  │  │  └─ authStore.ts
 │  │  │  │  ├─ types
-│  │  │  │  │  ├─ Identity.ts
 │  │  │  │  │  ├─ IGuest.ts
-│  │  │  │  │  └─ IMember.ts
+│  │  │  │  │  ├─ IMember.ts
+│  │  │  │  │  └─ Identity.ts
 │  │  │  │  └─ ui
 │  │  │  │     └─ views
 │  │  │  │        ├─ LoginView.vue
 │  │  │  │        └─ RegisterView.vue
+│  │  │  ├─ banPick
+│  │  │  │  └─ ui
+│  │  │  │     ├─ components
+│  │  │  │     │  └─ ToolBar.vue
+│  │  │  │     ├─ composables
+│  │  │  │     │  ├─ useBanPickFacade.ts
+│  │  │  │     │  ├─ useBanPickFilters.ts
+│  │  │  │     │  ├─ useBanPickInitializer.ts
+│  │  │  │     │  ├─ useBanPickMatchSave.ts
+│  │  │  │     │  ├─ useBanPickRandomPull.ts
+│  │  │  │     │  └─ useViewportScale.ts
+│  │  │  │     └─ views
+│  │  │  │        └─ BanPickView.vue
 │  │  │  ├─ board
 │  │  │  │  ├─ application
 │  │  │  │  │  ├─ boardUseCase.ts
@@ -353,8 +361,9 @@ Genshin-Ban-Pick
 │  │  │  │     │  ├─ PickZones.vue
 │  │  │  │     │  ├─ StepIndicator.vue
 │  │  │  │     │  └─ UtilityZones.vue
-│  │  │  │     └─ composables
-│  │  │  │        └─ useBoardZonesLayout.ts
+│  │  │  │     ├─ composables
+│  │  │  │     │  └─ useBoardZonesLayout.ts
+│  │  │  │     └─ views
 │  │  │  ├─ character
 │  │  │  │  ├─ application
 │  │  │  │  │  └─ characterUseCase.ts
@@ -392,19 +401,27 @@ Genshin-Ban-Pick
 │  │  │  │  │  ├─ IChatMessage.ts
 │  │  │  │  │  └─ IChatMessageDTO.ts
 │  │  │  │  └─ ui
-│  │  │  │     ├─ components
-│  │  │  │     │  ├─ ChatFloating.vue
-│  │  │  │     │  ├─ ChatRoom.vue
-│  │  │  │     │  └─ ChatRoomDrawer.vue
-│  │  │  │     └─ composables
+│  │  │  │     └─ components
+│  │  │  │        ├─ ChatFloating.vue
+│  │  │  │        ├─ ChatRoom.vue
+│  │  │  │        └─ ChatRoomDrawer.vue
+│  │  │  ├─ match
+│  │  │  │  ├─ application
+│  │  │  │  │  └─ matchUseCase.ts
+│  │  │  │  ├─ domain
+│  │  │  │  │  └─ saveMatchDomain.ts
+│  │  │  │  ├─ index.ts
+│  │  │  │  ├─ infrastructure
+│  │  │  │  │  └─ matchService.ts
+│  │  │  │  └─ types
+│  │  │  │     └─ IMatchResult.ts
 │  │  │  ├─ room
 │  │  │  │  ├─ application
 │  │  │  │  │  └─ roomUseCase.ts
 │  │  │  │  ├─ domain
 │  │  │  │  │  ├─ buildRoomDomain.ts
-│  │  │  │  │  ├─ fetchRoomsDomain.ts
 │  │  │  │  │  ├─ fetchRoomSettingDomain.ts
-│  │  │  │  │  └─ saveRoomDomain.ts
+│  │  │  │  │  └─ fetchRoomsDomain.ts
 │  │  │  │  ├─ index.ts
 │  │  │  │  ├─ infrastructure
 │  │  │  │  │  └─ roomService.ts
@@ -419,6 +436,9 @@ Genshin-Ban-Pick
 │  │  │  │  └─ ui
 │  │  │  │     ├─ components
 │  │  │  │     │  └─ RoomUserPool.vue
+│  │  │  │     ├─ composables
+│  │  │  │     │  ├─ useRoomList.ts
+│  │  │  │     │  └─ useRoomSetting.ts
 │  │  │  │     └─ views
 │  │  │  │        ├─ RoomListView.vue
 │  │  │  │        └─ RoomSettingView.vue
@@ -429,14 +449,16 @@ Genshin-Ban-Pick
 │  │  │  │  │  └─ getCharacterDisplayName.ts
 │  │  │  │  ├─ infrastructure
 │  │  │  │  │  └─ imageRegistry.ts
-│  │  │  │  └─ ui
-│  │  │  │     └─ composables
-│  │  │  │        ├─ useDesignTokens.ts
-│  │  │  │        ├─ useEchartTheme.ts
-│  │  │  │        ├─ useElementColor.ts
-│  │  │  │        ├─ useRelativeTime.ts
-│  │  │  │        ├─ useScopedCssVar.ts
-│  │  │  │        └─ useTeamTheme.ts
+│  │  │  │  ├─ ui
+│  │  │  │  │  └─ composables
+│  │  │  │  │     ├─ useDesignTokens.ts
+│  │  │  │  │     ├─ useEchartTheme.ts
+│  │  │  │  │     ├─ useElementColor.ts
+│  │  │  │  │     ├─ useRelativeTime.ts
+│  │  │  │  │     ├─ useScopedCssVar.ts
+│  │  │  │  │     └─ useTeamTheme.ts
+│  │  │  │  └─ utils
+│  │  │  │     └─ array.ts
 │  │  │  ├─ tactical
 │  │  │  │  ├─ application
 │  │  │  │  │  └─ tacticalUseCase.ts
@@ -493,6 +515,9 @@ Genshin-Ban-Pick
 │  ├─ upload-node-modules.sh
 │  └─ vite.config.ts
 ├─ package-lock.json
-└─ README.md
+└─ packages
+   └─ shared
+      └─ src
+         └─ types
 
 ```
