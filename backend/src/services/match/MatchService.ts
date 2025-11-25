@@ -10,8 +10,8 @@ import {
     InvalidFieldsError,
     UserNotFoundError,
 } from '../../errors/AppError.ts';
+import { IRoomStateManager } from '../../modules/socket/managers/IRoomStateManager.ts';
 import { createLogger } from '../../utils/logger.ts';
-import { IRoomStateManager } from '../../socket/managers/IRoomStateManager.ts';
 
 const logger = createLogger('ROOM STATE PERSISTENCE SERVICE');
 

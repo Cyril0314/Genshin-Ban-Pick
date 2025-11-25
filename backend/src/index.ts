@@ -13,20 +13,19 @@ import { createLogger } from './utils/logger.ts';
 import { errorHandler } from './middlewares/errorHandler.ts';
 import authRoutes from './routes/auth.ts';
 import characterRoutes from './routes/characters.ts';
-import roomRoutes from './routes/room.ts';
 import analysisRoutes from './routes/analysis.ts';
-;
+import matchRoutes from './routes/match.ts';
+import { registerAppRouters } from './app/appRouter.ts';
+
 import CharacterService from './services/CharacterService.ts';
-import RoomService from './services/room/RoomService.ts';
 import MemberService from './services/auth/MemberService.ts';
 import GuestService from './services/auth/GuestService.ts';
-import { createSocketApp } from './socket/index.ts';
-import { RoomStateManager } from './socket/managers/RoomStateManager.ts';
+import { createSocketApp } from './modules/socket/index.ts';
+import { RoomStateManager } from './modules/socket/managers/RoomStateManager.ts';
 import { MatchService } from './services/match/MatchService.ts'
 import AnalysisService from './services/analysis/AnalysisService.ts';
 
 import type { Request, Response } from 'express';
-import matchRoutes from './routes/match.ts';
 
 const logger = createLogger('INDEX')
 
@@ -76,7 +75,6 @@ const prisma = new PrismaClient(); // DB
 const roomStateManager = new RoomStateManager(); // Disk
 const guestService = new GuestService(prisma)
 const memberService = new MemberService(prisma);
-const roomService = new RoomService(prisma, roomStateManager);
 const matchService = new MatchService(prisma, roomStateManager)
 const characterService = new CharacterService(prisma);
 const analysisService = new AnalysisService(prisma, characterService)
@@ -88,8 +86,9 @@ const analysisService = new AnalysisService(prisma, characterService)
 // 🧩 7. Routes 註冊
 // ---------------------------------------------------------
 logger.info('Register Api Routes');
+registerAppRouters(app, prisma, roomStateManager)
 app.use('/api', authRoutes(guestService, memberService));
-app.use('/api', roomRoutes(roomService));
+// app.use('/api', roomRoutes(roomService));
 app.use('/api', matchRoutes(matchService));
 app.use('/api', characterRoutes(characterService));
 app.use('/api', analysisRoutes(analysisService));
