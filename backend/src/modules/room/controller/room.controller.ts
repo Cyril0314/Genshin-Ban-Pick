@@ -8,7 +8,7 @@ export default class RoomController {
 
     fetchRooms = async (req: Request, res: Response) => {
         const rooms = this.roomService.fetchRooms();
-        res.json(rooms);
+        res.status(200).json(rooms);
     };
 
     buildRoom = async (req: Request, res: Response) => {
@@ -21,6 +21,6 @@ export default class RoomController {
     getRoomSetting = async (req: Request, res: Response) => {
         const { roomId } = req.params;
         const roomSetting = this.roomService.getRoomSetting(roomId);
-        res.json(roomSetting);
+        res.status(200).json(roomSetting);
     };
 }

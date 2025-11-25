@@ -1,4 +1,4 @@
-// backend/src/socket/modules/chatSocket.ts
+// backend/src/modules/socket/modules/chatSocket.ts
 
 import { Server, Socket } from "socket.io";
 

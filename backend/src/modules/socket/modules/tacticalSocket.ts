@@ -1,4 +1,4 @@
-// backend/src/socket/modules/tacticalSocket.ts
+// backend/src/modules/socket/modules/tacticalSocket.ts
 
 import { Server, Socket } from 'socket.io';
 

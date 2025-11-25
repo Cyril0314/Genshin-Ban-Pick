@@ -1,10 +1,10 @@
-// backend/src/socket/modules/boardSocket.ts
+// backend/src/modules/socket/modules/boardSocket.ts
 
 import { Server, Socket } from 'socket.io';
 
 import { createLogger } from '../../../utils/logger.ts';
 import { IRoomStateManager } from '../managers/IRoomStateManager.ts';
-import { ICharacterRandomContext } from '../../../types/ICharacterRandomContext.ts';
+import { ICharacterRandomContext } from '../../character/domain/ICharacterRandomContext.ts';
 
 import { BoardImageMap } from "../../room/index.ts";
 

@@ -1,4 +1,4 @@
-// backend/src/socket/modules/teamSocket.ts
+// backend/src/modules/socket/modules/teamSocket.ts
 
 import { Server, Socket } from 'socket.io';
 

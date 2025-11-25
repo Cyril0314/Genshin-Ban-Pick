@@ -1,7 +1,7 @@
 // backend/src/modules/room/domain/createMatchFlow.ts
 
 import { InvalidRoomSettingError } from '../../../errors/AppError.ts';
-import { IMatchStep } from '../../../types/IMatchFlow.ts';
+import { IMatchStep } from '../../match/domain/IMatchFlow.ts';
 import { ITeam } from '../../../types/ITeam.ts';
 import { IZone, ZoneType } from '../../../types/IZone.ts';
 import { createLogger } from '../../../utils/logger.ts';

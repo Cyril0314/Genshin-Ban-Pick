@@ -9,12 +9,13 @@ import RoomUserService from './application/roomUser.service.ts';
 import RoomStateRepository from './infra/RoomStateRepository.ts';
 import { createRoomsRouter } from './http/rooms.routes.ts';
 
+import type { IRoomStateRepository } from './domain/IRoomStateRepository.ts';
 import type { IRoomSetting } from './domain/IRoomSetting.ts';
 import type { IRoomUser } from './types/IRoomUser.ts';
 
 // import {  } from './domain/IRoomState.ts'
 
-export { IRoomSetting, IRoomUser, RoomUserService, RoomStateRepository };
+export { IRoomSetting, IRoomUser, RoomUserService, RoomStateRepository, IRoomStateRepository };
 export * from './domain/IRoomState.ts';
 
 export function createRoomModule(prisma: PrismaClient, roomStateManager: IRoomStateManager) {

@@ -1,6 +1,6 @@
 // backend/src/modules/room/domain/IRoomSetting.ts
 
-import { IMatchFlow } from "../../../types/IMatchFlow.ts";
+import { IMatchFlow } from "../../match/domain/IMatchFlow.ts";
 import { ITeam } from "../../../types/ITeam.ts";
 import { IZone } from "../../../types/IZone.ts";
 

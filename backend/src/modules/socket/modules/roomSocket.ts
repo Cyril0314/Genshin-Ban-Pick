@@ -1,4 +1,4 @@
-// backend/src/socket/modules/roomSocket.ts
+// backend/src/modules/socket/modules/roomSocket.ts
 
 import { Server, Socket } from 'socket.io';
 

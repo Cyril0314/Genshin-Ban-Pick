@@ -210,14 +210,9 @@ REST 資源路徑	複數名詞 /rooms
 
 ```
 Genshin-Ban-Pick
-├─ .DS_Store
 ├─ .prettierrc.json
-├─ README.md
 ├─ backend
 │  ├─ .env
-│  ├─ dist
-│  │  ├─ constants
-│  │  └─ routes
 │  ├─ eslint.config.js
 │  ├─ package-lock.json
 │  ├─ package.json
@@ -272,25 +267,114 @@ Genshin-Ban-Pick
 │  │  ├─ middlewares
 │  │  │  └─ errorHandler.ts
 │  │  ├─ modules
+│  │  │  ├─ analysis
+│  │  │  │  ├─ application
+│  │  │  │  │  ├─ analysis.service.ts
+│  │  │  │  │  ├─ clustering
+│  │  │  │  │  │  ├─ ClusteringService.ts
+│  │  │  │  │  │  └─ types
+│  │  │  │  │  │     ├─ IBridgeScoreResult.ts
+│  │  │  │  │  │     └─ ICommunityScanResult.ts
+│  │  │  │  │  ├─ projection
+│  │  │  │  │  │  └─ ProjectionService.ts
+│  │  │  │  │  ├─ synergy
+│  │  │  │  │  │  ├─ SynergyNormalizationService.ts
+│  │  │  │  │  │  ├─ SynergyService.ts
+│  │  │  │  │  │  └─ types
+│  │  │  │  │  │     ├─ IRawTacticalUsage.ts
+│  │  │  │  │  │     ├─ ISynergyMatrix.ts
+│  │  │  │  │  │     └─ SynergyMode.ts
+│  │  │  │  │  └─ tactical
+│  │  │  │  │     ├─ calculateTacticalWeight.ts
+│  │  │  │  │     ├─ computeTacticalUsages.ts
+│  │  │  │  │     ├─ getWeightContext.ts
+│  │  │  │  │     └─ types
+│  │  │  │  │        ├─ IMoveContext.ts
+│  │  │  │  │        ├─ ITacticalCoefficients.ts
+│  │  │  │  │        └─ IWeightContext.ts
+│  │  │  │  ├─ controller
+│  │  │  │  │  └─ analysis.controller.ts
+│  │  │  │  ├─ domain
+│  │  │  │  │  └─ ICharacterProvider.ts
+│  │  │  │  ├─ http
+│  │  │  │  │  └─ analyses.routes.ts
+│  │  │  │  ├─ index.ts
+│  │  │  │  ├─ infra
+│  │  │  │  └─ types
+│  │  │  ├─ auth
+│  │  │  │  ├─ application
+│  │  │  │  │  ├─ auth.service.ts
+│  │  │  │  │  ├─ guest.service.ts
+│  │  │  │  │  └─ member.service.ts
+│  │  │  │  ├─ controller
+│  │  │  │  │  └─ auth.controller.ts
+│  │  │  │  ├─ domain
+│  │  │  │  │  ├─ IAuthPayload.ts
+│  │  │  │  │  └─ IJwtProvider.ts
+│  │  │  │  ├─ http
+│  │  │  │  │  └─ auth.routes.ts
+│  │  │  │  ├─ index.ts
+│  │  │  │  ├─ infra
+│  │  │  │  │  └─ JwtProvider.ts
+│  │  │  │  └─ types
+│  │  │  ├─ character
+│  │  │  │  ├─ application
+│  │  │  │  │  └─ character.service.ts
+│  │  │  │  ├─ controller
+│  │  │  │  │  └─ character.controller.ts
+│  │  │  │  ├─ domain
+│  │  │  │  │  └─ ICharacterRandomContext.ts
+│  │  │  │  ├─ http
+│  │  │  │  │  └─ characters.routes.ts
+│  │  │  │  ├─ index.ts
+│  │  │  │  └─ types
+│  │  │  │     └─ CharacterFilterKey.ts
+│  │  │  ├─ match
+│  │  │  │  ├─ application
+│  │  │  │  │  ├─ match.service.ts
+│  │  │  │  │  ├─ MatchCreator.ts
+│  │  │  │  │  ├─ MatchMoveCreator.ts
+│  │  │  │  │  ├─ MatchTacticalUsageCreator.ts
+│  │  │  │  │  ├─ MatchTeamCreator.ts
+│  │  │  │  │  └─ MatchTeamMemberCreator.ts
+│  │  │  │  ├─ controller
+│  │  │  │  │  └─ match.controller.ts
+│  │  │  │  ├─ domain
+│  │  │  │  │  ├─ IMatchFlow.ts
+│  │  │  │  │  ├─ IMatchSnapshot.ts
+│  │  │  │  │  ├─ IMatchSnapshotRepository.ts
+│  │  │  │  │  ├─ resolveIdentity.ts
+│  │  │  │  │  └─ validateSnapshot.ts
+│  │  │  │  ├─ http
+│  │  │  │  │  └─ matches.routes.ts
+│  │  │  │  ├─ index.ts
+│  │  │  │  ├─ infra
+│  │  │  │  │  └─ MatchSnapshotRepository.ts
+│  │  │  │  └─ types
+│  │  │  │     └─ ResolvedIdentity.ts
 │  │  │  ├─ room
 │  │  │  │  ├─ application
-│  │  │  │  │  └─ room.service.ts
+│  │  │  │  │  ├─ room.service.ts
+│  │  │  │  │  └─ roomUser.service.ts
 │  │  │  │  ├─ controller
 │  │  │  │  │  └─ room.controller.ts
 │  │  │  │  ├─ domain
-│  │  │  │  │  ├─ IRoomSetting.ts
-│  │  │  │  │  ├─ IRoomState.ts
-│  │  │  │  │  ├─ IRoomStateRepository.ts
 │  │  │  │  │  ├─ createDefaultTeams.ts
 │  │  │  │  │  ├─ createMatchFlow.ts
 │  │  │  │  │  ├─ createRoomSetting.ts
 │  │  │  │  │  ├─ createRoomState.ts
-│  │  │  │  │  └─ createZoneMetaTable.ts
+│  │  │  │  │  ├─ createZoneMetaTable.ts
+│  │  │  │  │  ├─ findUserTeamSlot.ts
+│  │  │  │  │  ├─ IRoomSetting.ts
+│  │  │  │  │  ├─ IRoomState.ts
+│  │  │  │  │  ├─ IRoomStateRepository.ts
+│  │  │  │  │  ├─ joinRoomUser.ts
+│  │  │  │  │  └─ leaveRoomUser.ts
 │  │  │  │  ├─ http
-│  │  │  │  │  └─ room.router.ts
+│  │  │  │  │  └─ rooms.routes.ts
 │  │  │  │  ├─ index.ts
 │  │  │  │  ├─ infra
-│  │  │  │  │  └─ roomState.repository.ts
+│  │  │  │  │  └─ RoomStateRepository.ts
 │  │  │  │  └─ types
 │  │  │  │     └─ IRoomUser.ts
 │  │  │  └─ socket
@@ -308,52 +392,10 @@ Genshin-Ban-Pick
 │  │  │     ├─ socketAuth.ts
 │  │  │     └─ socketController.ts
 │  │  ├─ prisma.ts
-│  │  ├─ routes
-│  │  │  ├─ analysis.ts
-│  │  │  ├─ auth.ts
-│  │  │  ├─ characters.ts
-│  │  │  └─ match.ts
-│  │  ├─ services
-│  │  │  ├─ CharacterService.ts
-│  │  │  ├─ analysis
-│  │  │  │  ├─ AnalysisService.ts
-│  │  │  │  ├─ clustering
-│  │  │  │  │  ├─ ClusteringService.ts
-│  │  │  │  │  └─ types
-│  │  │  │  │     ├─ IBridgeScoreResult.ts
-│  │  │  │  │     └─ ICommunityScanResult.ts
-│  │  │  │  ├─ projection
-│  │  │  │  │  └─ ProjectionService.ts
-│  │  │  │  ├─ synergy
-│  │  │  │  │  ├─ SynergyNormalizationService.ts
-│  │  │  │  │  ├─ SynergyService.ts
-│  │  │  │  │  └─ types
-│  │  │  │  │     ├─ IRawTacticalUsage.ts
-│  │  │  │  │     ├─ ISynergyMatrix.ts
-│  │  │  │  │     └─ SynergyMode.ts
-│  │  │  │  └─ tactical
-│  │  │  │     ├─ calculateTacticalWeight.ts
-│  │  │  │     ├─ computeTacticalUsages.ts
-│  │  │  │     ├─ getWeightContext.ts
-│  │  │  │     └─ types
-│  │  │  │        ├─ IMoveContext.ts
-│  │  │  │        ├─ ITacticalCoefficients.ts
-│  │  │  │        └─ IWeightContext.ts
-│  │  │  ├─ auth
-│  │  │  │  ├─ AuthPayload.ts
-│  │  │  │  ├─ GuestService.ts
-│  │  │  │  ├─ MemberService.ts
-│  │  │  │  └─ jwt.ts
-│  │  │  └─ match
-│  │  │     └─ MatchService.ts
 │  │  ├─ test
-│  │  │  └─ saveTest.ts
+│  │  │  └─ save.test.ts
 │  │  ├─ types
-│  │  │  ├─ CharacterFilterKey.ts
-│  │  │  ├─ ICharacterRandomContext.ts
 │  │  │  ├─ IChatMessageDTO.ts
-│  │  │  ├─ IMatchFlow.ts
-│  │  │  ├─ IRoomUser.ts
 │  │  │  ├─ ITeam.ts
 │  │  │  ├─ IZone.ts
 │  │  │  └─ TeamMember.ts
@@ -363,236 +405,14 @@ Genshin-Ban-Pick
 │  ├─ tsconfig.json
 │  ├─ types
 │  │  ├─ ml-kmeans.d.ts
-│  │  ├─ ml-pca.d.ts
-│  │  └─ src
+│  │  └─ ml-pca.d.ts
 │  └─ upload-node-modules.sh
-├─ genshin-ban-pick
+├─ Genshin-Ban-Pick
 │  ├─ .editorconfig
 │  ├─ .env.development
 │  ├─ .env.production
-│  ├─ README.md
 │  ├─ deploy-dist-to-ec2.sh
 │  ├─ dist
-│  │  ├─ assets
-│  │  │  ├─ 5.7-BiwvNLiO.png
-│  │  │  ├─ AboutView-CSIvawM9.css
-│  │  │  ├─ AboutView-tA7qV-91.js
-│  │  │  ├─ Aino_Profile-BTgFBAOx.webp
-│  │  │  ├─ Aino_Wish-zIXDGB5s.png
-│  │  │  ├─ Albedo_Profile-BgKXU_oL.webp
-│  │  │  ├─ Albedo_Wish-CbQHbG_S.png
-│  │  │  ├─ Alhaitham_Profile-BVSmz8zv.webp
-│  │  │  ├─ Alhaitham_Wish-B94bAD_W.png
-│  │  │  ├─ Amber_Profile-DB3eTXt8.webp
-│  │  │  ├─ Amber_Wish-C7sRM_DP.png
-│  │  │  ├─ AratakiItto_Profile-Cr8rdhjI.webp
-│  │  │  ├─ AratakiItto_Wish-DKjzPtdQ.png
-│  │  │  ├─ Arlecchino_Profile-DO4pw2Bh.webp
-│  │  │  ├─ Arlecchino_Wish-Bgsq6mK0.png
-│  │  │  ├─ Baizhu_Profile-CptcZs-i.webp
-│  │  │  ├─ Baizhu_Wish-BThGjeSI.png
-│  │  │  ├─ Barbara_Profile-DjpufX66.webp
-│  │  │  ├─ Barbara_Wish-BFuMF7Yn.png
-│  │  │  ├─ Beidou_Profile-Cd1ARu6C.webp
-│  │  │  ├─ Beidou_Wish-DRhGzzhD.png
-│  │  │  ├─ Bennett_Profile-Cmsdb5W4.webp
-│  │  │  ├─ Bennett_Wish-BOql39Lu.png
-│  │  │  ├─ Candace_Profile-DrzD4pX5.webp
-│  │  │  ├─ Candace_Wish-BkXjHKC8.png
-│  │  │  ├─ Charlotte_Profile-CAyBQkHy.webp
-│  │  │  ├─ Charlotte_Wish-BODrKz-Y.png
-│  │  │  ├─ Chasca_Profile-X60TcLHq.webp
-│  │  │  ├─ Chasca_Wish-5exmRrK0.png
-│  │  │  ├─ Chevreuse_Profile-Bi4bUO11.webp
-│  │  │  ├─ Chevreuse_Wish-H_CW-j7K.png
-│  │  │  ├─ Chiori_Profile-8X3oOgkK.webp
-│  │  │  ├─ Chiori_Wish-COYZz26c.png
-│  │  │  ├─ Chongyun_Profile-0KjRra7B.webp
-│  │  │  ├─ Chongyun_Wish-CxM4RL2y.png
-│  │  │  ├─ Citlali_Profile-DuV8f46r.webp
-│  │  │  ├─ Citlali_Wish-DCLfhN_Y.png
-│  │  │  ├─ Clorinde_Profile-DnnjJkac.webp
-│  │  │  ├─ Clorinde_Wish-DkbkPN8G.png
-│  │  │  ├─ Collei_Profile-C75Nn37a.webp
-│  │  │  ├─ Collei_Wish-BJQIzAqi.png
-│  │  │  ├─ Cyno_Profile-Dxgs06NG.webp
-│  │  │  ├─ Cyno_Wish-BmqUJaFs.png
-│  │  │  ├─ Dahlia_Profile-R-Bk2AZD.webp
-│  │  │  ├─ Dahlia_Wish-BK5kf8br.png
-│  │  │  ├─ Dehya_Profile-DYcDwiKU.webp
-│  │  │  ├─ Dehya_Wish-BgUzc5mt.png
-│  │  │  ├─ Diluc_Profile-fAdpndgT.webp
-│  │  │  ├─ Diluc_Wish-D1UEM9Iu.png
-│  │  │  ├─ Diona_Profile-VcRgTsXk.webp
-│  │  │  ├─ Diona_Wish-BP_waHjf.png
-│  │  │  ├─ Dori_Profile-Bb6GffXQ.webp
-│  │  │  ├─ Dori_Wish-BAE8-hcj.png
-│  │  │  ├─ Emilie_Profile-070jHETT.webp
-│  │  │  ├─ Emilie_Wish-BSl-TJxX.png
-│  │  │  ├─ Escoffier_Profile-Fx2a8XDY.webp
-│  │  │  ├─ Escoffier_Wish-BgvjVPGO.png
-│  │  │  ├─ Eula_Profile-BBESSwxr.webp
-│  │  │  ├─ Eula_Wish-DUUJXyDd.png
-│  │  │  ├─ Faruzan_Profile-D1e3CR7S.webp
-│  │  │  ├─ Faruzan_Wish-D0Knlr2v.png
-│  │  │  ├─ Fischl_Profile-CByupWZG.webp
-│  │  │  ├─ Fischl_Wish-CDYBQGpW.png
-│  │  │  ├─ Flins_Profile-Be5DtAib.webp
-│  │  │  ├─ Flins_Wish-ChSepAlD.png
-│  │  │  ├─ Freminet_Profile-DitbMwn6.webp
-│  │  │  ├─ Freminet_Wish-eI5d3wYL.png
-│  │  │  ├─ Furina_Profile-Ca9pHN4U.webp
-│  │  │  ├─ Furina_Wish-CSwDjH7z.png
-│  │  │  ├─ Gaming_Profile-Dr-gl_In.webp
-│  │  │  ├─ Gaming_Wish-Db02i76-.png
-│  │  │  ├─ Ganyu_Profile-DskePiq5.webp
-│  │  │  ├─ Ganyu_Wish-DZhEbluh.png
-│  │  │  ├─ Gorou_Profile-C93AFJeP.webp
-│  │  │  ├─ Gorou_Wish-CjXhRcXS.png
-│  │  │  ├─ HuTao_Profile-B6U8gOSV.webp
-│  │  │  ├─ HuTao_Wish-C64_lm2M.png
-│  │  │  ├─ Iansan_Profile-DZ75PVMK.webp
-│  │  │  ├─ Iansan_Wish-CuJA2QGm.png
-│  │  │  ├─ Ifa_Profile-CjyBIarW.webp
-│  │  │  ├─ Ifa_Wish-Blj6lnPJ.png
-│  │  │  ├─ Ineffa_Profile-Boq9c_TB.webp
-│  │  │  ├─ Ineffa_Wish-BT9COw7k.png
-│  │  │  ├─ Jean_Profile-CocG5guq.webp
-│  │  │  ├─ Jean_Wish-DHo-Ckig.png
-│  │  │  ├─ Kachina_Profile-CXMC0j0g.webp
-│  │  │  ├─ Kachina_Wish-BH9p9u9l.png
-│  │  │  ├─ KaedeharaKazuha_Profile-Dv_PZDgb.webp
-│  │  │  ├─ KaedeharaKazuha_Wish-DpoHbpcd.png
-│  │  │  ├─ Kaeya_Profile-COUZw5Hb.webp
-│  │  │  ├─ Kaeya_Wish-CV_fZs0V.png
-│  │  │  ├─ KamisatoAyaka_Profile-CNBAu1Pq.webp
-│  │  │  ├─ KamisatoAyaka_Wish-B9swQEMK.png
-│  │  │  ├─ KamisatoAyato_Profile-AOCjBAdn.webp
-│  │  │  ├─ KamisatoAyato_Wish-C3yzgPPD.png
-│  │  │  ├─ Kaveh_Profile-tZ73JIsC.webp
-│  │  │  ├─ Kaveh_Wish-9yuMgr0A.png
-│  │  │  ├─ Keqing_Profile-BUBIMHHm.webp
-│  │  │  ├─ Keqing_Wish-CnxUf42V.png
-│  │  │  ├─ Kinich_Profile-gWWI_EfM.webp
-│  │  │  ├─ Kinich_Wish-2Q2lUTpn.png
-│  │  │  ├─ Kirara_Profile-DQO6UBpy.webp
-│  │  │  ├─ Kirara_Wish-DDK2fxfK.png
-│  │  │  ├─ Klee_Profile-Bbc3KMrN.webp
-│  │  │  ├─ Klee_Wish-CaGkMVE3.png
-│  │  │  ├─ KujouSara_Profile-CgpLs1EH.webp
-│  │  │  ├─ KujouSara_Wish-DyLpaRvH.png
-│  │  │  ├─ KukiShinobu_Profile-DYwgGwYW.webp
-│  │  │  ├─ KukiShinobu_Wish-BUs2DqEX.png
-│  │  │  ├─ LanYan_Profile-Dt_DDKL1.webp
-│  │  │  ├─ LanYan_Wish-Cexj2cgP.png
-│  │  │  ├─ Lauma_Profile-SWK7FvZ5.webp
-│  │  │  ├─ Lauma_Wish-BEUJvfdn.png
-│  │  │  ├─ Layla_Profile-CfXL31-a.webp
-│  │  │  ├─ Layla_Wish-CyYV9WO5.png
-│  │  │  ├─ Lisa_Profile-CnZbMH2w.webp
-│  │  │  ├─ Lisa_Wish-u3J33dmD.png
-│  │  │  ├─ Lynette_Profile-DatM1aF9.webp
-│  │  │  ├─ Lynette_Wish-B-qt7djx.png
-│  │  │  ├─ Lyney_Profile-DBRqRh2-.webp
-│  │  │  ├─ Lyney_Wish-CNc8opOm.png
-│  │  │  ├─ Mavuika_Profile-CVP5Wt2c.webp
-│  │  │  ├─ Mavuika_Wish-BlqF95jn.png
-│  │  │  ├─ Mika_Profile-DGa1EoOh.webp
-│  │  │  ├─ Mika_Wish-Bex5l7IU.png
-│  │  │  ├─ Mona_Profile-DjkRif2_.webp
-│  │  │  ├─ Mona_Wish-DJeSwqSb.png
-│  │  │  ├─ Mualani_Profile-Dt0KO0yR.webp
-│  │  │  ├─ Mualani_Wish-CrkTXARm.png
-│  │  │  ├─ Nahida_Profile-BzoWNcBv.webp
-│  │  │  ├─ Nahida_Wish-D5EfEB6c.png
-│  │  │  ├─ Navia_Profile-DkidcwOg.webp
-│  │  │  ├─ Navia_Wish-DRyaVon7.png
-│  │  │  ├─ Nefer_Profile-BlxuuT1d.webp
-│  │  │  ├─ Nefer_Wish-B7vnOywv.png
-│  │  │  ├─ Neuvillette_Profile-BtLdJGp6.webp
-│  │  │  ├─ Neuvillette_Wish-Bbx8GsAU.png
-│  │  │  ├─ Nilou_Profile-B1OJFuNc.webp
-│  │  │  ├─ Nilou_Wish-CxJ_KZd2.png
-│  │  │  ├─ Ningguang_Profile-CZaI93EJ.webp
-│  │  │  ├─ Ningguang_Wish-B9NHQyg7.png
-│  │  │  ├─ Noelle_Profile-CpGa_xBr.webp
-│  │  │  ├─ Noelle_Wish-DR7gJsUk.png
-│  │  │  ├─ Ororon_Profile-DxEQabwk.webp
-│  │  │  ├─ Ororon_Wish-CSBc6fO1.png
-│  │  │  ├─ Qiqi_Profile-CVbEvPvn.webp
-│  │  │  ├─ Qiqi_Wish-vAP_YvNF.png
-│  │  │  ├─ RaidenShogun_Profile-CkBRjsGy.webp
-│  │  │  ├─ RaidenShogun_Wish-CbN1wCmX.png
-│  │  │  ├─ Razor_Profile-zn6_nWcZ.webp
-│  │  │  ├─ Razor_Wish-fk-P5cWu.png
-│  │  │  ├─ Rosaria_Profile-DZ48m9Nt.webp
-│  │  │  ├─ Rosaria_Wish-Di-4l0Ly.png
-│  │  │  ├─ SangonomiyaKokomi_Profile-Rra2V-YS.webp
-│  │  │  ├─ SangonomiyaKokomi_Wish-bkZJKcy-.png
-│  │  │  ├─ Sayu_Profile-BeptTTM3.webp
-│  │  │  ├─ Sayu_Wish-DiMaySWR.png
-│  │  │  ├─ Sethos_Profile-Dy_j1hUK.webp
-│  │  │  ├─ Sethos_Wish-BZQ1YPhK.png
-│  │  │  ├─ Shenhe_Profile-C30nQw8p.webp
-│  │  │  ├─ Shenhe_Wish-DaRkQNqo.png
-│  │  │  ├─ ShikanoinHeizou_Profile-B1ZhIXUl.webp
-│  │  │  ├─ ShikanoinHeizou_Wish-QIY2fJKW.png
-│  │  │  ├─ Sigewinne_Profile-DMbxOAT8.webp
-│  │  │  ├─ Sigewinne_Wish-Dkg_EXfH.png
-│  │  │  ├─ Skirk_Profile-BG7Ed6hv.webp
-│  │  │  ├─ Skirk_Wish-CBMcrSVv.png
-│  │  │  ├─ Sucrose_Profile-BIhvu42q.webp
-│  │  │  ├─ Sucrose_Wish-57_FL2VI.png
-│  │  │  ├─ Tartaglia_Profile-CHBoWyJn.webp
-│  │  │  ├─ Tartaglia_Wish-B11q_OFI.png
-│  │  │  ├─ Thoma_Profile-BTZULJQ5.webp
-│  │  │  ├─ Thoma_Wish-DWKK7pqm.png
-│  │  │  ├─ Tighnari_Profile-CSx8oQ1d.webp
-│  │  │  ├─ Tighnari_Wish-CJ1aNs3o.png
-│  │  │  ├─ Traveler_Profile-sxji-Mye.webp
-│  │  │  ├─ Traveler_Wish-DnTuqQT6.png
-│  │  │  ├─ Varesa_Profile-BhFPgiz7.webp
-│  │  │  ├─ Varesa_Wish-eBrrd824.png
-│  │  │  ├─ Venti_Profile-B-tZM0jC.webp
-│  │  │  ├─ Venti_Wish-VnrtrJfm.png
-│  │  │  ├─ Wanderer_Profile--TeccnvW.webp
-│  │  │  ├─ Wanderer_Wish-BNu4mffb.png
-│  │  │  ├─ Wriothesley_Profile-MSlU_hG1.webp
-│  │  │  ├─ Wriothesley_Wish-52SuNSEi.png
-│  │  │  ├─ Xiangling_Profile-Cph67zgQ.webp
-│  │  │  ├─ Xiangling_Wish-5CkeAoJT.png
-│  │  │  ├─ Xianyun_Profile-BkDVzMky.webp
-│  │  │  ├─ Xianyun_Wish-kPzVp5aA.png
-│  │  │  ├─ Xiao_Profile-Bb_XX0Hq.webp
-│  │  │  ├─ Xiao_Wish-BSZZPhX9.png
-│  │  │  ├─ Xilonen_Profile-DP0mVkbs.webp
-│  │  │  ├─ Xilonen_Wish-Dp8cYi5V.png
-│  │  │  ├─ Xingqiu_Profile-B8pV8zSR.webp
-│  │  │  ├─ Xingqiu_Wish-DNtr97VM.png
-│  │  │  ├─ Xinyan_Profile-qjrRzr6M.webp
-│  │  │  ├─ Xinyan_Wish-DRJHkrLZ.png
-│  │  │  ├─ YaeMiko_Profile-C0yCsuAK.webp
-│  │  │  ├─ YaeMiko_Wish-Dj-Zk_I0.png
-│  │  │  ├─ Yanfei_Profile-DoaOJdIl.webp
-│  │  │  ├─ Yanfei_Wish-CXJshmxt.png
-│  │  │  ├─ Yaoyao_Profile-BDak4YaL.webp
-│  │  │  ├─ Yaoyao_Wish-CTwGIKMs.png
-│  │  │  ├─ Yelan_Profile-BjkBhJEl.webp
-│  │  │  ├─ Yelan_Wish-CK0EC73b.png
-│  │  │  ├─ Yoimiya_Profile-DJZsCmjG.webp
-│  │  │  ├─ Yoimiya_Wish-GCdzP-FU.png
-│  │  │  ├─ YumemizukiMizuki_Profile-p4QtYPjM.webp
-│  │  │  ├─ YumemizukiMizuki_Wish-B07_o9Th.png
-│  │  │  ├─ YunJin_Profile-DDMoM5pR.webp
-│  │  │  ├─ YunJin_Wish-BhnI0EiH.png
-│  │  │  ├─ Zhongli_Profile-BKf77nvg.webp
-│  │  │  ├─ Zhongli_Wish-JkyBplO8.png
-│  │  │  ├─ index-DxolZ8aM.js
-│  │  │  ├─ index-ayZQtmNK.css
-│  │  │  └─ wallpaper4-DFm1uiwi.jpg
-│  │  ├─ favicon.ico
-│  │  ├─ index.html
-│  │  └─ wish.png
 │  ├─ env.d.ts
 │  ├─ eslint.config.ts
 │  ├─ index.html
@@ -601,8 +421,8 @@ Genshin-Ban-Pick
 │  ├─ public
 │  │  ├─ favicon.ico
 │  │  └─ wish.png
+│  ├─ README.md
 │  ├─ src
-│  │  ├─ App.vue
 │  │  ├─ app
 │  │  │  ├─ bootstrap
 │  │  │  │  ├─ registerAllSyncModules.ts
@@ -615,12 +435,13 @@ Genshin-Ban-Pick
 │  │  │  ├─ infrastructure
 │  │  │  │  └─ http
 │  │  │  │     └─ httpClient.ts
-│  │  │  └─ stores
-│  │  │     └─ socketStore.ts
+│  │  │  ├─ stores
+│  │  │  │  └─ socketStore.ts
+│  │  │  └─ ui
+│  │  ├─ App.vue
 │  │  ├─ assets
 │  │  │  ├─ base.css
 │  │  │  ├─ images
-│  │  │  │  ├─ .DS_Store
 │  │  │  │  ├─ background
 │  │  │  │  │  ├─ 4.7.jpg
 │  │  │  │  │  ├─ 4.8.jpg
@@ -628,10 +449,10 @@ Genshin-Ban-Pick
 │  │  │  │  │  ├─ 5.3.jpg
 │  │  │  │  │  ├─ 5.5.jpg
 │  │  │  │  │  ├─ 5.7.png
-│  │  │  │  │  ├─ LunaI.webp
-│  │  │  │  │  ├─ Tier.png
 │  │  │  │  │  ├─ background.jpg
+│  │  │  │  │  ├─ LunaI.webp
 │  │  │  │  │  ├─ noise.png
+│  │  │  │  │  ├─ Tier.png
 │  │  │  │  │  ├─ wallpaper.png
 │  │  │  │  │  ├─ wallpaper2.png
 │  │  │  │  │  ├─ wallpaper3.png
@@ -915,9 +736,9 @@ Genshin-Ban-Pick
 │  │  │  │  ├─ store
 │  │  │  │  │  └─ authStore.ts
 │  │  │  │  ├─ types
+│  │  │  │  │  ├─ Identity.ts
 │  │  │  │  │  ├─ IGuest.ts
-│  │  │  │  │  ├─ IMember.ts
-│  │  │  │  │  └─ Identity.ts
+│  │  │  │  │  └─ IMember.ts
 │  │  │  │  └─ ui
 │  │  │  │     └─ views
 │  │  │  │        ├─ LoginView.vue
@@ -971,9 +792,8 @@ Genshin-Ban-Pick
 │  │  │  │     │  ├─ PickZones.vue
 │  │  │  │     │  ├─ StepIndicator.vue
 │  │  │  │     │  └─ UtilityZones.vue
-│  │  │  │     ├─ composables
-│  │  │  │     │  └─ useBoardZonesLayout.ts
-│  │  │  │     └─ views
+│  │  │  │     └─ composables
+│  │  │  │        └─ useBoardZonesLayout.ts
 │  │  │  ├─ character
 │  │  │  │  ├─ application
 │  │  │  │  │  └─ characterUseCase.ts
@@ -1011,10 +831,11 @@ Genshin-Ban-Pick
 │  │  │  │  │  ├─ IChatMessage.ts
 │  │  │  │  │  └─ IChatMessageDTO.ts
 │  │  │  │  └─ ui
-│  │  │  │     └─ components
-│  │  │  │        ├─ ChatFloating.vue
-│  │  │  │        ├─ ChatRoom.vue
-│  │  │  │        └─ ChatRoomDrawer.vue
+│  │  │  │     ├─ components
+│  │  │  │     │  ├─ ChatFloating.vue
+│  │  │  │     │  ├─ ChatRoom.vue
+│  │  │  │     │  └─ ChatRoomDrawer.vue
+│  │  │  │     └─ composables
 │  │  │  ├─ match
 │  │  │  │  ├─ application
 │  │  │  │  │  └─ matchUseCase.ts
@@ -1030,8 +851,8 @@ Genshin-Ban-Pick
 │  │  │  │  │  └─ roomUseCase.ts
 │  │  │  │  ├─ domain
 │  │  │  │  │  ├─ buildRoomDomain.ts
-│  │  │  │  │  ├─ fetchRoomSettingDomain.ts
-│  │  │  │  │  └─ fetchRoomsDomain.ts
+│  │  │  │  │  ├─ fetchRoomsDomain.ts
+│  │  │  │  │  └─ fetchRoomSettingDomain.ts
 │  │  │  │  ├─ index.ts
 │  │  │  │  ├─ infrastructure
 │  │  │  │  │  └─ roomService.ts
@@ -1125,9 +946,6 @@ Genshin-Ban-Pick
 │  ├─ upload-node-modules.sh
 │  └─ vite.config.ts
 ├─ package-lock.json
-└─ packages
-   └─ shared
-      └─ src
-         └─ types
+└─ README.md
 
 ```

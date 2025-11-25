@@ -1,4 +1,4 @@
-// backend/src/socket/managers/RoomStateManager.ts
+// backend/src/modules/socket/managers/RoomStateManager.ts
 
 import { IRoomStateManager } from './IRoomStateManager.ts';
 import { IRoomState, IRoomUser } from "../../room/index.ts";

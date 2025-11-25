@@ -1,6 +1,6 @@
 // backend/src/modules/room/domain/IRoomState.ts
 
-import { ICharacterRandomContext } from '../../../types/ICharacterRandomContext.ts';
+import { ICharacterRandomContext } from '../../character/domain/ICharacterRandomContext.ts';
 import { IChatMessageDTO } from '../../../types/IChatMessageDTO.ts';
 import { TeamMembersMap } from '../../../types/TeamMember.ts';
 import { IRoomSetting } from './IRoomSetting.ts';

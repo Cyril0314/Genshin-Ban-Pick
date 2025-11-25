@@ -1,14 +1,12 @@
-// backend/src/socket/socketAuth.ts
+// backend/src/modules/socket/socketAuth.ts
 
 import { Server, Socket } from 'socket.io';
-import { useJwt } from '../../services/auth/jwt.ts';
-import GuestService from '../../services/auth/GuestService.ts';
-import MemberService from '../../services/auth/MemberService.ts';
+import GuestService from '../auth/application/guest.service.ts';
+import MemberService from '../auth/application/member.service.ts';
 import { MissingFieldsError, UserNotFoundError } from '../../errors/AppError.ts';
+import { IJwtProvider } from '../auth/domain/IJwtProvider.ts';
 
-export function createSocketAuth(guestService: GuestService, memberService: MemberService) {
-    let jwt = useJwt();
-
+export function createSocketAuth(memberService: MemberService, guestService: GuestService, jwtProvider: IJwtProvider) {
     return function attachAuthMiddleware(io: Server) {
         io.use(async (socket: Socket, next) => {
             const { token } = socket.handshake.auth as { token: string };
@@ -16,7 +14,7 @@ export function createSocketAuth(guestService: GuestService, memberService: Memb
                 return next(new MissingFieldsError());
             }
             try {
-                const payload = jwt.verify(token);
+                const payload = jwtProvider.verify(token);
 
                 let result;
                 switch (payload.type) {

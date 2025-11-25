@@ -1,4 +1,4 @@
-// backend/src/socket/managers/IRoomStateManager.ts
+// backend/src/modules/socket/managers/IRoomStateManager.ts
 
 import { IChatMessageDTO } from "../../../types/IChatMessageDTO.ts";
 

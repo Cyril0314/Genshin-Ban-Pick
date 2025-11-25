@@ -1,4 +1,4 @@
-// backend/src/socket/modules/stepSocket.ts
+// backend/src/modules/socket/modules/stepSocket.ts
 
 import { Server, Socket } from 'socket.io';
 

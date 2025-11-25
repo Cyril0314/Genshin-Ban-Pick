@@ -1,17 +1,17 @@
-// backend/src/socket/index.ts
+// backend/src/modules/socket/index.ts
 
 import http from 'http';
 
-import { PrismaClient } from '@prisma/client';
 import { Server } from 'socket.io';
 
 import { createSocketAuth } from './socketAuth.ts';
 import { setupSocketIO } from './socketController.ts';
-import GuestService from '../../services/auth/GuestService.ts';
-import MemberService from '../../services/auth/MemberService.ts';
+import GuestService from '../auth/application/guest.service.ts';
+import MemberService from '../auth/application/member.service.ts';
 import { IRoomStateManager } from './managers/IRoomStateManager.ts';
+import { IJwtProvider } from '../auth/domain/IJwtProvider.ts';
 
-export function createSocketApp(server: http.Server, guestService: GuestService, memberService: MemberService, roomStateManager: IRoomStateManager) {
+export function createSocketApp(server: http.Server, roomStateManager: IRoomStateManager, memberService: MemberService, guestService: GuestService, jwtProvider: IJwtProvider) {
     const io = new Server(server, {
         cors: {
             // origin: ["http://localhost:5173", "http://52.87.171.134"], // 允許的前端來源
@@ -21,7 +21,7 @@ export function createSocketApp(server: http.Server, guestService: GuestService,
         },
     });
 
-    const attachAuth = createSocketAuth(guestService, memberService); // 建立 middleware
+    const attachAuth = createSocketAuth(memberService, guestService, jwtProvider); // 建立 middleware
     attachAuth(io); // 連接 middleware 和 io
     setupSocketIO(io, roomStateManager); // 設定 io
     return io;
