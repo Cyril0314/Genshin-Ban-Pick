@@ -10,7 +10,7 @@ import { getWishImagePath } from '@/modules/shared/infrastructure/imageRegistry'
 import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
 import { useMatchStepStore } from '../../store/matchStepStore';
 
-import type { IZone } from "../../types/IZone";
+import type { IZone } from '@shared/contracts/board/IZone';
 
 const props = defineProps<{
   zone: IZone

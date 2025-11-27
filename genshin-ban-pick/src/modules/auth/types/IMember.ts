@@ -1,16 +1,10 @@
 // src/modules/auth/types/IMember.ts
 
+import { MemberRole } from '@shared/contracts/auth/value_type'
+
 export interface IMember {
     id: number;
     account: string;
     nickname: string;
-    createdAt: Date;
-    updatedAt: Date;
     role: MemberRole;
-}
-
-export enum MemberRole {
-    User = 'User',
-    Owner = 'Owner',
-    Admin = 'Admin',
 }

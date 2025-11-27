@@ -5,7 +5,7 @@ import { buildRoomDomain } from '../domain/buildRoomDomain';
 import { fetchRoomSettingDomain } from '../domain/fetchRoomSettingDomain';
 import { useRoomUserStore } from '../store/roomUserStore';
 
-import type { IRoomUser } from '../types/IRoomUser';
+import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 
 export function roomUseCase() {
     const roomUserStore = useRoomUserStore();

@@ -1,24 +1,31 @@
-import { IRoomState } from '../domain/IRoomState.ts';
-import { IRoomStateManager } from '../../socket/managers/IRoomStateManager.ts';
-import { IRoomStateRepository } from '../domain/IRoomStateRepository.ts';
-import { IRoomUser } from '../types/IRoomUser.ts';
+import IRoomStateManager from '../../socket/domain/IRoomStateManager';
+import IRoomStateRepository from '../domain/IRoomStateRepository';
+import { IRoomState } from '@shared/contracts/room/IRoomState';
+import { IRoomUser } from '@shared/contracts/room/IRoomUser';
 
 export default class RoomStateRepository implements IRoomStateRepository {
     constructor(private roomStateManager: IRoomStateManager) {}
 
-    getAll() {
+    findAll() {
         return this.roomStateManager.getRoomStates();
     }
 
-    get(roomId: string) {
+    findById(roomId: string) {
         return this.roomStateManager.get(roomId);
     }
 
-    set(roomId: string, state: IRoomState) {
+    create(roomId: string, state: IRoomState) {
         this.roomStateManager.setRoomState(roomId, state);
+        return state
     }
 
-    setRoomUsers(roomId: string, users: IRoomUser[]) {
+    upsert(roomId: string, state: IRoomState) {
+        this.roomStateManager.setRoomState(roomId, state);
+        return state
+    }
+
+    updateRoomUsersById(roomId: string, users: IRoomUser[]) {
         this.roomStateManager.setUsers(roomId, users);
+        return users.length
     }
 }

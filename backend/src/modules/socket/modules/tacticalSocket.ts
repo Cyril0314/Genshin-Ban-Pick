@@ -2,9 +2,10 @@
 
 import { Server, Socket } from 'socket.io';
 
-import { createLogger } from '../../../utils/logger.ts';
-import { IRoomStateManager } from '../managers/IRoomStateManager.ts';
-import { TacticalCellImageMap, IRoomUser } from "../../room/index.ts";
+import { createLogger } from '../../../utils/logger';
+import IRoomStateManager from '../domain/IRoomStateManager';
+import { IRoomUser } from '@shared/contracts/room/IRoomUser';
+import { TacticalCellImageMap } from '@shared/contracts/tactical/TacticalCellImageMap';
 
 const logger = createLogger('TATICAL SOCKET');
 

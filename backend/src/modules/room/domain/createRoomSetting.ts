@@ -1,15 +1,15 @@
 // backend/src/modules/room/domain/createRoomSetting.ts
 
-import { ITeam } from '../../../types/ITeam.ts';
-import { IRoomSetting } from './IRoomSetting.ts';
-import { createDefaultTeams } from './createDefaultTeams.ts';
-import { createMatchFlow } from './createMatchFlow.ts';
-import { createZoneMetaTable } from './createZoneMetaTable.ts';
+import { IRoomSetting } from '@shared/contracts/room/IRoomSetting';
+import { ITeam } from '@shared/contracts/team/ITeam';
+import { createDefaultTeams } from './createDefaultTeams';
+import { createMatchFlow } from './createMatchFlow';
+import { createZoneMetaTable } from './createZoneMetaTable';
 
 const defaultFlowVersion = 1;
 const defaultTotalRounds = 2;
-const defaultNumberOfUtility = 3;
-const defaultNumberOfBan = 4;
+const defaultNumberOfUtility = 4;
+const defaultNumberOfBan = 6;
 const defaultNumberOfPick = 32;
 
 const defaultTeams = createDefaultTeams();

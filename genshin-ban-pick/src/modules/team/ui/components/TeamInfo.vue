@@ -4,7 +4,7 @@ import { computed, ref } from 'vue';
 
 import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
 import { DragTypes } from '@/app/constants/customMIMETypes';
-import type { TeamMember } from '../../types/TeamMember';
+import type { TeamMember } from '@shared/contracts/team/TeamMember';
 
 const props = defineProps<{
     side: 'left' | 'right';

@@ -7,11 +7,11 @@ import vSelect from 'vue-select';
 import 'vue-select/dist/vue-select.css';
 import { useSelectorOptions, CommonOption } from '../composables/useSelectorOptions';
 import { useFilteredCharacters } from '../composables/useFilteredCharacters';
-import { ZoneType } from '@/modules/board';
+import { ZoneType } from '@shared/contracts/board/value-types';
 
-import type { ICharacter } from '@/modules/character/types/ICharacter';
-import type { CharacterFilterKey } from '@/modules/character/types/CharacterFilterKey';
+import type { CharacterFilterKey } from '@shared/contracts/character/value-types';
 import type { SelectorOption } from '../composables/useSelectorOptions';
+import type { ICharacter } from '@shared/contracts/character/ICharacter';
 
 const props = defineProps<{
     characterMap: Record<string, ICharacter>;

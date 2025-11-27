@@ -2,31 +2,14 @@
 
 import { Prisma } from '@prisma/client';
 import { PrismaClient } from '@prisma/client/extension';
-import { IRawTacticalUsage } from './types/IRawTacticalUsage.ts';
-import { SynergyMode } from './types/SynergyMode.ts';
-import { ISynergyMatrix } from './types/ISynergyMatrix.ts';
+import { IRawTacticalUsage } from './types/IRawTacticalUsage';
+import { SynergyMode } from './types/SynergyMode';
+import { ISynergyMatrix } from './types/ISynergyMatrix';
 
 export class SynergyService {
     constructor(private prisma: PrismaClient) {}
 
     async getRawTacticalUsages(): Promise<IRawTacticalUsage[]> {
-        type MatchTacticalUsage = Prisma.MatchTacticalUsageGetPayload<{
-            select: {
-                setupNumber: true;
-                characterKey: true;
-                teamMember: {
-                    select: {
-                        teamId: true;
-                        team: {
-                            select: {
-                                matchId: true;
-                            };
-                        };
-                    };
-                };
-            };
-        }>;
-
         const rows: MatchTacticalUsage[] = await this.prisma.matchTacticalUsage.findMany({
             select: {
                 setupNumber: true,
@@ -100,3 +83,20 @@ export class SynergyService {
         }
     }
 }
+
+type MatchTacticalUsage = Prisma.MatchTacticalUsageGetPayload<{
+    select: {
+        setupNumber: true;
+        characterKey: true;
+        teamMember: {
+            select: {
+                teamId: true;
+                team: {
+                    select: {
+                        matchId: true;
+                    };
+                };
+            };
+        };
+    };
+}>;

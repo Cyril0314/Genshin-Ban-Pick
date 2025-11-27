@@ -1,7 +1,7 @@
 // src/middlewares/errorHandler.ts
 
-import { AppError } from '../errors/AppError.ts';
-import { createLogger } from '../utils/logger.ts';
+import { AppError } from '../errors/AppError';
+import { createLogger } from '../utils/logger';
 
 import type {  ErrorRequestHandler } from 'express';
 

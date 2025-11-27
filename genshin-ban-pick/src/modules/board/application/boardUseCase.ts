@@ -4,7 +4,8 @@ import { handleBoardImageDropDomain } from '../domain/handleBoardImageDropDomain
 import { handleBoardImageMapResetDomain } from '../domain/handleBoardImageMapResetDomain';
 import { handleBoardImageRestoreDomain } from '../domain/handleBoardImageRestoreDomain';
 import { useBoardImageStore } from '../store/boardImageStore';
-import type { BoardImageMap } from '../types/BoardImageMap';
+
+import type { BoardImageMap } from '@shared/contracts/board/BoardImageMap';
 
 export function boardUseCase() {
     const boardStore = useBoardImageStore();

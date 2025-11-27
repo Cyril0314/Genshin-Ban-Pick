@@ -1,30 +1,25 @@
 // backend/src/modules/auth/application/auth.service.ts
 
-import { PrismaClient } from '@prisma/client';
+import MemberService from './member.service';
+import GuestService from './guest.service';
+import { IJwtProvider } from '../domain/IJwtProvider';
+import { UserNotFoundError } from '../../../errors/AppError';
+import { createLogger } from '../../../utils/logger';
+import { IGuestData } from '../types/IGuestData';
+import { IMemberData } from '../types/IMemberData';
 
-import MemberService from './member.service.ts';
-import GuestService from './guest.service.ts';
-import { IJwtProvider } from '../domain/IJwtProvider.ts';
-import { UserNotFoundError } from '../../../errors/AppError.ts';
-
+const logger = createLogger('AUTH');
 export default class AuthService {
-    private userProvider: Record<'Member' | 'Guest', { getById(id: number): Promise<any> }>;
-
     constructor(
-        private prisma: PrismaClient,
         private memberService: MemberService,
         private guestService: GuestService,
         private jwtProvider: IJwtProvider,
-    ) {
-        this.userProvider = {
-            Member: this.memberService,
-            Guest: this.guestService,
-        };
-    }
+    ) {}
 
     async registerMember(account: string, password: string, nickname: string) {
         const member = await this.memberService.register(account, password, nickname);
         const token = this.createToken('Member', member.id, 7);
+        logger.debug('Register member', member);
         return {
             ...member,
             token,
@@ -34,6 +29,7 @@ export default class AuthService {
     async loginMember(account: string, password: string) {
         const member = await this.memberService.login(account, password);
         const token = this.createToken('Member', member.id, 7);
+        logger.debug('Login member', member);
         return {
             ...member,
             token,
@@ -43,23 +39,31 @@ export default class AuthService {
     async loginGuest(nickname: string) {
         const guest = await this.guestService.login(nickname);
         const token = this.createToken('Guest', guest.id, 180);
+        logger.debug('Login guest', guest);
         return {
             ...guest,
             token,
         };
     }
 
-    async fetchSession(token: string) {
+    async fetchSession(token: string): Promise<{ type: 'Member'; user: IMemberData } | { type: 'Guest'; user: IGuestData }> {
         const payload = this.jwtProvider.verify(token);
-        const provider = this.userProvider[payload.type];
-
-        if (!provider) throw new UserNotFoundError();
-
-        const user = await provider.getById(payload.id);
-        return {
-            type: payload.type,
-            ...user,
-        };
+        switch (payload.type) {
+            case 'Guest':
+                const guest = await this.guestService.getById(payload.id);
+                if (!guest) throw new UserNotFoundError();
+                return {
+                    type: 'Guest',
+                    user: guest,
+                };
+            case 'Member':
+                const member = await this.memberService.getById(payload.id);
+                if (!member) throw new UserNotFoundError();
+                return {
+                    type: 'Member',
+                    user: member,
+                };
+        }
     }
 
     private createToken(type: 'Member' | 'Guest', id: number, days: number) {

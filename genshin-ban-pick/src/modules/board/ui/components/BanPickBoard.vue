@@ -11,11 +11,12 @@ import PickZones from './PickZones.vue';
 import UtilityZones from './UtilityZones.vue';
 
 import { useTeamInfoStore } from '@/modules/team';
-import { ZoneType } from '../../types/IZone';
 import { useBoardZonesLayout } from '../composables/useBoardZonesLayout';
 
-import type { ICharacter, CharacterFilterKey } from '@/modules/character';
-import type { IRoomSetting } from '@/modules/room';
+import type { ZoneType } from '@shared/contracts/board/value-types';
+import type { CharacterFilterKey } from '@shared/contracts/character/value-types';
+import type { ICharacter } from '@shared/contracts/character/ICharacter';
+import type { IRoomSetting } from '@shared/contracts/room/IRoomSetting';
 
 const props = defineProps<{
     roomSetting: IRoomSetting;

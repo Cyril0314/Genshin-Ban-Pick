@@ -3,14 +3,14 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 
-import { createRoomModule } from '../modules/room/index.ts';
-import { IRoomStateManager } from '../modules/socket/managers/IRoomStateManager.ts';
+import { createRoomModule } from '../modules/room/index';
+import IRoomStateManager from '../modules/socket/domain/IRoomStateManager';
 
 import type { Express } from 'express';
-import { createCharacterModule } from '../modules/character/index.ts';
-import { createMatchModule } from '../modules/match/index.ts';
-import { createAnalysisModule } from '../modules/analysis/index.ts';
-import { createAuthModule } from '../modules/auth/index.ts';
+import { createCharacterModule } from '../modules/character/index';
+import { createMatchModule } from '../modules/match/index';
+import { createAnalysisModule } from '../modules/analysis/index';
+import { createAuthModule } from '../modules/auth/index';
 
 export function registerAppRouters(app: Express, prisma: PrismaClient, roomStateManager: IRoomStateManager) {
     const authModule = createAuthModule(prisma);
@@ -25,7 +25,7 @@ export function registerAppRouters(app: Express, prisma: PrismaClient, roomState
     const matchModule = createMatchModule(prisma, roomStateManager);
     app.use('/api/matches', matchModule.router);
 
-    const analysisModule = createAnalysisModule(prisma, characterModule.service);
+    const analysisModule = createAnalysisModule(prisma, characterModule.repository);
     app.use('/api/analyses', analysisModule.router);
 
     return {

@@ -8,10 +8,10 @@ import { handleMemberDropDomain } from '../domain/handleMemberDropDomain';
 import { handleMemberRestoreDomain } from '../domain/handleMemberRestoreDomain';
 import { useTeamInfoStore } from '../store/teamInfoStore';
 
-import type { IRoomUser } from '@/modules/room';
-import type { ITeam } from '../types/ITeam';
-import type { TeamMember, TeamMembersMap } from '../types/TeamMember';
-
+import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
+import type { TeamMember } from '@shared/contracts/team/TeamMember';
+import type { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';
+import type { ITeam } from '@shared/contracts/team/ITeam';
 
 export function teamUseCase() {
     const teamInfoStore = useTeamInfoStore();

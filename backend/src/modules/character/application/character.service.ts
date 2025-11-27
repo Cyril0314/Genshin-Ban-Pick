@@ -1,26 +1,17 @@
 // backend/src/modules/character/application/character.service.ts
 
-import { PrismaClient } from '@prisma/client';
+import ICharacterRepository from '../domain/ICharacterRepository';
 
-import { DataNotFoundError } from '../../../errors/AppError.ts';
-import { ICharacterProvider } from '../../analysis/domain/ICharacterProvider.ts';
+import { DataNotFoundError } from '../../../errors/AppError';
 
-export default class CharacterService implements ICharacterProvider {
-    constructor(private prisma: PrismaClient) {}
+export default class CharacterService {
+    constructor(private characterRepository: ICharacterRepository) {}
 
     async fetchCharacters() {
-        try {
-            const characters = await this.prisma.character.findMany({
-                orderBy: { id: 'asc' },
-            });
-
-            if (!characters || characters.length === 0) {
-                throw new DataNotFoundError();
-            }
-            return characters;
-        } catch (error) {
-            console.error('[CharacterService] Failed to fetch characters:', error);
+        const characters = await this.characterRepository.findAll();
+        if (!characters || characters.length === 0) {
             throw new DataNotFoundError();
         }
+        return characters;
     }
 }

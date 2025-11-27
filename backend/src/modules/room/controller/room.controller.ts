@@ -1,7 +1,7 @@
 // backend/src/modules/room/controller/room.controller.ts
 
 import { Request, Response } from 'express';
-import RoomService from '../application/room.service.ts';
+import RoomService from '../application/room.service';
 
 export default class RoomController {
     constructor(private roomService: RoomService) {}

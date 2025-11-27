@@ -1,9 +1,8 @@
 // src/modules/character/ui/components/composables/useSelectorOptions.ts
-import { Element, Weapon, Region, ModelType, CharacterRole, Wish, Rarity } from '@/modules/character/types/ICharacter';
 
-import { CharacterFilterKey } from '../../types/CharacterFilterKey';
+import { CharacterFilterKey, Rarity, Element, Weapon, ModelType, CharacterRole, Region, Wish } from '@shared/contracts/character/value-types';
 
-import type { ICharacter } from '../../types/ICharacter'
+import type { ICharacter } from '@shared/contracts/character/ICharacter.ts';
 
 export interface SelectorOption {
     key: CharacterFilterKey;
@@ -18,7 +17,6 @@ export enum CommonOption {
 
 export function useSelectorOptions(characterMap: Record<string, ICharacter>): SelectorOption[] {
     const characters = Object.values(characterMap).filter((c) => c.name.toLowerCase() !== 'traveler');
-
     return [
         {
             key: CharacterFilterKey.Weapon,

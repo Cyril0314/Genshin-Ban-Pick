@@ -3,7 +3,7 @@
 import { transformChatMessageDomain } from "./transformChatMessageDomain";
 
 import type { IChatMessage } from "../types/IChatMessage";
-import type { IChatMessageDTO } from "../types/IChatMessageDTO";
+import type { IChatMessageDTO } from '@shared/contracts/chat/IChatMessageDTO';
 
 export function addMessageDomain(messages: IChatMessage[], messageDTO: IChatMessageDTO, identityKey?: string) {
     const newMessages = messages

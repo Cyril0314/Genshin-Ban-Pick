@@ -2,11 +2,10 @@
 
 import { Server, Socket } from 'socket.io';
 
-import { createLogger } from '../../../utils/logger.ts';
-import { IRoomStateManager } from '../managers/IRoomStateManager.ts';
-import { ICharacterRandomContext } from '../../character/domain/ICharacterRandomContext.ts';
-
-import { BoardImageMap } from "../../room/index.ts";
+import { createLogger } from '../../../utils/logger';
+import IRoomStateManager from '../domain/IRoomStateManager';
+import { ICharacterRandomContext } from '@shared/contracts/character/ICharacterRandomContext';
+import { BoardImageMap } from '@shared/contracts/board/BoardImageMap';
 
 const logger = createLogger('BOARD SOCKET');
 

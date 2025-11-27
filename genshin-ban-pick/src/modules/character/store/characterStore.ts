@@ -2,7 +2,7 @@
 
 import { defineStore } from 'pinia';
 
-import type { ICharacter } from '../types/ICharacter';
+import type { ICharacter } from '@shared/contracts/character/ICharacter';
 
 export const useCharacterStore = defineStore('character', {
     state: () => ({

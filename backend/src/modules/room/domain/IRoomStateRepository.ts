@@ -1,10 +1,12 @@
-import { IRoomUser } from '../types/IRoomUser.ts';
-import { IRoomState } from './IRoomState.ts';
+// src/modules/room/domain/IRoomStateRepository.ts
 
-export interface IRoomStateRepository {
-    getAll(): Record<string, IRoomState>;
-    get(roomId: string): IRoomState | undefined;
-    set(roomId: string, state: IRoomState): void;
+import { IRoomUser } from '@shared/contracts/room/IRoomUser';
+import { IRoomState } from '@shared/contracts/room/IRoomState';
 
-    setRoomUsers(roomId: string, users: IRoomUser[]): void;
+export default interface IRoomStateRepository {
+    findAll(): Record<string, IRoomState>;
+    findById(roomId: string): IRoomState | null;
+    create(roomId: string, state: IRoomState): IRoomState;
+    upsert(roomId: string, state: IRoomState): IRoomState;
+    updateRoomUsersById(roomId: string, users: IRoomUser[]): number;
 }

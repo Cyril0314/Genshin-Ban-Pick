@@ -3,7 +3,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed, watch, shallowRef } from 'vue';
 
-import type { IMatchStep } from '../types/IMatchFlow';
+import type { IMatchStep } from '@shared/contracts/match/IMatchStep';
 
 export const useMatchStepStore = defineStore('matchStep', () => {
     const matchSteps = shallowRef<IMatchStep[]>([]);

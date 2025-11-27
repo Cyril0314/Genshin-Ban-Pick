@@ -9,12 +9,12 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 
-import { createLogger } from './utils/logger.ts';
-import { errorHandler } from './middlewares/errorHandler.ts';
-import { registerAppRouters } from './app/appRouter.ts';
+import { createLogger } from './utils/logger';
+import { errorHandler } from './middlewares/errorHandler';
+import { registerAppRouters } from './app/appRouter';
 
-import { createSocketApp } from './modules/socket/index.ts';
-import { RoomStateManager } from './modules/socket/managers/RoomStateManager.ts';
+import { createSocketApp } from './modules/socket/index';
+import RoomStateManager from './modules/socket/infra/RoomStateManager';
 
 import type { Request, Response } from 'express';
 
@@ -75,7 +75,7 @@ const modules = registerAppRouters(app, prisma, roomStateManager);
 // 🧩 8. Socket 初始化
 // ---------------------------------------------------------
 logger.info('Init Socket');
-createSocketApp(server, roomStateManager, modules.authModule.memberService, modules.authModule.guestService, modules.authModule.jwtProvider);
+createSocketApp(server, roomStateManager, modules.authModule.authService);
 
 // ---------------------------------------------------------
 // 🧩 9. Error Handler (一定要最後)

@@ -1,7 +1,8 @@
 // src/modules/board/domain/findNextMatchStepZoneIdDomain.ts
 
-import type { IMatchStep } from '../types/IMatchFlow';
-import type { IZone, ZoneType } from '../types/IZone';
+import type { IMatchStep } from '@shared/contracts/match/IMatchStep';
+import type { IZone } from '@shared/contracts/board/IZone';
+import type { ZoneType } from '@shared/contracts/board/value-types';
 
 export function findNextMatchStepZoneIdDomain(
     zoneType: ZoneType,

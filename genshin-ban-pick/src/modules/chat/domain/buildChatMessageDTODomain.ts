@@ -1,6 +1,6 @@
 // src/modules/chat/domain/buildChatMessageDTODomain.ts
 
-import type { IChatMessageDTO } from '../types/IChatMessageDTO';
+import type { IChatMessageDTO } from '@shared/contracts/chat/IChatMessageDTO';
 
 export function buildChatMessageDTODomain(identityKey: string, nickname: string, message: string, date = Date.now()) {
     const messageDTO: IChatMessageDTO = {

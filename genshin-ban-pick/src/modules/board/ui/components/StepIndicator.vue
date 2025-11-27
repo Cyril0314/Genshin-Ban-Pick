@@ -7,7 +7,7 @@ import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
 import { useTeamInfoStore } from '@/modules/team';
 import { useBoardImageStore } from '../../store/boardImageStore';
 import { useMatchStepStore } from '../../store/matchStepStore';
-import { ZoneType } from "../../types/IZone";
+import { ZoneType } from '@shared/contracts/board/value-types';
 
 const active = ref(false);
 

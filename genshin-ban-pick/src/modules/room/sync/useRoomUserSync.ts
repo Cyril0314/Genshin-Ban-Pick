@@ -1,12 +1,9 @@
 // src/modules/room/sync/useRoomUserSync.ts
 
-import { storeToRefs } from 'pinia';
-
 import { useSocketStore } from '@/app/stores/socketStore';
-
-import { useRoomUserStore } from '../store/roomUserStore';
-import type { IRoomUser } from '../types/IRoomUser';
 import { roomUseCase } from '../application/roomUseCase';
+
+import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 
 enum RoomEvent {
     UserJoinRequest = 'room.user.join.request',

@@ -6,7 +6,7 @@ import { storeToRefs } from 'pinia';
 import { useCharacterStore } from '@/modules/character';
 import { useDesignTokens } from '@/modules/shared/ui/composables/useDesignTokens';
 import { useEchartTheme } from '@/modules/shared/ui/composables/useEchartTheme';
-import { ZoneType } from '@/modules/board';
+import { ZoneType } from '@shared/contracts/board/value-types';
 import { getCharacterDisplayName } from '@/modules/shared/domain/getCharacterDisplayName';
 import { analysisUseCase } from '../../application/analysisUseCase';
 

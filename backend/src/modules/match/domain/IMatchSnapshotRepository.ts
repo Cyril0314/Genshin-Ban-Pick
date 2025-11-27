@@ -1,7 +1,7 @@
 // src/modules/match/domain/IMatchSnapshotRepository.ts
 
-import { IMatchSnapshot } from './IMatchSnapshot.ts';
+import { IMatchSnapshot } from './IMatchSnapshot';
 
-export interface IMatchSnapshotRepository {
-    getSnapshot(roomId: string): IMatchSnapshot | null;
+export default interface IMatchSnapshotRepository {
+    findById(roomId: string): IMatchSnapshot | null;
 }

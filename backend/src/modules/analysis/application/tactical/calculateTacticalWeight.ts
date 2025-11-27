@@ -1,7 +1,7 @@
 // backend/src/modules/analyses/application/tactical/calculateTacticalWeight.ts
 
-import { ITacticalCoefficients, DEFAULT_TACTICAL_COEFFICIENTS } from './types/ITacticalCoefficients.ts';
-import { IBanContext, IPickContext, IUtilityContext, IWeightContext } from './types/IWeightContext.ts';
+import { ITacticalCoefficients, DEFAULT_TACTICAL_COEFFICIENTS } from './types/ITacticalCoefficients';
+import { IBanContext, IPickContext, IUtilityContext, IWeightContext } from './types/IWeightContext';
 
 export function calculateTacticalWeight(ctx: IWeightContext, c: ITacticalCoefficients = DEFAULT_TACTICAL_COEFFICIENTS): number {
     if (ctx.ban.total > 0) return calcBanWeight(ctx.ban, c);

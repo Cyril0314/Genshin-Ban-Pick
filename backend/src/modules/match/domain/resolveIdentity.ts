@@ -1,8 +1,7 @@
-import { UserNotFoundError } from "../../../errors/AppError.ts";
-import { TeamMember } from "../../../types/TeamMember.ts";
-import { ResolvedIdentity } from "../types/ResolvedIdentity.ts";
+import { ResolvedIdentity } from "../types/ResolvedIdentity";
+import { TeamMember } from '@shared/contracts/team/TeamMember';
 
-export function resolveIdentity(teamMember: TeamMember): ResolvedIdentity {
+export function resolveIdentity(teamMember: TeamMember): ResolvedIdentity | null {
     if (teamMember.type === 'Manual') {
         return {
             kind: 'Manual',
@@ -35,5 +34,5 @@ export function resolveIdentity(teamMember: TeamMember): ResolvedIdentity {
         };
     }
 
-    throw new UserNotFoundError();
+    return null;
 }

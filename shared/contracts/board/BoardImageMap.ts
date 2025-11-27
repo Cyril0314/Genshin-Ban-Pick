@@ -1,0 +1,1 @@
+export type BoardImageMap = Record<number, string>;

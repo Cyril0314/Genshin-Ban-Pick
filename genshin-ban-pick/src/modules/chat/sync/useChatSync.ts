@@ -3,7 +3,7 @@ import { useSocketStore } from '@/app/stores/socketStore';
 import { useAuthStore } from '@/modules/auth';
 import { chatUseCase } from '../application/chatUseCase';
 
-import type { IChatMessageDTO } from '../types/IChatMessageDTO';
+import type { IChatMessageDTO } from '@shared/contracts/chat/IChatMessageDTO';
 
 enum ChatEvent {
     MessageSendRequest = 'chat.message.send.request',

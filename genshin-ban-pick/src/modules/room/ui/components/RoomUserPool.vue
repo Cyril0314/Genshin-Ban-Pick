@@ -9,7 +9,7 @@ import { useTeamInfoStore } from '@/modules/team';
 import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme.ts';
 import { useRoomUserStore } from '../../store/roomUserStore';
 
-import type { IRoomUser } from '../../types/IRoomUser.ts';
+import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 
 const roomUserStore = useRoomUserStore();
 const { roomUsers } = storeToRefs(roomUserStore);

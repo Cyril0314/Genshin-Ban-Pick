@@ -1,8 +1,8 @@
 // backend/src/modules/auth/controller/auth.controller.ts
 
 import { Request, Response } from 'express';
-import { InvalidTokenError, MissingFieldsError, UserNotFoundError } from '../../../errors/AppError.ts';
-import AuthService from '../application/auth.service.ts';
+import { InvalidTokenError, MissingFieldsError } from '../../../errors/AppError';
+import AuthService from '../application/auth.service';
 
 export default class AuthController {
     constructor(private authService: AuthService) {}
@@ -13,7 +13,13 @@ export default class AuthController {
             throw new MissingFieldsError();
         }
         const payload = await this.authService.registerMember(account, password, nickname);
-        res.status(201).json(payload);
+        const dto = {
+            id: payload.id,
+            account: payload.account,
+            nickname: payload.nickname,
+            role: payload.role,
+        };
+        res.status(201).json(dto);
     };
 
     loginMember = async (req: Request, res: Response) => {
@@ -22,7 +28,14 @@ export default class AuthController {
             throw new MissingFieldsError();
         }
         const payload = await this.authService.loginMember(account, password);
-        res.status(200).json(payload);
+        const dto = {
+            id: payload.id,
+            account: payload.account,
+            nickname: payload.nickname,
+            role: payload.role,
+            token: payload.token,
+        };
+        res.status(200).json(dto);
     };
 
     loginGuest = async (req: Request, res: Response) => {
@@ -31,8 +44,12 @@ export default class AuthController {
             throw new MissingFieldsError();
         }
         const payload = await this.authService.loginGuest(nickname);
-
-        res.status(200).json(payload);
+        const dto = {
+            id: payload.id,
+            nickname: payload.nickname,
+            token: payload.token,
+        };
+        res.status(200).json(dto);
     };
 
     fetchSession = async (req: Request, res: Response) => {
@@ -42,6 +59,22 @@ export default class AuthController {
         }
         const token = authHeader.split(' ')[1];
         const payload = await this.authService.fetchSession(token);
-        res.status(200).json(payload);
+
+        const dto =
+            payload.type === 'Member'
+                ? {
+                      type: 'Member',
+                      id: payload.user.id,
+                      nickname: payload.user.nickname,
+                      account: payload.user.account,
+                      role: payload.user.role,
+                  }
+                : {
+                      type: 'Guest',
+                      id: payload.user.id,
+                      nickname: payload.user.nickname,
+                  };
+
+        res.status(200).json(dto);
     };
 }

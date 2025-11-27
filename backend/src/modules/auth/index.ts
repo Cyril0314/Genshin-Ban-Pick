@@ -2,18 +2,22 @@
 
 import { PrismaClient } from '@prisma/client/extension';
 
-import AuthController from './controller/auth.controller.ts';
-import AuthService from './application/auth.service.ts';
-import createAuthRouter from './http/auth.routes.ts';
-import MemberService from './application/member.service.ts';
-import GuestService from './application/guest.service.ts';
-import JwtProvider from './infra/JwtProvider.ts';
+import AuthController from './controller/auth.controller';
+import AuthService from './application/auth.service';
+import createAuthRouter from './http/auth.routes';
+import MemberService from './application/member.service';
+import GuestService from './application/guest.service';
+import JwtProvider from './infra/JwtProvider';
+import MemberRepository from './infra/MemberRepository';
+import GuestRepository from './infra/GuestRepository';
 
 export function createAuthModule(prisma: PrismaClient) {
-    const memberService = new MemberService(prisma);
-    const guestService = new GuestService(prisma);
+    const memberRepository = new MemberRepository(prisma);
+    const guestRepository = new GuestRepository(prisma);
+    const memberService = new MemberService(memberRepository);
+    const guestService = new GuestService(guestRepository);
     const jwtProvider = new JwtProvider();
-    const authService = new AuthService(prisma, memberService, guestService, jwtProvider);
+    const authService = new AuthService(memberService, guestService, jwtProvider);
     const controller = new AuthController(authService);
     const router = createAuthRouter(controller);
     return {

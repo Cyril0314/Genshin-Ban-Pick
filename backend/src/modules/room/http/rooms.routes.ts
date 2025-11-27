@@ -2,13 +2,13 @@
 
 import express from 'express';
 
-import { createLogger } from '../../../utils/logger.ts';
-import { asyncHandler } from '../../../utils/asyncHandler.ts';
-import RoomController from '../controller/room.controller.ts';
+import { createLogger } from '../../../utils/logger';
+import { asyncHandler } from '../../../utils/asyncHandler';
+import RoomController from '../controller/room.controller';
 
-const logger = createLogger('ROOM');
+const logger = createLogger('ROOM:ROUTES');
 
-export function createRoomsRouter(roomController: RoomController) {
+export default function createRoomsRouter(roomController: RoomController) {
     const router = express.Router();
     router.get('/', asyncHandler(roomController.fetchRooms))
 

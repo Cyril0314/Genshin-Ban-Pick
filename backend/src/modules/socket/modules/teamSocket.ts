@@ -2,10 +2,10 @@
 
 import { Server, Socket } from 'socket.io';
 
-import { createLogger } from '../../../utils/logger.ts';
-import { IRoomStateManager } from '../managers/IRoomStateManager.ts';
-import { syncTacticalCellImageMapStateOther } from './tacticalSocket.ts';
-import { TeamMember } from '../../../types/TeamMember.ts';
+import { createLogger } from '../../../utils/logger';
+import IRoomStateManager from '../domain/IRoomStateManager';
+import { syncTacticalCellImageMapStateOther } from './tacticalSocket';
+import { TeamMember } from '@shared/contracts/team/TeamMember';
 
 const logger = createLogger('TEAM SOCKET');
 
@@ -29,7 +29,8 @@ export function registerTeamSocket(io: Server, socket: Socket, roomStateManager:
         if (!roomState) return;
 
         for (const [teamSlot, teamMembers] of Object.entries(roomState.teamMembersMap)) {
-            for (const [memberSlot, teamMember] of Object.entries(teamMembers)) {
+            const _teamMembers = teamMembers as Record<number, TeamMember>
+            for (const [memberSlot, teamMember] of Object.entries(_teamMembers)) {
                 if (teamMember.type === 'Online' && member.type === 'Online'  && teamMember.user.identityKey === member.user.identityKey) {
                     delete roomState.teamMembersMap[Number(teamSlot)][Number(memberSlot)];
                     socket.to(roomId).emit(`${TeamEvent.MemberRemoveBroadcast}`, { teamSlot, memberSlot });

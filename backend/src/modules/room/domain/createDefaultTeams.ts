@@ -1,6 +1,6 @@
 // backend/src/modules/room/domain/createDefaultTeams.ts
 
-import { ITeam } from "../../../types/ITeam.ts";
+import { ITeam } from '@shared/contracts/team/ITeam';
 
 export function createDefaultTeams() {
     return [createAetherTeam(), createLumineTeam()];

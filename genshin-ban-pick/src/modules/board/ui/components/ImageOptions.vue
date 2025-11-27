@@ -2,9 +2,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-import type { ICharacter } from '@/modules/character/types/ICharacter'
-
 import { getProfileImagePath } from '@/modules/shared/infrastructure/imageRegistry'
+import type { ICharacter } from '@shared/contracts/character/ICharacter';
 import { DragTypes } from '@/app/constants/customMIMETypes'
 
 const props = defineProps<{

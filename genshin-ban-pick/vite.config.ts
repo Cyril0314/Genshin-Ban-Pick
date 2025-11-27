@@ -4,6 +4,7 @@ import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import { defineConfig } from 'vite'
 import vueDevTools from 'vite-plugin-vue-devtools'
+import path from 'node:path'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -20,7 +21,8 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@shared': path.resolve(__dirname, '../shared'),
     },
   },
   build: { target: 'esnext' }

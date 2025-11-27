@@ -5,8 +5,8 @@ import { handleTacticalCellImagePlaceDomain } from '../domain/handleTacticalCell
 import { handleTacticalCellImageRemoveDomain } from '../domain/handleTacticalCellImageRemoveDomain';
 import { useTacticalBoardStore } from '../store/tacticalBoardStore';
 
-import type { ITeam } from '@/modules/team';
-import type { TacticalCellImageMap } from '../types/TacticalCellImageMap';
+import type { ITeam } from '@shared/contracts/team/ITeam';
+import type { TacticalCellImageMap } from '@shared/contracts/tactical/TacticalCellImageMap';
 
 export function tacticalUseCase() {
     const tacticalBoardStore = useTacticalBoardStore();

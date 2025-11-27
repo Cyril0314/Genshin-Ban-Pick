@@ -1,0 +1,1 @@
+export type TacticalCellImageMap = Record<number, string>

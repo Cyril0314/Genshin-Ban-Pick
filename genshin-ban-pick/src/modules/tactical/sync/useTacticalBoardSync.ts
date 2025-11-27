@@ -2,10 +2,10 @@
 import { useSocketStore } from '@/app/stores/socketStore';
 import { useTeamInfoStore } from '@/modules/team';
 import { useAuthStore } from '@/modules/auth';
-
-import { useTacticalBoardStore } from '../store/tacticalBoardStore';
-import type { TacticalCellImageMap } from '../types/TacticalCellImageMap';
 import { tacticalUseCase } from '../application/tacticalUseCase';
+import { useTacticalBoardStore } from '../store/tacticalBoardStore';
+
+import type { TacticalCellImageMap } from '@shared/contracts/tactical/TacticalCellImageMap';
 
 enum TacticalEvent {
     CellImagePlaceRequest = 'tactical.cell.image.place.request',

@@ -2,14 +2,15 @@
 
 import { Server, Socket } from 'socket.io';
 
-import { syncBoardImageMapStateSelf } from './boardSocket.ts';
-import { syncStepStateSelf } from './stepSocket.ts';
-import { syncTeamMembersMapStateSelf, syncTeamMembersMapStateAll } from './teamSocket.ts';
-import { createLogger } from '../../../utils/logger.ts';
-import { IRoomStateManager } from '../managers/IRoomStateManager.ts';
-import { syncChatMessagesStateSelf } from './chatSocket.ts';
-import { syncTacticalCellImageMapStateSelf } from './tacticalSocket.ts';
-import { IRoomUser, RoomUserService } from '../../room/index.ts';
+import { syncBoardImageMapStateSelf } from './boardSocket';
+import { syncStepStateSelf } from './stepSocket';
+import { syncTeamMembersMapStateSelf, syncTeamMembersMapStateAll } from './teamSocket';
+import { createLogger } from '../../../utils/logger';
+import IRoomStateManager from '../domain/IRoomStateManager';
+import { syncChatMessagesStateSelf } from './chatSocket';
+import { syncTacticalCellImageMapStateSelf } from './tacticalSocket';
+import { RoomUserService } from '../../room/index';
+import { IRoomUser } from '@shared/contracts/room/IRoomUser';
 
 const logger = createLogger('ROOM SOCKET');
 

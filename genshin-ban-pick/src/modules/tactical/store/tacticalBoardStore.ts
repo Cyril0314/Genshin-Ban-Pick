@@ -3,8 +3,8 @@
 import { computed, reactive, ref, shallowRef, watch } from "vue";
 import { defineStore } from "pinia";
 
-import type { ITeam } from "@/modules/team";
-import type { TacticalCellImageMap } from "../types/TacticalCellImageMap";
+import type { ITeam } from '@shared/contracts/team/ITeam';
+import type { TacticalCellImageMap } from '@shared/contracts/tactical/TacticalCellImageMap';
 
 export const useTacticalBoardStore = defineStore('tacticalBoard', () => {
     const teamTacticalCellImageMap = ref<Record<number, TacticalCellImageMap>>({});

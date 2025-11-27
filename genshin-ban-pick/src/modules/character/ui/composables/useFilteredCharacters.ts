@@ -1,8 +1,8 @@
 // src/modules/character/ui/components/composables/useFilteredCharacters.ts
 import { computed } from 'vue'
 
-import type { ICharacter } from '../../types/ICharacter'
-import type { CharacterFilterKey } from '../../types/CharacterFilterKey'
+import { CharacterFilterKey } from '@shared/contracts/character/value-types';
+import type { ICharacter } from '@shared/contracts/character/ICharacter.ts';
 
 export function useFilteredCharacters(
   characterMap: Record<string, ICharacter>,

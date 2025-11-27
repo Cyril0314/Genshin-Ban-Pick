@@ -3,7 +3,7 @@
 import api from '@/app/infrastructure/http/httpClient';
 
 import type { HttpClient } from '@/app/infrastructure/http/httpClient';
-import type { ITeam } from '@/modules/team';
+import type { ITeam } from '@shared/contracts/team/ITeam';
 
 export function createRoomService(client: HttpClient = api) {
     async function get() {

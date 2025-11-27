@@ -2,8 +2,8 @@
 
 import { Prisma } from '@prisma/client';
 import { PrismaClient } from '@prisma/client/extension';
-import { getWeightContext } from './getWeightContext.ts';
-import { calculateTacticalWeight } from './calculateTacticalWeight.ts';
+import { getWeightContext } from './getWeightContext';
+import { calculateTacticalWeight } from './calculateTacticalWeight';
 
 export async function computeTacticalUsage(prisma: PrismaClient) {
     type Match = Prisma.MatchGetPayload<{ select: { id: true; createdAt: true } }>;

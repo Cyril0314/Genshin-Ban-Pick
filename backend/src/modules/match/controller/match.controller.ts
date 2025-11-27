@@ -1,7 +1,7 @@
 // backend/src/modules/match/controller/match.controller.ts
 
 import { Request, Response } from 'express';
-import MatchService from '../application/match.service.ts';
+import MatchService from '../application/match.service';
 
 export default class MatchController {
     constructor(private matchService: MatchService) {}

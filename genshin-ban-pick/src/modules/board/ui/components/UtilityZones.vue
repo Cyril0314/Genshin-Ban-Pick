@@ -6,7 +6,7 @@ import { computed } from 'vue';
 import DropZone from './DropZone.vue';
 import { chunk } from '@/modules/shared/utils/array';
 
-import type { IZone } from "../../types/IZone";
+import type { IZone } from '@shared/contracts/board/IZone';
 
 const props = defineProps<{
     zones: IZone[];

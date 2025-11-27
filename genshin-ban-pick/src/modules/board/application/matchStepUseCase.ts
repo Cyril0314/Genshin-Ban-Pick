@@ -2,7 +2,7 @@
 
 import { useMatchStepStore } from "../store/matchStepStore";
 
-import type { IMatchStep } from "../types/IMatchFlow";
+import type { IMatchStep } from '@shared/contracts/match/IMatchStep';
 
 export function matchStepUseCase() {
     const matchStepStore = useMatchStepStore();

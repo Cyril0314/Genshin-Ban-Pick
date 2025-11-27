@@ -4,10 +4,9 @@ import { boardUseCase } from '../application/boardUseCase';
 import { useSocketStore } from '@/app/stores/socketStore';
 import { useMatchStepSync } from './useMatchStepSync';
 import { useTacticalBoardSync } from '@/modules/tactical';
-
 import { useMatchStepStore } from '../store/matchStepStore';
 
-import type { ICharacterRandomContext } from '../types/ICharacterRandomContext';
+import type { ICharacterRandomContext } from '@shared/contracts/character/ICharacterRandomContext';
 
 enum BoardEvent {
     ImageDropRequest = 'board.image.drop.request',

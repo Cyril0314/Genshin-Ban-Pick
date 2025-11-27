@@ -1,10 +1,11 @@
 // backend/src/modules/room/domain/createMatchFlow.ts
 
-import { InvalidRoomSettingError } from '../../../errors/AppError.ts';
-import { IMatchStep } from '../../match/domain/IMatchFlow.ts';
-import { ITeam } from '../../../types/ITeam.ts';
-import { IZone, ZoneType } from '../../../types/IZone.ts';
-import { createLogger } from '../../../utils/logger.ts';
+import { InvalidRoomSettingError } from '../../../errors/AppError';
+import { ITeam } from '@shared/contracts/team/ITeam';
+import { IZone } from '@shared/contracts/board/IZone';
+import { ZoneType } from '@shared/contracts/board/value-types';
+import { IMatchStep } from '@shared/contracts/match/IMatchStep';
+import { createLogger } from '../../../utils/logger';
 
 const logger = createLogger('BAN PICK STEPS');
 

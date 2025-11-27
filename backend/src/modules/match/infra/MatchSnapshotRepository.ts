@@ -1,13 +1,13 @@
 // src/modules/match/infra/MatchSnapshotRepository.ts
 
-import { IMatchSnapshotRepository } from '../domain/IMatchSnapshotRepository.ts';
-import { IMatchSnapshot } from '../domain/IMatchSnapshot.ts';
-import { IRoomStateManager } from '../../socket/managers/IRoomStateManager.ts';
+import IMatchSnapshotRepository from '../domain/IMatchSnapshotRepository';
+import { IMatchSnapshot } from '../domain/IMatchSnapshot';
+import IRoomStateManager from '../../socket/domain/IRoomStateManager';
 
-export class MatchSnapshotRepository implements IMatchSnapshotRepository {
+export default class MatchSnapshotRepository implements IMatchSnapshotRepository {
     constructor(private readonly roomStateManager: IRoomStateManager) {}
 
-    getSnapshot(roomId: string): IMatchSnapshot | null {
+    findById(roomId: string): IMatchSnapshot | null {
         const roomState = this.roomStateManager.get(roomId);
         if (!roomState) return null;
 

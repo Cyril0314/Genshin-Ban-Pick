@@ -1,7 +1,7 @@
 // backend/src/modules/analyses/application/synergy/SynergyNormalizationService.ts
 
 import { Matrix } from 'ml-matrix';
-import { ISynergyMatrix } from './types/ISynergyMatrix.ts';
+import { ISynergyMatrix } from './types/ISynergyMatrix';
 
 /**
  * SynergyNormalizationService

@@ -2,15 +2,15 @@
 
 import { Server, Socket } from 'socket.io';
 
-import { createLogger } from '../../utils/logger.ts';
-import { IRoomStateManager } from './managers/IRoomStateManager.ts';
-import { registerChatSocket } from './modules/chatSocket.ts';
-import { registerBoardSocket } from './modules/boardSocket.ts';
-import { registerRoomSocket, handleRoomUserLeave } from './modules/roomSocket.ts';
-import { registerStepSocket } from './modules/stepSocket.ts';
-import { registerTeamSocket } from './modules/teamSocket.ts';
-import { registerTacticalSocket } from './modules/tacticalSocket.ts';
-import { RoomStateRepository, RoomUserService } from '../room/index.ts';
+import { createLogger } from '../../utils/logger';
+import IRoomStateManager from './domain/IRoomStateManager';
+import { registerChatSocket } from './modules/chatSocket';
+import { registerBoardSocket } from './modules/boardSocket';
+import { registerRoomSocket, handleRoomUserLeave } from './modules/roomSocket';
+import { registerStepSocket } from './modules/stepSocket';
+import { registerTeamSocket } from './modules/teamSocket';
+import { registerTacticalSocket } from './modules/tacticalSocket';
+import { RoomStateRepository, RoomUserService } from '../room/index';
 
 const logger = createLogger('SOCKET CONTROLLER');
 

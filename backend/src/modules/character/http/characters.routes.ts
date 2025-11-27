@@ -2,9 +2,9 @@
 
 import express from 'express';
 
-import { createLogger } from '../../../utils/logger.ts';
-import { asyncHandler } from '../../../utils/asyncHandler.ts';
-import CharacterController from '../controller/character.controller.ts';
+import { createLogger } from '../../../utils/logger';
+import { asyncHandler } from '../../../utils/asyncHandler';
+import CharacterController from '../controller/character.controller';
 
 const logger = createLogger('CHARACTER');
 

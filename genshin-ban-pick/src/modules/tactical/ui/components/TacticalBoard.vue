@@ -6,7 +6,7 @@ import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
 import TacticalCell from './TacticalCell.vue';
 import { useTacticalBoardStore } from '../../store/tacticalBoardStore';
 
-import type { TeamMember } from '@/modules/team';
+import type { TeamMember } from '@shared/contracts/team/TeamMember';
 
 const props = defineProps<{ teamSlot: number; teamMembers: Record<number, TeamMember> }>();
 

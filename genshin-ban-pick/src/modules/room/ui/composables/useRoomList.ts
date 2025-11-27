@@ -4,7 +4,7 @@ import { ref } from "vue";
 
 import { roomUseCase } from "../../application/roomUseCase";
 
-import type { IRoomState } from "../../types/IRoomState";
+import type { IRoomState } from '@shared/contracts/room/IRoomState';
 
 export function useRoomList() {
     const rooms = ref<Record<string, IRoomState>>({});

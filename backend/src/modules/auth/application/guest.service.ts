@@ -1,20 +1,16 @@
 // backend/src/modules/auth/application/guest.service.ts
 
-import { PrismaClient } from '@prisma/client';
+import IGuestRepository from '../domain/IGuestRepository';
 
 export default class GuestService {
-    constructor(private prisma: PrismaClient) {}
+    constructor(private guestRepository: IGuestRepository) {}
 
     async login(nickname: string) {
         // 建立訪客
-        return this.prisma.guest.create({
-            data: { nickname },
-        });
+        return await this.guestRepository.create(nickname)
     }
 
     async getById(id: number) {
-        return await this.prisma.guest.findUnique({
-            where: { id },
-        });
+        return await this.guestRepository.findById(id)
     }
 }

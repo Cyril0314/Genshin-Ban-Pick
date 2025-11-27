@@ -1,8 +1,8 @@
 // backend/src/modules/analyses/application/tactical/getWeightContext.ts
 
 import { MoveType, MoveSource } from '@prisma/client';
-import { IWeightContext } from './types/IWeightContext.ts';
-import { IMoveContext } from './types/IMoveContext.ts';
+import { IWeightContext } from './types/IWeightContext';
+import { IMoveContext } from './types/IMoveContext';
 
 export function getWeightContext(move: IMoveContext): IWeightContext {
     const ctx: IWeightContext = {

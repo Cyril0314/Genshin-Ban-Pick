@@ -1,9 +1,9 @@
 // backend/src/modules/auth/infra/JwtProvider.ts
 
 import jwt from 'jsonwebtoken';
-import { IAuthPayload } from '../domain/IAuthPayload.ts';
-import { IJwtProvider } from '../domain/IJwtProvider.ts';
-import { ExpiredTokenError, InvalidTokenError } from '../../../errors/AppError.ts';
+import { IAuthPayload } from '../domain/IAuthPayload';
+import { IJwtProvider } from '../domain/IJwtProvider';
+import { ExpiredTokenError, InvalidTokenError } from '../../../errors/AppError';
 
 export default class JwtProvider implements IJwtProvider {
     sign(authPayload: IAuthPayload, expiresInDays: number) {

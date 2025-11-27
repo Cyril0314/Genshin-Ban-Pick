@@ -2,7 +2,7 @@
 
 import { roomService } from '../infrastructure/roomService';
 
-import type { ITeam } from '@/modules/team';
+import type { ITeam } from '@shared/contracts/team/ITeam';
 
 export async function buildRoomDomain(
     roomId: string,

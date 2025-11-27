@@ -9,8 +9,8 @@ import { boardUseCase, matchStepUseCase } from '@/modules/board';
 import { teamUseCase } from '@/modules/team';
 import { tacticalUseCase } from '@/modules/tactical';
 
-import type { IRoomSetting } from '@/modules/room';
-import type { CharacterFilterKey } from '@/modules/character';
+import type { IRoomSetting } from '@shared/contracts/room/IRoomSetting.ts';
+import type { CharacterFilterKey } from '@shared/contracts/character/value-types';
 
 export function useBanPickInitializer(roomId: string) {
     // --- states ---

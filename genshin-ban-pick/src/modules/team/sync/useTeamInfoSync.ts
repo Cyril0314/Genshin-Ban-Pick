@@ -4,7 +4,8 @@ import { useSocketStore } from '@/app/stores/socketStore';
 import { useRoomUserStore } from '@/modules/room';
 import { teamUseCase } from '../application/teamUseCase';
 
-import type { TeamMember, TeamMembersMap } from '../types/TeamMember';
+import type { TeamMember } from '@shared/contracts/team/TeamMember';
+import type { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';
 
 enum TeamEvent {
     MemberAddRequest = 'team.member.add.request',

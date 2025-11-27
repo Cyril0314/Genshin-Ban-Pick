@@ -9,12 +9,12 @@ import betweenness from 'graphology-metrics/centrality/betweenness';
 import modularity from 'graphology-metrics/graph/modularity';
 import louvain from 'graphology-communities-louvain';
 
-import { SynergyNormalizationService } from '../synergy/SynergyNormalizationService.ts';
+import { SynergyNormalizationService } from '../synergy/SynergyNormalizationService';
 
-import { ProjectionService } from '../projection/ProjectionService.ts';
-import { ICommunityScanResult } from './types/ICommunityScanResult.ts';
-import { ISynergyMatrix } from '../synergy/types/ISynergyMatrix.ts';
-import { IBridgeScoreResult } from './types/IBridgeScoreResult.ts';
+import { ProjectionService } from '../projection/ProjectionService';
+import { ICommunityScanResult } from './types/ICommunityScanResult';
+import { ISynergyMatrix } from '../synergy/types/ISynergyMatrix';
+import { IBridgeScoreResult } from './types/IBridgeScoreResult';
 
 export class ClusteringService {
     private rng: () => number;

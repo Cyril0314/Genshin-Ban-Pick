@@ -1,7 +1,7 @@
 // backend/src/modules/analyses/controller/analysis.controller.ts
 
 import { Request, Response } from 'express';
-import AnalysisService from '../application/analysis.service.ts';
+import AnalysisService from '../application/analysis.service';
 
 export default class AnalysisController {
     constructor(private analysisService: AnalysisService) {}

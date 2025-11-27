@@ -2,13 +2,13 @@
 
 import express from 'express';
 
-import { createLogger } from '../../../utils/logger.ts';
-import { asyncHandler } from '../../../utils/asyncHandler.ts';
-import AnalysisController from '../controller/analysis.controller.ts';
+import { createLogger } from '../../../utils/logger';
+import { asyncHandler } from '../../../utils/asyncHandler';
+import AnalysisController from '../controller/analysis.controller';
 
 const logger = createLogger('CHARACTER');
 
-export function createAnalysesRouter(analysisController: AnalysisController) {
+export default function createAnalysesRouter(analysisController: AnalysisController) {
     const router = express.Router();
     router.get('/tactical-usages', asyncHandler(analysisController.fetchTacticalUsages));
     router.get('/preference', asyncHandler(analysisController.fetchPreference));

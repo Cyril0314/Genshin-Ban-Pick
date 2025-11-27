@@ -5,7 +5,7 @@ import { sendMessageDomain } from "../domain/sendMessageDomain";
 import { setMessagesDomain } from "../domain/setMessagesDomain";
 import { useChatStore } from "../store/chatStore";
 
-import type { IChatMessageDTO } from "../types/IChatMessageDTO";
+import type { IChatMessageDTO } from '@shared/contracts/chat/IChatMessageDTO';
 
 export function chatUseCase() {
 
