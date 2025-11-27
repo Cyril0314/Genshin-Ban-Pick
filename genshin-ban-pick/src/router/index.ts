@@ -1,3 +1,4 @@
+// src/router/index.ts
 import { createRouter, createWebHistory } from 'vue-router';
 
 import BanPickView from '@/modules/banPick/ui/views/BanPickView.vue';

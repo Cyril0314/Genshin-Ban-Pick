@@ -1,4 +1,4 @@
-// src/modules/shared/types/team/TeamMember.ts
+// src/modules/team/types/TeamMember.ts
 
 // import type { IRoomUser } from '@/modules/room';
 

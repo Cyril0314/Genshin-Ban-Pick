@@ -1,4 +1,4 @@
-// backend/src/modules/match/application/MatchTacticalUsageCreator.ts
+// backend/src/modules/match/application/creators/MatchTacticalUsageCreator.ts
 
 import { Prisma } from '@prisma/client';
 import { TeamTacticalCellImageMap } from '@shared/contracts/tactical/TeamTacticalCellImageMap';

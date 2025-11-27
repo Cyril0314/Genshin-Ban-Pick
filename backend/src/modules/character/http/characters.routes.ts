@@ -1,4 +1,4 @@
-// backend/src/modules/character/http/characters.router.ts
+// backend/src/modules/character/http/characters.routes.ts
 
 import express from 'express';
 

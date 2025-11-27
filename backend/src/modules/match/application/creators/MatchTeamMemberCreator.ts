@@ -1,4 +1,4 @@
-// backend/src/modules/match/application/MatchTeamMemberCreator.ts
+// backend/src/modules/match/application/creators/MatchTeamMemberCreator.ts
 
 import { Prisma } from '@prisma/client';
 import { resolveIdentity } from '../../domain/resolveIdentity';

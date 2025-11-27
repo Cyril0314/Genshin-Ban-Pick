@@ -1,4 +1,4 @@
-// backend/src/modules/analyses/application/tactical/types/IMoveContext.ts
+// backend/src/modules/analysis/application/tactical/types/IMoveContext.ts
 
 import { MoveType, MoveSource } from '@prisma/client';
 

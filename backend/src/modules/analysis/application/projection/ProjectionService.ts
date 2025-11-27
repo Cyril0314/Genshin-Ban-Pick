@@ -1,4 +1,4 @@
-// backend/src/modules/analyses/application/projection/ProjectionService.ts
+// backend/src/modules/analysis/application/projection/ProjectionService.ts
 import PCA from 'ml-pca';
 import { Matrix } from 'ml-matrix';
 

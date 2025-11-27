@@ -1,4 +1,4 @@
-// backend/src/modules/room/http/rooms.router.ts
+// backend/src/modules/room/http/rooms.routes.ts
 
 import express from 'express';
 

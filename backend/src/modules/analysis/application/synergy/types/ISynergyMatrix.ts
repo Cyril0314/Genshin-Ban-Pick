@@ -1,4 +1,4 @@
-// backend/src/modules/analyses/application/synergy/types/ISynergyMatrix.ts
+// backend/src/modules/analysis/application/synergy/types/ISynergyMatrix.ts
 
 export interface ISynergyMatrix {
     [characterKey: string]: {

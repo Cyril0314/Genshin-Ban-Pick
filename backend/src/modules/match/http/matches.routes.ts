@@ -1,4 +1,4 @@
-// backend/src/modules/match/http/matches.router.ts
+// backend/src/modules/match/http/matches.routes.ts
 
 import express from 'express';
 

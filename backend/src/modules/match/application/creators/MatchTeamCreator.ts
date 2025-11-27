@@ -1,4 +1,4 @@
-// backend/src/modules/match/application/MatchTeamCreator.ts
+// backend/src/modules/match/application/creators/MatchTeamCreator.ts
 
 import { Prisma } from "@prisma/client";
 

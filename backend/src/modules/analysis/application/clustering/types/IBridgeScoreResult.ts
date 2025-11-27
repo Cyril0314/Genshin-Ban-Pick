@@ -1,4 +1,4 @@
-// backend/src/modules/analyses/application/clustering/types/IBridgeScoreResult.ts
+// backend/src/modules/analysis/application/clustering/types/IBridgeScoreResult.ts
 
 export interface IBridgeScoreResult {
     characterKey: string;

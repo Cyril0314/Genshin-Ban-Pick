@@ -1,4 +1,4 @@
-// backend/src/index.js
+// backend/src/index.ts
 
 import http from 'http';
 import path from 'path';

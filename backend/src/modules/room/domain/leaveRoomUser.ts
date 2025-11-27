@@ -1,4 +1,4 @@
-// backend/src/modules/room/domain/joinRoomUser.ts
+// backend/src/modules/room/domain/leaveRoomUser.ts
 
 import { IRoomUser } from '@shared/contracts/room/IRoomUser';
 

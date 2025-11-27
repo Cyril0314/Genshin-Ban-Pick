@@ -1,4 +1,4 @@
-// backend/src/routes/auth.ts
+// backend/src/modules/auth/http/auth.routes.ts
 
 import express from 'express';
 

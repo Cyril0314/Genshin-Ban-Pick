@@ -1,4 +1,4 @@
-// backend/src/modules/analyses/application/clustering/ClusteringService.ts
+// backend/src/modules/analysis/application/clustering/ClusteringService.ts
 
 import { UndirectedGraph } from 'graphology';
 import { Matrix } from 'ml-matrix';

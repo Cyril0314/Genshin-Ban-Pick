@@ -1,4 +1,4 @@
-// backend/src/modules/analyses/application/synergy/SynergyService.ts
+// backend/src/modules/analysis/application/synergy/SynergyService.ts
 
 import { Prisma } from '@prisma/client';
 import { PrismaClient } from '@prisma/client/extension';

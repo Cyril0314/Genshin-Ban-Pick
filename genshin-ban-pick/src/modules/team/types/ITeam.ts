@@ -1,4 +1,4 @@
-// src/modules/shared/types/team/ITeam.ts
+// src/modules/team/types/ITeam.ts
 
 // export interface ITeam {
 //     slot: number;

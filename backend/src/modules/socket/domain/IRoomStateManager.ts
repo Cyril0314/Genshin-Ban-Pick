@@ -1,4 +1,4 @@
-// backend/src/modules/socket/managers/IRoomStateManager.ts
+// backend/src/modules/socket/domain/IRoomStateManager.ts
 
 import { IChatMessageDTO } from '@shared/contracts/chat/IChatMessageDTO';
 import { IRoomUser } from '@shared/contracts/room/IRoomUser';

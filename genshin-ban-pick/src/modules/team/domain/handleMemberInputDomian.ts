@@ -1,4 +1,4 @@
-// src/modules/team/domain/removeTeamMemberDomain.ts
+// src/modules/team/domain/handleMemberInputDomian.ts
 
 import { addTeamMemberDomain } from './addTeamMemberDomain';
 import { createManualMemberDomain } from './createManualMemberDomain';

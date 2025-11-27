@@ -1,4 +1,4 @@
-// backend/src/modules/analyses/http/analyses.router.ts
+// backend/src/modules/analysis/http/analyses.routes.ts
 
 import express from 'express';
 

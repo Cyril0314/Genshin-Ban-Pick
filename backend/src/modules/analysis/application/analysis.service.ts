@@ -1,4 +1,4 @@
-// backend/src/modules/analyses/application/analysis.service.ts
+// backend/src/modules/analysis/application/analysis.service.ts
 
 import { Prisma, PrismaClient } from '@prisma/client';
 

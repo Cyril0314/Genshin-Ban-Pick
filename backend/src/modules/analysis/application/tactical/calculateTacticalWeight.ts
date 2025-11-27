@@ -1,4 +1,4 @@
-// backend/src/modules/analyses/application/tactical/calculateTacticalWeight.ts
+// backend/src/modules/analysis/application/tactical/calculateTacticalWeight.ts
 
 import { ITacticalCoefficients, DEFAULT_TACTICAL_COEFFICIENTS } from './types/ITacticalCoefficients';
 import { IBanContext, IPickContext, IUtilityContext, IWeightContext } from './types/IWeightContext';

@@ -1,4 +1,4 @@
-// backend/src/modules/analyses/controller/analysis.controller.ts
+// backend/src/modules/analysis/controller/analysis.controller.ts
 
 import { Request, Response } from 'express';
 import AnalysisService from '../application/analysis.service';

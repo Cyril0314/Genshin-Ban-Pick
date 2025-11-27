@@ -1,4 +1,4 @@
-// backend/src/modules/analyses/application/synergy/SynergyNormalizationService.ts
+// backend/src/modules/analysis/application/synergy/SynergyNormalizationService.ts
 
 import { Matrix } from 'ml-matrix';
 import { ISynergyMatrix } from './types/ISynergyMatrix';
