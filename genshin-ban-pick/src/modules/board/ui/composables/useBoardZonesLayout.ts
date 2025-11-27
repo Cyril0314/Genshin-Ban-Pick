@@ -2,11 +2,11 @@
 
 import { computed } from "vue";
 
-import { ZoneType } from "../../types/IZone";
+import { ZoneType } from '@shared/contracts/board/value-types';
 
-import type { IRoomSetting } from "@/modules/room";
-import type { TeamMember } from '@/modules/team';
-import type { IZone } from "../../types/IZone";
+import type { IRoomSetting } from '@shared/contracts/room/IRoomSetting';
+import type { TeamMember } from '@shared/contracts/team/TeamMember';
+import type { IZone } from '@shared/contracts/board/IZone';
 
 export function useBoardZonesLayout(roomSetting: IRoomSetting, teamInfoPair: { left: { name: string; members: Record<number, TeamMember>; slot: number; }; right: { name: string; members: Record<number, TeamMember>; slot: number; } }) {
     const maxNumberOfPickPerColumn: number = 8

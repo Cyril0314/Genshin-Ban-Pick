@@ -4,32 +4,16 @@
 import { computed, onMounted, ref } from 'vue';
 import router from '@/router';
 
-import { roomUseCase } from '../../application/roomUseCase';
-import type { IRoomState } from '../../types/IRoomState';
+import { useRoomList } from '../composables/useRoomList';
 
-const { fetchRooms } = roomUseCase();
-const rooms = ref<Record<string, IRoomState>>({});
-const loading = ref(true);
-const errorMessage = ref('');
-
-async function loadRooms() {
-    loading.value = true;
-    try {
-        rooms.value = await fetchRooms();
-        errorMessage.value = '';
-    } catch (error: any) {
-        errorMessage.value = error?.message ?? '無法載入房間列表';
-    } finally {
-        loading.value = false;
-    }
-}
+const { isLoading, errorMessage, rooms, loadRooms } = useRoomList()
 
 onMounted(async () => {
     loadRooms();
 });
 
 function enterRoom(roomId: string) {
-    router.push(`/ban-pick?room=${roomId}`);
+    router.push({ name: 'BanPick', query: { room: roomId } });
 }
 </script>
 
@@ -39,7 +23,7 @@ function enterRoom(roomId: string) {
             <h2 class="title">房間列表</h2>
 
             <!-- 載入狀態 -->
-            <div v-if="loading" class="loading">
+            <div v-if="isLoading" class="loading">
                 <span>載入中...</span>
             </div>
 

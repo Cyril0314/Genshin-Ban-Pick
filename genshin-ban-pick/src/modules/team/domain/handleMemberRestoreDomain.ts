@@ -2,7 +2,7 @@
 
 import { removeTeamMemberDomain } from "./removeTeamMemberDomain";
 
-import type { TeamMembersMap } from "../types/TeamMember";
+import type { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';
 
 export function handleMemberRestoreDomain(teamMembersMap: TeamMembersMap, teamSlot: number, memberSlot: number) {
     let nextMap = { ...teamMembersMap };

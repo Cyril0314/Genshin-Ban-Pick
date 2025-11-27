@@ -1,4 +1,5 @@
 {
     "editor.wordWrap": "on",
-    "editor.fontSize": 14
+    "editor.fontSize": 14,
+    "prisma.pinToPrisma6": true
 }

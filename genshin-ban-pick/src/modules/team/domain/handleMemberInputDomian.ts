@@ -3,7 +3,8 @@
 import { addTeamMemberDomain } from './addTeamMemberDomain';
 import { createManualMemberDomain } from './createManualMemberDomain';
 
-import type { TeamMember, TeamMembersMap } from '../types/TeamMember';
+import type { TeamMember } from '@shared/contracts/team/TeamMember';
+import type { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';
 
 export function handleMemberInputDomain(
     teamMembersMap: TeamMembersMap,

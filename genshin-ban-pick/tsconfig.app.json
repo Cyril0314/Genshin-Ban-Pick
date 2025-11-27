@@ -13,7 +13,8 @@
     "paths": {
       "@/*": [
         "./src/*"
-      ]
+      ],
+      "@shared/*": ["../shared/*"]
     },
     "strict": true,
     "noImplicitAny": true,

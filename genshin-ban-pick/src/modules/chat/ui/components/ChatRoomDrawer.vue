@@ -12,18 +12,11 @@ const emit = defineEmits<{
 </script>
 
 <template>
-    <n-drawer
-        class="drawer"
-        :show="props.open"
-        @update:show="emit('update:open', $event)"
-        placement="right"
-        width="undefined"
-        content-class="scale-context"
-        content-style="background-color: var(--md-sys-color-surface-container-high); --base-size: 1.2vw;"
-    >
+    <n-drawer class="drawer" :show="props.open" @update:show="emit('update:open', $event)" placement="right"
+        width="undefined" content-class="scale-context"
+        content-style="background-color: var(--md-sys-color-surface-container-high); --base-size: 1.2vw;">
         <ChatRoom />
     </n-drawer>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

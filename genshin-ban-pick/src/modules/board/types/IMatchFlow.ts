@@ -1,12 +1,12 @@
 // src/modules/board/types/IMatchFlow.ts
 
-export interface IMatchFlow {
-    version: number;
-    steps: IMatchStep[];
-}
+// export interface IMatchFlow {
+//     version: number;
+//     steps: IMatchStep[];
+// }
 
-export interface IMatchStep {
-    index: number;
-    zoneId: number;
-    teamSlot: number | null;
-}
+// export interface IMatchStep {
+//     index: number;
+//     zoneId: number;
+//     teamSlot: number | null;
+// }

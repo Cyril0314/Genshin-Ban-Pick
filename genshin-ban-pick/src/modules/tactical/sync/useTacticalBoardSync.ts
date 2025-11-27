@@ -1,15 +1,11 @@
 // src/modules/tactical/sync/useTacticalBoardSync.ts
-import { computed } from 'vue';
-import { storeToRefs } from 'pinia';
-
 import { useSocketStore } from '@/app/stores/socketStore';
 import { useTeamInfoStore } from '@/modules/team';
 import { useAuthStore } from '@/modules/auth';
-
-import { useTacticalBoardStore } from '../store/tacticalBoardStore';
-import type { TacticalCellImageMap } from '../types/TacticalCellImageMap';
 import { tacticalUseCase } from '../application/tacticalUseCase';
+import { useTacticalBoardStore } from '../store/tacticalBoardStore';
 
+import type { TacticalCellImageMap } from '@shared/contracts/tactical/TacticalCellImageMap';
 
 enum TacticalEvent {
     CellImagePlaceRequest = 'tactical.cell.image.place.request',
@@ -28,22 +24,19 @@ enum TacticalEvent {
 export function useTacticalBoardSync() {
     const socket = useSocketStore().getSocket();
     const authStore = useAuthStore();
-    const { identityKey } = storeToRefs(authStore);
     const teamInfoStore = useTeamInfoStore();
-    const { teamMembersMap } = storeToRefs(teamInfoStore);
     const tacticalBoardStore = useTacticalBoardStore();
-    const { teamTacticalCellImageMap } = storeToRefs(tacticalBoardStore);
-    const { handleTacticalCellImagePlace, handleTacticalCellImageRemove, handleTacticalCellImageMapReset, setTacticalCellImageMap } = tacticalUseCase();
+    const { handleTacticalCellImagePlace, handleTacticalCellImageRemove, handleTacticalCellImageMapReset, setTacticalCellImageMap } =
+        tacticalUseCase();
 
-    const userTeamSlot = computed(() => {
-        for (const [teamSlot, members] of Object.entries(teamMembersMap.value)) {
-            const memberValues = Object.values(members);
-            if (memberValues.some((m) => m.type === 'Online' && m.user.identityKey === identityKey.value)) {
+    function getUserTeamSlot() {
+        for (const [teamSlot, members] of Object.entries(teamInfoStore.teamMembersMap)) {
+            if (Object.values(members).some((m) => m.type === 'Online' && m.user.identityKey === authStore.identityKey)) {
                 return Number(teamSlot);
             }
         }
         return null;
-    });
+    }
 
     function registerTacticalBoardSync() {
         socket.on(TacticalEvent.CellImagePlaceBroadcast, handleTacticalCellImagePlaceBroadcast);
@@ -56,36 +49,36 @@ export function useTacticalBoardSync() {
         console.debug(`[TATICAL BOARD SYNC] Handle tactical cell image place`, { teamSlot, cellId, imgId });
         handleTacticalCellImagePlace(teamSlot, cellId, imgId);
 
-        if (userTeamSlot.value !== teamSlot) return;
+        if (getUserTeamSlot() !== teamSlot) return;
         socket.emit(`${TacticalEvent.CellImagePlaceRequest}`, { teamSlot, cellId, imgId });
     }
 
     function tacticalCellImageRemove({ teamSlot, cellId }: { teamSlot: number; cellId: number }) {
         console.debug(`[TATICAL BOARD SYNC] Handle tactical cell image remove`, { teamSlot, cellId });
-        handleTacticalCellImageRemove(teamSlot, cellId)
+        handleTacticalCellImageRemove(teamSlot, cellId);
 
-        if (userTeamSlot.value !== teamSlot) return;
+        if (getUserTeamSlot() !== teamSlot) return;
         socket.emit(`${TacticalEvent.CellImageRemoveRequest}`, { teamSlot, cellId });
     }
 
     function handleTacticalCellImagePlaceBroadcast({ teamSlot, cellId, imgId }: { teamSlot: number; cellId: number; imgId: string }) {
-        if (userTeamSlot.value !== teamSlot) return;
+        if (getUserTeamSlot() !== teamSlot) return;
         console.debug(`[TATICAL BOARD SYNC] Handle tactical cell image place broadcast`, { teamSlot, cellId, imgId });
 
         handleTacticalCellImagePlace(teamSlot, cellId, imgId);
     }
 
     function handleTacticalCellImageRemoveBroadcast({ teamSlot, cellId }: { teamSlot: number; cellId: number }) {
-        if (userTeamSlot.value !== teamSlot) return;
+        if (getUserTeamSlot() !== teamSlot) return;
         console.debug(`[TATICAL BOARD SYNC] Handle tactical cell image remove broadcast`, { teamSlot, cellId });
-        handleTacticalCellImageRemove(teamSlot, cellId)
+        handleTacticalCellImageRemove(teamSlot, cellId);
     }
 
     function handleTacticalCellImageMapResetBroadcast({ teamSlot }: { teamSlot: number }) {
-        if (userTeamSlot.value !== teamSlot) return;
+        if (getUserTeamSlot() !== teamSlot) return;
         console.debug(`[TATICAL BOARD SYNC] Handle tactical cell image remove reset broadcast`, { teamSlot });
 
-        handleTacticalCellImageMapReset(teamSlot)
+        handleTacticalCellImageMapReset(teamSlot);
     }
 
     function handleTacticalCellImageMapStateSync({
@@ -95,7 +88,7 @@ export function useTacticalBoardSync() {
         teamSlot: number;
         tacticalCellImageMap: TacticalCellImageMap;
     }) {
-        if (userTeamSlot.value !== teamSlot) return;
+        if (getUserTeamSlot() !== teamSlot) return;
         console.debug(`[TATICAL BOARD SYNC] Handle tactical cell image map state sync`, { teamSlot, tacticalCellImageMap });
         setTacticalCellImageMap(teamSlot, tacticalCellImageMap);
     }
@@ -104,20 +97,20 @@ export function useTacticalBoardSync() {
         console.debug('[TATICAL BOARD SYNC] Handle reset board', teamSlot);
         handleTacticalCellImageMapReset(teamSlot);
 
-        if (userTeamSlot.value !== teamSlot) return;
+        if (getUserTeamSlot() !== teamSlot) return;
         socket.emit(`${TacticalEvent.CellImageMapResetRequest}`, { teamSlot });
     }
 
     function handleAllTeamResetBoard() {
         console.debug('[TATICAL BOARD STORE] Handle all team reset board');
-        for (const teamSlotString of Object.keys(teamTacticalCellImageMap.value)) {
+        for (const teamSlotString of Object.keys(tacticalBoardStore.teamTacticalCellImageMap)) {
             const teamSlot = Number(teamSlotString);
             tacticalCellImageMapReset(teamSlot);
         }
     }
 
     return {
-        userTeamSlot,
+        getUserTeamSlot,
         registerTacticalBoardSync,
         tacticalCellImagePlace,
         tacticalCellImageRemove,

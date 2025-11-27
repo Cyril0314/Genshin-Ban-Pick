@@ -1,9 +1,12 @@
 <!-- src/modules/board/ui/components/UtilityZones.vue -->
 
 <script setup lang="ts">
-import DropZone from './DropZone.vue';
+import { computed } from 'vue';
 
-import type { IZone } from "../../types/IZone";
+import DropZone from './DropZone.vue';
+import { chunk } from '@/modules/shared/utils/array';
+
+import type { IZone } from '@shared/contracts/board/IZone';
 
 const props = defineProps<{
     zones: IZone[];
@@ -16,25 +19,18 @@ const emit = defineEmits<{
     (e: 'image-restore', payload: { zoneId: number }): void;
 }>();
 
-function chunk<T>(arr: T[], size: number): T[][] {
-    const result = [];
-    for (let i = 0; i < arr.length; i += size) {
-        result.push(arr.slice(i, i + size));
-    }
-    return result;
-}
+const emitters = {
+    imageDrop: (payload: { zoneId: number; imgId: string }) =>
+        emit('image-drop', payload),
 
-const zoneMatrix = chunk(props.zones ?? [], props.maxPerRow);
+    imageRestore: (payload: { zoneId: number }) =>
+        emit('image-restore', payload),
+};
 
-function handleImageDrop({ zoneId, imgId }: { zoneId: number; imgId: string }) {
-    console.debug(`[UTILITY ZONES] Handle image drop`, zoneId, imgId);
-    emit('image-drop', { zoneId, imgId });
-}
+const zoneMatrix = computed(() =>
+  chunk(props.zones ?? [], props.maxPerRow)
+)
 
-function handleImageRestore({ zoneId }: { zoneId: number }) {
-    console.debug(`[UTILITY ZONES] Handle image restore`, zoneId);
-    emit('image-restore', { zoneId });
-}
 </script>
 
 <template>
@@ -45,8 +41,8 @@ function handleImageRestore({ zoneId }: { zoneId: number }) {
                     :zone="zone"
                     :boardImageMap="props.boardImageMap"
                     :label="`Utility ${zone.order + 1}`"
-                    @image-drop="handleImageDrop"
-                    @image-restore="handleImageRestore"
+                    @image-drop="emitters.imageDrop"
+                    @image-restore="emitters.imageRestore"
                 />
             </template>
         </div>

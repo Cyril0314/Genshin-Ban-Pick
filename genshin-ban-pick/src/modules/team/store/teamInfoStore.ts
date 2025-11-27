@@ -3,8 +3,9 @@
 import { defineStore } from 'pinia';
 import { ref, computed, watch, shallowRef } from 'vue';
 
-import type { ITeam } from '../types/ITeam';
-import type { TeamMember, TeamMembersMap } from '../types/TeamMember';
+import type { TeamMember } from '@shared/contracts/team/TeamMember';
+import type { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';
+import type { ITeam } from '@shared/contracts/team/ITeam';
 
 export const useTeamInfoStore = defineStore('teamInfo', () => {
     const teams = shallowRef<ITeam[]>([]);

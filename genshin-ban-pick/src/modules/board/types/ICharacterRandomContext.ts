@@ -1,7 +1,7 @@
 // src/modules/board/types/ICharacterRandomContext.ts
 
-import type { CharacterFilterKey } from "@/modules/character";
+// import type { CharacterFilterKey } from '@shared/contracts/character/value-types';
 
-export interface ICharacterRandomContext {
-    characterFilter: Record<CharacterFilterKey, string[]>;
-}
+// export interface ICharacterRandomContext {
+//     characterFilter: Record<CharacterFilterKey, string[]>;
+// }

@@ -3,14 +3,14 @@
 import { defineStore } from 'pinia';
 import { ref, computed, watch } from 'vue';
 
-import { MemberRole } from '../types/IMember';
+import { MemberRole } from '@shared/contracts/auth/value_type';
 import { tokenStorage } from '../infrastructure/tokenStorage';
 
-import type { Identity, MaybeIdentity } from '../types/Identity';
+import type { Identity } from '../types/Identity';
 
 export const useAuthStore = defineStore('auth', () => {
     const isInitialized = ref(false);
-    const identity = ref<MaybeIdentity>(null);
+    const identity = ref<Identity | null>(null);
     const isLoggedIn = computed(() => identity.value !== null);
     const isAdmin = computed(() => identity.value?.type === 'Member' && identity.value.user.role === MemberRole.Admin);
     const isGuest = computed(() => identity.value?.type === 'Guest');

@@ -1,6 +1,6 @@
 // src/modules/tactical/domain/findCellIdByImageIdDomain.ts
 
-import type { TacticalCellImageMap } from '../types/TacticalCellImageMap';
+import type { TacticalCellImageMap } from '@shared/contracts/tactical/TacticalCellImageMap';
 
 export function findCellIdByImageIdDomain(tacticalCellImageMap: TacticalCellImageMap, imgId: string): number | null {
     const value = Object.entries(tacticalCellImageMap).find(([, f]) => f === imgId);

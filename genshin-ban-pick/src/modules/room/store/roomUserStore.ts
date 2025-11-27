@@ -3,7 +3,7 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
 
-import type { IRoomUser } from '../types/IRoomUser';
+import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 
 export const useRoomUserStore = defineStore('roomUser', () => {
     const roomUsers = ref<IRoomUser[]>([]);

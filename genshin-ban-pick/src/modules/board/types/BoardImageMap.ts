@@ -1,3 +1,3 @@
 // src/modules/board/types/BoardImageMap.ts
 
-export type BoardImageMap = Record<number, string>;
+// export type BoardImageMap = Record<number, string>;

@@ -3,7 +3,7 @@
 import api from '@/app/infrastructure/http/httpClient';
 
 import type { HttpClient } from '@/app/infrastructure/http/httpClient';
-import type { ITeam } from '@/modules/team';
+import type { ITeam } from '@shared/contracts/team/ITeam';
 
 export function createRoomService(client: HttpClient = api) {
     async function get() {
@@ -28,15 +28,11 @@ export function createRoomService(client: HttpClient = api) {
     async function getSetting(roomId: string) {
         return client.get(`/rooms/${roomId}/setting`);
     }
-    async function postSave(roomId: string) {
-        return client.post(`/rooms/${roomId}/save`);
-    }
 
     return {
         get,
         post,
         getSetting,
-        postSave,
     };
 }
 

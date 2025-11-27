@@ -9,25 +9,16 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 
-import { createLogger } from './utils/logger.ts';
-import { errorHandler } from './middlewares/errorHandler.ts';
-import authRoutes from './routes/auth.ts';
-import characterRoutes from './routes/characters.ts';
-import roomRoutes from './routes/room.ts';
-import analysisRoutes from './routes/analysis.ts';
-;
-import CharacterService from './services/CharacterService.ts';
-import RoomService from './services/room/RoomService.ts';
-import MemberService from './services/auth/MemberService.ts';
-import GuestService from './services/auth/GuestService.ts';
-import { createSocketApp } from './socket/index.ts';
-import { RoomStateManager } from './socket/managers/RoomStateManager.ts';
-import { RoomStatePersistenceService } from './services/room/RoomStatePersistenceService.ts'
-import AnalysisService from './services/analysis/AnalysisService.ts';
+import { createLogger } from './utils/logger';
+import { errorHandler } from './middlewares/errorHandler';
+import { registerAppRouters } from './app/appRouter';
+
+import { createSocketApp } from './modules/socket/index';
+import RoomStateManager from './modules/socket/infra/RoomStateManager';
 
 import type { Request, Response } from 'express';
 
-const logger = createLogger('INDEX')
+const logger = createLogger('INDEX');
 
 // ---------------------------------------------------------
 // 🧩 4. 環境變數設定
@@ -68,34 +59,23 @@ app.use(express.static(path.resolve(__dirname, '../public')));
 app.use(express.json());
 // app.disable('etag');
 // ---------------------------------------------------------
-// 🧩 6. Service 實例化
+// 🧩 6. 資料服務實例化
 // ---------------------------------------------------------
 logger.info('Init Services');
 const prisma = new PrismaClient(); // DB
 const roomStateManager = new RoomStateManager(); // Disk
-const guestService = new GuestService(prisma)
-const memberService = new MemberService(prisma);
-const roomService = new RoomService(prisma, roomStateManager);
-const characterService = new CharacterService(prisma);
-const analysisService = new AnalysisService(prisma, characterService)
-
-// const results = await analysisService.getPreference()
-// console.info(`getBridgeScores`, JSON.stringify(results, null, 2))
 
 // ---------------------------------------------------------
 // 🧩 7. Routes 註冊
 // ---------------------------------------------------------
 logger.info('Register Api Routes');
-app.use('/api', authRoutes(guestService, memberService));
-app.use('/api', roomRoutes(roomService));
-app.use('/api', characterRoutes(characterService));
-app.use('/api', analysisRoutes(analysisService));
+const modules = registerAppRouters(app, prisma, roomStateManager);
 
 // ---------------------------------------------------------
 // 🧩 8. Socket 初始化
 // ---------------------------------------------------------
 logger.info('Init Socket');
-createSocketApp(server, guestService, memberService, roomStateManager);
+createSocketApp(server, roomStateManager, modules.authModule.authService);
 
 // ---------------------------------------------------------
 // 🧩 9. Error Handler (一定要最後)

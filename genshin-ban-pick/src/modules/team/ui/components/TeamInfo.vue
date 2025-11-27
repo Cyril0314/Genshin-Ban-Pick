@@ -1,10 +1,10 @@
 <!-- src/features/Team/TeamInfo.vue -->
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
 import { DragTypes } from '@/app/constants/customMIMETypes';
-import type { TeamMember } from '../../types/TeamMember';
+import type { TeamMember } from '@shared/contracts/team/TeamMember';
 
 const props = defineProps<{
     side: 'left' | 'right';
@@ -24,8 +24,11 @@ const emit = defineEmits<{
 
 const numberOfReservedSlot = 1
 const inputValue = ref('');
-
 const { themeVars } = useTeamTheme(props.teamInfo.slot);
+
+const totalSlots = computed(() => 
+  Array.from({ length: props.numberOfSetupCharacter + numberOfReservedSlot })
+)
 
 function getTeamMember(memberSlot: number): TeamMember | null {
     return props.teamInfo.members[memberSlot] ?? null
@@ -39,7 +42,7 @@ function getTeamMemberName(memberSlot: number): string | null {
 
 function handleInput(e: Event) {
     console.debug(`[TEAM INFO] Handle input`);
-
+ 
     const name = inputValue.value.trim();
     if (!name) return;
     for (let i = 0; i < props.numberOfSetupCharacter; i++) {
@@ -59,7 +62,7 @@ function handleRemoveMemberButtonClick(memberSlot: number) {
     emit('member-restore', { teamSlot: props.teamInfo.slot, memberSlot });
 }
 
-function handleDropEvent(event: DragEvent, memberSlot: number) {
+function handleDropEvent( memberSlot: number, event: DragEvent) {
     console.debug(`[TEAM INFO] Handle drop event`);
     event.preventDefault();
     // isOver.value = false
@@ -78,8 +81,8 @@ function handleDropEvent(event: DragEvent, memberSlot: number) {
 
             <div class="layout__team-member-names">
                 <div class="team-member"
-                    v-for="(_, memberSlot) in Array.from({ length: props.numberOfSetupCharacter + numberOfReservedSlot })"
-                    @dragover.prevent @drop="(e) => handleDropEvent(e, memberSlot)">
+                    v-for="(_, memberSlot) in totalSlots"
+                    @dragover.prevent @drop="(e) => handleDropEvent(memberSlot, e)">
                     <span class="team-member__name">{{ getTeamMemberName(memberSlot) }}</span>
                     <button class="team-member__remove" @click="handleRemoveMemberButtonClick(memberSlot)">✕</button>
                 </div>

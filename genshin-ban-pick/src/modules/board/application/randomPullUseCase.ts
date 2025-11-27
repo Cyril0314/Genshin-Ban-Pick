@@ -1,10 +1,11 @@
 // src/modules/board/application/randomPullUseCase.ts
 
-import type { IRoomSetting } from '@/modules/room';
-import type { ZoneType } from '../types/IZone';
 import { findNextMatchStepZoneIdDomain } from '../domain/findNextMatchStepZoneIdDomain';
 import { pickRandomImageDomain } from '../domain/pickRandomImageDomain';
 import { getAvailableImageIdsDomain } from '../domain/getAvailableImageIdsDomain';
+
+import type { IRoomSetting } from '@shared/contracts/room/IRoomSetting';
+import type { ZoneType } from '@shared/contracts/board/value-types';
 
 export function randomPullUseCase() {
     function randomPull(

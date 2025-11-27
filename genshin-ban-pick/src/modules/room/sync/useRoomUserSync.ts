@@ -1,11 +1,9 @@
 // src/modules/room/sync/useRoomUserSync.ts
 
-import { storeToRefs } from 'pinia';
-
 import { useSocketStore } from '@/app/stores/socketStore';
+import { roomUseCase } from '../application/roomUseCase';
 
-import { useRoomUserStore } from '../store/roomUserStore';
-import type { IRoomUser } from '../types/IRoomUser';
+import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 
 enum RoomEvent {
     UserJoinRequest = 'room.user.join.request',
@@ -18,9 +16,7 @@ enum RoomEvent {
 }
 
 export function useRoomUserSync() {
-    const roomUserStore = useRoomUserStore();
-    const { setRoomUsers } = roomUserStore;
-    const { roomUsers } = storeToRefs(roomUserStore);
+    const { setRoomUsers } = roomUseCase();
     const socket = useSocketStore().getSocket();
 
     function registerRoomUserSync() {
@@ -54,7 +50,6 @@ export function useRoomUserSync() {
     }
 
     return {
-        roomUsers,
         registerRoomUserSync,
         joinRoom,
         leaveRoom,

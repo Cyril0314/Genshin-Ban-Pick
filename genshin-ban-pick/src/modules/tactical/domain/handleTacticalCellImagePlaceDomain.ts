@@ -4,7 +4,7 @@ import { findCellIdByImageIdDomain } from './findCellIdByImageIdDomain';
 import { placeCellImageDomain } from './placeCellImageDomain';
 import { removeCellImageDomain } from './removeCellImageDomain';
 
-import type { TacticalCellImageMap } from '../types/TacticalCellImageMap';
+import type { TacticalCellImageMap } from '@shared/contracts/tactical/TacticalCellImageMap';
 
 export function handleTacticalCellImagePlaceDomain(tacticalCellImageMap: TacticalCellImageMap, cellId: number, imgId: string) {
     let nextMap = { ...tacticalCellImageMap };

@@ -1,10 +1,11 @@
 // src/modules/team/domain/handleMemberDropDomain.ts
 
-import type { IRoomUser } from "@/modules/room";
-import type { TeamMember, TeamMembersMap } from "../types/TeamMember";
 import { addTeamMemberDomain } from "./addTeamMemberDomain";
 import { createOnlineMemberDomain } from "./createOnlineMemberDomain";
 import { removeTeamMemberDomain } from "./removeTeamMemberDomain";
+
+import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
+import type { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';
 
 export function handleMemberDropDomain(teamMembersMap: TeamMembersMap, roomUsers: IRoomUser[], identityKey: string, teamSlot: number, memberSlot: number) {
     let nextMap = { ...teamMembersMap };

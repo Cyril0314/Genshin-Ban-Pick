@@ -2,7 +2,7 @@
 
 import { removeCellImageDomain } from './removeCellImageDomain';
 
-import type { TacticalCellImageMap } from '../types/TacticalCellImageMap';
+import type { TacticalCellImageMap } from '@shared/contracts/tactical/TacticalCellImageMap';
 
 export function handleTacticalCellImageRemoveDomain(tacticalCellImageMap: TacticalCellImageMap, cellId: number) {
     let nextMap = { ...tacticalCellImageMap };

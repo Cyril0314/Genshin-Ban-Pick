@@ -12,15 +12,9 @@ export const useChatStore = defineStore('chat', () => {
             console.debug(`[CHAT STORE] Set new messages`, newMessages);
             messages.value = newMessages;
     }
-    
-    function addMessage(message: IChatMessage) {
-        console.debug(`[CHAT STORE] Add message`, message);
-        messages.value.push(message);
-    }
 
     return {
         messages,
-        addMessage,
         setMessages
     }
 })

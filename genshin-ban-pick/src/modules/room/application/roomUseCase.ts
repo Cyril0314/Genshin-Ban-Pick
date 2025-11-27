@@ -3,8 +3,9 @@
 import { fetchRoomsDomain } from '../domain/fetchRoomsDomain';
 import { buildRoomDomain } from '../domain/buildRoomDomain';
 import { fetchRoomSettingDomain } from '../domain/fetchRoomSettingDomain';
-import { saveRoomDomain } from '../domain/saveRoomDomain';
 import { useRoomUserStore } from '../store/roomUserStore';
+
+import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 
 export function roomUseCase() {
     const roomUserStore = useRoomUserStore();
@@ -24,15 +25,14 @@ export function roomUseCase() {
         return roomSetting;
     }
 
-    async function saveRoom(roomId: string) {
-        const id = await saveRoomDomain(roomId);
-        return id;
+    function setRoomUsers(roomUsers: IRoomUser[]) {
+        roomUserStore.setRoomUsers(roomUsers)
     }
 
     return {
         fetchRooms,
         buildRoom,
         fetchRoomSetting,
-        saveRoom,
+        setRoomUsers,
     };
 }

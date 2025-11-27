@@ -6,19 +6,19 @@ import type { HttpClient } from '@/app/infrastructure/http/httpClient';
 
 export function createAnalysisService(client: HttpClient = api) {
     async function getTacticalUsages() {
-        return client.get(`/analysis/tactical-usages`);
+        return client.get(`/analyses/tactical-usages`);
     }
 
     async function getPreference() {
-        return client.get('/analysis/preference');
+        return client.get('/analyses/preference');
     }
 
     async function getSynergy(payload: { mode: 'match' | 'team' | 'setup' }) {
-        return client.get(`/analysis/synergy`, { params: payload });
+        return client.get(`/analyses/synergy`, { params: payload });
     }
 
     async function getCharacterClusters() {
-        return client.get(`/analysis/character-clusters`);
+        return client.get(`/analyses/character-clusters`);
     }
 
     return {

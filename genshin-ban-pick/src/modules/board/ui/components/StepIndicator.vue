@@ -7,33 +7,29 @@ import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
 import { useTeamInfoStore } from '@/modules/team';
 import { useBoardImageStore } from '../../store/boardImageStore';
 import { useMatchStepStore } from '../../store/matchStepStore';
-import { ZoneType } from "../../types/IZone";
+import { ZoneType } from '@shared/contracts/board/value-types';
 
 const active = ref(false);
+
 const matchStepStore = useMatchStepStore();
 const { currentStep } = storeToRefs(matchStepStore);
+
 const boardImageStore = useBoardImageStore();
 const { zoneMetaTable } = storeToRefs(boardImageStore);
+
 const teamInfoStore = useTeamInfoStore();
 const { teams } = storeToRefs(teamInfoStore);
 
 const currentTeam = computed(() => {
-    return teams.value.find((team) => team.slot === currentStep.value?.teamSlot);
-});
-
-const currentTeamTheme = computed(() => {
-    if (!currentTeam.value) {
-        return null
-    }
-    return useTeamTheme(currentTeam.value.slot).themeVars.value;
-});
+  const slot = currentStep.value?.teamSlot
+  return teams.value.find((t) => t.slot === slot) ?? null
+})
 
 const teamColorRGB = computed(() => {
-    if (currentTeamTheme.value === null) {
-        return 'var(--md-sys-color-on-surface-rgb)';
-    }
-    return currentTeamTheme.value['--team-color-rgb'];
-});
+  const slot = currentStep.value?.teamSlot
+  if (slot == null) return 'var(--md-sys-color-on-surface-rgb)'
+  return useTeamTheme(slot).themeVars.value['--team-color-rgb']
+})
 
 const displayText = computed(() => {
     if (!currentStep.value) return '選角結束';

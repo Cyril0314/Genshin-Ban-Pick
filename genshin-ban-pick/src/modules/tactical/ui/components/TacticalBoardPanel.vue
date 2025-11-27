@@ -14,9 +14,9 @@ const teamInfoStore = useTeamInfoStore();
 const { teamInfoPair } = storeToRefs(teamInfoStore);
 
 const tacticalBoardSync = useTacticalBoardSync();
-const { userTeamSlot, tacticalCellImagePlace, tacticalCellImageRemove } = tacticalBoardSync
+const { getUserTeamSlot, tacticalCellImagePlace, tacticalCellImageRemove } = tacticalBoardSync
 
-const currentTeamSlot = ref<number>(userTeamSlot.value ?? teamInfoPair.value!.left.slot)
+const currentTeamSlot = ref<number>(getUserTeamSlot() ?? teamInfoPair.value!.left.slot)
 
 function handleImageDrop({ teamSlot, cellId, imgId }: { teamSlot: number, cellId: number; imgId: string }) {
   console.debug(`[TATICAL BOARD PANEL] Handle image drop`, { teamSlot, cellId, imgId });

@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-import BanPickView from '@/app/ui/views/BanPickView.vue';
+import BanPickView from '@/modules/banPick/ui/views/BanPickView.vue';
 import LoginView from '@/modules/auth/ui/views/LoginView.vue';
 import RegisterView from '@/modules/auth/ui/views/RegisterView.vue';
 import RoomSettingView from '@/modules/room/ui/views/RoomSettingView.vue';

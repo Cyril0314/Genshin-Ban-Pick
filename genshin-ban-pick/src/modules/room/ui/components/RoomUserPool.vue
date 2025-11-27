@@ -1,7 +1,7 @@
 <!-- src/modules/room/ui/components/RoomUserPool.vue -->
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import { DragTypes } from '@/app/constants/customMIMETypes.ts';
@@ -9,7 +9,7 @@ import { useTeamInfoStore } from '@/modules/team';
 import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme.ts';
 import { useRoomUserStore } from '../../store/roomUserStore';
 
-import type { IRoomUser } from '../../types/IRoomUser.ts';
+import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 
 const roomUserStore = useRoomUserStore();
 const { roomUsers } = storeToRefs(roomUserStore);
@@ -17,6 +17,17 @@ const teamInfoStore = useTeamInfoStore();
 const { teamMembersMap } = storeToRefs(teamInfoStore);
 
 const usersRef = ref<HTMLElement | null>(null);
+
+const userToTeamSlotMap = computed(() => {
+    const map: Record<string, number> = {};
+    for (const [teamSlot, members] of Object.entries(teamMembersMap.value)) {
+        Object.values(members).forEach(m => {
+            if (m.type === 'Online')
+                map[m.user.identityKey] = Number(teamSlot)
+        });
+    }
+    return map;
+});
 
 onMounted(() => {
     const el = usersRef.value;
@@ -32,25 +43,14 @@ onMounted(() => {
     );
 });
 
-function handleDragStartEvent(event: DragEvent, roomUser: IRoomUser) {
+function handleDragStartEvent(roomUser: IRoomUser, event: DragEvent) {
     console.debug(`[ROOM USER POOL] Handle drag start event`, roomUser.identityKey);
     event?.dataTransfer?.setData(DragTypes.ROOM_USER, roomUser.identityKey);
 }
 
-function findUserTeamSlot(roomUser: IRoomUser): number | null {
-    console.debug(`[ROOM USER POOL] Find user team slot`, roomUser);
-    for (const [teamSlot, members] of Object.entries(teamMembersMap.value)) {
-        const memberValues = Object.values(members);
-        if (memberValues.some((m) => m.type === 'Online' && m.user.identityKey === roomUser.identityKey)) {
-            return Number(teamSlot);
-        }
-    }
-    return null;
-}
-
 function getStyleForUser(roomUser: IRoomUser) {
-    const teamSlot = findUserTeamSlot(roomUser);
-    if (teamSlot === null) {
+    const teamSlot = userToTeamSlotMap.value[roomUser.identityKey];
+    if (teamSlot === undefined) {
         return {
             '--team-color-bg': `var(--md-sys-color-surface-container-high)`,
             '--team-on-color-bg': `var(--md-sys-color-on-surface-variant)`,
@@ -70,7 +70,7 @@ function getStyleForUser(roomUser: IRoomUser) {
                 :key="roomUser.identityKey"
                 :style="getStyleForUser(roomUser)"
                 draggable="true"
-                @dragstart="handleDragStartEvent($event, roomUser)"
+                @dragstart="handleDragStartEvent(roomUser, $event)"
             >
                 <span class="user__label">{{ roomUser.nickname }}</span>
             </div>

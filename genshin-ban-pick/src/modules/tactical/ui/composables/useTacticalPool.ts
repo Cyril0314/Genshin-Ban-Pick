@@ -3,9 +3,10 @@
 import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
 
-import { useBoardImageStore, useMatchStepStore, ZoneType } from '@/modules/board';
+import { useBoardImageStore, useMatchStepStore } from '@/modules/board';
 import { useTeamInfoStore } from '@/modules/team';
 import { useTacticalBoardStore } from '../../store/tacticalBoardStore';
+import { ZoneType } from '@shared/contracts/board/value-types';
 
 export function useTacticalPool() {
     const boardStore = useBoardImageStore();
