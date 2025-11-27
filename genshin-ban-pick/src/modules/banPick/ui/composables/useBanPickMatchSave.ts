@@ -1,13 +1,14 @@
 // src/modules/banPick/ui/composables/useBanPickMatchSave.vue
 
 import { ref } from 'vue';
-import type { IMatchResult } from '@/modules/match/types/IMatchResult';
 import { matchUseCase } from '@/modules/match';
+
+import type { IMatch } from '@shared/contracts/match/IMatch';
 
 export function useBanPickMatchSave(roomId: string) {
     const { saveMatch } = matchUseCase();
 
-    const result = ref<IMatchResult | null>(null)
+    const result = ref<IMatch | null>(null)
     const isLoading = ref(false);
     const error = ref<string | null>(null);
 

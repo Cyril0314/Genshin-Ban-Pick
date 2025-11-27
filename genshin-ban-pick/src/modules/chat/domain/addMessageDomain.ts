@@ -1,13 +1,9 @@
 // src/modules/chat/domain/addMessageDomain.ts
 
-import { transformChatMessageDomain } from "./transformChatMessageDomain";
+import type { IChatMessage } from '@shared/contracts/chat/IChatMessage';
 
-import type { IChatMessage } from "../types/IChatMessage";
-import type { IChatMessageDTO } from '@shared/contracts/chat/IChatMessageDTO';
-
-export function addMessageDomain(messages: IChatMessage[], messageDTO: IChatMessageDTO, identityKey?: string) {
-    const newMessages = messages
-    const chatMessage = transformChatMessageDomain(messageDTO, identityKey);
-    newMessages.push(chatMessage)
+export function addMessageDomain(messages: IChatMessage[], message: IChatMessage) {
+    const newMessages = [...messages]
+    newMessages.push(message)
     return newMessages
 }

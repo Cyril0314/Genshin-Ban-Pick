@@ -112,7 +112,7 @@ async function main() {
     }, true);
 
     console.log('\n✅ Match saved successfully!');
-    console.log('Match ID:', result);
+    console.log('Match:', JSON.stringify(result, null, 2));
 
     function shuffled<T>(arr: T[]): T[] {
         return [...arr].sort(() => Math.random() - 0.5);

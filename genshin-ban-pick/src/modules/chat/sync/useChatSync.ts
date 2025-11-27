@@ -3,7 +3,7 @@ import { useSocketStore } from '@/app/stores/socketStore';
 import { useAuthStore } from '@/modules/auth';
 import { chatUseCase } from '../application/chatUseCase';
 
-import type { IChatMessageDTO } from '@shared/contracts/chat/IChatMessageDTO';
+import type { IChatMessage } from '@shared/contracts/chat/IChatMessage';
 
 enum ChatEvent {
     MessageSendRequest = 'chat.message.send.request',
@@ -23,21 +23,21 @@ export function useChatSync() {
         socket.on(`${ChatEvent.MessageSendBroadcast}`, handleChatMessageSendBroadcast);
     }
 
-    function sendMessage(message: string) {
-        console.debug('[CHAT] Sent chat message send request', message);
+    function sendMessage(messageText: string) {
+        console.debug('[CHAT] Sent chat message send request', messageText);
         if (!authStore.identityKey || !authStore.nickname) return;
-        const messageDTO = handleSendMessage(authStore.identityKey, authStore.nickname, message);
-        socket.emit(`${ChatEvent.MessageSendRequest}`, messageDTO);
+        const message = handleSendMessage(authStore.identityKey, authStore.nickname, messageText);
+        socket.emit(`${ChatEvent.MessageSendRequest}`, { message });
     }
 
-    function handleChatMessagesStateSync(newMessageDTOs: IChatMessageDTO[]) {
-        console.debug(`[CHAT] Handle chat messages state sync`, newMessageDTOs);
-        setMessages(newMessageDTOs, authStore.identityKey ?? undefined);
+    function handleChatMessagesStateSync(newMessages: IChatMessage[]) {
+        console.debug(`[CHAT] Handle chat messages state sync`, newMessages);
+        setMessages(newMessages, authStore.identityKey ?? undefined);
     }
 
-    function handleChatMessageSendBroadcast(messageDTO: IChatMessageDTO) {
-        console.debug(`[CHAT] Handle chat message send broadcast`, messageDTO);
-        addMessage(messageDTO);
+    function handleChatMessageSendBroadcast(message: IChatMessage) {
+        console.debug(`[CHAT] Handle chat message send broadcast`, message);
+        addMessage(message);
     }
 
     return {

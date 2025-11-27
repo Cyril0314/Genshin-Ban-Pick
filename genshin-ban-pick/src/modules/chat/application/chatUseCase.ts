@@ -2,10 +2,9 @@
 
 import { addMessageDomain } from "../domain/addMessageDomain";
 import { sendMessageDomain } from "../domain/sendMessageDomain";
-import { setMessagesDomain } from "../domain/setMessagesDomain";
 import { useChatStore } from "../store/chatStore";
 
-import type { IChatMessageDTO } from '@shared/contracts/chat/IChatMessageDTO';
+import type { IChatMessage } from '@shared/contracts/chat/IChatMessage';
 
 export function chatUseCase() {
 
@@ -13,21 +12,19 @@ export function chatUseCase() {
 
     function handleSendMessage(identityKey: string, nickname: string, message: string) {
         const prevMessages = chatStore.messages
-        const { messages, messageDTO } = sendMessageDomain(prevMessages, identityKey, nickname, message)
+        const { messages, newMessage } = sendMessageDomain(prevMessages, identityKey, nickname, message)
         chatStore.setMessages(messages)
-        return messageDTO
+        return newMessage
     }
 
-    function addMessage(messageDTO: IChatMessageDTO) {
+    function addMessage(message: IChatMessage) {
         const prevMessages = chatStore.messages
-        const nextMessages = addMessageDomain(prevMessages, messageDTO)
+        const nextMessages = addMessageDomain(prevMessages, message)
         chatStore.setMessages(nextMessages)
     }
 
-    function setMessages(messageDTOs: IChatMessageDTO[], identityKey?: string) {
-        const prevMessages = chatStore.messages
-        const nextMessages = setMessagesDomain(prevMessages, messageDTOs, identityKey)
-        chatStore.setMessages(nextMessages)
+    function setMessages(messages: IChatMessage[], identityKey?: string) {
+        chatStore.setMessages(messages)
     }
     
     return {

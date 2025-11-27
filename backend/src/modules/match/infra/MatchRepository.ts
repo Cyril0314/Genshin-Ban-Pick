@@ -1,6 +1,6 @@
 // src/modules/match/infra/MatchRepository.ts
 
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient, Match, MatchMove } from '@prisma/client';
 
 import IMatchRepository from '../domain/IMatchRepository';
 import { IMatchSnapshot } from '../domain/IMatchSnapshot';
@@ -12,17 +12,17 @@ import MatchMoveCreator from '../application/creators/MatchMoveCreator';
 import MatchTacticalUsageCreator from '../application/creators/MatchTacticalUsageCreator';
 import { DbConnectionError, DbForeignKeyConstraintError, DbUniqueConstraintError, DryRunError } from '../../../errors/AppError';
 import { createLogger } from '../../../utils/logger';
+import { IMatch } from '@shared/contracts/match/IMatch';
+import { mapMatchFromPrisma } from '../domain/mapMatchFromPrisma';
 
 const logger = createLogger('MATCH:Repository');
 
 export class MatchRepository implements IMatchRepository {
     constructor(private prisma: PrismaClient) {}
-
-    async create(snapshot: IMatchSnapshot, dryRun: boolean = false) {
+    async create(snapshot: IMatchSnapshot, dryRun: boolean = false): Promise<IMatch> {
         const { roomSetting } = snapshot;
-
         try {
-            return await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+            const match = await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
                 const flowVersion = roomSetting.matchFlow.version;
                 // 1. Match: 對局
                 const match = await MatchCreator.createMatch(tx, flowVersion);
@@ -93,10 +93,11 @@ export class MatchRepository implements IMatchRepository {
                 } satisfies Prisma.MatchFindUniqueArgs;
 
                 const allMatchData = await tx.match.findUnique(matchQuery);
-
-                if (dryRun) throw new DryRunError(allMatchData);
-                return allMatchData;
+                const aggregate = mapMatchFromPrisma(allMatchData);
+                if (dryRun) throw new DryRunError(aggregate);
+                return aggregate;
             });
+            return match;
         } catch (err: any) {
             if (err instanceof DryRunError) {
                 logger.warn('Block dry run data', err.data);

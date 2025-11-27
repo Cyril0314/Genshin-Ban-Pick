@@ -1,4 +1,4 @@
-import { MemberRole } from '@shared/contracts/auth/value_type'
+import { MemberRole } from '@shared/contracts/auth/value_types'
 
 export interface IMemberData {
     id: number;

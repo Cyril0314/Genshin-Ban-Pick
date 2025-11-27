@@ -2,7 +2,7 @@
 
 import { PrismaClient, Member } from '@prisma/client';
 import IMemberRepository from '../domain/IMemberRepository';
-import { MemberRole } from '@shared/contracts/auth/value_type'
+import { MemberRole } from '@shared/contracts/auth/value_types'
 import { IMemberData } from '../types/IMemberData';
 
 export default class MemberRepository implements IMemberRepository {

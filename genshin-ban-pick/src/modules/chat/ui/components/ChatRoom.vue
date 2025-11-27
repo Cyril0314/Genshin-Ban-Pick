@@ -7,6 +7,7 @@ import { useAuthStore } from '@/modules/auth';
 import { useRelativeTime } from '@/modules/shared/ui/composables/useRelativeTime';
 import { useChatSync } from '../../sync/useChatSync.ts';
 import { useChatStore } from '../../store/chatStore.ts';
+import type { IChatMessage } from '@shared/contracts/chat/IChatMessage.ts';
 
 const newMessage = ref('');
 const messagesContainer = ref<HTMLElement | null>(null);
@@ -14,7 +15,7 @@ const chatStore = useChatStore();
 const { messages } = storeToRefs(chatStore)
 const { sendMessage } = useChatSync();
 const authStore = useAuthStore();
-const { nickname } = storeToRefs(authStore);
+const { nickname, identityKey } = storeToRefs(authStore);
 
 watch(
     messages,
@@ -39,6 +40,11 @@ function scrollToBottom() {
         }
     });
 }
+
+function isSelfMessage(msg: IChatMessage) {
+    return msg.identityKey === identityKey.value
+}
+
 </script>
 
 <template>
@@ -50,8 +56,8 @@ function scrollToBottom() {
 
         <div ref="messagesContainer" class="chat__messages">
             <div v-for="(msg, index) in messages" :key="index" class="message__container"
-                :class="[{ 'message__container--self': msg.isSelf }]">
-                <span v-if="!msg.isSelf" class = "message__name">{{ `${msg.nickname}:` }}</span> 
+                :class="[{ 'message__container--self': isSelfMessage(msg) }]">
+                <span v-if="!isSelfMessage(msg)" class = "message__name">{{ `${msg.nickname}:` }}</span> 
                 <div class ="message"> {{ msg.message }} </div>
                 <span class="message__time">{{ useRelativeTime(msg.timestamp ?? 0) }}</span>
             </div>

@@ -1,6 +1,6 @@
 // backend/src/modules/socket/domain/IRoomStateManager.ts
 
-import { IChatMessageDTO } from '@shared/contracts/chat/IChatMessageDTO';
+import { IChatMessage } from '@shared/contracts/chat/IChatMessage';
 import { IRoomUser } from '@shared/contracts/room/IRoomUser';
 import { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';
 import { IRoomState } from '@shared/contracts/room/IRoomState';
@@ -17,7 +17,7 @@ export default interface IRoomStateManager {
 
   getUsers(roomId: string): IRoomUser[];
   setUsers(roomId: string, users: IRoomUser[]): void;
-  getChatMessages(roomId: string): IChatMessageDTO[];
+  getChatMessages(roomId: string): IChatMessage[];
   getBoardImageMap(roomId: string): BoardImageMap;
   getCharacterRandomContextMap(roomId: string): CharacterRandomContextMap;
   getTeamMembersMap(roomId: string): TeamMembersMap;

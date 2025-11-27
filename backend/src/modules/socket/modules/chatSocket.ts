@@ -4,6 +4,7 @@ import { Server, Socket } from "socket.io";
 
 import { createLogger } from '../../../utils/logger';
 import IRoomStateManager from '../domain/IRoomStateManager';
+import { IChatMessage } from "@shared/contracts/chat/IChatMessage";
 
 const logger = createLogger('CHAT SOCKET')
 
@@ -17,22 +18,18 @@ enum ChatEvent {
 
 export function registerChatSocket(io: Server, socket: Socket, roomStateManager: IRoomStateManager) {
   socket.on(
-    `${ChatEvent.MessageSendRequest}`, ({ message }: { message: string }) => {
+    `${ChatEvent.MessageSendRequest}`, ({ message }: { message: IChatMessage }) => {
       logger.info(`Received ${ChatEvent.MessageSendRequest} message: ${message}`);
       const roomId = (socket as any).roomId;
-      if (!roomId || !message) return;
+      if (!roomId) return;
 
-      
       const roomState = roomStateManager.get(roomId);
       if (!roomState) return;
 
-      const identityKey = socket.data.identity.identityKey as string;
-      const nickname = socket.data.identity.nickname as string;
-      const newMsg = { identityKey, nickname, message, timestamp: Date.now() };
-      roomState.chatMessages.push(newMsg);
+      roomState.chatMessages.push(message);
 
-      socket.to(roomId).emit(`${ChatEvent.MessageSendBroadcast}`, newMsg);
-      logger.info(`Sent ${ChatEvent.MessageSendBroadcast} newMsg: ${newMsg}`);
+      socket.to(roomId).emit(`${ChatEvent.MessageSendBroadcast}`, message);
+      logger.info(`Sent ${ChatEvent.MessageSendBroadcast}`, message);
     }
   );
 
