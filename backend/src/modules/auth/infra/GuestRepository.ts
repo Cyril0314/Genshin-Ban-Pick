@@ -1,6 +1,8 @@
 // src/modules/auth/infra/GuestRepository.ts
 
-import { PrismaClient, Guest } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
+
+import type { Guest } from '@prisma/client';
 import type { IGuestRepository } from '../domain/IGuestRepository';
 import type { IGuestData } from '../types/IGuestData';
 

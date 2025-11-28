@@ -1,7 +1,8 @@
 // backend/src/modules/match/application/creators/MatchTacticalUsageCreator.ts
 
 import { Prisma } from '@prisma/client';
-import { TeamTacticalCellImageMap } from '@shared/contracts/tactical/TeamTacticalCellImageMap';
+
+import type { TeamTacticalCellImageMap } from '@shared/contracts/tactical/TeamTacticalCellImageMap';
 
 export default class MatchTacticalUsageCreator {
     static async createMatchTacticalUsages(

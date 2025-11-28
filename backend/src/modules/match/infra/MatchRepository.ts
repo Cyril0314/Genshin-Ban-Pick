@@ -1,6 +1,6 @@
 // src/modules/match/infra/MatchRepository.ts
 
-import { Prisma, PrismaClient, Match, MatchMove } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 import MatchCreator from '../application/creators/MatchCreator';
 import MatchTeamCreator from '../application/creators/MatchTeamCreator';
@@ -19,7 +19,7 @@ const logger = createLogger('MATCH:Repository');
 
 export default class MatchRepository implements IMatchRepository {
     constructor(private prisma: PrismaClient) {}
-    async create(snapshot: IMatchSnapshot, dryRun: boolean = false): Promise<IMatch> {
+    async create(snapshot: IMatchSnapshot, dryRun: boolean): Promise<IMatch> {
         const { roomSetting } = snapshot;
         try {
             const match = await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {

@@ -1,4 +1,4 @@
-import { ZoneType } from "./value-types";
+import type { ZoneType } from "./value-types";
 
 export interface IZone {
     id: number;

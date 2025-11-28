@@ -1,7 +1,7 @@
 // backend/src/modules/match/domain/resolveIdentity.ts
 
-import { ResolvedIdentity } from "../types/ResolvedIdentity";
-import { TeamMember } from '@shared/contracts/team/TeamMember';
+import type { ResolvedIdentity } from "../types/ResolvedIdentity";
+import type { TeamMember } from '@shared/contracts/team/TeamMember';
 
 export function resolveIdentity(teamMember: TeamMember): ResolvedIdentity | null {
     if (teamMember.type === 'Manual') {

@@ -10,7 +10,6 @@ import type {
     Member,
     RandomMoveContext,
 } from '@prisma/client';
-
 import type { IMatch } from '@shared/contracts/match/IMatch';
 import type { IMatchTeam } from '@shared/contracts/match/IMatchTeam';
 import type { IMatchTeamMember } from '@shared/contracts/match/IMatchTeamMember';

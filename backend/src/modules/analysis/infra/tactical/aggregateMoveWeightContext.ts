@@ -1,6 +1,6 @@
 // backend/src/modules/analysis/infra/tactical/aggregateMoveWeightContext.ts
 
-import { MoveType, MoveSource } from '@prisma/client';
+import { MoveSource, MoveType } from "@shared/contracts/match/value-types";
 
 import type { IMoveContext } from '../../domain/IMoveContext';
 import type { IWeightContext } from '@shared/contracts/analysis/IWeightContext';

@@ -1,6 +1,6 @@
 // backend/src/modules/room/domain/findUserTeamSlot.ts
 
-import { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';
+import type { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';
 
 export function findUserTeamSlot(teamMembersMap: TeamMembersMap, identityKey: string) {
     const userTeamSlot = Object.entries(teamMembersMap).find(([teamSlot, members]) => {
