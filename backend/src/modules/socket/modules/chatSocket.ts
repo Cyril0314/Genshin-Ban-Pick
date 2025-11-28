@@ -3,8 +3,9 @@
 import { Server, Socket } from "socket.io";
 
 import { createLogger } from '../../../utils/logger';
-import IRoomStateManager from '../domain/IRoomStateManager';
-import { IChatMessage } from "@shared/contracts/chat/IChatMessage";
+
+import type { IRoomStateManager } from '../domain/IRoomStateManager';
+import type { IChatMessage } from "@shared/contracts/chat/IChatMessage";
 
 const logger = createLogger('CHAT SOCKET')
 

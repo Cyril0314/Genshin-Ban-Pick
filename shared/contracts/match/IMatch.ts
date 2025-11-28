@@ -1,5 +1,5 @@
-import { IMatchMove } from "./IMatchMove";
-import { IMatchTeam } from "./IMatchTeam";
+import type { IMatchMove } from "./IMatchMove";
+import type { IMatchTeam } from "./IMatchTeam";
 
 export interface IMatch {
     id: number;

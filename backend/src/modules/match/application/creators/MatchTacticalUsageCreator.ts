@@ -25,7 +25,6 @@ export default class MatchTacticalUsageCreator {
             const usages = Object.entries(tacticalCellImageMap)
                 .sort(([a], [b]) => Number(a) - Number(b))
                 .map(([cellIndexString, characterKey]) => {
-                    const _characterKey = characterKey as string
                     const cellIndex = Number(cellIndexString);
 
                     const playerIndex = cellIndex % numberOfSetupCharacter; // ← 0~3 決定這格屬於哪位玩家
@@ -39,7 +38,7 @@ export default class MatchTacticalUsageCreator {
                         setupNumber, // 0,1,2,3 對應該隊員的第幾格
 
                         teamMemberId: targetMember.id,
-                        characterKey: _characterKey,
+                        characterKey,
                     };
                 })
                 .filter((entry) => entry !== null);

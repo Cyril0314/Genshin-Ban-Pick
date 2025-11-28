@@ -1,4 +1,4 @@
-// backend/src/modules/match/mapper/matchMapper.ts
+// backend/src/modules/match/domain/matchMapper.ts
 import type {
     Character,
     Guest,

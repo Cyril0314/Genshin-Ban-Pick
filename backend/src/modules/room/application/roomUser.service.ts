@@ -3,9 +3,10 @@
 import { DataNotFoundError } from '../../../errors/AppError';
 import { createLogger } from '../../../utils/logger';
 import { findUserTeamSlot } from '../domain/findUserTeamSlot';
-import IRoomStateRepository from '../domain/IRoomStateRepository';
 import { joinRoomUser } from '../domain/joinRoomUser';
 import { leaveRoomUser } from '../domain/leaveRoomUser';
+
+import type { IRoomStateRepository } from '../domain/IRoomStateRepository';
 
 const logger = createLogger('ROOM_USER');
 

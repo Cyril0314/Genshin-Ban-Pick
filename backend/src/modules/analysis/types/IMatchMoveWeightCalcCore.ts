@@ -1,0 +1,17 @@
+// src/modules/analysis/types/IMatchMoveWeightCalcCore.ts
+
+import { CharacterFilterKey } from "@shared/contracts/character/value-types";
+import { MoveSource, MoveType } from "@shared/contracts/match/value-types";
+
+export interface IMatchMoveWeightCalcCore {
+    characterKey: string;
+    type: MoveType;
+    source: MoveSource;
+    matchId: number;
+    characterReleaseDate: Date | null,
+    randomMoveContext: {
+        id: number;
+        filters: Record<CharacterFilterKey, string[]>;
+        matchMoveId: number;
+    } | null;
+}

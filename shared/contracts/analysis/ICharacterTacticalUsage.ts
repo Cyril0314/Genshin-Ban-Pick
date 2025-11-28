@@ -1,8 +1,6 @@
-// src/modules/analysis/types/ITacticalUsages.ts
-
 import type { IWeightContext } from "./IWeightContext";
 
-export interface ITacticalUsages {
+export interface ICharacterTacticalUsage {
     characterKey: string;
     tacticalUsage: number;
     globalUsage: number;

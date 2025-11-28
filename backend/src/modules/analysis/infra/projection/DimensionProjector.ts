@@ -1,8 +1,8 @@
-// backend/src/modules/analysis/application/projection/ProjectionService.ts
+// backend/src/modules/analysis/infra/projection/DimensionProjector.ts
 import PCA from 'ml-pca';
 import { Matrix } from 'ml-matrix';
 
-export class ProjectionService {
+export default class DimensionProjector {
     constructor() {}
 
     projectCharacters2D(matrix: Matrix, nComponents = 2): number[][] {

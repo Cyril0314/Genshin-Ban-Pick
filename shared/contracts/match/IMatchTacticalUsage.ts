@@ -1,4 +1,4 @@
-import { ICharacter } from "../character/ICharacter";
+import type { ICharacter } from "../character/ICharacter";
 
 export interface IMatchTacticalUsage {
     id: number;

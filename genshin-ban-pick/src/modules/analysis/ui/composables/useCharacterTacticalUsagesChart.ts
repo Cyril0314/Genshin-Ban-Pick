@@ -12,7 +12,7 @@ import { useEchartTheme } from '@/modules/shared/ui/composables/useEchartTheme';
 import { getCharacterDisplayName } from '@/modules/shared/domain/getCharacterDisplayName';
 import { analysisUseCase } from '../../application/analysisUseCase';
 
-import type { ITacticalUsages } from '../../types/ITacticalUsages';
+import type { ICharacterTacticalUsage } from '@shared/contracts/analysis/ICharacterTacticalUsage';
 
 export function useCharacterTacticalUsagesChart(topN = 120) {
     const designTokens = useDesignTokens();
@@ -21,7 +21,7 @@ export function useCharacterTacticalUsagesChart(topN = 120) {
     const characterStore = useCharacterStore();
     const { characterMap } = storeToRefs(characterStore);
 
-    const data = ref<ITacticalUsages[] | null>(null);
+    const data = ref<ICharacterTacticalUsage[] | null>(null);
 
     onMounted(async () => {
         data.value = await fetchTacticalUsages();

@@ -1,0 +1,1 @@
+export type SynergyMode = 'match' | 'team' | 'setup';

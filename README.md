@@ -208,6 +208,19 @@ Socket module	*.socket.ts
 REST 資源路徑	複數名詞 /rooms
 介面命名	IName（可選但統一）
 
+
+| **Scope**    | **Intent / Purpose**                                                                | **Expected Output (Data)**                                                                    | **SQL Analogy**                                                         |
+| ------------ | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| **Minimal**  | Data strictly limited to what is essential for identification or existence checks   | Only key identifiers and a few critical fields, heavily filtered                              | `SELECT id, name FROM table WHERE active = true LIMIT 1;`               |
+| **Core**     | Default working dataset for routine application operations                          | Essential fields + frequently used relationships (typically via foreign keys or one relation) | `SELECT * FROM table WHERE user_id = 123 AND status='active';`          |
+| **Light**    | Lightweight enrichment beyond the default dataset                                   | Core fields + one small related metric or column (e.g., a count or timestamp)                 | `SELECT t.*, COUNT(c.id) FROM table t LEFT JOIN child c GROUP BY t.id;` |
+| **Expanded** | Dataset prepared for standard UI views requiring joined context                     | Core fields + 2–3 commonly required relationships (joined data for display or sync)           | `SELECT * FROM table t JOIN rel1 r1 JOIN rel2 r2 WHERE t.room_id = 7;`  |
+| **Summary**  | Aggregated or analytical result set, not raw row data                               | Computed statistics such as totals, averages, max/min, grouped values                         | `SELECT AVG(score), COUNT(id) FROM table GROUP BY category;`            |
+| **Detailed** | Most complete dataset needed for focused inspection of a single record or small set | All available columns + most related entities, fully joined for depth                         | `SELECT * FROM table t JOIN rel1 JOIN rel2 ... WHERE t.id = 42;`        |
+| **Full**     | Near-unrestricted operational dataset                                               | All fields + all standard filters but without pagination or strict limits                     | `SELECT * FROM table WHERE deleted IN (true,false);`                    |
+| **Full**     | Absolute unrestricted fetch (truly "no filter")                                     | All rows, including inactive, soft-deleted, archived, or orphaned records                     | `SELECT * FROM table;`                                                  |
+
+
 ```
 Genshin-Ban-Pick
 ├─ .prettierrc.json

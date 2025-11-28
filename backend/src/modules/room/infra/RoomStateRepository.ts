@@ -1,7 +1,9 @@
-import IRoomStateManager from '../../socket/domain/IRoomStateManager';
-import IRoomStateRepository from '../domain/IRoomStateRepository';
-import { IRoomState } from '@shared/contracts/room/IRoomState';
-import { IRoomUser } from '@shared/contracts/room/IRoomUser';
+// backend/src/modules/room/infra/RoomStateRepository.ts
+
+import type { IRoomStateManager } from '../../socket/domain/IRoomStateManager';
+import type { IRoomStateRepository } from '../domain/IRoomStateRepository';
+import type { IRoomState } from '@shared/contracts/room/IRoomState';
+import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 
 export default class RoomStateRepository implements IRoomStateRepository {
     constructor(private roomStateManager: IRoomStateManager) {}

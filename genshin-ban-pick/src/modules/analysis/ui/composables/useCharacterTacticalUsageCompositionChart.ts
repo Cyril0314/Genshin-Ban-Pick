@@ -10,8 +10,8 @@ import { ZoneType } from '@shared/contracts/board/value-types';
 import { getCharacterDisplayName } from '@/modules/shared/domain/getCharacterDisplayName';
 import { analysisUseCase } from '../../application/analysisUseCase';
 
+import type { ICharacterTacticalUsage } from '@shared/contracts/analysis/ICharacterTacticalUsage';
 import type { CallbackDataParams } from 'echarts/types/dist/shared';
-import type { ITacticalUsages } from '../../types/ITacticalUsages';
 
 export function useCharacterTacticalUsageCompositionChart(topN = 120) {
     const designTokens = useDesignTokens();
@@ -23,7 +23,7 @@ export function useCharacterTacticalUsageCompositionChart(topN = 120) {
     const isPercentage = ref(false);
     const activeType = ref<'All' | ZoneType>('All');
 
-    const data = ref<ITacticalUsages[] | null>(null);
+    const data = ref<ICharacterTacticalUsage[] | null>(null);
 
     onMounted(async () => {
         data.value = await fetchTacticalUsages();
@@ -81,7 +81,7 @@ export function useCharacterTacticalUsageCompositionChart(topN = 120) {
         };
     });
 
-    function getTotal(data: ITacticalUsages, activeType: ZoneType | 'All') {
+    function getTotal(data: ICharacterTacticalUsage, activeType: ZoneType | 'All') {
         switch (activeType) {
             case ZoneType.Ban:
                 return data.context.ban.total;
@@ -109,7 +109,7 @@ export function useCharacterTacticalUsageCompositionChart(topN = 120) {
         };
     }
 
-    function makeActiveSeries(top: ITacticalUsages[], activeType: ZoneType | 'All') {
+    function makeActiveSeries(top: ICharacterTacticalUsage[], activeType: ZoneType | 'All') {
         switch (activeType) {
             case ZoneType.Ban:
                 return [

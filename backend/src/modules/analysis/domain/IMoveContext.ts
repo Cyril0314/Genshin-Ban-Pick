@@ -1,6 +1,6 @@
-// backend/src/modules/analysis/application/tactical/types/IMoveContext.ts
+// backend/src/modules/analysis/domain/IMoveContext.ts
 
-import { MoveType, MoveSource } from '@prisma/client';
+import { MoveSource, MoveType } from "@shared/contracts/match/value-types";
 
 export interface IMoveContext {
     type: MoveType;

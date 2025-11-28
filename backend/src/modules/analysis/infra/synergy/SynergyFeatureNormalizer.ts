@@ -1,7 +1,8 @@
-// backend/src/modules/analysis/application/synergy/SynergyNormalizationService.ts
+// backend/src/modules/analysis/infra/synergy/SynergyFeatureNormalizer.ts
 
 import { Matrix } from 'ml-matrix';
-import { ISynergyMatrix } from './types/ISynergyMatrix';
+
+import type { ISynergyMatrix } from '@shared/contracts/analysis/ISynergyMatrix';
 
 /**
  * SynergyNormalizationService
@@ -10,7 +11,7 @@ import { ISynergyMatrix } from './types/ISynergyMatrix';
  * - Graph 用的 similarity normalization（Jaccard / Cosine）
  * - PCA / KMeans 用的 Z-score normalization
  */
-export class SynergyNormalizationService {
+export default class SynergyFeatureNormalizer {
     constructor() {}
 
     // ---------------------------------------------------------

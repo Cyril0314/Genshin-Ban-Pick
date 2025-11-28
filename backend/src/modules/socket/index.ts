@@ -6,9 +6,10 @@ import { Server } from 'socket.io';
 
 import { createSocketAuth } from './infra/socketAuth';
 import { setupSocketIO } from './socketController';
-import IRoomStateManager from './domain/IRoomStateManager';
 import AuthService from '../auth/application/auth.service';
 import AuthValidator from './infra/AuthValidator';
+
+import type { IRoomStateManager } from './domain/IRoomStateManager';
 
 export function createSocketApp(server: http.Server, roomStateManager: IRoomStateManager, authService: AuthService) {
     const io = new Server(server, {

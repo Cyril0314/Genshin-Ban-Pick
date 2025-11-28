@@ -1,4 +1,4 @@
-import { IMatchTeamMember } from "./IMatchTeamMember";
+import type { IMatchTeamMember } from "./IMatchTeamMember";
 
 export interface IMatchTeam {
     id: number;

@@ -3,8 +3,9 @@
 import { DataNotFoundError } from '../../../errors/AppError';
 import { createLogger } from '../../../utils/logger';
 import { validateSnapshot } from '../domain/validateSnapshot';
-import IMatchSnapshotRepository from '../domain/IMatchSnapshotRepository';
-import IMatchRepository from '../domain/IMatchRepository';
+
+import type { IMatchSnapshotRepository } from '../domain/IMatchSnapshotRepository';
+import type { IMatchRepository } from '../domain/IMatchRepository';
 
 const logger = createLogger('MATCH');
 

@@ -2,7 +2,8 @@
 
 import { Server, Socket } from 'socket.io';
 import { MissingFieldsError, UserNotFoundError } from '../../../errors/AppError';
-import IAuthValidator from '../domain/IAuthValidator';
+
+import type { IAuthValidator } from '../domain/IAuthValidator';
 
 export function createSocketAuth(authValidator: IAuthValidator) {
     return function attachAuthMiddleware(io: Server) {

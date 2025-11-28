@@ -6,11 +6,13 @@ import { syncBoardImageMapStateSelf } from './boardSocket';
 import { syncStepStateSelf } from './stepSocket';
 import { syncTeamMembersMapStateSelf, syncTeamMembersMapStateAll } from './teamSocket';
 import { createLogger } from '../../../utils/logger';
-import IRoomStateManager from '../domain/IRoomStateManager';
+
 import { syncChatMessagesStateSelf } from './chatSocket';
 import { syncTacticalCellImageMapStateSelf } from './tacticalSocket';
 import { RoomUserService } from '../../room/index';
-import { IRoomUser } from '@shared/contracts/room/IRoomUser';
+
+import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
+import type { IRoomStateManager } from '../domain/IRoomStateManager';
 
 const logger = createLogger('ROOM SOCKET');
 

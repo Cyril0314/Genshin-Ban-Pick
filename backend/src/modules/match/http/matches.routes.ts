@@ -8,7 +8,7 @@ import MatchController from '../controller/match.controller';
 
 const logger = createLogger('MATCH');
 
-export function createMatchesRouter(matchController: MatchController) {
+export default function createMatchesRouter(matchController: MatchController) {
     const router = express.Router();
     router.post('/', asyncHandler(matchController.saveMatch))
 

@@ -2,8 +2,9 @@
 
 import { PrismaClient } from '@prisma/client';
 
-import ICharacterRepository from '../domain/ICharacterRepository';
 import { mapCharacterFromPrisma } from '../domain/mapCharacterFromPrisma';
+
+import type { ICharacterRepository } from '../domain/ICharacterRepository';
 
 export default class CharacterRepository implements ICharacterRepository {
     constructor(private prisma: PrismaClient) {}

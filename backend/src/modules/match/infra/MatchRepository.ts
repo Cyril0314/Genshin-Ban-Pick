@@ -2,9 +2,6 @@
 
 import { Prisma, PrismaClient, Match, MatchMove } from '@prisma/client';
 
-import IMatchRepository from '../domain/IMatchRepository';
-import { IMatchSnapshot } from '../domain/IMatchSnapshot';
-
 import MatchCreator from '../application/creators/MatchCreator';
 import MatchTeamCreator from '../application/creators/MatchTeamCreator';
 import MatchTeamMemberCreator from '../application/creators/MatchTeamMemberCreator';
@@ -12,12 +9,15 @@ import MatchMoveCreator from '../application/creators/MatchMoveCreator';
 import MatchTacticalUsageCreator from '../application/creators/MatchTacticalUsageCreator';
 import { DbConnectionError, DbForeignKeyConstraintError, DbUniqueConstraintError, DryRunError } from '../../../errors/AppError';
 import { createLogger } from '../../../utils/logger';
-import { IMatch } from '@shared/contracts/match/IMatch';
 import { mapMatchFromPrisma } from '../domain/mapMatchFromPrisma';
+
+import type { IMatchRepository } from '../domain/IMatchRepository';
+import type { IMatchSnapshot } from '../domain/IMatchSnapshot';
+import type { IMatch } from '@shared/contracts/match/IMatch';
 
 const logger = createLogger('MATCH:Repository');
 
-export class MatchRepository implements IMatchRepository {
+export default class MatchRepository implements IMatchRepository {
     constructor(private prisma: PrismaClient) {}
     async create(snapshot: IMatchSnapshot, dryRun: boolean = false): Promise<IMatch> {
         const { roomSetting } = snapshot;

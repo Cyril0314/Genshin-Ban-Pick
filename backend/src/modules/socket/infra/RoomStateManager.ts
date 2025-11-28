@@ -1,9 +1,10 @@
 // backend/src/modules/socket/infra/RoomStateManager.ts
 
-import IRoomStateManager from '../domain/IRoomStateManager';
-import { IRoomUser } from '@shared/contracts/room/IRoomUser';
-import { IRoomState } from '@shared/contracts/room/IRoomState';
 import { createLogger } from '../../../utils/logger';
+
+import type { IRoomStateManager } from '../domain/IRoomStateManager';
+import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
+import type { IRoomState } from '@shared/contracts/room/IRoomState';
 
 const logger = createLogger('ROOM STATE MANAGER');
 

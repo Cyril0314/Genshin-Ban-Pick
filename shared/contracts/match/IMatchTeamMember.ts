@@ -1,5 +1,5 @@
-import { IMatchMemberUser } from "./IMatchMemberUser";
-import { IMatchTacticalUsage } from "./IMatchTacticalUsage";
+import type { IMatchMemberUser } from "./IMatchMemberUser";
+import type { IMatchTacticalUsage } from "./IMatchTacticalUsage";
 
 export interface IMatchTeamMember {
     id: number;

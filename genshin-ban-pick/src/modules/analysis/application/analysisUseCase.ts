@@ -5,6 +5,8 @@ import { fetchPreferenceDomain } from '../domain/fetchPreferenceDomain';
 import { fetchSynergyDomain } from '../domain/fetchSynergyDomain';
 import { fetchCharacterClustersDomain } from '../domain/useAnalysisDomain';
 
+import type { SynergyMode } from '@shared/contracts/analysis/value-types';
+
 export function analysisUseCase() {
     async function fetchTacticalUsages() {
         return await fetchTacticalUsagesDomain();
@@ -14,7 +16,7 @@ export function analysisUseCase() {
         return await fetchPreferenceDomain();
     }
 
-    async function fetchSynergy(payload: { mode: 'match' | 'team' | 'setup' }) {
+    async function fetchSynergy(payload: { mode: SynergyMode }) {
         return await fetchSynergyDomain(payload);
     }
 

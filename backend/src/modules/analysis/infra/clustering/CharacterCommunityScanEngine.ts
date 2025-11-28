@@ -1,4 +1,4 @@
-// backend/src/modules/analysis/application/clustering/ClusteringService.ts
+// backend/src/modules/analysis/infra/clustering/CharacterCommunityScanEngine.ts
 
 import { UndirectedGraph } from 'graphology';
 import { Matrix } from 'ml-matrix';
@@ -9,18 +9,20 @@ import betweenness from 'graphology-metrics/centrality/betweenness';
 import modularity from 'graphology-metrics/graph/modularity';
 import louvain from 'graphology-communities-louvain';
 
-import { SynergyNormalizationService } from '../synergy/SynergyNormalizationService';
+import SynergyFeatureNormalizer from '../synergy/SynergyFeatureNormalizer';
 
-import { ProjectionService } from '../projection/ProjectionService';
-import { ICommunityScanResult } from './types/ICommunityScanResult';
-import { ISynergyMatrix } from '../synergy/types/ISynergyMatrix';
-import { IBridgeScoreResult } from './types/IBridgeScoreResult';
+import DimensionProjector from '../projection/DimensionProjector';
 
-export class ClusteringService {
+import type { ICommunityScanResult } from '../../domain/ICommunityScanResult';
+import type { ISynergyMatrix } from '@shared/contracts/analysis/ISynergyMatrix';
+import type { IBridgeScoreResult } from '@shared/contracts/analysis/IBridgeScoreResult';
+import type { IArchetypePoint } from '@shared/contracts/analysis/IArchetypePoint';
+
+export default class CharacterCommunityScanEngine {
     private rng: () => number;
     constructor(
-        private projectionService: ProjectionService,
-        private synergyNormalizationService: SynergyNormalizationService,
+        private dimensionProjector: DimensionProjector,
+        private synergyFeatureNormalizer: SynergyFeatureNormalizer,
         seed: number = 20251114,
     ) {
         this.rng = createSeededRandom(seed);
@@ -30,23 +32,23 @@ export class ClusteringService {
         const graph = await this.buildSynergyGraph(synergy, characterMap);
         const k = await this.findBestClusterCount(graph);
 
-        const { chars, matrix } = this.synergyNormalizationService.normalizeForClustering(synergy);
+        const { chars, matrix } = this.synergyFeatureNormalizer.normalizeForClustering(synergy);
         const clusterIds = this.clusterCharacters(matrix, k);
 
-        const projected = this.projectionService.projectCharacters2D(matrix, 2);
+        const projected = this.dimensionProjector.projectCharacters2D(matrix, 2);
 
         const archetypes = chars.map((c, i) => ({
             characterKey: c,
             clusterId: clusterIds[i],
         }));
 
-        const clusterMedoids = this.computeClusterMedoids(chars, clusterIds, projected);
+        const clusterMedoids: IArchetypePoint[] = this.computeClusterMedoids(chars, clusterIds, projected);
         const bridgeScores = this.computeBridgeScores(graph, chars, clusterIds, projected);
         return {
             archetypes,
-            matrix,
+            // matrix,
             projected,
-            clusterIds,
+            // clusterIds,
             clusterMedoids,
             bridgeScores,
         };
@@ -68,7 +70,7 @@ export class ClusteringService {
         return result.clusters;
     }
 
-    computeClusterMedoids(chars: string[], clusterIds: number[], pcaPoints: number[][]) {
+    computeClusterMedoids(chars: string[], clusterIds: number[], pcaPoints: number[][]): IArchetypePoint[] {
         const clusters: Record<number, number[]> = {};
 
         // 1) 分群
@@ -245,7 +247,7 @@ export class ClusteringService {
     ): Promise<UndirectedGraph> {
         const graph = new UndirectedGraph();
         // 確保 normalizationService 輸出的是 0-1 的標準化權重
-        const normalSynergy = this.synergyNormalizationService.normalizeForGraph(synergy, 'jaccard');
+        const normalSynergy = this.synergyFeatureNormalizer.normalizeForGraph(synergy, 'jaccard');
 
         const chars = Object.keys(synergy);
         chars.forEach((char) => graph.addNode(char, characterMap[char]));

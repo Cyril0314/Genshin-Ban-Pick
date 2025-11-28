@@ -1,7 +1,7 @@
 // backend/src/modules/room/domain/createRoomState.ts
 
-import { ITeam } from '@shared/contracts/team/ITeam';
-import { IRoomSetting } from '@shared/contracts/room/IRoomSetting';
+import type { ITeam } from '@shared/contracts/team/ITeam';
+import type { IRoomSetting } from '@shared/contracts/room/IRoomSetting';
 
 export function createRoomState(roomSetting: IRoomSetting) {
     return {

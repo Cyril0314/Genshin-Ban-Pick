@@ -1,6 +1,6 @@
-import { ICharacter } from "../character/ICharacter";
-import { IRandomMoveContext } from "./IRandomMoveContext";
-import { MoveSource, MoveType } from "./value-types";
+import type { ICharacter } from "../character/ICharacter";
+import type { IRandomMoveContext } from "./IRandomMoveContext";
+import type { MoveSource, MoveType } from "./value-types";
 
 export interface IMatchMove {
     id: number;

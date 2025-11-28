@@ -4,24 +4,25 @@ import { PrismaClient } from '@prisma/client/extension';
 
 import AnalysisController from './controller/analysis.controller';
 import AnalysisService from './application/analysis.service';
+import AnalysisRepository from './infra/AnalysisRepository';
 import createAnalysesRouter from './http/analyses.routes';
-import ICharacterRepository from '../character/domain/ICharacterRepository';
-import { SynergyNormalizationService } from './application/synergy/SynergyNormalizationService';
-import { SynergyService } from './application/synergy/SynergyService';
-import { ProjectionService } from './application/projection/ProjectionService';
-import { ClusteringService } from './application/clustering/ClusteringService';
+import CharacterSynergyCalculator from './infra/synergy/CharacterSynergyCalculator';
+import SynergyFeatureNormalizer from './infra/synergy/SynergyFeatureNormalizer';
+import DimensionProjector from './infra/projection/DimensionProjector';
+import CharacterCommunityScanEngine from './infra/clustering/CharacterCommunityScanEngine';
+
+import type { ICharacterRepository } from '../character/domain/ICharacterRepository';
 
 export function createAnalysisModule(prisma: PrismaClient, characterRepository: ICharacterRepository) {
-    const synergyNormalizationService = new SynergyNormalizationService();
-    const synergyService = new SynergyService(prisma);
-    const projectionService = new ProjectionService();
-    const clusteringService = new ClusteringService(projectionService, synergyNormalizationService);
+    const analysisRepository = new AnalysisRepository(prisma)
+    const synergyFeatureNormalizer = new SynergyFeatureNormalizer();
+    const characterSynergyCalculator = new CharacterSynergyCalculator();
+    const dimensionProjector = new DimensionProjector();
+    const characterCommunityScanEngine = new CharacterCommunityScanEngine(dimensionProjector, synergyFeatureNormalizer);
     const service = new AnalysisService(
-        prisma,
-        synergyNormalizationService,
-        synergyService,
-        clusteringService,
-        projectionService,
+        analysisRepository,
+        characterSynergyCalculator,
+        characterCommunityScanEngine,
         characterRepository,
     );
     const controller = new AnalysisController(service);

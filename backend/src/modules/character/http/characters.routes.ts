@@ -8,7 +8,7 @@ import CharacterController from '../controller/character.controller';
 
 const logger = createLogger('CHARACTER');
 
-export function createCharactersRouter(characterController: CharacterController) {
+export default function createCharactersRouter(characterController: CharacterController) {
     const router = express.Router();
     router.get('/', asyncHandler(characterController.fetchCharacters))
 

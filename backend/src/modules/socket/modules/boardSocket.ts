@@ -3,9 +3,10 @@
 import { Server, Socket } from 'socket.io';
 
 import { createLogger } from '../../../utils/logger';
-import IRoomStateManager from '../domain/IRoomStateManager';
-import { ICharacterRandomContext } from '@shared/contracts/character/ICharacterRandomContext';
-import { BoardImageMap } from '@shared/contracts/board/BoardImageMap';
+
+import type { IRoomStateManager } from '../domain/IRoomStateManager';
+import type { ICharacterRandomContext } from '@shared/contracts/character/ICharacterRandomContext';
+import type { BoardImageMap } from '@shared/contracts/board/BoardImageMap';
 
 const logger = createLogger('BOARD SOCKET');
 

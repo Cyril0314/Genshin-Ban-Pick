@@ -3,7 +3,8 @@
 import { Server, Socket } from 'socket.io';
 
 import { createLogger } from '../../../utils/logger';
-import IRoomStateManager from '../domain/IRoomStateManager';
+
+import type { IRoomStateManager } from '../domain/IRoomStateManager';
 
 const logger = createLogger('STEP Socket');
 

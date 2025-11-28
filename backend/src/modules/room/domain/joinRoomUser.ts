@@ -1,6 +1,6 @@
 // backend/src/modules/room/domain/joinRoomUser.ts
 
-import { IRoomUser } from '@shared/contracts/room/IRoomUser';
+import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 
 export function joinRoomUser(roomUsers: IRoomUser[], identity: { identityKey: string; nickname: string; socketId: string }) {
     const joinedUser: IRoomUser = {

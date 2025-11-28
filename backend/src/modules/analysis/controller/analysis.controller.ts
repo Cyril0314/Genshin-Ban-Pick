@@ -3,6 +3,8 @@
 import { Request, Response } from 'express';
 import AnalysisService from '../application/analysis.service';
 
+import type { SynergyMode } from '@shared/contracts/analysis/value-types';
+
 export default class AnalysisController {
     constructor(private analysisService: AnalysisService) {}
 
@@ -18,7 +20,7 @@ export default class AnalysisController {
 
     fetchSynergy = async (req: Request, res: Response) => {
         const { mode } = req.query;
-        const synergy = await this.analysisService.fetchSynergy(mode as 'team' | 'match' | 'setup');
+        const synergy = await this.analysisService.fetchSynergy(mode as SynergyMode);
         res.status(200).json(synergy);
     };
 

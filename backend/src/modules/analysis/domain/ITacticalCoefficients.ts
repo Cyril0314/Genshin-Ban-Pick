@@ -1,4 +1,4 @@
-// backend/src/modules/analysis/application/tactical/types/ITacticalCoefficients.ts
+// backend/src/modules/analysis/domain/ITacticalCoefficients.ts
 
 export interface ITacticalCoefficients {
     pick: IPickCoefficients;

@@ -3,9 +3,10 @@
 import { Server, Socket } from 'socket.io';
 
 import { createLogger } from '../../../utils/logger';
-import IRoomStateManager from '../domain/IRoomStateManager';
 import { syncTacticalCellImageMapStateOther } from './tacticalSocket';
-import { TeamMember } from '@shared/contracts/team/TeamMember';
+
+import type { TeamMember } from '@shared/contracts/team/TeamMember';
+import type { IRoomStateManager } from '../domain/IRoomStateManager';
 
 const logger = createLogger('TEAM SOCKET');
 

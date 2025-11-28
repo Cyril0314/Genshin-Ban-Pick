@@ -7,12 +7,14 @@ import { useEchartTheme } from '@/modules/shared/ui/composables/useEchartTheme';
 import { getCharacterDisplayName } from '@/modules/shared/domain/getCharacterDisplayName';
 import { analysisUseCase } from '../../application/analysisUseCase';
 
+import type { SynergyMode } from '@shared/contracts/analysis/value-types';
+
 export function useCharacterSynergyChart() {
     const designTokens = useDesignTokens();
     const { gridStyle, tooltipStyle, dataZoomStyle } = useEchartTheme();
     const { fetchSynergy } = analysisUseCase();
 
-    const scope = ref<'match' | 'team' | 'setup'>('setup');
+    const scope = ref<SynergyMode>('setup');
     const synergy = ref<Record<string, Record<string, number>> | null>(null);
 
     onMounted(async () => {

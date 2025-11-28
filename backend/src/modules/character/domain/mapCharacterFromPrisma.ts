@@ -2,8 +2,8 @@
 
 import { Character } from '@prisma/client';
 
-import { ICharacter } from '@shared/contracts/character/ICharacter';
 import { Rarity, Element, Weapon, ModelType, CharacterRole, Region, Wish } from '@shared/contracts/character/value-types';
+import type { ICharacter } from '@shared/contracts/character/ICharacter';
 
 export function mapCharacterFromPrisma(character: Character): ICharacter {
     return {

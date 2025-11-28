@@ -8,8 +8,8 @@ import { getCharacterDisplayName } from '@/modules/shared/domain/getCharacterDis
 import { analysisUseCase } from '../../application/analysisUseCase';
 
 import type { CallbackDataParams } from 'echarts/types/dist/shared';
-import type { ITacticalUsages } from '../../types/ITacticalUsages';
-import type { ICharacterClusters } from '../../types/ICharacterClusters';
+import type { ICharacterClusters } from '@shared/contracts/analysis/ICharacterClusters';
+import type { ICharacterTacticalUsage } from '@shared/contracts/analysis/ICharacterTacticalUsage';
 
 export function useCharacterClustersChart() {
     const designTokens = useDesignTokens();
@@ -18,7 +18,7 @@ export function useCharacterClustersChart() {
 
     // const clusterColors = ['#ff5964', '#526dff', '#6bf178', '#ffe74c', '#FF922B', '#65def1', '#df4be4ff', '#b1e022ff', '#e02248ff'];
     const clusterColors = ['#f2002b', '#f64021', '#f98016', '#fcc00b', '#ffff00', '#00cc66', '#496ddb', '#a010ff', '#ff1cc2'];
-    const tacticalUsages = ref<ITacticalUsages[] | null>(null);
+    const tacticalUsages = ref<ICharacterTacticalUsage[] | null>(null);
     const characterClusters = ref<ICharacterClusters | null>(null);
 
     const effectiveUsageMap = computed(() => Object.fromEntries((tacticalUsages.value ?? []).map((u) => [u.characterKey, u.effectiveUsage])));

@@ -1,6 +1,6 @@
 // backend/src/modules/auth/application/guest.service.ts
 
-import IGuestRepository from '../domain/IGuestRepository';
+import type { IGuestRepository } from '../domain/IGuestRepository';
 
 export default class GuestService {
     constructor(private guestRepository: IGuestRepository) {}

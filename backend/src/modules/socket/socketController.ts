@@ -3,7 +3,6 @@
 import { Server, Socket } from 'socket.io';
 
 import { createLogger } from '../../utils/logger';
-import IRoomStateManager from './domain/IRoomStateManager';
 import { registerChatSocket } from './modules/chatSocket';
 import { registerBoardSocket } from './modules/boardSocket';
 import { registerRoomSocket, handleRoomUserLeave } from './modules/roomSocket';
@@ -11,6 +10,8 @@ import { registerStepSocket } from './modules/stepSocket';
 import { registerTeamSocket } from './modules/teamSocket';
 import { registerTacticalSocket } from './modules/tacticalSocket';
 import { RoomStateRepository, RoomUserService } from '../room/index';
+
+import type { IRoomStateManager } from './domain/IRoomStateManager';
 
 const logger = createLogger('SOCKET CONTROLLER');
 
