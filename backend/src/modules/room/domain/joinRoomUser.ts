@@ -2,28 +2,27 @@
 
 import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 
-export function joinRoomUser(roomUsers: IRoomUser[], identity: { identityKey: string; nickname: string; socketId: string }) {
+export function joinRoomUser(roomUsers: IRoomUser[], identityKey: string, nickname: string, socketId: string) {
     const joinedUser: IRoomUser = {
-        id: identity.socketId,
-        identityKey: identity.identityKey,
-        nickname: identity.nickname,
+        id: socketId,
+        identityKey: identityKey,
+        nickname: nickname,
         timestamp: Date.now(),
     };
 
-    const index = roomUsers.findIndex((u) => u.identityKey === identity.identityKey);
+    const index = roomUsers.findIndex((u) => u.identityKey === identityKey);
 
     let newRoomUsers: IRoomUser[];
 
     if (index >= 0) {
         // 重連 → 替換舊值
-        newRoomUsers = roomUsers.map((u, i) => (i === index ? { ...u, id: identity.socketId, timestamp: Date.now() } : u));
-        return { joinedUser: newRoomUsers[index], isReconnect: true, roomUsers: newRoomUsers };
+        newRoomUsers = roomUsers.map((u, i) => (i === index ? { ...u, id: socketId, timestamp: Date.now() } : u));
+        return { joinedUser: null, roomUsers: newRoomUsers };
     } else {
         newRoomUsers = [...roomUsers, joinedUser];
-        return { 
+        return {
             joinedUser,
-            isReconnect: false, 
-            roomUsers: newRoomUsers 
+            roomUsers: newRoomUsers,
         };
     }
 }

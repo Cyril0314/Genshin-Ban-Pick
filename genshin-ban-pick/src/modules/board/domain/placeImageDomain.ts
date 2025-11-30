@@ -1,10 +1,12 @@
 // src/modules/board/domain/placeImageDomain.ts
 
+import type { BoardImageMap } from "@shared/contracts/board/BoardImageMap";
+
 export function placeImageDomain(
-    boardImageMap: Record<number, string>,
+    boardImageMap: BoardImageMap,
     zoneId: number,
     imgId: string
-): Record<number, string> {
+): BoardImageMap {
     return {
         ...boardImageMap,
         [zoneId]: imgId,

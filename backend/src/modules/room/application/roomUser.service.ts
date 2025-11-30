@@ -1,8 +1,6 @@
 // src/backend/modules/room/application/roomUser.service.ts
 
-import { DataNotFoundError } from '../../../errors/AppError';
 import { createLogger } from '../../../utils/logger';
-import { findUserTeamSlot } from '../domain/findUserTeamSlot';
 import { joinRoomUser } from '../domain/joinRoomUser';
 import { leaveRoomUser } from '../domain/leaveRoomUser';
 
@@ -13,17 +11,13 @@ const logger = createLogger('ROOM_USER');
 export default class RoomUserService {
     constructor(private roomStateRepository: IRoomStateRepository) {}
 
-    join(roomId: string, identity: { identityKey: string; nickname: string; socketId: string }) {
-        const roomState = this.roomStateRepository.findById(roomId);
-        if (!roomState) throw new DataNotFoundError();
-
-        const {joinedUser, isReconnect, roomUsers } = joinRoomUser(roomState.users, identity)
+    join(roomId: string, { identityKey, nickname, socketId }: { identityKey: string; nickname: string; socketId: string }) {
+        const prevRoomUsers = this.roomStateRepository.findRoomUsersById(roomId);
+        const { joinedUser, roomUsers } = joinRoomUser(prevRoomUsers, identityKey, nickname, socketId)
 
         this.roomStateRepository.updateRoomUsersById(roomId, roomUsers)
 
-        const userTeamSlot = findUserTeamSlot(roomState.teamMembersMap, identity.identityKey)
-
-        return { joinedUser, isReconnect, roomUsers, userTeamSlot }
+        return { joinedUser, roomUsers }
     }
 
     leave(roomId: string, identityKey: string) {

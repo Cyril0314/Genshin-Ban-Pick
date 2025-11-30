@@ -1,11 +1,9 @@
 // src/modules/team/application/teamUseCase.ts
 
-
-import { addTeamMemberDomain } from '../domain/addTeamMemberDomain';
-import { removeTeamMemberDomain } from '../domain/removeTeamMemberDomain';
 import { handleMemberInputDomain } from '../domain/handleMemberInputDomian';
 import { handleMemberDropDomain } from '../domain/handleMemberDropDomain';
-import { handleMemberRestoreDomain } from '../domain/handleMemberRestoreDomain';
+import { handleMemberLeaveDomain } from '../domain/handleMemberLeaveDomain';
+import { handleMemberJoinDomain } from '../domain/handleMemberJoinDomain';
 import { useTeamInfoStore } from '../store/teamInfoStore';
 
 import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
@@ -20,50 +18,44 @@ export function teamUseCase() {
         teamInfoStore.initTeams(teams);
     }
 
-    function addTeamMember(teamSlot: number, memberSlot: number, member: TeamMember) {
-        const prevMap = teamInfoStore.teamMembersMap[teamSlot];
-        const nextMap = addTeamMemberDomain(prevMap, memberSlot, member);
-        teamInfoStore.setTeamMemberMap(teamSlot, nextMap);
-    }
-
-    function removeTeamMember(teamSlot: number, memberSlot: number) {
-        const prevMap = teamInfoStore.teamMembersMap[teamSlot];
-        const nextMap = removeTeamMemberDomain(prevMap, memberSlot);
-        teamInfoStore.setTeamMemberMap(teamSlot, nextMap);
-    }
-
     function setTeamMembersMap(teamMembersMap: TeamMembersMap) {
         teamInfoStore.setTeamMembersMap(teamMembersMap);
     }
 
     function handleMemberInput(name: string, teamSlot: number, memberSlot: number) {
         const prevMap = teamInfoStore.teamMembersMap;
-        const { teamMembersMap, teamMember } = handleMemberInputDomain(prevMap, teamSlot, name, memberSlot);
-        teamInfoStore.setTeamMembersMap(teamMembersMap);
+        const teamMember = handleMemberInputDomain(prevMap, teamSlot, name);
+        if (!teamMember) return null
+        handleMemberJoin(teamSlot, memberSlot, teamMember)
         return teamMember
     }
 
     function handleMemberDrop(roomUsers: IRoomUser[], identityKey: string, teamSlot: number, memberSlot: number) {
         const prevMap = teamInfoStore.teamMembersMap;
-        const { teamMembersMap, teamMember } = handleMemberDropDomain(prevMap, roomUsers, identityKey, teamSlot, memberSlot);
-        teamInfoStore.setTeamMembersMap(teamMembersMap);
-
+        const teamMember = handleMemberDropDomain(prevMap, roomUsers, identityKey, teamSlot);
+        if (!teamMember) return null
+        handleMemberJoin(teamSlot, memberSlot, teamMember)
         return teamMember
     }
 
-    function handleMemberRestore(teamSlot: number, memberSlot: number) {
+    function handleMemberLeave(teamSlot: number, memberSlot: number) {
         const prevMap = teamInfoStore.teamMembersMap;
-        const nextMap = handleMemberRestoreDomain(prevMap, teamSlot, memberSlot);
+        const nextMap = handleMemberLeaveDomain(prevMap, teamSlot, memberSlot);
+        teamInfoStore.setTeamMembersMap(nextMap);
+    }
+
+    function handleMemberJoin(teamSlot: number, memberSlot: number, teamMember: TeamMember) {
+        const prevMap = teamInfoStore.teamMembersMap;
+        const nextMap = handleMemberJoinDomain(prevMap, teamSlot, memberSlot, teamMember);
         teamInfoStore.setTeamMembersMap(nextMap);
     }
     
     return {
         initTeams,
-        addTeamMember,
-        removeTeamMember,
         setTeamMembersMap,
         handleMemberInput,
         handleMemberDrop,
-        handleMemberRestore,
+        handleMemberJoin,
+        handleMemberLeave,
     };
 }

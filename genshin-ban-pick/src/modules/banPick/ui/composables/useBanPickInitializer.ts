@@ -1,16 +1,18 @@
 // src/modules/banPick/ui/composables/useBanPickInitializer.ts
 
-import { ref, shallowRef, onMounted, onUnmounted } from 'vue';
+import { ref, shallowRef, onMounted, onUnmounted, inject } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import { roomUseCase, useRoomUserSync } from '@/modules/room';
-import { characterUseCase, useCharacterStore } from '@/modules/character';
-import { boardUseCase, matchStepUseCase } from '@/modules/board';
-import { teamUseCase } from '@/modules/team';
+import { useCharacterStore } from '@/modules/character';
+import { boardUseCase, matchStepUseCase, useBoardSync, useMatchStepSync } from '@/modules/board';
+import { teamUseCase, useTeamInfoSync } from '@/modules/team';
 import { tacticalUseCase } from '@/modules/tactical';
 
 import type { IRoomSetting } from '@shared/contracts/room/IRoomSetting.ts';
 import type { CharacterFilterKey } from '@shared/contracts/character/value-types';
+import { useChatSync } from '@/modules/chat';
+import type CharacterUseCase from '@/modules/character/application/CharacterUseCase';
 
 export function useBanPickInitializer(roomId: string) {
     // --- states ---
@@ -28,15 +30,21 @@ export function useBanPickInitializer(roomId: string) {
         wish: [],
     });
 
+    const characterUseCase = inject('character-use-case') as CharacterUseCase
+
     // --- use cases ---
     const { fetchRoomSetting } = roomUseCase();
-    const { fetchCharacterMap } = characterUseCase();
+    const { fetchCharacterMap } = characterUseCase;
     const { initZoneMetaTable } = boardUseCase();
     const { initTeams } = teamUseCase();
     const { initMatchSteps } = matchStepUseCase();
     const { initTeamTacticalCellImageMap } = tacticalUseCase();
 
     const { joinRoom, leaveRoom } = useRoomUserSync();
+    const { fetchBoardImageMapState } = useBoardSync();
+    const { fetchMatchStepState } = useMatchStepSync();
+    const { fetchChatState } = useChatSync();
+    const { fetchMembersMapState } = useTeamInfoSync();
 
     const characterStore = useCharacterStore();
     const { characterMap } = storeToRefs(characterStore);
@@ -62,7 +70,13 @@ export function useBanPickInitializer(roomId: string) {
             filteredCharacterKeys.value = Object.keys(characterMap.value);
 
             // 5. 加入 socket 房間
-            joinRoom(roomId);
+            joinRoom(roomId).then(() => {
+                console.debug('[BAN PICK INITEALIZER] Joined room', roomId);
+                fetchBoardImageMapState();
+                fetchMatchStepState();
+                fetchChatState();
+                fetchMembersMapState();
+            });
         } catch (error) {
             console.error('[BAN PICK INITEALIZER] Fetched character and room setting failed:', error);
         } finally {

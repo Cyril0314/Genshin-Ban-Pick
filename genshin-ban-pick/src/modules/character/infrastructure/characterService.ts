@@ -1,17 +1,11 @@
-// src/modules/character/infrastructure/characterService.ts
-
-import api from '@/app/infrastructure/http/httpClient';
+// src/modules/character/infrastructure/CharacterService.ts
 
 import type { HttpClient } from '@/app/infrastructure/http/httpClient';
 
-export function createCharacterService(client: HttpClient = api) {
-    async function getCharacters() {
-        return client.get('/characters');
+export default class CharacterService {
+    constructor(private client: HttpClient) {}
+
+    async getCharacters() {
+        return this.client.get('/characters');
     }
-
-    return {
-        getCharacters,
-    };
 }
-
-export const characterService = createCharacterService();

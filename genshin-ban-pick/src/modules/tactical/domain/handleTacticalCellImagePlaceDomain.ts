@@ -10,7 +10,7 @@ export function handleTacticalCellImagePlaceDomain(tacticalCellImageMap: Tactica
     let nextMap = { ...tacticalCellImageMap };
 
     const previousCellId = findCellIdByImageIdDomain(nextMap, imgId);
-    const displacedImgId = nextMap[cellId];
+    const displacedImgId = nextMap[cellId] ?? null;
 
     // 移除原本出現的位置
     if (previousCellId !== null) {
@@ -18,12 +18,12 @@ export function handleTacticalCellImagePlaceDomain(tacticalCellImageMap: Tactica
     }
 
     // 移除被擠掉的圖片
-    if (displacedImgId !== undefined) {
+    if (displacedImgId !== null) {
         nextMap = removeCellImageDomain(nextMap, cellId);
     }
 
     // 若兩邊都有圖片且 cell 不相同 → 交換
-    if (previousCellId !== null && displacedImgId !== undefined && previousCellId !== cellId) {
+    if (previousCellId !== null && displacedImgId !== null && previousCellId !== cellId) {
         nextMap = placeCellImageDomain(nextMap, previousCellId, displacedImgId);
     }
 

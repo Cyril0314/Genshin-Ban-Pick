@@ -1,21 +1,20 @@
-// src/modules/character/application/characterUseCase.ts
+// src/modules/character/application/CharacterUseCase.ts
 
-import { fetchCharacterMapDomain } from '../domain/fetchCharacterMapDomain';
 import { useCharacterStore } from '../store/characterStore';
 
-export function characterUseCase() {
-    const characterStore = useCharacterStore();
+import type CharacterRepository from '../infrastructure/CharacterRepository';
 
-    async function fetchCharacterMap() {
+export default class CharacterUseCase {
+    constructor(private characterStore: ReturnType<typeof useCharacterStore>, private characterRepository: CharacterRepository) {}
+
+    async fetchCharacterMap() {
+        const characterStore = this.characterStore;
+
         if (characterStore.isInitialized) {
             return characterStore.characterMap;
         }
-        const characterMap = await fetchCharacterMapDomain();
+        const characterMap = await this.characterRepository.fetchCharacterMap();
         characterStore.setCharacterMap(characterMap);
         return characterMap;
-    }
-
-    return {
-        fetchCharacterMap,
     }
 }

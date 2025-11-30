@@ -3,33 +3,21 @@
 import { Server, Socket } from 'socket.io';
 
 import { createLogger } from '../../../utils/logger';
-
-import type { IRoomStateManager } from '../domain/IRoomStateManager';
+import { StepEvent } from '@shared/contracts/board/value-types';
+import { MatchStepService } from '../../board';
 
 const logger = createLogger('STEP Socket');
 
-enum StepEvent {
-    AdvanceRequest = 'step.advance.request',
-    RollbackRequest = 'step.rollback.request',
-    ResetRequest = 'step.reset.request',
-
-    StateSyncSelf = 'step.state.sync.self',
-    StateSyncAll = 'step.state.sync.all',
-}
-
 type RoomId = string;
 
-export function registerStepSocket(io: Server, socket: Socket, roomStateManager: IRoomStateManager) {
+export function registerStepSocket(io: Server, socket: Socket, matchStepService: MatchStepService) {
     socket.on(`${StepEvent.AdvanceRequest}`, () => {
         logger.info(`Sent ${StepEvent.AdvanceRequest}`);
         const roomId = (socket as any).roomId;
         if (!roomId) return;
 
-        const roomState = roomStateManager.get(roomId);
-        if (!roomState) return;
-
-        roomState.stepIndex = roomState.stepIndex + 1;
-        syncStepStateAll(io, roomId, roomStateManager);
+        matchStepService.advance(roomId);
+        syncStepStateAll(roomId);
     });
 
     socket.on(`${StepEvent.RollbackRequest}`, () => {
@@ -37,11 +25,8 @@ export function registerStepSocket(io: Server, socket: Socket, roomStateManager:
         const roomId = (socket as any).roomId;
         if (!roomId) return;
 
-        const roomState = roomStateManager.get(roomId);
-        if (!roomState) return;
-
-        roomState.stepIndex = roomState.stepIndex - 1;
-        syncStepStateAll(io, roomId, roomStateManager);
+        matchStepService.rollback(roomId);
+        syncStepStateAll(roomId);
     });
 
     socket.on(`${StepEvent.ResetRequest}`, () => {
@@ -49,22 +34,23 @@ export function registerStepSocket(io: Server, socket: Socket, roomStateManager:
         const roomId = (socket as any).roomId;
         if (!roomId) return;
 
-        const roomState = roomStateManager.get(roomId);
-        if (!roomState) return;
-
-        roomState.stepIndex = 0;
-        syncStepStateAll(io, roomId, roomStateManager);
+        matchStepService.reset(roomId);
+        syncStepStateAll(roomId);
     });
-}
 
-export function syncStepStateSelf(socket: Socket, roomId: RoomId, roomStateManager: IRoomStateManager) {
-    const stepIndex = roomStateManager.getStepIndex(roomId);
-    socket.emit(`${StepEvent.StateSyncSelf}`, stepIndex);
-    logger.info(`Sent ${StepEvent.StateSyncSelf} stepIndex: ${stepIndex}`);
-}
+    socket.on(`${StepEvent.StateRequest}`, () => {
+        logger.info(`Sent ${StepEvent.StateRequest}`);
+        const roomId = (socket as any).roomId;
+        if (!roomId) return;
 
-export function syncStepStateAll(io: Server, roomId: RoomId, roomStateManager: IRoomStateManager) {
-    const stepIndex = roomStateManager.getStepIndex(roomId);
-    io.to(roomId).emit(`${StepEvent.StateSyncAll}`, stepIndex);
-    logger.info(`Sent ${StepEvent.StateSyncAll} stepIndex: ${stepIndex}`);
+        const stepIndex = matchStepService.getStepIndex(roomId);
+        socket.emit(`${StepEvent.StateSyncSelf}`, stepIndex);
+        logger.info(`Sent ${StepEvent.StateSyncSelf} stepIndex: ${stepIndex}`);
+    });
+
+    function syncStepStateAll(roomId: RoomId) {
+        const stepIndex = matchStepService.getStepIndex(roomId);
+        io.to(roomId).emit(`${StepEvent.StateSyncAll}`, stepIndex);
+        logger.info(`Sent ${StepEvent.StateSyncAll} stepIndex: ${stepIndex}`);
+    }
 }

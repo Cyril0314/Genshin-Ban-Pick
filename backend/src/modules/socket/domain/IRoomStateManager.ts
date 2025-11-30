@@ -14,12 +14,18 @@ export interface IRoomStateManager {
   get(roomId: string): IRoomState | null;
   remove(roomId: string): void;
 
-  getUsers(roomId: string): IRoomUser[];
+  getUsers(roomId: string): IRoomUser[] | null;
   setUsers(roomId: string, users: IRoomUser[]): void;
-  getChatMessages(roomId: string): IChatMessage[];
-  getBoardImageMap(roomId: string): BoardImageMap;
-  getCharacterRandomContextMap(roomId: string): CharacterRandomContextMap;
-  getTeamMembersMap(roomId: string): TeamMembersMap;
-  getStepIndex(roomId: string): number;
-  getTeamTacticalCellImageMap(roomId: string): TeamTacticalCellImageMap;
+  getChatMessages(roomId: string): IChatMessage[] | null;
+  setChatMessages(roomId: string, chatMessages: IChatMessage[]): void;
+  getBoardImageMap(roomId: string): BoardImageMap | null;
+  setBoardImageMap(roomId: string, boardImageMap: BoardImageMap): void;
+  getCharacterRandomContextMap(roomId: string): CharacterRandomContextMap | null;
+  setCharacterRandomContextMap(roomId: string, characterRandomContextMap: CharacterRandomContextMap): void;
+  getTeamMembersMap(roomId: string): TeamMembersMap | null;
+  setTeamMembersMap(roomId: string, teamMembersMap: TeamMembersMap): void
+  getStepIndex(roomId: string): number | null;
+  setStepIndex(roomId: string, stepIndex: number): void;
+  getTeamTacticalCellImageMap(roomId: string): TeamTacticalCellImageMap | null;
+  setTeamTacticalCellImageMap(roomId: string, teamTacticalCellImageMap: TeamTacticalCellImageMap): void;
 }

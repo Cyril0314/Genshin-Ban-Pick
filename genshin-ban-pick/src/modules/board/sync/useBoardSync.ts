@@ -5,21 +5,9 @@ import { useSocketStore } from '@/app/stores/socketStore';
 import { useMatchStepSync } from './useMatchStepSync';
 import { useTacticalBoardSync } from '@/modules/tactical';
 import { useMatchStepStore } from '../store/matchStepStore';
+import { BoardEvent } from '@shared/contracts/board/value-types';
 
 import type { ICharacterRandomContext } from '@shared/contracts/character/ICharacterRandomContext';
-
-enum BoardEvent {
-    ImageDropRequest = 'board.image.drop.request',
-    ImageDropBroadcast = 'board.image.drop.broadcast',
-
-    ImageRestoreRequest = 'board.image.restore.request',
-    ImageRestoreBroadcast = 'board.image.restore.broadcast',
-
-    ImageMapResetRequest = 'board.image_map.reset.request',
-    ImageMapResetBroadcast = 'board.image_map.reset.broadcast',
-
-    ImageMapStateSyncSelf = 'board.image_map.state.sync.self',
-}
 
 export function useBoardSync() {
     const socket = useSocketStore().getSocket();
@@ -30,10 +18,15 @@ export function useBoardSync() {
     const matchStepStore = useMatchStepStore();
 
     function registerBoardSync() {
-        socket.on(`${BoardEvent.ImageMapStateSyncSelf}`, handleBoradImageMapStateSync);
+        socket.on(`${BoardEvent.ImageMapStateSyncSelf}`, handleBoardImageMapStateSync);
         socket.on(`${BoardEvent.ImageDropBroadcast}`, handleBoardImageDropBroadcast);
         socket.on(`${BoardEvent.ImageRestoreBroadcast}`, handleBoardImageRestoreBroadcast);
         socket.on(`${BoardEvent.ImageMapResetBroadcast}`, handleBoardImageMapResetBroadcast);
+    }
+
+    function fetchBoardImageMapState() {
+        console.debug('[BOARD SYNC] Sent board image map state request');
+        socket.emit(`${BoardEvent.ImageMapStateRequest}`);
     }
 
     function boardImageDrop({ zoneId, imgId, randomContext }: { zoneId: number; imgId: string; randomContext?: ICharacterRandomContext }) {
@@ -82,13 +75,14 @@ export function useBoardSync() {
         handleAllTeamResetBoard();
     }
 
-    function handleBoradImageMapStateSync(imageMap: Record<number, string>) {
+    function handleBoardImageMapStateSync(imageMap: Record<number, string>) {
         console.debug('[BOARD SYNC] Handle board image map state sync', imageMap);
         setBoardImageMap(imageMap);
     }
 
     return {
         registerBoardSync,
+        fetchBoardImageMapState,
         boardImageDrop,
         boardImageRestore,
         boardImageMapReset,

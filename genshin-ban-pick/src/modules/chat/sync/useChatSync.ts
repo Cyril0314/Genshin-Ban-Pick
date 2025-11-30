@@ -2,16 +2,9 @@
 import { useSocketStore } from '@/app/stores/socketStore';
 import { useAuthStore } from '@/modules/auth';
 import { chatUseCase } from '../application/chatUseCase';
+import { ChatEvent } from '@shared/contracts/chat/value-types';
 
 import type { IChatMessage } from '@shared/contracts/chat/IChatMessage';
-
-enum ChatEvent {
-    MessageSendRequest = 'chat.message.send.request',
-    MessageSendBroadcast = 'chat.message.send.broadcast',
-
-    MessagesStateRequest = 'chat.messages.state.request',
-    MessagesStateSyncSelf = 'chat.messages.state.sync.self',
-}
 
 export function useChatSync() {
     const socket = useSocketStore().getSocket();
@@ -21,6 +14,11 @@ export function useChatSync() {
     function registerChatSync() {
         socket.on(`${ChatEvent.MessagesStateSyncSelf}`, handleChatMessagesStateSync);
         socket.on(`${ChatEvent.MessageSendBroadcast}`, handleChatMessageSendBroadcast);
+    }
+
+    function fetchChatState() {
+        console.debug('[Chat] Sent chat state request');
+        socket.emit(`${ChatEvent.MessagesStateRequest}`);
     }
 
     function sendMessage(messageText: string) {
@@ -42,6 +40,7 @@ export function useChatSync() {
 
     return {
         registerChatSync,
+        fetchChatState,
         sendMessage,
     };
 }

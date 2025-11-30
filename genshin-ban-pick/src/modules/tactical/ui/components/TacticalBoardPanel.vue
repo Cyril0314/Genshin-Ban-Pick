@@ -1,7 +1,7 @@
 <!-- src/modules/tactical/ui/components/TacticalBoardPanel.vue -->
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia';
 
 import TacticalBoard from './TacticalBoard.vue'
@@ -9,14 +9,27 @@ import TacticalPool from './TacticalPool.vue'
 import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
 import { useTeamInfoStore } from '@/modules/team';
 import { useTacticalBoardSync } from '../../sync/useTacticalBoardSync';
+import { useMyTeamInfo } from '@/modules/shared/ui/composables/useMyTeamInfo';
 
 const teamInfoStore = useTeamInfoStore();
 const { teamInfoPair } = storeToRefs(teamInfoStore);
 
 const tacticalBoardSync = useTacticalBoardSync();
-const { getUserTeamSlot, tacticalCellImagePlace, tacticalCellImageRemove } = tacticalBoardSync
+const { fetchCellImageMapState, tacticalCellImagePlace, tacticalCellImageRemove } = tacticalBoardSync
 
-const currentTeamSlot = ref<number>(getUserTeamSlot() ?? teamInfoPair.value!.left.slot)
+const { myTeamSlot } = useMyTeamInfo()
+
+const currentTeamSlot = ref<number>(myTeamSlot.value ?? teamInfoPair.value!.left.slot)
+
+onMounted(async () => {
+  if (myTeamSlot.value === null) return;
+  fetchCellImageMapState(myTeamSlot.value);
+});
+
+watch(myTeamSlot, (newSlot) => {
+  if (newSlot === null) return
+  fetchCellImageMapState(newSlot);
+});
 
 function handleImageDrop({ teamSlot, cellId, imgId }: { teamSlot: number, cellId: number; imgId: string }) {
   console.debug(`[TATICAL BOARD PANEL] Handle image drop`, { teamSlot, cellId, imgId });
