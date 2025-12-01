@@ -8,7 +8,7 @@ import { useDesignTokens } from '@/modules/shared/ui/composables/useDesignTokens
 import { useEchartTheme } from '@/modules/shared/ui/composables/useEchartTheme';
 import { ZoneType } from '@shared/contracts/board/value-types';
 import { getCharacterDisplayName } from '@/modules/shared/domain/getCharacterDisplayName';
-import { analysisUseCase } from '../../application/analysisUseCase';
+import { useAnalysisUseCase } from './useAnalysisUseCase';
 
 import type { ICharacterTacticalUsage } from '@shared/contracts/analysis/ICharacterTacticalUsage';
 import type { CallbackDataParams } from 'echarts/types/dist/shared';
@@ -16,7 +16,7 @@ import type { CallbackDataParams } from 'echarts/types/dist/shared';
 export function useCharacterTacticalUsageCompositionChart(topN = 120) {
     const designTokens = useDesignTokens();
     const { gridStyle, xAxisStyle, yAxisStyle, legendStyle, tooltipStyle, dataZoomStyle } = useEchartTheme();
-    const { fetchTacticalUsages } = analysisUseCase();
+    const analysisUseCase = useAnalysisUseCase();
     const characterStore = useCharacterStore();
     const { characterMap } = storeToRefs(characterStore);
 
@@ -26,7 +26,7 @@ export function useCharacterTacticalUsageCompositionChart(topN = 120) {
     const data = ref<ICharacterTacticalUsage[] | null>(null);
 
     onMounted(async () => {
-        data.value = await fetchTacticalUsages();
+        data.value = await analysisUseCase.fetchTacticalUsages();
     });
 
     const option = computed(() => {

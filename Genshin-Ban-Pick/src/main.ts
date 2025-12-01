@@ -13,9 +13,14 @@ import router from './router';
 import { registerHttpClient } from './app/bootstrap/registerHttpClient';
 import api from './app/infrastructure/http/httpClient';
 import { registerAuthDependencies, useAuthStore } from './modules/auth';
-import { useCharacterStore, registerCharacterDependencies } from './modules/character';
-import { useBoardImageStore, registerBoardDependencies } from './modules/board';
-import { useChatStore, registerChatDependencies } from './modules/chat';
+import { registerCharacterDependencies, useCharacterStore } from './modules/character';
+import { registerBoardDependencies, useBoardImageStore, useMatchStepStore } from './modules/board';
+import { registerChatDependencies, useChatStore} from './modules/chat';
+import { registerRoomDependencies, useRoomUserStore } from './modules/room';
+import { registerMatchDependencies } from './modules/match';
+import { registerTeamDependencies, useTeamInfoStore } from './modules/team';
+import { registerTacticalDependencies, useTacticalBoardStore } from './modules/tactical';
+import { registerAnalysisDependencies } from './modules/analysis';
 
 const app = createApp(App);
 const pinia = createPinia();
@@ -28,13 +33,22 @@ app.use(naive);
 
 const authStore = useAuthStore(pinia);
 const characterStore = useCharacterStore(pinia);
+const roomUserStore = useRoomUserStore(pinia);
 const boardImageStore = useBoardImageStore(pinia);
+const matchStepStore = useMatchStepStore(pinia);
+const teamInfoStore = useTeamInfoStore(pinia);
+const tacticalBoardStore = useTacticalBoardStore(pinia);
 const chatStore = useChatStore(pinia);
 
 registerHttpClient(authStore);
 registerAuthDependencies(app, httpClient, authStore);
 registerCharacterDependencies(app, httpClient, characterStore);
-registerBoardDependencies(app, boardImageStore);
+registerMatchDependencies(app, httpClient)
+registerAnalysisDependencies(app, httpClient)
+registerRoomDependencies(app, httpClient, roomUserStore);
+registerBoardDependencies(app, boardImageStore, matchStepStore);
+registerTeamDependencies(app, teamInfoStore);
+registerTacticalDependencies(app, tacticalBoardStore)
 registerChatDependencies(app, chatStore);
 
 app.mount('#app');

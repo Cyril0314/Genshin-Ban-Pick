@@ -2,7 +2,8 @@
 
 export * from './application/BoardUseCase'
 export * from './ui/composables/useBoardUseCase'
-export * from './application/matchStepUseCase'
+export * from './application/MatchStepUseCase'
+export * from './ui/composables/useMatchStepUseCase'
 export * from './application/randomPullUseCase'
 export * from './sync/useBoardSync';
 export * from './sync/useMatchStepSync';

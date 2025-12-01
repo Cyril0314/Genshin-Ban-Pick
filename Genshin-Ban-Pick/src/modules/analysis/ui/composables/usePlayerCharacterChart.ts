@@ -5,20 +5,20 @@ import { computed, onMounted, ref } from 'vue';
 import { useEchartTheme } from '@/modules/shared/ui/composables/useEchartTheme';
 import { useDesignTokens } from '@/modules/shared/ui/composables/useDesignTokens';
 import { getCharacterDisplayName } from '@/modules/shared/domain/getCharacterDisplayName';
-import { analysisUseCase } from '../../application/analysisUseCase';
+import { useAnalysisUseCase } from './useAnalysisUseCase';
 
 import type { CallbackDataParams } from 'echarts/types/dist/shared';
-import type { IPreference } from '../../types/IPreference';
+import type { IPreference } from '@shared/contracts/analysis/IPreference';
 
 export function usePlayerCharacterChart() {
     const designTokens = useDesignTokens();
     const { gridStyle, tooltipStyle, dataZoomStyle } = useEchartTheme();
-    const { fetchPreference } = analysisUseCase();
+    const analysisUseCase = useAnalysisUseCase();
 
     const preference = ref<IPreference[] | null>(null);
 
     onMounted(async () => {
-        preference.value = await fetchPreference();
+        preference.value = await analysisUseCase.fetchPreference();
     });
 
     const option = computed(() => {

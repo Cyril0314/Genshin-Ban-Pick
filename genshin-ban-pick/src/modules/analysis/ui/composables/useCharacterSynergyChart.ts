@@ -5,24 +5,24 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { useDesignTokens } from '@/modules/shared/ui/composables/useDesignTokens';
 import { useEchartTheme } from '@/modules/shared/ui/composables/useEchartTheme';
 import { getCharacterDisplayName } from '@/modules/shared/domain/getCharacterDisplayName';
-import { analysisUseCase } from '../../application/analysisUseCase';
+import { useAnalysisUseCase } from './useAnalysisUseCase';
 
 import type { SynergyMode } from '@shared/contracts/analysis/value-types';
 
 export function useCharacterSynergyChart() {
     const designTokens = useDesignTokens();
     const { gridStyle, tooltipStyle, dataZoomStyle } = useEchartTheme();
-    const { fetchSynergy } = analysisUseCase();
+    const analysisUseCase = useAnalysisUseCase();
 
     const scope = ref<SynergyMode>('setup');
     const synergy = ref<Record<string, Record<string, number>> | null>(null);
 
     onMounted(async () => {
-        synergy.value = await fetchSynergy({ mode: scope.value });
+        synergy.value = await analysisUseCase.fetchSynergy({ mode: scope.value });
     });
 
     watch(scope, async () => {
-        synergy.value = await fetchSynergy({ mode: scope.value });
+        synergy.value = await analysisUseCase.fetchSynergy({ mode: scope.value });
     });
 
     const option = computed(() => {

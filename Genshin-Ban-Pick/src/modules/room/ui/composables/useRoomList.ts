@@ -2,7 +2,7 @@
 
 import { ref } from "vue";
 
-import { roomUseCase } from "../../application/roomUseCase";
+import { useRoomUseCase } from "./useRoomUseCase";
 
 import type { IRoomState } from '@shared/contracts/room/IRoomState';
 
@@ -11,12 +11,12 @@ export function useRoomList() {
     const isLoading = ref(true);
     const errorMessage = ref('');
 
-    const { fetchRooms } = roomUseCase();
+    const roomUseCase = useRoomUseCase();
 
     async function loadRooms() {
         isLoading.value = true;
         try {
-            rooms.value = await fetchRooms();
+            rooms.value = await roomUseCase.fetchRooms();
             errorMessage.value = '';
         } catch (error: any) {
             errorMessage.value = error?.message ?? '無法載入房間列表';

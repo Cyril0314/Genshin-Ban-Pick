@@ -1,9 +1,11 @@
 // src/modules/room/ui/composables/useRoomSetting.ts
+
 import { reactive, ref } from 'vue';
-import { roomUseCase } from '../../application/roomUseCase';
+
+import { useRoomUseCase } from './useRoomUseCase';
 
 export function useRoomSetting() {
-    const { buildRoom } = roomUseCase();
+    const roomUseCase = useRoomUseCase();
 
     const form = reactive({
         roomId: 'default-room',
@@ -20,7 +22,7 @@ export function useRoomSetting() {
         errorMessage.value = '';
 
         try {
-            await buildRoom(form.roomId, {
+            await roomUseCase.buildRoom(form.roomId, {
                 numberOfUtility: form.numberOfUtility,
                 numberOfBan: form.numberOfBan,
                 numberOfPick: form.numberOfPick,

@@ -1,12 +1,12 @@
 // src/modules/board/sync/useMatchStepSync.ts
 
 import { useSocketStore } from '@/app/stores/socketStore';
-import { matchStepUseCase } from '../application/matchStepUseCase';
 import { StepEvent } from '@shared/contracts/board/value-types';
+import { useMatchStepUseCase } from '../ui/composables/useMatchStepUseCase';
 
 export function useMatchStepSync() {
     const socket = useSocketStore().getSocket();
-    const { setStepIndex } = matchStepUseCase();
+    const matchStepUseCase = useMatchStepUseCase();
 
     function registerMatchStepSync() {
         socket.on(`${StepEvent.StateSyncSelf}`, handleStepStateSync);
@@ -35,7 +35,7 @@ export function useMatchStepSync() {
 
     function handleStepStateSync(newStepIndex: number) {
         console.debug('[MATCH STEP SYNC] Handle step state sync', newStepIndex);
-        setStepIndex(newStepIndex);
+        matchStepUseCase.setStepIndex(newStepIndex);
     }
 
     return {

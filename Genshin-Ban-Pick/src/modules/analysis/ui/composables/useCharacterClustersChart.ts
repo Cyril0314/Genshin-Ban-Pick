@@ -5,7 +5,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useEchartTheme } from '@/modules/shared/ui/composables/useEchartTheme';
 import { useDesignTokens } from '@/modules/shared/ui/composables/useDesignTokens';
 import { getCharacterDisplayName } from '@/modules/shared/domain/getCharacterDisplayName';
-import { analysisUseCase } from '../../application/analysisUseCase';
+import { useAnalysisUseCase } from './useAnalysisUseCase';
 
 import type { CallbackDataParams } from 'echarts/types/dist/shared';
 import type { ICharacterClusters } from '@shared/contracts/analysis/ICharacterClusters';
@@ -14,7 +14,7 @@ import type { ICharacterTacticalUsage } from '@shared/contracts/analysis/ICharac
 export function useCharacterClustersChart() {
     const designTokens = useDesignTokens();
     const { gridStyle, xAxisStyle, yAxisStyle, tooltipStyle, dataZoomStyle, legendStyle } = useEchartTheme();
-    const { fetchCharacterClusters, fetchTacticalUsages } = analysisUseCase();
+    const analysisUseCase = useAnalysisUseCase();
 
     // const clusterColors = ['#ff5964', '#526dff', '#6bf178', '#ffe74c', '#FF922B', '#65def1', '#df4be4ff', '#b1e022ff', '#e02248ff'];
     const clusterColors = ['#f2002b', '#f64021', '#f98016', '#fcc00b', '#ffff00', '#00cc66', '#496ddb', '#a010ff', '#ff1cc2'];
@@ -29,8 +29,8 @@ export function useCharacterClustersChart() {
     });
 
     onMounted(async () => {
-        tacticalUsages.value = await fetchTacticalUsages();
-        characterClusters.value = await fetchCharacterClusters();
+        tacticalUsages.value = await analysisUseCase.fetchTacticalUsages();
+        characterClusters.value = await analysisUseCase.fetchCharacterClusters();
         console.log(`characterClusters`, characterClusters.value);
     });
 

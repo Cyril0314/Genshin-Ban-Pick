@@ -1,13 +1,13 @@
 // src/modules/room/sync/useRoomUserSync.ts
 
 import { useSocketStore } from '@/app/stores/socketStore';
-import { roomUseCase } from '../application/roomUseCase';
 import { RoomEvent } from '@shared/contracts/room/value-types';
+import { useRoomUserUseCase } from '../ui/composables/useRoomUserUseCase';
 
 import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 
 export function useRoomUserSync() {
-    const { setRoomUsers } = roomUseCase();
+    const roomUserUseCase = useRoomUserUseCase();
     const socket = useSocketStore().getSocket();
 
     function registerRoomUserSync() {
@@ -43,7 +43,7 @@ export function useRoomUserSync() {
     function handleRoomUsersStateSync(newRoomUsers: IRoomUser[]) {
         console.debug('[ROOM USERS] Handle room users state sync', newRoomUsers);
 
-        setRoomUsers(newRoomUsers);
+        roomUserUseCase.setRoomUsers(newRoomUsers);
     }
 
     return {
