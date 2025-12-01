@@ -1,4 +1,4 @@
-// src/modules/chat/applicaiton/chatUseCase.ts
+// src/modules/chat/applicaiton/ChatUseCase.ts
 
 import { addMessageDomain } from "../domain/addMessageDomain";
 import { sendMessageDomain } from "../domain/sendMessageDomain";
@@ -6,30 +6,23 @@ import { useChatStore } from "../store/chatStore";
 
 import type { IChatMessage } from '@shared/contracts/chat/IChatMessage';
 
-export function chatUseCase() {
+export default class ChatUseCase {
+    constructor(private chatStore: ReturnType<typeof useChatStore>) {}
 
-    const chatStore = useChatStore()
-
-    function handleSendMessage(identityKey: string, nickname: string, message: string) {
-        const prevMessages = chatStore.messages
+    handleSendMessage(identityKey: string, nickname: string, message: string) {
+        const prevMessages = this.chatStore.messages
         const { messages, newMessage } = sendMessageDomain(prevMessages, identityKey, nickname, message)
-        chatStore.setMessages(messages)
+        this.chatStore.setMessages(messages)
         return newMessage
     }
 
-    function addMessage(message: IChatMessage) {
-        const prevMessages = chatStore.messages
+    addMessage(message: IChatMessage) {
+        const prevMessages = this.chatStore.messages
         const nextMessages = addMessageDomain(prevMessages, message)
-        chatStore.setMessages(nextMessages)
+        this.chatStore.setMessages(nextMessages)
     }
 
-    function setMessages(messages: IChatMessage[], identityKey?: string) {
-        chatStore.setMessages(messages)
-    }
-    
-    return {
-        handleSendMessage,
-        addMessage,
-        setMessages,
+    setMessages(messages: IChatMessage[], identityKey?: string) {
+        this.chatStore.setMessages(messages)
     }
 }

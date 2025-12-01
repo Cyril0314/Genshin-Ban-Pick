@@ -5,7 +5,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { useSocketStore } from '@/app/stores/socketStore';
-import { authUseCase } from '../../application/authUseCase';
+import { authUseCase } from '../../application/AuthUseCase';
 
 const router = useRouter();
 const { registerMember } = authUseCase();

@@ -1,32 +1,23 @@
-// src/modules/auth/infrastructure/authService.ts
-
-import api from '@/app/infrastructure/http/httpClient';
+// src/modules/auth/infrastructure/AuthService.ts
 
 import type { HttpClient } from '@/app/infrastructure/http/httpClient';
 
-export function createAuthService(client: HttpClient = api) {
-    async function postRegisterMember(payload: { account: string; password: string; nickname: string }) {
-        return client.post('/auth/register/member', payload, { withToken: false });
+export default class AuthService {
+    constructor(private client: HttpClient) {}
+
+    async postRegisterMember(payload: { account: string; password: string; nickname: string }) {
+        return this.client.post('/auth/register/member', payload, { withToken: false });
     }
 
-    async function postLoginMember(payload: { account: string; password: string }) {
-        return client.post('/auth/login/member', payload, { withToken: false });
+    async postLoginMember(payload: { account: string; password: string }) {
+        return this.client.post('/auth/login/member', payload, { withToken: false });
     }
 
-    async function postLoginGuest(payload: { nickname: string }) {
-        return client.post('/auth/login/guest', payload, { withToken: false });
+    async postLoginGuest(payload: { nickname: string }) {
+        return this.client.post('/auth/login/guest', payload, { withToken: false });
     }
 
-    async function getSession() {
-        return client.get('/auth/session');
+    async getSession() {
+        return this.client.get('/auth/session');
     }
-
-    return {
-        postRegisterMember,
-        postLoginMember,
-        postLoginGuest,
-        getSession,
-    };
 }
-
-export const authService = createAuthService();

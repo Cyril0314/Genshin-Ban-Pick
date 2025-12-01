@@ -1,7 +1,6 @@
 // src/modules/character/application/CharacterUseCase.ts
 
-import { useCharacterStore } from '../store/characterStore';
-
+import type { useCharacterStore } from '../store/characterStore';
 import type CharacterRepository from '../infrastructure/CharacterRepository';
 
 export default class CharacterUseCase {

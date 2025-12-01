@@ -12,21 +12,29 @@ import App from './App.vue';
 import router from './router';
 import { registerHttpClient } from './app/bootstrap/registerHttpClient';
 import api from './app/infrastructure/http/httpClient';
-import { useCharacterStore } from './modules/character';
-import { registerCharacterDependencies } from './modules/character/registerCharacterDependencies';
+import { registerAuthDependencies, useAuthStore } from './modules/auth';
+import { useCharacterStore, registerCharacterDependencies } from './modules/character';
+import { useBoardImageStore, registerBoardDependencies } from './modules/board';
+import { useChatStore, registerChatDependencies } from './modules/chat';
 
 const app = createApp(App);
 const pinia = createPinia();
-const httpClient = api
+const httpClient = api;
 console.info('[MAIN] Create App');
 
 app.use(pinia);
 app.use(router);
 app.use(naive);
 
-registerHttpClient();
-const characterStore = useCharacterStore(pinia)
+const authStore = useAuthStore(pinia);
+const characterStore = useCharacterStore(pinia);
+const boardImageStore = useBoardImageStore(pinia);
+const chatStore = useChatStore(pinia);
 
-registerCharacterDependencies(app, httpClient, characterStore)
+registerHttpClient(authStore);
+registerAuthDependencies(app, httpClient, authStore);
+registerCharacterDependencies(app, httpClient, characterStore);
+registerBoardDependencies(app, boardImageStore);
+registerChatDependencies(app, chatStore);
 
 app.mount('#app');

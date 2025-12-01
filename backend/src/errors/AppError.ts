@@ -16,6 +16,7 @@ export class AppError extends Error {
         }
     }
 }
+
 export class UserExistsError extends AppError {
     constructor(cause?: Error) {
         super('USER_EXISTS', cause);

@@ -1,7 +1,7 @@
 // src/modules/board/sync/useBoardSync.ts
 
-import { boardUseCase } from '../application/boardUseCase';
 import { useSocketStore } from '@/app/stores/socketStore';
+import { useBoardUseCase } from '../ui/composables/useBoardUseCase';
 import { useMatchStepSync } from './useMatchStepSync';
 import { useTacticalBoardSync } from '@/modules/tactical';
 import { useMatchStepStore } from '../store/matchStepStore';
@@ -11,7 +11,8 @@ import type { ICharacterRandomContext } from '@shared/contracts/character/IChara
 
 export function useBoardSync() {
     const socket = useSocketStore().getSocket();
-    const { handleBoardImageDrop, handleBoardImageRestore, handleBoardImageMapReset, setBoardImageMap } = boardUseCase();
+    const boardUseCase = useBoardUseCase();
+
     const { advanceStep, resetStep } = useMatchStepSync();
     const { handleAllTeamResetBoard } = useTacticalBoardSync();
 
@@ -31,7 +32,7 @@ export function useBoardSync() {
 
     function boardImageDrop({ zoneId, imgId, randomContext }: { zoneId: number; imgId: string; randomContext?: ICharacterRandomContext }) {
         console.log(`[BOARD SYNC] Handle image drop`, { zoneId, imgId, randomContext });
-        handleBoardImageDrop(zoneId, imgId);
+        boardUseCase.handleBoardImageDrop(zoneId, imgId);
 
         console.debug('[BOARD SYNC] Sent board image drop request', { zoneId, imgId });
         socket.emit(`${BoardEvent.ImageDropRequest}`, { zoneId, imgId, randomContext });
@@ -43,7 +44,7 @@ export function useBoardSync() {
 
     function boardImageRestore({ zoneId }: { zoneId: number }) {
         console.debug('[BOARD SYNC] Handle board image restore', zoneId);
-        handleBoardImageRestore(zoneId);
+        boardUseCase.handleBoardImageRestore(zoneId);
 
         console.debug('[BOARD SYNC] Sent board image restore request', zoneId);
         socket.emit(`${BoardEvent.ImageRestoreRequest}`, { zoneId });
@@ -51,7 +52,7 @@ export function useBoardSync() {
 
     function boardImageMapReset() {
         console.debug('[BOARD SYNC] Handle board image reset');
-        handleBoardImageMapReset();
+        boardUseCase.handleBoardImageMapReset();
         handleAllTeamResetBoard();
 
         console.debug('[BOARD SYNC] Sent board image reset request');
@@ -61,23 +62,23 @@ export function useBoardSync() {
 
     function handleBoardImageDropBroadcast({ zoneId, imgId }: { zoneId: number; imgId: string }) {
         console.debug('[BOARD SYNC] Handle board image drop broadcast', { zoneId, imgId });
-        handleBoardImageDrop(zoneId, imgId);
+        boardUseCase.handleBoardImageDrop(zoneId, imgId);
     }
 
     function handleBoardImageRestoreBroadcast({ zoneId }: { zoneId: number }) {
         console.debug('[BOARD SYNC] Handle board image restore broadcast', { zoneId });
-        handleBoardImageRestore(zoneId);
+        boardUseCase.handleBoardImageRestore(zoneId);
     }
 
     function handleBoardImageMapResetBroadcast() {
         console.debug('[BOARD SYNC] Handle board image reset broadcast');
-        handleBoardImageMapReset();
+        boardUseCase.handleBoardImageMapReset();
         handleAllTeamResetBoard();
     }
 
     function handleBoardImageMapStateSync(imageMap: Record<number, string>) {
         console.debug('[BOARD SYNC] Handle board image map state sync', imageMap);
-        setBoardImageMap(imageMap);
+        boardUseCase.setBoardImageMap(imageMap);
     }
 
     return {
