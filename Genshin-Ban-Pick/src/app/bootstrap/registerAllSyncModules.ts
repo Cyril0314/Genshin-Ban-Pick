@@ -1,6 +1,6 @@
 // src/app/bootstrap/registerAllSyncModules.ts
 
-import { useBoardSync, useMatchStepSync } from '@/modules/board';
+import { useBoardSync } from '@/modules/board';
 import { useChatSync } from '@/modules/chat';
 import { useRoomUserSync } from '@/modules/room';
 import { useTacticalBoardSync } from '@/modules/tactical';
@@ -16,14 +16,12 @@ export function registerAllSyncModules(socket: Socket) {
     const { registerRoomUserSync } = useRoomUserSync();
     const { registerTeamInfoSync } = useTeamInfoSync();
     const { registerBoardSync } = useBoardSync();
-    const { registerMatchStepSync } = useMatchStepSync();
     const { registerTacticalBoardSync } = useTacticalBoardSync();
     const { registerChatSync } = useChatSync();
 
     registerRoomUserSync();
     registerTeamInfoSync();
     registerBoardSync();
-    registerMatchStepSync();
     registerTacticalBoardSync();
     registerChatSync();
 

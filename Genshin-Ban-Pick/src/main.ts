@@ -14,7 +14,7 @@ import { registerHttpClient } from './app/bootstrap/registerHttpClient';
 import api from './app/infrastructure/http/httpClient';
 import { registerAuthDependencies, useAuthStore } from './modules/auth';
 import { registerCharacterDependencies, useCharacterStore } from './modules/character';
-import { registerBoardDependencies, useBoardImageStore, useMatchStepStore } from './modules/board';
+import { registerBoardDependencies, useBoardStore } from './modules/board';
 import { registerChatDependencies, useChatStore} from './modules/chat';
 import { registerRoomDependencies, useRoomUserStore } from './modules/room';
 import { registerMatchDependencies } from './modules/match';
@@ -34,8 +34,7 @@ app.use(naive);
 const authStore = useAuthStore(pinia);
 const characterStore = useCharacterStore(pinia);
 const roomUserStore = useRoomUserStore(pinia);
-const boardImageStore = useBoardImageStore(pinia);
-const matchStepStore = useMatchStepStore(pinia);
+const boardStore = useBoardStore(pinia);
 const teamInfoStore = useTeamInfoStore(pinia);
 const tacticalBoardStore = useTacticalBoardStore(pinia);
 const chatStore = useChatStore(pinia);
@@ -46,7 +45,7 @@ registerCharacterDependencies(app, httpClient, characterStore);
 registerMatchDependencies(app, httpClient)
 registerAnalysisDependencies(app, httpClient)
 registerRoomDependencies(app, httpClient, roomUserStore);
-registerBoardDependencies(app, boardImageStore, matchStepStore);
+registerBoardDependencies(app, boardStore);
 registerTeamDependencies(app, teamInfoStore);
 registerTacticalDependencies(app, tacticalBoardStore)
 registerChatDependencies(app, chatStore);

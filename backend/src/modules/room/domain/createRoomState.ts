@@ -11,7 +11,6 @@ export function createRoomState(roomSetting: IRoomSetting) {
         characterRandomContextMap: {},
         teamMembersMap: initializeTeamMembersMap(roomSetting.teams),
         teamTacticalCellImageMap: initializeTeamTacticalCellImageMap(roomSetting.teams),
-        stepIndex: 0,
         roomSetting,
     };
 }

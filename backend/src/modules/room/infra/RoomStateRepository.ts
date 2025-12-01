@@ -58,15 +58,6 @@ export default class RoomStateRepository implements IRoomStateRepository {
         return Object.values(characterRandomContextMap).length;
     }
 
-    findStepIndexById(roomId: string): number | null {
-        return this.roomStateManager.getStepIndex(roomId) ?? null;
-    }
-
-    updateStepIndexById(roomId: string, stepIndex: number): number {
-        this.roomStateManager.setStepIndex(roomId, stepIndex);
-        return 1;
-    }
-
     findChatMessagesById(roomId: string): IChatMessage[] | null {
         return this.roomStateManager.getChatMessages(roomId) ?? null;
     }

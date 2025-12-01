@@ -2,16 +2,11 @@
 
 import { DIKeys } from '@/app/constants/diKeys';
 import BoardUseCase from './application/BoardUseCase';
-import MatchStepUseCase from './application/MatchStepUseCase';
 
 import type { App } from 'vue';
-import type { useBoardImageStore } from './store/boardImageStore';
-import type { useMatchStepStore } from './store/matchStepStore';
+import type { useBoardStore } from './store/boardStore';
 
-export function registerBoardDependencies(app: App, boardImageStore: ReturnType<typeof useBoardImageStore>, matchStepStore: ReturnType<typeof useMatchStepStore>) {
-    const boardUseCase = new BoardUseCase(boardImageStore);
+export function registerBoardDependencies(app: App, boardStore: ReturnType<typeof useBoardStore>) {
+    const boardUseCase = new BoardUseCase(boardStore);
     app.provide(DIKeys.BoardUseCase, boardUseCase);
-
-    const matchStepUseCase = new MatchStepUseCase(matchStepStore);
-    app.provide(DIKeys.MatchStepUseCase, matchStepUseCase);
 }

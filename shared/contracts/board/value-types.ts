@@ -17,13 +17,3 @@ export enum BoardEvent {
     ImageMapStateRequest = 'board.image_map.state.request',
     ImageMapStateSyncSelf = 'board.image_map.state.sync.self',
 }
-
-export enum StepEvent {
-    AdvanceRequest = 'step.advance.request',
-    RollbackRequest = 'step.rollback.request',
-    ResetRequest = 'step.reset.request',
-
-    StateRequest = 'step.state.request',
-    StateSyncSelf = 'step.state.sync.self',
-    StateSyncAll = 'step.state.sync.all',
-}

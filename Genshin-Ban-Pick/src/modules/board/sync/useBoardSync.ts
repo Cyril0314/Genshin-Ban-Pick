@@ -2,9 +2,7 @@
 
 import { useSocketStore } from '@/app/stores/socketStore';
 import { useBoardUseCase } from '../ui/composables/useBoardUseCase';
-import { useMatchStepSync } from './useMatchStepSync';
 import { useTacticalBoardSync } from '@/modules/tactical';
-import { useMatchStepStore } from '../store/matchStepStore';
 import { BoardEvent } from '@shared/contracts/board/value-types';
 
 import type { ICharacterRandomContext } from '@shared/contracts/character/ICharacterRandomContext';
@@ -13,10 +11,7 @@ export function useBoardSync() {
     const socket = useSocketStore().getSocket();
     const boardUseCase = useBoardUseCase();
 
-    const { advanceStep, resetStep } = useMatchStepSync();
     const { handleAllTeamResetBoard } = useTacticalBoardSync();
-
-    const matchStepStore = useMatchStepStore();
 
     function registerBoardSync() {
         socket.on(`${BoardEvent.ImageMapStateSyncSelf}`, handleBoardImageMapStateSync);
@@ -36,10 +31,6 @@ export function useBoardSync() {
 
         console.debug('[BOARD SYNC] Sent board image drop request', { zoneId, imgId });
         socket.emit(`${BoardEvent.ImageDropRequest}`, { zoneId, imgId, randomContext });
-
-        if (matchStepStore.currentStep?.zoneId === zoneId) {
-            advanceStep();
-        }
     }
 
     function boardImageRestore({ zoneId }: { zoneId: number }) {
@@ -57,7 +48,6 @@ export function useBoardSync() {
 
         console.debug('[BOARD SYNC] Sent board image reset request');
         socket.emit(`${BoardEvent.ImageMapResetRequest}`);
-        resetStep();
     }
 
     function handleBoardImageDropBroadcast({ zoneId, imgId }: { zoneId: number; imgId: string }) {

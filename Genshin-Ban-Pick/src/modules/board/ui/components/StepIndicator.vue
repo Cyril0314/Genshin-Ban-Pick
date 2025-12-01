@@ -5,17 +5,13 @@ import { ref, computed, watch } from 'vue';
 
 import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
 import { useTeamInfoStore } from '@/modules/team';
-import { useBoardImageStore } from '../../store/boardImageStore';
-import { useMatchStepStore } from '../../store/matchStepStore';
+import { useBoardStore } from '../../store/boardStore';
 import { ZoneType } from '@shared/contracts/board/value-types';
 
 const active = ref(false);
 
-const matchStepStore = useMatchStepStore();
-const { currentStep } = storeToRefs(matchStepStore);
-
-const boardImageStore = useBoardImageStore();
-const { zoneMetaTable } = storeToRefs(boardImageStore);
+const boardStore = useBoardStore();
+const { zoneMetaTable, currentStep } = storeToRefs(boardStore);
 
 const teamInfoStore = useTeamInfoStore();
 const { teams } = storeToRefs(teamInfoStore);

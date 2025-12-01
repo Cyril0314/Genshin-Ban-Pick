@@ -24,8 +24,6 @@ export interface IRoomStateManager {
   setCharacterRandomContextMap(roomId: string, characterRandomContextMap: CharacterRandomContextMap): void;
   getTeamMembersMap(roomId: string): TeamMembersMap | null;
   setTeamMembersMap(roomId: string, teamMembersMap: TeamMembersMap): void
-  getStepIndex(roomId: string): number | null;
-  setStepIndex(roomId: string, stepIndex: number): void;
   getTeamTacticalCellImageMap(roomId: string): TeamTacticalCellImageMap | null;
   setTeamTacticalCellImageMap(roomId: string, teamTacticalCellImageMap: TeamTacticalCellImageMap): void;
 }

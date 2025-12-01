@@ -23,9 +23,6 @@ export interface IRoomStateRepository {
     findCharacterRandomContextMapById(roomId: string): CharacterRandomContextMap | null ;
     updateCharacterRandomContextMapById(roomId: string, characterRandomContextMap: CharacterRandomContextMap): number;
 
-    findStepIndexById(roomId: string): number | null;
-    updateStepIndexById(roomId: string, stepIndex: number): number;
-
     findChatMessagesById(roomId: string): IChatMessage[] | null;
     updateChatMessagesById(roomId: string, chatMessages: IChatMessage[]): number;
 

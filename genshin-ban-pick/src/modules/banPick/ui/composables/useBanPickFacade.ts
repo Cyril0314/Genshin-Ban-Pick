@@ -4,7 +4,7 @@ import { storeToRefs } from 'pinia';
 import { useBanPickInitializer } from './useBanPickInitializer';
 import { useBanPickFilters } from './useBanPickFilters';
 import { useBanPickRandomPull } from './useBanPickRandomPull';
-import { useBoardImageStore, useBoardSync } from '@/modules/board';
+import { useBoardStore, useBoardSync } from '@/modules/board';
 import { useCharacterStore } from '@/modules/character';
 import { useTeamInfoSync } from '@/modules/team';
 import { useBanPickMatchSave } from './useBanPickMatchSave';
@@ -12,8 +12,8 @@ import { useBanPickMatchSave } from './useBanPickMatchSave';
 export function useBanPickFacade(roomId: string) {
     const { isLoading: isInitLoading, roomSetting, filteredCharacterKeys, characterFilter } = useBanPickInitializer(roomId);
 
-    const boardImageStore = useBoardImageStore();
-    const { boardImageMap, usedImageIds } = storeToRefs(boardImageStore);
+    const boardStore = useBoardStore();
+    const { boardImageMap, usedImageIds } = storeToRefs(boardStore);
     const characterStore = useCharacterStore();
     const { characterMap } = storeToRefs(characterStore);
     const { filterChange } = useBanPickFilters(filteredCharacterKeys, characterFilter);

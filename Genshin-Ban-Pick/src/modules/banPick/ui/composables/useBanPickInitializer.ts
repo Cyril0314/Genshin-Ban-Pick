@@ -1,12 +1,12 @@
 // src/modules/banPick/ui/composables/useBanPickInitializer.ts
 
-import { ref, shallowRef, onMounted, onUnmounted, inject } from 'vue';
+import { ref, shallowRef, onMounted, onUnmounted } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import { useSocketStore } from '@/app/stores/socketStore';
 import { useRoomUseCase, useRoomUserSync } from '@/modules/room';
 import { useCharacterStore, useCharacterUseCase } from '@/modules/character';
-import { useBoardUseCase, useMatchStepUseCase, useBoardSync, useMatchStepSync } from '@/modules/board';
+import { useBoardUseCase, useBoardSync } from '@/modules/board';
 import { useTeamUseCase, useTeamInfoSync } from '@/modules/team';
 import { useTacticalUseCase } from '@/modules/tactical';
 import { useChatSync } from '@/modules/chat';
@@ -35,12 +35,10 @@ export function useBanPickInitializer(roomId: string) {
     const boardUseCase = useBoardUseCase();
     const roomUseCase = useRoomUseCase();
     const tamUseCase = useTeamUseCase();
-    const matchStepUseCase = useMatchStepUseCase();
     const tacticalUseCase = useTacticalUseCase();
 
     const { joinRoom, leaveRoom } = useRoomUserSync();
     const { fetchBoardImageMapState } = useBoardSync();
-    const { fetchMatchStepState } = useMatchStepSync();
     const { fetchChatState } = useChatSync();
     const { fetchMembersMapState } = useTeamInfoSync();
 
@@ -61,9 +59,8 @@ export function useBanPickInitializer(roomId: string) {
 
             // 3. 初始化 Board / Team / Flow
             if (roomSetting.value) {
-                boardUseCase.initZoneMetaTable(roomSetting.value.zoneMetaTable);
+                boardUseCase.initZoneMetaTableAndSteps(roomSetting.value.zoneMetaTable, roomSetting.value.matchFlow.steps);
                 tamUseCase.initTeams(roomSetting.value.teams);
-                matchStepUseCase.initMatchSteps(roomSetting.value.matchFlow.steps);
                 tacticalUseCase.initTeamTacticalCellImageMap(roomSetting.value.teams, roomSetting.value.numberOfTeamSetup, roomSetting.value.numberOfSetupCharacter);
             }
 
@@ -74,7 +71,6 @@ export function useBanPickInitializer(roomId: string) {
             joinRoom(roomId).then(() => {
                 console.debug('[BAN PICK INITEALIZER] Joined room', roomId);
                 fetchBoardImageMapState();
-                fetchMatchStepState();
                 fetchChatState();
                 fetchMembersMapState();
             });

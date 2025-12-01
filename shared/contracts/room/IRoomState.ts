@@ -13,6 +13,5 @@ export interface IRoomState {
     characterRandomContextMap: CharacterRandomContextMap;
     teamTacticalCellImageMap: TeamTacticalCellImageMap;
     teamMembersMap: TeamMembersMap;
-    stepIndex: number;
     roomSetting: IRoomSetting;
 }

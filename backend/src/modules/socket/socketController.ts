@@ -6,11 +6,10 @@ import { createLogger } from '../../utils/logger';
 import { registerChatSocket } from './modules/chatSocket';
 import { registerBoardSocket } from './modules/boardSocket';
 import { registerRoomSocket } from './modules/roomSocket';
-import { registerStepSocket } from './modules/stepSocket';
 import { registerTeamSocket } from './modules/teamSocket';
 import { registerTacticalSocket } from './modules/tacticalSocket';
 import { RoomStateRepository, RoomUserService } from '../room/index';
-import { BoardService, MatchStepService } from '../board';
+import { BoardService } from '../board';
 import { ChatService } from '../chat';
 import { TeamService } from '../team';
 import { TacticalService } from '../tactical';
@@ -23,7 +22,6 @@ export function setupSocketIO(io: Server, roomStateManager: IRoomStateManager) {
     const roomStateRepository = new RoomStateRepository(roomStateManager);
     const roomUserService = new RoomUserService(roomStateRepository);
     const boardService = new BoardService(roomStateRepository);
-    const matchStepService = new MatchStepService(roomStateRepository);
     const chatService = new ChatService(roomStateRepository);
     const teamService = new TeamService(roomStateRepository);
     const tacticalService = new TacticalService(roomStateRepository);
@@ -33,7 +31,6 @@ export function setupSocketIO(io: Server, roomStateManager: IRoomStateManager) {
 
         registerRoomSocket(io, socket, roomUserService);
         registerBoardSocket(io, socket, boardService);
-        registerStepSocket(io, socket, matchStepService);
         registerTeamSocket(io, socket, teamService);
         registerChatSocket(io, socket, chatService);
         registerTacticalSocket(io, socket, tacticalService);

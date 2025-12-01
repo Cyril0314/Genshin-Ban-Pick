@@ -1,38 +1,40 @@
 // src/modules/board/application/BoardUseCase.ts
 
+import type { IZone } from '@shared/contracts/board/IZone';
 import { handleBoardImageDropDomain } from '../domain/handleBoardImageDropDomain';
 import { handleBoardImageMapResetDomain } from '../domain/handleBoardImageMapResetDomain';
 import { handleBoardImageRestoreDomain } from '../domain/handleBoardImageRestoreDomain';
-import { useBoardImageStore } from '../store/boardImageStore';
+import { useBoardStore } from '../store/boardStore';
 
 import type { BoardImageMap } from '@shared/contracts/board/BoardImageMap';
+import type { IMatchStep } from '@shared/contracts/match/IMatchStep';
 
 export default class BoardUseCase {
-    constructor(private boardImageStore: ReturnType<typeof useBoardImageStore>) {}
+    constructor(private boardStore: ReturnType<typeof useBoardStore>) {}
 
-    initZoneMetaTable(zoneMetaTable: Record<number, any>) {
-        this.boardImageStore.initZoneMetaTable(zoneMetaTable);
+    initZoneMetaTableAndSteps(zoneMetaTable: Record<number, IZone>, matchSteps: IMatchStep[]) {
+        this.boardStore.initZoneMetaTableAndSteps(zoneMetaTable, matchSteps);
     }
 
     handleBoardImageDrop(zoneId: number, imgId: string) {
-        const prevMap = this.boardImageStore.boardImageMap;
+        const prevMap = this.boardStore.boardImageMap;
         const nextMap = handleBoardImageDropDomain(prevMap, zoneId, imgId);
-        this.boardImageStore.setBoardImageMap(nextMap);
+        this.boardStore.setBoardImageMap(nextMap);
     }
 
     handleBoardImageRestore(zoneId: number) {
-        const prevMap = this.boardImageStore.boardImageMap;
+        const prevMap = this.boardStore.boardImageMap;
         const nextMap = handleBoardImageRestoreDomain(prevMap, zoneId);
-        this.boardImageStore.setBoardImageMap(nextMap);
+        this.boardStore.setBoardImageMap(nextMap);
     }
 
     handleBoardImageMapReset() {
-        const prevMap = this.boardImageStore.boardImageMap;
+        const prevMap = this.boardStore.boardImageMap;
         const nextMap = handleBoardImageMapResetDomain(prevMap);
-        this.boardImageStore.setBoardImageMap(nextMap);
+        this.boardStore.setBoardImageMap(nextMap);
     }
 
     setBoardImageMap(newBoardImageMap: BoardImageMap) {
-        this.boardImageStore.setBoardImageMap(newBoardImageMap);
+        this.boardStore.setBoardImageMap(newBoardImageMap);
     }
 }

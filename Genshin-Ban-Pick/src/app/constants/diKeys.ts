@@ -8,7 +8,6 @@ export const DIKeys = {
     AnalysisUseCase: Symbol('analysis-use-case'),
     RoomUserUseCase: Symbol('room-user-use-case'),
     BoardUseCase: Symbol('board-use-case'),
-    MatchStepUseCase: Symbol('match-step-use-case'),
     TeamUseCase: Symbol('team-use-case'),
     TacticalUseCase: Symbol('tactical-use-case'),
     ChatUseCase: Symbol('chat-use-case'),

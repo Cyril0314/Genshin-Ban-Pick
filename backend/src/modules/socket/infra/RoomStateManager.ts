@@ -70,15 +70,7 @@ export default class RoomStateManager implements IRoomStateManager {
     setTeamMembersMap(roomId: string, teamMembersMap: TeamMembersMap): void {
         this.roomStates[roomId].teamMembersMap = teamMembersMap;
     }
-
-    getStepIndex(roomId: string) {
-        return this.get(roomId).stepIndex;
-    }
-
-    setStepIndex(roomId: string, stepIndex: number): void {
-        this.roomStates[roomId].stepIndex = stepIndex;
-    }
-
+    
     getTeamTacticalCellImageMap(roomId: string) {
         return this.get(roomId).teamTacticalCellImageMap;
     }
