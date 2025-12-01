@@ -1,0 +1,39 @@
+// src/modules/room/infrastructure/roomService.ts
+
+import api from '@/app/infrastructure/http/httpClient';
+
+import type { HttpClient } from '@/app/infrastructure/http/httpClient';
+import type { ITeam } from '@shared/contracts/team/ITeam';
+
+export function createRoomService(client: HttpClient = api) {
+    async function get() {
+        return client.get(`/rooms`, { withToken: false });
+    }
+
+    async function post(
+        roomId: string,
+        payload: {
+            numberOfUtility?: number;
+            numberOfBan?: number;
+            numberOfPick?: number;
+            totalRounds?: number;
+            teams?: ITeam[];
+            numberOfTeamSetup?: number;
+            numberOfSetupCharacter?: number;
+        },
+    ) {
+        return client.post(`/rooms/${roomId}`, payload, { withToken: false });
+    }
+
+    async function getSetting(roomId: string) {
+        return client.get(`/rooms/${roomId}/setting`);
+    }
+
+    return {
+        get,
+        post,
+        getSetting,
+    };
+}
+
+export const roomService = createRoomService();
