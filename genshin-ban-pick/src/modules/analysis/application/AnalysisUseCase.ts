@@ -21,4 +21,8 @@ export default class AnalysisUseCase {
     async fetchCharacterClusters() {
         return await this.analysisRepository.fetchCharacterClusters();
     }
+
+    async fetchPlayerStyle(memberId: number) {
+        return await this.analysisRepository.fetchPlayerStyle(memberId);
+    }
 }

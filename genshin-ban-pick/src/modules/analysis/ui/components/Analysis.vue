@@ -8,6 +8,7 @@ import CharacterSynergyChart from './CharacterSynergyChart.vue';
 import CharacterTacticalUsagesChart from './CharacterTacticalUsagesChart.vue';
 import CharacterTacticalUsageCompositionChart from './CharacterTacticalUsageCompositionChart.vue';
 import PlayerCharacterChart from './PlayerCharacterChart.vue';
+import PlayerStyleRadarChart from './PlayerStyleRadarChart.vue';
 
 const props = defineProps<{}>();
 
@@ -18,9 +19,9 @@ const tabs = [
     { name: '角色使用構成', component: CharacterTacticalUsageCompositionChart },
     { name: '角色共現熱圖', component: CharacterSynergyChart },
     { name: '角色群聚圖', component: CharacterClustersChart },
-    
+
     { name: '玩家偏好角色', component: PlayerCharacterChart },
-    // { name: '隊伍 Archetype 雷達圖', component: TeamArchetypeRadar },
+    { name: '玩家風格雷達', component: PlayerStyleRadarChart },
 ];
 
 const currentTabIndex = ref<number>(0);
@@ -29,8 +30,7 @@ const currentTabIndex = ref<number>(0);
 <template>
     <div class="layout__analysis">
         <div class="tab__bar">
-            <button v-for="(t, i) in tabs" :key="i" class="tab" :class="{ 'tab--active': currentTabIndex === i }"
-                @click="currentTabIndex = i">
+            <button v-for="(t, i) in tabs" :key="i" class="tab" :class="{ 'tab--active': currentTabIndex === i }" @click="currentTabIndex = i">
                 {{ t.name }}
             </button>
         </div>
@@ -46,7 +46,6 @@ const currentTabIndex = ref<number>(0);
     flex-direction: row;
     width: 100%;
     height: 90vh;
-    
 }
 
 .tab__bar {
@@ -59,7 +58,6 @@ const currentTabIndex = ref<number>(0);
     flex-shrink: 1;
     height: 100%;
 }
-
 
 .tab {
     width: var(--size-tab);
@@ -82,15 +80,12 @@ const currentTabIndex = ref<number>(0);
 }
 
 .tab--active {
-    background-color: color-mix(in srgb,
-        var(--md-sys-color-surface-container-highest),
-        white 18%);
+    background-color: color-mix(in srgb, var(--md-sys-color-surface-container-highest), white 18%);
 }
 
 .chart__section {
     width: 100%;
     height: 100%;
     background-color: var(--md-sys-color-surface-dim);
-    
 }
 </style>

@@ -28,4 +28,10 @@ export default class AnalysisController {
         const characterClusters = await this.analysisService.fetchCharacterClusters();
         res.status(200).json(characterClusters);
     };
+
+    fetchPlayerStyle = async (req: Request, res: Response) => {
+        const { memberId } = req.params;
+        const style = await this.analysisService.fetchPlayerStyle(Number(memberId));
+        res.status(200).json(style);
+    };
 }

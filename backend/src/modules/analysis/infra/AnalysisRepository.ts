@@ -8,6 +8,7 @@ import type { IMatchTimeMinimal } from '../types/IMatchTimeMinimal';
 import type { IMatchMoveWeightCalcCore } from '../types/IMatchMoveWeightCalcCore';
 import type { IMatchTacticalUsageExpandedRefs } from '../types/IMatchTacticalUsageExpandedRefs';
 import type { IMatchTacticalUsageTeamMemberIdentityRefs } from '../types/IMatchTacticalUsageUserPreferenceCore';
+import type { IMatchMoveWithCharacter } from '../types/IMatchMoveWithCharacter';
 import type { MoveSource, MoveType } from '@shared/contracts/match/value-types';
 import type { CharacterFilterKey } from '@shared/contracts/character/value-types';
 
@@ -36,9 +37,9 @@ export default class AnalysisRepository implements IAnalysisRepository {
                     id: r.randomMoveContext.id,
                     filters: restoreFiltersFromJson(r.randomMoveContext.filters),
                     matchMoveId: r.randomMoveContext.matchMoveId,
-                }
+                };
             } else {
-                randomMoveContext = null
+                randomMoveContext = null;
             }
 
             return {
@@ -78,6 +79,25 @@ export default class AnalysisRepository implements IAnalysisRepository {
             setupNumber: r.setupNumber,
             characterKey: r.characterKey,
         }));
+    }
+
+    async findMatchMoveHistoryByMemberId(memberId: number): Promise<IMatchMoveWithCharacter[]> {
+        return await this.prisma.matchMove.findMany({
+            where: {
+                type: 'Pick',
+                source: 'Manual',
+                team: {
+                    teamMembers: {
+                        some: {
+                            memberRef: memberId,
+                        },
+                    },
+                },
+            },
+            include: {
+                character: true,
+            },
+        });
     }
 }
 

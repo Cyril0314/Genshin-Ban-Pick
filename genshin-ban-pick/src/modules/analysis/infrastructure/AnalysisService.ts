@@ -21,4 +21,8 @@ export default class AnalysisService {
     async getCharacterClusters() {
         return this.client.get(`/analyses/character-clusters`);
     }
+
+    async getPlayerStyle(memberId: number) {
+        return this.client.get(`/analyses/member/${memberId}/style`);
+    }
 }

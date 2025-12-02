@@ -25,4 +25,9 @@ export default class AnalysisRepository {
         const response = await this.analysisService.getCharacterClusters();
         return response.data;
     }
-}
+
+    async fetchPlayerStyle(memberId: number) {
+        const response = await this.analysisService.getPlayerStyle(memberId);
+        return response.data;
+    }
+}   

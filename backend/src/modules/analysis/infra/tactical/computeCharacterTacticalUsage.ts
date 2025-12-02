@@ -9,7 +9,7 @@ import type { IMatchMoveWeightCalcCore } from '../../types/IMatchMoveWeightCalcC
 import type { IWeightContext } from '@shared/contracts/analysis/IWeightContext';
 import type { ICharacterTacticalUsage } from '@shared/contracts/analysis/ICharacterTacticalUsage';
 
-export default function computeCharacterTacticalUsage(matches: IMatchTimeMinimal[], matchMoves: IMatchMoveWeightCalcCore[], matchTacticalUsages: IMatchTacticalUsageExpandedRefs[]): ICharacterTacticalUsage[] {
+export function computeCharacterTacticalUsage(matches: IMatchTimeMinimal[], matchMoves: IMatchMoveWeightCalcCore[], matchTacticalUsages: IMatchTacticalUsageExpandedRefs[]): ICharacterTacticalUsage[] {
     const matchCount = matches.length;
 
     const usedSet = new Set(matchTacticalUsages.map((u) => `${u.matchId}:${u.characterKey}`));
