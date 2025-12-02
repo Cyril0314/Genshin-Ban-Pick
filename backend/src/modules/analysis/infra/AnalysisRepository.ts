@@ -8,7 +8,7 @@ import type { IMatchTimeMinimal } from '../types/IMatchTimeMinimal';
 import type { IMatchMoveWeightCalcCore } from '../types/IMatchMoveWeightCalcCore';
 import type { IMatchTacticalUsageExpandedRefs } from '../types/IMatchTacticalUsageExpandedRefs';
 import type { IMatchTacticalUsageTeamMemberIdentityRefs } from '../types/IMatchTacticalUsageUserPreferenceCore';
-import type { IMatchMoveWithCharacter } from '../types/IMatchMoveWithCharacter';
+import type { IMatchTacticalUsageWithCharacter } from '../types/IMatchTacticalUsageWithCharacter';
 import type { MoveSource, MoveType } from '@shared/contracts/match/value-types';
 import type { CharacterFilterKey } from '@shared/contracts/character/value-types';
 
@@ -81,17 +81,19 @@ export default class AnalysisRepository implements IAnalysisRepository {
         }));
     }
 
-    async findMatchMoveHistoryByMemberId(memberId: number): Promise<IMatchMoveWithCharacter[]> {
-        return await this.prisma.matchMove.findMany({
+    async findAllMatchTacticalUsageWithCharacter(): Promise<IMatchTacticalUsageWithCharacter[]> {
+        return await this.prisma.matchTacticalUsage.findMany({
+            include: {
+                character: true,
+            },
+        });
+    }
+
+    async findMatchTacticalUsageWithCharacterByMemberId(memberId: number): Promise<IMatchTacticalUsageWithCharacter[]> {
+        return await this.prisma.matchTacticalUsage.findMany({
             where: {
-                type: 'Pick',
-                source: 'Manual',
-                team: {
-                    teamMembers: {
-                        some: {
-                            memberRef: memberId,
-                        },
-                    },
+                teamMember: {
+                    memberRef: memberId,
                 },
             },
             include: {

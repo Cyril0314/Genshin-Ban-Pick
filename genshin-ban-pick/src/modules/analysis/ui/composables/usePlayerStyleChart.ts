@@ -18,7 +18,7 @@ export function usePlayerStyleChart() {
 
     onMounted(async () => {
         if (identity.value?.type === 'Member' && identity.value.user.id) {
-            playerStyle.value = await analysisUseCase.fetchPlayerStyle(8);
+            playerStyle.value = await analysisUseCase.fetchPlayerStyle(1);
         }
     });
 
@@ -35,9 +35,10 @@ export function usePlayerStyleChart() {
                 indicator: [
                     { name: '進攻型 (Aggression)', max: 100 },
                     { name: '防守型 (Support)', max: 100 },
-                    { name: '絕活哥 (Versatility)', max: 100 },
-                    { name: 'Meta奴 (Meta Affinity)', max: 100 },
+                    { name: '冷門角 (Versatility)', max: 100 },
+                    { name: 'Meta (Meta Affinity)', max: 100 },
                     { name: '元素偏好 (Element Bias)', max: 100 },
+                    { name: '武器偏好 (Weapon Bias)', max: 100 }
                 ],
                 splitNumber: 4,
                 axisName: {
@@ -62,7 +63,7 @@ export function usePlayerStyleChart() {
                     type: 'radar',
                     data: [
                         {
-                            value: [stats.aggression, stats.support, stats.versatility, stats.metaAffinity, stats.elementBias],
+                            value: [stats.aggression, stats.support, stats.versatility, stats.metaAffinity, stats.elementBias, stats.weaponBias],
                             name: '玩家風格',
                             itemStyle: {
                                 color: designTokens.colorPrimary.value,

@@ -4,4 +4,5 @@ export interface IPlayerStyleStats {
     versatility: number; // 0-100
     metaAffinity: number; // 0-100
     elementBias: number; // 0-100
+    weaponBias: number; // 0-100
 }

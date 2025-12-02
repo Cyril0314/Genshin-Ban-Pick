@@ -4,6 +4,7 @@ import CharacterSynergyCalculator from '../infra/synergy/CharacterSynergyCalcula
 import CharacterCommunityScanEngine from '../infra/clustering/CharacterCommunityScanEngine';
 import { computeCharacterTacticalUsage } from '../infra/tactical/computeCharacterTacticalUsage';
 import { computePlayerStyle } from '../infra/statistics/computePlayerStyle';
+import { createLogger } from '../../../utils/logger';
 
 import type { ICharacterRepository } from '../../character/domain/ICharacterRepository';
 import type { IAnalysisRepository } from '../domain/IAnalysisRepository';
@@ -14,6 +15,8 @@ import type { ISynergyMatrix } from '@shared/contracts/analysis/ISynergyMatrix';
 import type { ICharacterTacticalUsage } from '@shared/contracts/analysis/ICharacterTacticalUsage';
 import type { IPlayerStyleStats } from '@shared/contracts/analysis/IPlayerStyleStats';
 import type { SynergyMode } from '@shared/contracts/analysis/value-types';
+
+const logger = createLogger('ANALYSIS')
 
 export default class AnalysisService {
     constructor(
@@ -91,9 +94,9 @@ export default class AnalysisService {
     }
 
     async fetchPlayerStyle(memberId: number): Promise<IPlayerStyleStats> {
-        const memberMatchMoves = await this.analysisRepository.findMatchMoveHistoryByMemberId(memberId);
-        const allMatchMoves = await this.analysisRepository.findAllMatchMoveCoreForWeightCalc();
-
-        return computePlayerStyle(memberMatchMoves, allMatchMoves)
+        const memberUsages = await this.analysisRepository.findMatchTacticalUsageWithCharacterByMemberId(memberId);
+        const allUsages = await this.analysisRepository.findAllMatchTacticalUsageWithCharacter();
+        // logger.debug("memberMatchMoves", memberUsages)
+        return computePlayerStyle(memberUsages, allUsages)
     }
 }
