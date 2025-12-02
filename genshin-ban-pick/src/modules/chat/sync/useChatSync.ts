@@ -1,4 +1,5 @@
 // src/modules/chat/sync/useChatSync.ts
+
 import { useSocketStore } from '@/app/stores/socketStore';
 import { useAuthStore } from '@/modules/auth';
 import { ChatEvent } from '@shared/contracts/chat/value-types';

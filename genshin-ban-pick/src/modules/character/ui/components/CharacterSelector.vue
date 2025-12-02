@@ -105,7 +105,6 @@ function handleRandomButtonClick(zoneType: ZoneType) {
 
 <style scoped>
 .container__selector {
-    z-index: 1000;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
     /* justify-content: center; */

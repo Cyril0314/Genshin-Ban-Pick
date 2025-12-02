@@ -80,6 +80,7 @@ pm2 ls 列出所有 pm2 的程序
 pm2 start --name xxx.js 啟動服務
 pm2 stop --name 暫停服務
 pm2 restart --name 重啟服務
+
 1. 基本原則
 ✔ 一致性優先
 
@@ -100,45 +101,6 @@ pm2 restart --name 重啟服務
 常數	UPPER_SNAKE_CASE	MAX_STEP_COUNT, DEFAULT_ROOM_SIZE
 介面 (Interface)	首字母加 I（可選，但要一致）	IRoomState, IChatMessageDTO
 泛型參數	單字母大寫	T, K, V
-3. 檔案命名規則（架構導向）
-✔ 建議使用 kebab-case
-
-專案中大型後端最常見形式，例如：
-
-room.service.ts
-room.controller.ts
-room.router.ts
-room-state.repository.ts
-socket-auth.middleware.ts
-
-✔ 各檔案類型的後綴統一
-角色	後綴	範例
-Service（商業邏輯）	.service.ts	room.service.ts
-Controller（連接 router 與 service）	.controller.ts	room.controller.ts
-Repository（資料存取）	.repository.ts	room-state.repository.ts
-Router（HTTP endpoint）	.router.ts	room.router.ts
-Socket module	.socket.ts	chat.socket.ts, board.socket.ts
-Middleware	.middleware.ts	socket-auth.middleware.ts
-Domain / 型別定義	.ts（不需後綴）	IRoomState.ts、ITeam.ts
-4. 資料夾命名（模組化 Monolith）
-
-各功能模組使用 單數名詞 + domain 分層：
-
-modules/
-  room/
-    application/
-    controller/
-    domain/
-    infra/
-    http/
-    types/
-  socket/
-    modules/
-    managers/
-
-
-📌 資料夾也採用 kebab-case 或小寫
-例如：application、domain、infra、http。
 
 5. REST API 路由命名
 
@@ -157,57 +119,6 @@ modules/
 /rooms/:roomId/users
 /rooms/:roomId/messages
 
-6. Socket Event 命名規則
-✔ 使用 kebab-case 或 domain:action
-
-建議格式（專案清晰易搜尋）：
-
-room:joined
-room:left
-board:image-drop
-chat:message
-team:update
-step:next
-
-7. 環境變數命名規則（.env）
-✔ 標準格式：UPPER_SNAKE_CASE
-
-範例：
-
-DATABASE_URL=
-JWT_SECRET=
-SOCKET_PORT=
-NODE_ENV=
-
-
-參考來源指出環境變數習慣使用大寫並以底線分隔以提高可讀性。
-
-8. 測試命名規則
-
-檔名：*.test.ts 或 *.spec.ts
-
-對應原檔名，例如：
-
-room.service.test.ts
-match.controller.spec.ts
-
-📘 TL;DR（快速版）
-
-風格總表：
-
-類型	命名方式
-變數、函式	lowerCamelCase
-類別、介面、Enum	UpperCamelCase
-常數、env	UPPER_SNAKE_CASE
-檔名	kebab-case
-Service 檔案	*.service.ts
-Controller	*.controller.ts
-Repository	*.repository.ts
-Router	*.router.ts
-Socket module	*.socket.ts
-REST 資源路徑	複數名詞 /rooms
-介面命名	IName（可選但統一）
-
 
 | **Scope**    | **Intent / Purpose**                                                                | **Expected Output (Data)**                                                                    | **SQL Analogy**                                                         |
 | ------------ | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
@@ -221,568 +132,138 @@ REST 資源路徑	複數名詞 /rooms
 | **Full**     | Absolute unrestricted fetch (truly "no filter")                                     | All rows, including inactive, soft-deleted, archived, or orphaned records                     | `SELECT * FROM table;`                                                  |
 
 
-```
-Genshin-Ban-Pick
-├─ .prettierrc.json
-├─ backend
-│  ├─ .env
-│  ├─ eslint.config.js
-│  ├─ fix_headers.py
-│  ├─ package-lock.json
-│  ├─ package.json
-│  ├─ prisma
-│  │  ├─ characters.json
-│  │  ├─ migrations
-│  │  │  ├─ 20250513081454_init
-│  │  │  │  └─ migration.sql
-│  │  │  ├─ 20250514083431_add_user_model
-│  │  │  │  └─ migration.sql
-│  │  │  ├─ 20251102151051_add_role
-│  │  │  │  └─ migration.sql
-│  │  │  ├─ 20251102154054_add_guest
-│  │  │  │  └─ migration.sql
-│  │  │  ├─ 20251102184824_rename_user
-│  │  │  │  └─ migration.sql
-│  │  │  ├─ 20251105115425_refractor
-│  │  │  │  └─ migration.sql
-│  │  │  ├─ 20251105130019_model
-│  │  │  │  └─ migration.sql
-│  │  │  ├─ 20251105162328_add
-│  │  │  │  └─ migration.sql
-│  │  │  ├─ 20251108093141_add
-│  │  │  │  └─ migration.sql
-│  │  │  ├─ 20251108110607_enable_cascade_delete
-│  │  │  │  └─ migration.sql
-│  │  │  ├─ 20251108114629_delete_unused_fileds
-│  │  │  │  └─ migration.sql
-│  │  │  ├─ 20251111014228_add_slot_to_match_team_member
-│  │  │  │  └─ migration.sql
-│  │  │  ├─ 20251111015008_rename_slot_to_match_team_member
-│  │  │  │  └─ migration.sql
-│  │  │  ├─ 20251111020420_enforce_slot_to_match_team_member
-│  │  │  │  └─ migration.sql
-│  │  │  ├─ 20251111022046_rename_team_slot_to_slot
-│  │  │  │  └─ migration.sql
-│  │  │  ├─ 20251111022047_backfill_match_team_slot
-│  │  │  │  └─ migration.sql
-│  │  │  ├─ 20251111023456_enforce_team_slot
-│  │  │  │  └─ migration.sql
-│  │  │  └─ migration_lock.toml
-│  │  ├─ schema.prisma
-│  │  └─ seed.ts
-│  ├─ src
-│  │  ├─ app
-│  │  │  └─ appRouter.ts
-│  │  ├─ errors
-│  │  │  └─ AppError.ts
-│  │  ├─ index.ts
-│  │  ├─ middlewares
-│  │  │  └─ errorHandler.ts
-│  │  ├─ modules
-│  │  │  ├─ analysis
-│  │  │  │  ├─ application
-│  │  │  │  │  └─ analysis.service.ts
-│  │  │  │  ├─ controller
-│  │  │  │  │  └─ analysis.controller.ts
-│  │  │  │  ├─ domain
-│  │  │  │  │  ├─ IAnalysisRepository.ts
-│  │  │  │  │  ├─ ICommunityScanResult.ts
-│  │  │  │  │  ├─ IMoveContext.ts
-│  │  │  │  │  └─ ITacticalCoefficients.ts
-│  │  │  │  ├─ http
-│  │  │  │  │  └─ analyses.routes.ts
-│  │  │  │  ├─ index.ts
-│  │  │  │  ├─ infra
-│  │  │  │  │  ├─ AnalysisRepository.ts
-│  │  │  │  │  ├─ clustering
-│  │  │  │  │  │  └─ CharacterCommunityScanEngine.ts
-│  │  │  │  │  ├─ projection
-│  │  │  │  │  │  └─ DimensionProjector.ts
-│  │  │  │  │  ├─ synergy
-│  │  │  │  │  │  ├─ CharacterSynergyCalculator.ts
-│  │  │  │  │  │  └─ SynergyFeatureNormalizer.ts
-│  │  │  │  │  └─ tactical
-│  │  │  │  │     ├─ aggregateMoveWeightContext.ts
-│  │  │  │  │     ├─ calculateTacticalWeight.ts
-│  │  │  │  │     └─ computeCharacterTacticalUsage.ts
-│  │  │  │  └─ types
-│  │  │  │     ├─ IMatchMoveWeightCalcCore.ts
-│  │  │  │     ├─ IMatchTacticalUsageExpandedRefs.ts
-│  │  │  │     ├─ IMatchTacticalUsageUserPreferenceCore.ts
-│  │  │  │     └─ IMatchTimeMinimal.ts
-│  │  │  ├─ auth
-│  │  │  │  ├─ application
-│  │  │  │  │  ├─ auth.service.ts
-│  │  │  │  │  ├─ guest.service.ts
-│  │  │  │  │  └─ member.service.ts
-│  │  │  │  ├─ controller
-│  │  │  │  │  └─ auth.controller.ts
-│  │  │  │  ├─ domain
-│  │  │  │  │  ├─ IAuthPayload.ts
-│  │  │  │  │  ├─ IGuestRepository.ts
-│  │  │  │  │  ├─ IJwtProvider.ts
-│  │  │  │  │  └─ IMemberRepository.ts
-│  │  │  │  ├─ http
-│  │  │  │  │  └─ auth.routes.ts
-│  │  │  │  ├─ index.ts
-│  │  │  │  ├─ infra
-│  │  │  │  │  ├─ GuestRepository.ts
-│  │  │  │  │  ├─ JwtProvider.ts
-│  │  │  │  │  └─ MemberRepository.ts
-│  │  │  │  └─ types
-│  │  │  │     ├─ IGuestData.ts
-│  │  │  │     └─ IMemberData.ts
-│  │  │  ├─ board
-│  │  │  │  ├─ application
-│  │  │  │  │  ├─ board.service.ts
-│  │  │  │  │  └─ matchStep.service.ts
-│  │  │  │  ├─ domain
-│  │  │  │  │  ├─ addRandomContext.ts
-│  │  │  │  │  ├─ findZoneIdByImageId.ts
-│  │  │  │  │  ├─ imageDrop.ts
-│  │  │  │  │  ├─ imageMapReset.ts
-│  │  │  │  │  ├─ imageRestore.ts
-│  │  │  │  │  ├─ placeImage.ts
-│  │  │  │  │  ├─ removeImage.ts
-│  │  │  │  │  └─ removeRandomContext.ts
-│  │  │  │  └─ index.ts
-│  │  │  ├─ character
-│  │  │  │  ├─ application
-│  │  │  │  │  └─ character.service.ts
-│  │  │  │  ├─ controller
-│  │  │  │  │  └─ character.controller.ts
-│  │  │  │  ├─ domain
-│  │  │  │  │  ├─ ICharacterRepository.ts
-│  │  │  │  │  └─ mapCharacterFromPrisma.ts
-│  │  │  │  ├─ http
-│  │  │  │  │  └─ characters.routes.ts
-│  │  │  │  ├─ index.ts
-│  │  │  │  └─ infra
-│  │  │  │     └─ CharacterRepository.ts
-│  │  │  ├─ chat
-│  │  │  │  ├─ application
-│  │  │  │  │  └─ chat.service.ts
-│  │  │  │  ├─ domain
-│  │  │  │  │  └─ addMessage.ts
-│  │  │  │  └─ index.ts
-│  │  │  ├─ match
-│  │  │  │  ├─ application
-│  │  │  │  │  ├─ creators
-│  │  │  │  │  │  ├─ MatchCreator.ts
-│  │  │  │  │  │  ├─ MatchMoveCreator.ts
-│  │  │  │  │  │  ├─ MatchTacticalUsageCreator.ts
-│  │  │  │  │  │  ├─ MatchTeamCreator.ts
-│  │  │  │  │  │  └─ MatchTeamMemberCreator.ts
-│  │  │  │  │  └─ match.service.ts
-│  │  │  │  ├─ controller
-│  │  │  │  │  └─ match.controller.ts
-│  │  │  │  ├─ domain
-│  │  │  │  │  ├─ IMatchRepository.ts
-│  │  │  │  │  ├─ IMatchSnapshot.ts
-│  │  │  │  │  ├─ IMatchSnapshotRepository.ts
-│  │  │  │  │  ├─ mapMatchFromPrisma.ts
-│  │  │  │  │  ├─ resolveIdentity.ts
-│  │  │  │  │  ├─ restoreFilterFromJson.ts
-│  │  │  │  │  └─ validateSnapshot.ts
-│  │  │  │  ├─ http
-│  │  │  │  │  └─ matches.routes.ts
-│  │  │  │  ├─ index.ts
-│  │  │  │  ├─ infra
-│  │  │  │  │  ├─ MatchRepository.ts
-│  │  │  │  │  └─ MatchSnapshotRepository.ts
-│  │  │  │  └─ types
-│  │  │  │     └─ ResolvedIdentity.ts
-│  │  │  ├─ room
-│  │  │  │  ├─ application
-│  │  │  │  │  ├─ room.service.ts
-│  │  │  │  │  └─ roomUser.service.ts
-│  │  │  │  ├─ controller
-│  │  │  │  │  └─ room.controller.ts
-│  │  │  │  ├─ domain
-│  │  │  │  │  ├─ createDefaultTeams.ts
-│  │  │  │  │  ├─ createMatchFlow.ts
-│  │  │  │  │  ├─ createRoomSetting.ts
-│  │  │  │  │  ├─ createRoomState.ts
-│  │  │  │  │  ├─ createZoneMetaTable.ts
-│  │  │  │  │  ├─ IRoomStateRepository.ts
-│  │  │  │  │  ├─ joinRoomUser.ts
-│  │  │  │  │  └─ leaveRoomUser.ts
-│  │  │  │  ├─ http
-│  │  │  │  │  └─ rooms.routes.ts
-│  │  │  │  ├─ index.ts
-│  │  │  │  └─ infra
-│  │  │  │     └─ RoomStateRepository.ts
-│  │  │  ├─ socket
-│  │  │  │  ├─ domain
-│  │  │  │  │  ├─ IAuthValidator.ts
-│  │  │  │  │  └─ IRoomStateManager.ts
-│  │  │  │  ├─ index.ts
-│  │  │  │  ├─ infra
-│  │  │  │  │  ├─ AuthValidator.ts
-│  │  │  │  │  ├─ RoomStateManager.ts
-│  │  │  │  │  └─ socketAuth.ts
-│  │  │  │  ├─ modules
-│  │  │  │  │  ├─ boardSocket.ts
-│  │  │  │  │  ├─ chatSocket.ts
-│  │  │  │  │  ├─ roomSocket.ts
-│  │  │  │  │  ├─ stepSocket.ts
-│  │  │  │  │  ├─ tacticalSocket.ts
-│  │  │  │  │  └─ teamSocket.ts
-│  │  │  │  └─ socketController.ts
-│  │  │  ├─ tactical
-│  │  │  │  ├─ application
-│  │  │  │  │  └─ tactical.service.ts
-│  │  │  │  ├─ domain
-│  │  │  │  │  ├─ findCellIdByImageId.ts
-│  │  │  │  │  ├─ imageMapReset.ts
-│  │  │  │  │  ├─ imagePlace.ts
-│  │  │  │  │  ├─ imageRemove.ts
-│  │  │  │  │  ├─ placeCellImage.ts
-│  │  │  │  │  └─ removeCellImage.ts
-│  │  │  │  └─ index.ts
-│  │  │  └─ team
-│  │  │     ├─ application
-│  │  │     │  └─ team.service.ts
-│  │  │     ├─ domain
-│  │  │     │  ├─ addTeamMember.ts
-│  │  │     │  ├─ memberJoin.ts
-│  │  │     │  ├─ memberLeave.ts
-│  │  │     │  └─ removeTeamMember.ts
-│  │  │     └─ index.ts
-│  │  ├─ prisma.ts
-│  │  └─ utils
-│  │     ├─ asyncHandler.ts
-│  │     └─ logger.ts
-│  ├─ test
-│  │  └─ saveMatch.test.ts
-│  ├─ tsconfig.json
-│  ├─ tsup.config.ts
-│  ├─ types
-│  │  ├─ ml-kmeans.d.ts
-│  │  └─ ml-pca.d.ts
-│  ├─ upload-node-modules.sh
-│  └─ verify_headers.py
-├─ Genshin-Ban-Pick
-│  ├─ .editorconfig
-│  ├─ .env.development
-│  ├─ .env.production
-│  ├─ deploy-dist-to-ec2.sh
-│  ├─ dist
-│  ├─ env.d.ts
-│  ├─ eslint.config.ts
-│  ├─ index.html
-│  ├─ package-lock.json
-│  ├─ package.json
-│  ├─ public
-│  │  ├─ favicon.ico
-│  │  └─ wish.png
-│  ├─ README.md
-│  ├─ src
-│  │  ├─ app
-│  │  │  ├─ bootstrap
-│  │  │  │  ├─ registerAllSyncModules.ts
-│  │  │  │  ├─ registerHttpClient.ts
-│  │  │  │  └─ useAppInitializer.ts
-│  │  │  ├─ constants
-│  │  │  │  └─ customMIMETypes.ts
-│  │  │  ├─ errors
-│  │  │  │  └─ AppError.ts
-│  │  │  ├─ infrastructure
-│  │  │  │  └─ http
-│  │  │  │     └─ httpClient.ts
-│  │  │  ├─ stores
-│  │  │  │  └─ socketStore.ts
-│  │  │  └─ ui
-│  │  ├─ App.vue
-│  │  ├─ main.ts
-│  │  ├─ modules
-│  │  │  ├─ analysis
-│  │  │  │  ├─ application
-│  │  │  │  │  └─ analysisUseCase.ts
-│  │  │  │  ├─ domain
-│  │  │  │  │  ├─ fetchPreferenceDomain.ts
-│  │  │  │  │  ├─ fetchSynergyDomain.ts
-│  │  │  │  │  ├─ fetchTacticalUsagesDomain.ts
-│  │  │  │  │  └─ useAnalysisDomain.ts
-│  │  │  │  ├─ index.ts
-│  │  │  │  ├─ infrastructure
-│  │  │  │  │  └─ analysisService.ts
-│  │  │  │  └─ ui
-│  │  │  │     ├─ components
-│  │  │  │     │  ├─ Analysis.vue
-│  │  │  │     │  ├─ AnalysisDrawer.vue
-│  │  │  │     │  ├─ CharacterClustersChart.vue
-│  │  │  │     │  ├─ CharacterMetaChart.vue
-│  │  │  │     │  ├─ CharacterSynergyChart.vue
-│  │  │  │     │  ├─ CharacterTacticalUsageCompositionChart.vue
-│  │  │  │     │  ├─ CharacterTacticalUsagesChart.vue
-│  │  │  │     │  └─ PlayerCharacterChart.vue
-│  │  │  │     └─ composables
-│  │  │  │        ├─ useAnalysis.ts
-│  │  │  │        ├─ useCharacterClustersChart.ts
-│  │  │  │        ├─ useCharacterSynergyChart.ts
-│  │  │  │        ├─ useCharacterTacticalUsageCompositionChart.ts
-│  │  │  │        ├─ useCharacterTacticalUsagesChart.ts
-│  │  │  │        └─ usePlayerCharacterChart.ts
-│  │  │  ├─ auth
-│  │  │  │  ├─ application
-│  │  │  │  │  └─ authUseCase.ts
-│  │  │  │  ├─ domain
-│  │  │  │  │  ├─ autoLoginDomain.ts
-│  │  │  │  │  ├─ loginGuestDomain.ts
-│  │  │  │  │  ├─ loginMemberDomain.ts
-│  │  │  │  │  └─ registerMemberDomain.ts
-│  │  │  │  ├─ index.ts
-│  │  │  │  ├─ infrastructure
-│  │  │  │  │  ├─ authService.ts
-│  │  │  │  │  └─ tokenStorage.ts
-│  │  │  │  ├─ store
-│  │  │  │  │  └─ authStore.ts
-│  │  │  │  ├─ types
-│  │  │  │  │  ├─ Identity.ts
-│  │  │  │  │  ├─ IGuest.ts
-│  │  │  │  │  └─ IMember.ts
-│  │  │  │  └─ ui
-│  │  │  │     └─ views
-│  │  │  │        ├─ LoginView.vue
-│  │  │  │        └─ RegisterView.vue
-│  │  │  ├─ banPick
-│  │  │  │  └─ ui
-│  │  │  │     ├─ components
-│  │  │  │     │  └─ ToolBar.vue
-│  │  │  │     ├─ composables
-│  │  │  │     │  ├─ useBanPickFacade.ts
-│  │  │  │     │  ├─ useBanPickFilters.ts
-│  │  │  │     │  ├─ useBanPickInitializer.ts
-│  │  │  │     │  ├─ useBanPickMatchSave.ts
-│  │  │  │     │  ├─ useBanPickRandomPull.ts
-│  │  │  │     │  └─ useViewportScale.ts
-│  │  │  │     └─ views
-│  │  │  │        └─ BanPickView.vue
-│  │  │  ├─ board
-│  │  │  │  ├─ application
-│  │  │  │  │  ├─ boardUseCase.ts
-│  │  │  │  │  ├─ matchStepUseCase.ts
-│  │  │  │  │  └─ randomPullUseCase.ts
-│  │  │  │  ├─ domain
-│  │  │  │  │  ├─ findNextMatchStepZoneIdDomain.ts
-│  │  │  │  │  ├─ findZoneIdByImageIdDomain.ts
-│  │  │  │  │  ├─ getAvailableImageIdsDomain.ts
-│  │  │  │  │  ├─ handleBoardImageDropDomain.ts
-│  │  │  │  │  ├─ handleBoardImageMapResetDomain.ts
-│  │  │  │  │  ├─ handleBoardImageRestoreDomain.ts
-│  │  │  │  │  ├─ pickRandomImageDomain.ts
-│  │  │  │  │  ├─ placeImageDomain.ts
-│  │  │  │  │  └─ removeImageDomain.ts
-│  │  │  │  ├─ index.ts
-│  │  │  │  ├─ store
-│  │  │  │  │  ├─ boardImageStore.ts
-│  │  │  │  │  └─ matchStepStore.ts
-│  │  │  │  ├─ sync
-│  │  │  │  │  ├─ useBoardSync.ts
-│  │  │  │  │  └─ useMatchStepSync.ts
-│  │  │  │  └─ ui
-│  │  │  │     ├─ components
-│  │  │  │     │  ├─ BanPickBoard.vue
-│  │  │  │     │  ├─ BanZones.vue
-│  │  │  │     │  ├─ DropZone.vue
-│  │  │  │     │  ├─ ImageOptions.vue
-│  │  │  │     │  ├─ PickZones.vue
-│  │  │  │     │  ├─ StepIndicator.vue
-│  │  │  │     │  └─ UtilityZones.vue
-│  │  │  │     └─ composables
-│  │  │  │        └─ useBoardZonesLayout.ts
-│  │  │  ├─ character
-│  │  │  │  ├─ application
-│  │  │  │  │  └─ characterUseCase.ts
-│  │  │  │  ├─ domain
-│  │  │  │  │  └─ fetchCharacterMapDomain.ts
-│  │  │  │  ├─ index.ts
-│  │  │  │  ├─ infrastructure
-│  │  │  │  │  └─ characterService.ts
-│  │  │  │  ├─ store
-│  │  │  │  │  └─ characterStore.ts
-│  │  │  │  └─ ui
-│  │  │  │     ├─ components
-│  │  │  │     │  └─ CharacterSelector.vue
-│  │  │  │     └─ composables
-│  │  │  │        ├─ useFilteredCharacters.ts
-│  │  │  │        └─ useSelectorOptions.ts
-│  │  │  ├─ chat
-│  │  │  │  ├─ application
-│  │  │  │  │  └─ chatUseCase.ts
-│  │  │  │  ├─ domain
-│  │  │  │  │  ├─ addMessageDomain.ts
-│  │  │  │  │  ├─ buildChatMessageDomain.ts
-│  │  │  │  │  └─ sendMessageDomain.ts
-│  │  │  │  ├─ index.ts
-│  │  │  │  ├─ store
-│  │  │  │  │  └─ chatStore.ts
-│  │  │  │  ├─ sync
-│  │  │  │  │  └─ useChatSync.ts
-│  │  │  │  └─ ui
-│  │  │  │     ├─ components
-│  │  │  │     │  ├─ ChatFloating.vue
-│  │  │  │     │  ├─ ChatRoom.vue
-│  │  │  │     │  └─ ChatRoomDrawer.vue
-│  │  │  │     └─ composables
-│  │  │  ├─ match
-│  │  │  │  ├─ application
-│  │  │  │  │  └─ matchUseCase.ts
-│  │  │  │  ├─ domain
-│  │  │  │  │  └─ saveMatchDomain.ts
-│  │  │  │  ├─ index.ts
-│  │  │  │  └─ infrastructure
-│  │  │  │     └─ matchService.ts
-│  │  │  ├─ room
-│  │  │  │  ├─ application
-│  │  │  │  │  └─ roomUseCase.ts
-│  │  │  │  ├─ domain
-│  │  │  │  │  ├─ buildRoomDomain.ts
-│  │  │  │  │  ├─ fetchRoomsDomain.ts
-│  │  │  │  │  └─ fetchRoomSettingDomain.ts
-│  │  │  │  ├─ index.ts
-│  │  │  │  ├─ infrastructure
-│  │  │  │  │  └─ roomService.ts
-│  │  │  │  ├─ store
-│  │  │  │  │  └─ roomUserStore.ts
-│  │  │  │  ├─ sync
-│  │  │  │  │  └─ useRoomUserSync.ts
-│  │  │  │  └─ ui
-│  │  │  │     ├─ components
-│  │  │  │     │  └─ RoomUserPool.vue
-│  │  │  │     ├─ composables
-│  │  │  │     │  ├─ useRoomList.ts
-│  │  │  │     │  └─ useRoomSetting.ts
-│  │  │  │     └─ views
-│  │  │  │        ├─ RoomListView.vue
-│  │  │  │        └─ RoomSettingView.vue
-│  │  │  ├─ shared
-│  │  │  │  ├─ constants
-│  │  │  │  │  └─ characterNameMap.ts
-│  │  │  │  ├─ domain
-│  │  │  │  │  └─ getCharacterDisplayName.ts
-│  │  │  │  ├─ infrastructure
-│  │  │  │  │  └─ imageRegistry.ts
-│  │  │  │  ├─ ui
-│  │  │  │  │  └─ composables
-│  │  │  │  │     ├─ useDesignTokens.ts
-│  │  │  │  │     ├─ useEchartTheme.ts
-│  │  │  │  │     ├─ useElementColor.ts
-│  │  │  │  │     ├─ useMyTeamInfo.ts
-│  │  │  │  │     ├─ useRelativeTime.ts
-│  │  │  │  │     ├─ useScopedCssVar.ts
-│  │  │  │  │     └─ useTeamTheme.ts
-│  │  │  │  └─ utils
-│  │  │  │     └─ array.ts
-│  │  │  ├─ tactical
-│  │  │  │  ├─ application
-│  │  │  │  │  └─ tacticalUseCase.ts
-│  │  │  │  ├─ domain
-│  │  │  │  │  ├─ findCellIdByImageIdDomain.ts
-│  │  │  │  │  ├─ handleTacticalCellImageMapResetDomain.ts
-│  │  │  │  │  ├─ handleTacticalCellImagePlaceDomain.ts
-│  │  │  │  │  ├─ handleTacticalCellImageRemoveDomain.ts
-│  │  │  │  │  ├─ placeCellImageDomain.ts
-│  │  │  │  │  └─ removeCellImageDomain.ts
-│  │  │  │  ├─ index.ts
-│  │  │  │  ├─ store
-│  │  │  │  │  └─ tacticalBoardStore.ts
-│  │  │  │  ├─ sync
-│  │  │  │  │  └─ useTacticalBoardSync.ts
-│  │  │  │  └─ ui
-│  │  │  │     ├─ components
-│  │  │  │     │  ├─ TacticalBoard.vue
-│  │  │  │     │  ├─ TacticalBoardPanel.vue
-│  │  │  │     │  ├─ TacticalBoardPanelDrawer.vue
-│  │  │  │     │  ├─ TacticalCell.vue
-│  │  │  │     │  └─ TacticalPool.vue
-│  │  │  │     └─ composables
-│  │  │  │        └─ useTacticalPool.ts
-│  │  │  └─ team
-│  │  │     ├─ application
-│  │  │     │  └─ teamUseCase.ts
-│  │  │     ├─ domain
-│  │  │     │  ├─ addTeamMemberDomain.ts
-│  │  │     │  ├─ createManualMemberDomain.ts
-│  │  │     │  ├─ createOnlineMemberDomain.ts
-│  │  │     │  ├─ handleMemberDropDomain.ts
-│  │  │     │  ├─ handleMemberInputDomian.ts
-│  │  │     │  ├─ handleMemberJoinDomain.ts
-│  │  │     │  ├─ handleMemberLeaveDomain.ts
-│  │  │     │  └─ removeTeamMemberDomain.ts
-│  │  │     ├─ index.ts
-│  │  │     ├─ store
-│  │  │     │  └─ teamInfoStore.ts
-│  │  │     ├─ sync
-│  │  │     │  └─ useTeamInfoSync.ts
-│  │  │     └─ ui
-│  │  │        └─ components
-│  │  │           └─ TeamInfo.vue
-│  │  └─ router
-│  │     └─ index.ts
-│  ├─ tsconfig.app.json
-│  ├─ tsconfig.json
-│  ├─ tsconfig.node.json
-│  ├─ upload-node-modules.sh
-│  └─ vite.config.ts
-├─ package-lock.json
-├─ README.md
-├─ shared
-│  ├─ contracts
-│  │  ├─ analysis
-│  │  │  ├─ IArchetypePoint.ts
-│  │  │  ├─ IBanContext.ts
-│  │  │  ├─ IBridgeScoreResult.ts
-│  │  │  ├─ ICharacterClusters.ts
-│  │  │  ├─ ICharacterTacticalUsage.ts
-│  │  │  ├─ IPickContext.ts
-│  │  │  ├─ IPreference.ts
-│  │  │  ├─ ISynergyMatrix.ts
-│  │  │  ├─ IUtilityContext.ts
-│  │  │  ├─ IWeightContext.ts
-│  │  │  └─ value-types.ts
-│  │  ├─ auth
-│  │  │  └─ value_types.ts
-│  │  ├─ board
-│  │  │  ├─ BoardImageMap.ts
-│  │  │  ├─ IZone.ts
-│  │  │  └─ value-types.ts
-│  │  ├─ character
-│  │  │  ├─ CharacterRandomContextMap.ts
-│  │  │  ├─ ICharacter.ts
-│  │  │  ├─ ICharacterRandomContext.ts
-│  │  │  └─ value-types.ts
-│  │  ├─ chat
-│  │  │  ├─ IChatMessage.ts
-│  │  │  └─ value-types.ts
-│  │  ├─ match
-│  │  │  ├─ IMatch.ts
-│  │  │  ├─ IMatchFlow.ts
-│  │  │  ├─ IMatchMemberUser.ts
-│  │  │  ├─ IMatchMove.ts
-│  │  │  ├─ IMatchStep.ts
-│  │  │  ├─ IMatchTacticalUsage.ts
-│  │  │  ├─ IMatchTeam.ts
-│  │  │  ├─ IMatchTeamMember.ts
-│  │  │  ├─ IRandomMoveContext.ts
-│  │  │  └─ value-types.ts
-│  │  ├─ room
-│  │  │  ├─ IRoomSetting.ts
-│  │  │  ├─ IRoomState.ts
-│  │  │  ├─ IRoomUser.ts
-│  │  │  └─ value-types.ts
-│  │  ├─ tactical
-│  │  │  ├─ TacticalCellImageMap.ts
-│  │  │  ├─ TeamTacticalCellImageMap.ts
-│  │  │  └─ value-types.ts
-│  │  └─ team
-│  │     ├─ ITeam.ts
-│  │     ├─ TeamMember.ts
-│  │     ├─ TeamMembersMap.ts
-│  │     └─ value-types.ts
-│  ├─ package.json
-│  └─ tsconfig.json
-└─ verify_frontend_headers.py
+# Genshin Ban Pick
+
+一個基於 **Clean Architecture** 與 **Modular Monolith** 架構設計的原神 (Genshin Impact) Ban/Pick 模擬應用程式。
+
+## 專案簡介
+
+本專案旨在提供一個多人即時協作的 Ban/Pick 系統，支援：
+
+-   **即時同步**：透過 Socket.IO 實現多端狀態同步 (Ban/Pick 狀態、聊天室)。
+-   **角色管理**：完整的原神角色資料庫。
+-   **戰術白板**：可拖曳的角色與標記功能。
+
+## 系統架構 (Architecture)
+
+本專案採用 **Modular Monolith** 搭配 **Clean Architecture**，前後端架構高度一致，確保可維護性與擴充性。
+
+### 分層設計 (Layered Architecture)
+
+無論是前端或後端，每個模組 (Module) 皆遵循以下分層：
+
+1.  **Domain Layer (核心層)**
+
+    -   **職責**：定義業務規則、實體 (Entities) 與純邏輯運算。
+    -   **特性**：不依賴任何外部框架或 UI，純 TypeScript 函式。
+    -   **路徑**：`src/modules/*/domain`
+
+2.  **Application Layer (應用層)**
+
+    -   **職責**：Use Cases (使用案例)。協調 Domain、Store 與 Infrastructure。
+    -   **特性**：定義系統能「做什麼」(User Actions)。
+    -   **路徑**：`src/modules/*/application`
+
+3.  **Interface Adapter Layer (介面適配層)**
+
+    -   **Frontend**：UI Components (`.vue`), Composables (Controllers), Stores (Pinia).
+    -   **Backend**：Controllers, Socket Handlers.
+    -   **路徑**：`src/modules/*/ui`, `src/modules/*/store`, `src/modules/*/controller`
+
+4.  **Infrastructure Layer (基礎設施層)**
+    -   **職責**：實作具體的技術細節 (API Client, Database Repository, Socket Client)。
+    -   **路徑**：`src/modules/*/infrastructure`
+
+### 目錄結構
 
 ```
+src/
+├── app/                 # 全域應用設定 (Bootstrap, Global Stores, Errors)
+├── modules/             # 功能模組 (Feature Modules)
+│   ├── auth/            # 認證模組
+│   ├── board/           # 戰術白板與 Ban/Pick 核心
+│   ├── character/       # 角色資料
+│   ├── chat/            # 聊天室
+│   ├── match/           # 對局流程
+│   ├── room/            # 房間管理
+│   └── ...
+└── shared/              # 前後端共用合約 (Contracts/Types)
+```
+
+## 技術堆疊 (Tech Stack)
+
+### Frontend
+
+-   **Framework**: Vue 3 (Composition API)
+-   **Language**: TypeScript
+-   **State Management**: Pinia
+-   **UI Library**: Naive UI
+-   **Build Tool**: Vite
+-   **Communication**: Socket.IO Client, Axios
+
+### Backend
+
+-   **Runtime**: Node.js
+-   **Framework**: Express
+-   **Language**: TypeScript
+-   **Database**: PostgreSQL
+-   **ORM**: Prisma
+-   **Real-time**: Socket.IO
+
+## 快速開始 (Getting Started)
+
+### 前置需求
+
+-   Node.js (v18+)
+-   PostgreSQL
+
+### 安裝與執行
+
+1.  **安裝依賴**
+
+    ```bash
+    # 下載 npm ipv4 優先 (解決某些網路問題)
+    NODE_OPTIONS=--dns-result-order=ipv4first npm install
+    ```
+
+2.  **資料庫設定 (Backend)**
+
+    ```bash
+    # 產生 Prisma Client
+    npx prisma generate
+
+    # 執行 Migration
+    npx prisma migrate dev
+    ```
+
+-   **變數 / 函式**: `lowerCamelCase` (e.g., `getUserTeam`)
+-   **類別 / 型別**: `UpperCamelCase` (e.g., `RoomService`, `IRoomState`)
+-   **常數**: `UPPER_SNAKE_CASE` (e.g., `MAX_STEP_COUNT`)
+-   **檔案命名**: `kebab-case` (e.g., `room-user.service.ts`)
+
+### 檔案後綴
+
+| 類型          | 後綴             | 範例                 |
+| ------------- | ---------------- | -------------------- |
+| Service       | `.service.ts`    | `room.service.ts`    |
+| UseCase       | `UseCase.ts`     | `authUseCase.ts`     |
+| Repository    | `Repository.ts`  | `AuthRepository.ts`  |
+| Controller    | `.controller.ts` | `room.controller.ts` |
+| Socket        | `.socket.ts`     | `chat.socket.ts`     |
+| Vue Component | `.vue`           | `ChatRoom.vue`       |
+
+### Git 規範
+
+-   確保檔案名稱大小寫一致 (避免 macOS/Windows 大小寫不敏感導致的問題)。
+-   Commit Message 建議遵循 Conventional Commits (e.g., `feat: add chat drawer`, `fix: resolve dependency injection error`).
+
+## 架構審查總結 (Architecture Review)
+
+本專案架構完整度極高，具備以下優點：
+
+1.  **關注點分離 (SoC)**：業務邏輯與 UI 完全解耦，測試容易。
+2.  **模組化**：功能模組獨立，降低耦合度。
+3.  **型別安全**：前後端共用 `shared/contracts`，減少整合錯誤。
+4.  **依賴注入 (DI)**：透過 Vue `provide/inject` 與後端 DI 容器，實現鬆散耦合。
+
+建議持續保持此架構規範，並注意 UseCase 與 Store 之間的職責邊界。

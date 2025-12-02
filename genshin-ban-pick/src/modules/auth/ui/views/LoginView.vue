@@ -138,7 +138,7 @@ async function handleLoginGuestButtonClick() {
 }
 
 .form__group input:focus {
-    outline: 1px solid color-mix(in srgb, var(--md-sys-color-on-surface-variant) 80%, white 80%);
+    outline: 1px solid color-mix(in srgb, var(--md-sys-color-on-surface-variant) 20%, white 80%);
 }
 
 .layout__actions {
@@ -202,7 +202,7 @@ async function handleLoginGuestButtonClick() {
 }
 
 .btn__guest:hover {
-    color: color-mix(in srgb, var(--md-sys-color-on-surface-variant) 90%, white 10%);
+    color: color-mix(in srgb, var(--md-sys-color-on-surface-variant) 40%, white 60%);
     transform: scale(1.02);
 }
 </style>

@@ -25,4 +25,8 @@ export default class ChatUseCase {
     setMessages(messages: IChatMessage[], identityKey?: string) {
         this.chatStore.setMessages(messages)
     }
+
+    setHasUnreadMessage(hasUnreadMessage: boolean) {
+        this.chatStore.setHasUnreadMessage(hasUnreadMessage)
+    }
 }

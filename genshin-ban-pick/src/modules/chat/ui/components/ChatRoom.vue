@@ -1,4 +1,5 @@
 <!-- src/modules/chat/ui/components/ChatRoom.vue -->
+ 
 <script setup lang="ts">
 import { ref, nextTick, watch } from 'vue';
 import { storeToRefs } from 'pinia';
@@ -49,10 +50,10 @@ function isSelfMessage(msg: IChatMessage) {
 
 <template>
     <div class="chat__window">
-        <div class="chat__header">
-            <span id="current-nickname">用戶名稱: {{ nickname }} </span>
+        <!-- <div class="chat__header"> -->
+            <!-- <span id="current-nickname">用戶名稱: {{ nickname }} </span> -->
             <!-- <button @click="changeNickname">更改</button> -->
-        </div>
+        <!-- </div> -->
 
         <div ref="messagesContainer" class="chat__messages">
             <div v-for="(msg, index) in messages" :key="index" class="message__container"
@@ -72,12 +73,13 @@ function isSelfMessage(msg: IChatMessage) {
 
 <style scoped>
 .chat__window {
-    --size-chat-room: calc(var(--base-size) * 16);
+    --size-chat-room: calc(var(--base-size) * 18);
 
     display: flex;
     flex-direction: column;
     width: var(--size-chat-room);
     height: 100%;
+    overflow: hidden;
     padding: var(--space-lg);
     gap: var(--space-md);
 }
@@ -109,21 +111,21 @@ function isSelfMessage(msg: IChatMessage) {
     align-items: center;
 }
 
-#current-nickname {
+/* #current-nickname {
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-bold);
     font-family: var(--font-family-sans);
     color: var(--md-sys-color-on-surface);
     flex: 1;
     min-width: 50px;
-}
+} */
 
 .chat__messages {
     display: flex;
     flex-grow: 1;
     flex-direction: column;
     overflow-y: auto;
-    background-color: var(--md-sys-color-surface-container);
+    background-color: var(--md-sys-color-surface-container-low);
     color: var(--md-sys-color-on-primary-container);
     border-radius: var(--radius-lg);
     
@@ -158,7 +160,7 @@ function isSelfMessage(msg: IChatMessage) {
     font-weight: var(--font-weight-regular);
     font-family: var(--font-family-sans);
     color: var(--md-sys-color-on-surface);
-    background-color: var(--md-sys-color-surface-container-highest);
+    background-color: var(--md-sys-color-surface-container-high);
     padding: var(--space-xs) var(--space-md);
     border-radius: var(--radius-sm);
     word-break: break-all;
@@ -187,7 +189,7 @@ function isSelfMessage(msg: IChatMessage) {
     font-weight: var(--font-weight-regular);
     font-family: var(--font-family-sans);
     flex: 1;
-    background-color: var(--md-sys-color-surface-container-highest);
+    background-color: var(--md-sys-color-surface-container);
     color: var(--md-sys-color-on-surface);
     border: none;
     outline: 2px solid var(--md-sys-color-outline-variant);

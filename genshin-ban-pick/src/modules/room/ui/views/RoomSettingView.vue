@@ -117,7 +117,7 @@ async function handleSubmit() {
 }
 
 .form__group input:focus {
-    outline: 1px solid color-mix(in srgb, var(--md-sys-color-on-surface-variant) 80%, white 80%);
+    outline: 1px solid color-mix(in srgb, var(--md-sys-color-on-surface-variant) 20%, white 80%);
 }
 
 .layout__actions {
