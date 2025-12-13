@@ -31,7 +31,7 @@ export function useChatSync() {
 
     function handleChatMessagesStateSync(newMessages: IChatMessage[]) {
         console.debug(`[CHAT] Handle chat messages state sync`, newMessages);
-        chatUseCase.setMessages(newMessages, authStore.identityKey ?? undefined);
+        chatUseCase.setMessages(newMessages);
     }
 
     function handleChatMessageSendBroadcast(message: IChatMessage) {

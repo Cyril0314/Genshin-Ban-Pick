@@ -22,7 +22,7 @@ export default class ChatUseCase {
         this.chatStore.setMessages(nextMessages)
     }
 
-    setMessages(messages: IChatMessage[], identityKey?: string) {
+    setMessages(messages: IChatMessage[]) {
         this.chatStore.setMessages(messages)
     }
 

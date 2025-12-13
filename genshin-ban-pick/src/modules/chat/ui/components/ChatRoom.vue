@@ -1,11 +1,11 @@
 <!-- src/modules/chat/ui/components/ChatRoom.vue -->
- 
+
 <script setup lang="ts">
 import { ref, nextTick, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import { useAuthStore } from '@/modules/auth';
-import { useRelativeTime } from '@/modules/shared/ui/composables/useRelativeTime';
+import { useCurrentTime, formatRelativeTime } from '@/modules/shared/ui/composables/useRelativeTime';
 import { useChatSync } from '../../sync/useChatSync.ts';
 import { useChatStore } from '../../store/chatStore.ts';
 import type { IChatMessage } from '@shared/contracts/chat/IChatMessage.ts';
@@ -17,6 +17,7 @@ const { messages } = storeToRefs(chatStore)
 const { sendMessage } = useChatSync();
 const authStore = useAuthStore();
 const { nickname, identityKey } = storeToRefs(authStore);
+const now = useCurrentTime();
 
 watch(
     messages,
@@ -51,16 +52,16 @@ function isSelfMessage(msg: IChatMessage) {
 <template>
     <div class="chat__window">
         <!-- <div class="chat__header"> -->
-            <!-- <span id="current-nickname">用戶名稱: {{ nickname }} </span> -->
-            <!-- <button @click="changeNickname">更改</button> -->
+        <!-- <span id="current-nickname">用戶名稱: {{ nickname }} </span> -->
+        <!-- <button @click="changeNickname">更改</button> -->
         <!-- </div> -->
 
         <div ref="messagesContainer" class="chat__messages">
             <div v-for="(msg, index) in messages" :key="index" class="message__container"
                 :class="[{ 'message__container--self': isSelfMessage(msg) }]">
-                <span v-if="!isSelfMessage(msg)" class = "message__name">{{ `${msg.nickname}:` }}</span> 
-                <div class ="message"> {{ msg.message }} </div>
-                <span class="message__time">{{ useRelativeTime(msg.timestamp ?? 0) }}</span>
+                <span v-if="!isSelfMessage(msg)" class="message__name">{{ `${msg.nickname}:` }}</span>
+                <div class="message"> {{ msg.message }} </div>
+                <span class="message__time">{{ formatRelativeTime(msg.timestamp ?? 0, now) }}</span>
             </div>
         </div>
 
@@ -128,7 +129,7 @@ function isSelfMessage(msg: IChatMessage) {
     background-color: var(--md-sys-color-surface-container-low);
     color: var(--md-sys-color-on-primary-container);
     border-radius: var(--radius-lg);
-    
+
     gap: var(--space-sm);
     padding: var(--space-sm);
 
