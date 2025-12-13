@@ -1,7 +1,6 @@
-// src/composables/useRelativeTime.ts
-import { ref, computed, onUnmounted } from 'vue';
+import { ref, onUnmounted, readonly } from 'vue';
 
-export function useRelativeTime(timestamp: string | number | Date) {
+export function useCurrentTime() {
     const now = ref(Date.now());
 
     const timer = setInterval(() => {
@@ -10,31 +9,31 @@ export function useRelativeTime(timestamp: string | number | Date) {
 
     onUnmounted(() => clearInterval(timer));
 
-    const formatted = computed(() => {
-        const time = new Date(timestamp).getTime();
-        const diffSec = Math.floor((now.value - time) / 1000);
+    return readonly(now);
+}
 
-        if (diffSec < 60) {
-            return `${diffSec} 秒前`;
-        }
-        const diffMin = Math.floor(diffSec / 60);
-        if (diffMin < 60) {
-            return `${diffMin} 分鐘前`;
-        }
-        const diffHour = Math.floor(diffMin / 60);
-        if (diffHour < 24) {
-            return `${diffHour} 小時前`;
-        }
+export function formatRelativeTime(timestamp: string | number | Date, now: number) {
+    const time = new Date(timestamp).getTime();
+    const diffSec = Math.floor((now - time) / 1000);
 
-        // 超過 1 天用日期格式
-        const d = new Date(time);
-        const MM = String(d.getMonth() + 1).padStart(2, '0');
-        const DD = String(d.getDate()).padStart(2, '0');
-        const HH = String(d.getHours()).padStart(2, '0');
-        const mm = String(d.getMinutes()).padStart(2, '0');
+    if (diffSec < 60) {
+        return `${diffSec} 秒前`;
+    }
+    const diffMin = Math.floor(diffSec / 60);
+    if (diffMin < 60) {
+        return `${diffMin} 分鐘前`;
+    }
+    const diffHour = Math.floor(diffMin / 60);
+    if (diffHour < 24) {
+        return `${diffHour} 小時前`;
+    }
 
-        return `${MM}-${DD} ${HH}:${mm}`;
-    });
+    // 超過 1 天用日期格式
+    const d = new Date(time);
+    const MM = String(d.getMonth() + 1).padStart(2, '0');
+    const DD = String(d.getDate()).padStart(2, '0');
+    const HH = String(d.getHours()).padStart(2, '0');
+    const mm = String(d.getMinutes()).padStart(2, '0');
 
-    return formatted;
+    return `${MM}-${DD} ${HH}:${mm}`;
 }
