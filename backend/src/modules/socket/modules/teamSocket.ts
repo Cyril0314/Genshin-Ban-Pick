@@ -3,75 +3,50 @@
 import { Server, Socket } from 'socket.io';
 
 import { createLogger } from '../../../utils/logger';
-import IRoomStateManager from '../domain/IRoomStateManager';
-import { syncTacticalCellImageMapStateOther } from './tacticalSocket';
-import { TeamMember } from '@shared/contracts/team/TeamMember';
+import { TeamEvent } from '@shared/contracts/team/value-types';
+import { TeamService } from '../../team';
+
+import type { TeamMember } from '@shared/contracts/team/TeamMember';
 
 const logger = createLogger('TEAM SOCKET');
 
-enum TeamEvent {
-    MemberAddRequest = 'team.member.add.request',
-    MemberAddBroadcast = 'team.member.add.broadcast',
-    MemberRemoveRequest = 'team.member.remove.request',
-    MemberRemoveBroadcast = 'team.member.remove.broadcast',
+export function registerTeamSocket(io: Server, socket: Socket, teamService: TeamService) {
+    socket.on(
+        `${TeamEvent.MemberJoinRequest}`,
+        ({ teamSlot, memberSlot, teamMember }: { teamSlot: number; memberSlot: number; teamMember: TeamMember }) => {
+            logger.info(`Received ${TeamEvent.MemberJoinRequest} teamSlot: ${teamSlot}`, teamMember);
+            const roomId = (socket as any).roomId;
+            if (!roomId) return;
 
-    MembersMapStateSyncSelf = 'team.members_map.state.sync.self',
-    MembersMapStateSyncAll = 'team.members_map.state.sync.all',
-}
+            teamService.join(roomId, { teamSlot, memberSlot, teamMember });
+            socket.to(roomId).emit(`${TeamEvent.MemberJoinBroadcast}`, { teamSlot, memberSlot, teamMember });
+            logger.info(`Sent ${TeamEvent.MemberJoinBroadcast} teamSlot: ${teamSlot}`, memberSlot, teamMember);
+        },
+    );
 
-export function registerTeamSocket(io: Server, socket: Socket, roomStateManager: IRoomStateManager) {
-    socket.on(`${TeamEvent.MemberAddRequest}`, ({ teamSlot, memberSlot, member }: { teamSlot: number; memberSlot: number; member: TeamMember  }) => {
-        logger.info(`Received ${TeamEvent.MemberAddRequest} teamSlot: ${teamSlot}`, member);
+    socket.on(`${TeamEvent.MemberLeaveRequest}`, ({ teamSlot, memberSlot }: { teamSlot: number; memberSlot: number }) => {
+        logger.info(`Received ${TeamEvent.MemberLeaveRequest} teamSlot: ${teamSlot}`, memberSlot);
         const roomId = (socket as any).roomId;
         if (!roomId) return;
 
-        const roomState = roomStateManager.get(roomId);
-        if (!roomState) return;
-
-        for (const [teamSlot, teamMembers] of Object.entries(roomState.teamMembersMap)) {
-            const _teamMembers = teamMembers as Record<number, TeamMember>
-            for (const [memberSlot, teamMember] of Object.entries(_teamMembers)) {
-                if (teamMember.type === 'Online' && member.type === 'Online'  && teamMember.user.identityKey === member.user.identityKey) {
-                    delete roomState.teamMembersMap[Number(teamSlot)][Number(memberSlot)];
-                    socket.to(roomId).emit(`${TeamEvent.MemberRemoveBroadcast}`, { teamSlot, memberSlot });
-                    logger.info(`Sent ${TeamEvent.MemberRemoveBroadcast} teamSlot: ${teamSlot}`, memberSlot);
-                }
-            }
-        }
-
-        roomState.teamMembersMap[teamSlot][memberSlot] = member;
-        socket.to(roomId).emit(`${TeamEvent.MemberAddBroadcast}`, { teamSlot, memberSlot, member });
-        logger.info(`Sent ${TeamEvent.MemberAddBroadcast} teamSlot: ${teamSlot}`, memberSlot, member);
-
-        const user = roomState.users.find((user) => (member.type === 'Online' && member.user.identityKey === user.identityKey));
-        if (user) {
-             syncTacticalCellImageMapStateOther(user, io, roomId, roomStateManager, teamSlot)
-        }
+        teamService.leave(roomId, { teamSlot, memberSlot });
+        socket.to(roomId).emit(`${TeamEvent.MemberLeaveBroadcast}`, { teamSlot, memberSlot });
+        logger.info(`Sent ${TeamEvent.MemberLeaveBroadcast} teamSlot: ${teamSlot}`, memberSlot);
     });
 
-    socket.on(`${TeamEvent.MemberRemoveRequest}`, ({ teamSlot, memberSlot }: { teamSlot: number; memberSlot: number }) => {
-        logger.info(`Received ${TeamEvent.MemberRemoveRequest} teamSlot: ${teamSlot}`, memberSlot);
+    socket.on(`${TeamEvent.MembersMapStateRequest}`, () => {
+        logger.info(`Received ${TeamEvent.MembersMapStateRequest}`);
         const roomId = (socket as any).roomId;
         if (!roomId) return;
 
-        const roomState = roomStateManager.get(roomId);
-        if (!roomState) return;
-
-        delete roomState.teamMembersMap[teamSlot][memberSlot];
-
-        socket.to(roomId).emit(`${TeamEvent.MemberRemoveBroadcast}`, { teamSlot, memberSlot });
-        logger.info(`Sent ${TeamEvent.MemberRemoveBroadcast} teamSlot: ${teamSlot}`, memberSlot);
+        const teamMembersMap = teamService.getTeamMembersMap(roomId);
+        socket.emit(`${TeamEvent.MembersMapStateSyncSelf}`, teamMembersMap);
+        logger.info(`Sent ${TeamEvent.MembersMapStateSyncSelf}`, teamMembersMap);
     });
-}
 
-export function syncTeamMembersMapStateSelf(socket: Socket, roomId: string, roomStateManager: IRoomStateManager) {
-    const teamMembersMap = roomStateManager.getTeamMembersMap(roomId);
-    socket.emit(`${TeamEvent.MembersMapStateSyncSelf}`, teamMembersMap);
-    logger.info(`Sent ${TeamEvent.MembersMapStateSyncSelf}`, teamMembersMap);
-}
-
-export function syncTeamMembersMapStateAll(io: Server, roomId: string, roomStateManager: IRoomStateManager) {
-    const teamMembersMap = roomStateManager.getTeamMembersMap(roomId);
-    io.emit(`${TeamEvent.MembersMapStateSyncAll}`, teamMembersMap);
-    logger.info(`Sent ${TeamEvent.MembersMapStateSyncAll}`, teamMembersMap);
+    function syncTeamMembersMapStateAll(roomId: string) {
+        const teamMembersMap = teamService.getTeamMembersMap(roomId);
+        io.emit(`${TeamEvent.MembersMapStateSyncAll}`, teamMembersMap);
+        logger.info(`Sent ${TeamEvent.MembersMapStateSyncAll}`, teamMembersMap);
+    }
 }

@@ -3,8 +3,9 @@
 import { DataNotFoundError } from '../../../errors/AppError';
 import { createLogger } from '../../../utils/logger';
 import { validateSnapshot } from '../domain/validateSnapshot';
-import IMatchSnapshotRepository from '../domain/IMatchSnapshotRepository';
-import IMatchRepository from '../domain/IMatchRepository';
+
+import type { IMatchSnapshotRepository } from '../domain/IMatchSnapshotRepository';
+import type { IMatchRepository } from '../domain/IMatchRepository';
 
 const logger = createLogger('MATCH');
 
@@ -22,5 +23,9 @@ export default class MatchService {
         }
         validateSnapshot(snapshot);
         return this.matchRepository.create(snapshot, false);
+    }
+
+    async fetchMatchTeamMembers() {
+        return this.matchRepository.findAllMatchTeamMemberUniqueIdentities()
     }
 }

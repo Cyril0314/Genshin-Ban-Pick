@@ -4,7 +4,7 @@ import { PrismaClient } from '@prisma/client';
 
 import CharacterController from './controller/character.controller';
 import CharacterService from './application/character.service';
-import { createCharactersRouter } from './http/characters.routes';
+import createCharactersRouter from './http/characters.routes';
 import CharacterRepository from './infra/CharacterRepository';
 
 export function createCharacterModule(prisma: PrismaClient) {
@@ -14,3 +14,5 @@ export function createCharacterModule(prisma: PrismaClient) {
     const router = createCharactersRouter(controller);
     return { router, controller, service, repository };
 }
+
+export * from './domain/mapCharacter'

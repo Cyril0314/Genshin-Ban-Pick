@@ -8,7 +8,6 @@ import Toolbar from '../components/ToolBar.vue';
 import StepIndicator from '@/modules/board/ui/components/StepIndicator.vue';
 import RoomUserPool from '@/modules/room/ui/components/RoomUserPool.vue';
 import BanPickBoard from '@/modules/board/ui/components/BanPickBoard.vue';
-import ChatFloating from '@/modules/chat/ui/components/ChatFloating.vue';
 
 import { useViewportScale } from '../composables/useViewportScale';
 import { useBanPickFacade } from '../composables/useBanPickFacade';

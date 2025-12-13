@@ -1,9 +1,10 @@
-// backend/src/modules/match/application/MatchTeamMemberCreator.ts
+// backend/src/modules/match/application/creators/MatchTeamMemberCreator.ts
 
 import { Prisma } from '@prisma/client';
 import { resolveIdentity } from '../../domain/resolveIdentity';
 import { DataNotFoundError } from '../../../../errors/AppError';
-import { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';
+
+import type { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';
 
 export default class MatchTeamMemberCreator {
     static async createMatchTeamMembers(tx: Prisma.TransactionClient, teamMembersMap: TeamMembersMap, matchTeamIdMap: Record<number, number>) {

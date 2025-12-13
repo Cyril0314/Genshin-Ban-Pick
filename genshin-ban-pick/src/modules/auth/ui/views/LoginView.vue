@@ -5,10 +5,10 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { useSocketStore } from '@/app/stores/socketStore';
-import { authUseCase } from '../../application/authUseCase';
+import { useAuthUseCase } from '../composables/useAuthUseCase';
 
 const router = useRouter();
-const { loginMember, loginGuest } = authUseCase();
+const authUseCase = useAuthUseCase();
 const socketStore = useSocketStore();
 
 const accountInput = ref('');
@@ -16,7 +16,7 @@ const passwordInput = ref('');
 
 async function handleLoginMemberSubmit() {
     try {
-        const { token } = await loginMember(accountInput.value, passwordInput.value);
+        const { token } = await authUseCase.loginMember(accountInput.value, passwordInput.value);
         socketStore.connect(token);
         router.push(`/room-list`);
     } catch (error: any) {
@@ -26,7 +26,7 @@ async function handleLoginMemberSubmit() {
 
 async function handleLoginGuestButtonClick() {
     try {
-        const { token } = await loginGuest();
+        const { token } = await authUseCase.loginGuest();
         socketStore.connect(token);
         router.push(`/room-list`);
     } catch (error: any) {
@@ -138,7 +138,7 @@ async function handleLoginGuestButtonClick() {
 }
 
 .form__group input:focus {
-    outline: 1px solid color-mix(in srgb, var(--md-sys-color-on-surface-variant) 80%, white 80%);
+    outline: 1px solid color-mix(in srgb, var(--md-sys-color-on-surface-variant) 20%, white 80%);
 }
 
 .layout__actions {
@@ -202,7 +202,7 @@ async function handleLoginGuestButtonClick() {
 }
 
 .btn__guest:hover {
-    color: color-mix(in srgb, var(--md-sys-color-on-surface-variant) 90%, white 10%);
+    color: color-mix(in srgb, var(--md-sys-color-on-surface-variant) 40%, white 60%);
     transform: scale(1.02);
 }
 </style>

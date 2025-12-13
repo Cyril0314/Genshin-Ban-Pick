@@ -1,51 +1,22 @@
 // src/modules/analysis/domain/IAnalysisRepository.ts
 
-import { Prisma } from '@prisma/client';
+import type { IMatchTimeMinimal } from '../types/IMatchTimeMinimal';
+import type { IMatchMoveWeightCalcCore } from '../types/IMatchMoveWeightCalcCore';
+import type { IMatchTacticalUsageExpandedRefs } from '../types/IMatchTacticalUsageExpandedRefs';
+import type { IMatchTacticalUsageTeamMemberIdentityRefs } from '../types/IMatchTacticalUsageUserPreferenceCore';
+import type { IMatchTacticalUsageWithCharacter } from '../types/IMatchTacticalUsageWithCharacter'
+import type { MatchTeamMemberUniqueIdentity } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
 
-export default interface IAnalysisRepository {
-    findAllMatches: Promise<MatchDTO[]>;
+export interface IAnalysisRepository {
+    findAllMatchMinimalTimestamps(): Promise<IMatchTimeMinimal[]>;
 
-    fincAllMatchMoves: Promise<MatchMoveDTO[]>;
+    findAllMatchTacticalUsageIdentities(): Promise<IMatchTacticalUsageTeamMemberIdentityRefs[]>;
 
-    findAllMatchTacticalUsages: Promise<MatchTacticalUsageDTO[]>;
+    findAllMatchMoveCoreForWeightCalc(): Promise<IMatchMoveWeightCalcCore[]>;
+
+    findAllMatchTacticalUsageForAnalysis(): Promise<IMatchTacticalUsageExpandedRefs[]>;
+
+    findAllMatchTacticalUsageWithCharacter(): Promise<IMatchTacticalUsageWithCharacter[]>;
+
+    findMatchTacticalUsageWithCharacterByIdentity(identity: MatchTeamMemberUniqueIdentity): Promise<IMatchTacticalUsageWithCharacter[]>;
 }
-
-type MatchDTO = Prisma.MatchGetPayload<{ select: { id: true; createdAt: true } }>;
-
-type MatchMoveDTO = Prisma.MatchMoveGetPayload<{
-    select: {
-        type: true;
-        source: true;
-        matchId: true;
-        characterKey: true;
-        match: {
-            select: {
-                createdAt: true;
-            };
-        };
-        character: {
-            select: {
-                releaseDate: true;
-            };
-        };
-        randomMoveContext: true;
-    };
-}>;
-
-type MatchTacticalUsageDTO = Prisma.MatchTacticalUsageGetPayload<{
-    select: {
-        setupNumber: true;
-        characterKey: true;
-        teamMember: {
-            select: {
-                teamId: true;
-                team: {
-                    select: {
-                        matchId: true;
-                    };
-                };
-            };
-        };
-    };
-}>;
-

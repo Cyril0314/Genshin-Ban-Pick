@@ -3,7 +3,7 @@
 import bcrypt from 'bcryptjs';
 
 import { UserExistsError, UserNotFoundError, InvalidPasswordError } from '../../../errors/AppError';
-import IMemberRepository from '../domain/IMemberRepository';
+import type { IMemberRepository } from '../domain/IMemberRepository';
 
 export default class MemberService {
     constructor(private memberRepository: IMemberRepository) {}

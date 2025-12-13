@@ -7,10 +7,10 @@ import VChart from 'vue-echarts';
 import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { HeatmapChart } from 'echarts/charts';
-import { GridComponent, TooltipComponent, VisualMapComponent, LegendComponent } from 'echarts/components';
+import { GridComponent, TooltipComponent, VisualMapComponent, LegendComponent, DataZoomComponent } from 'echarts/components';
 import { usePlayerCharacterChart } from '../composables/usePlayerCharacterChart';
 
-use([CanvasRenderer, HeatmapChart, GridComponent, TooltipComponent, VisualMapComponent, LegendComponent]);
+use([CanvasRenderer, HeatmapChart, GridComponent, TooltipComponent, VisualMapComponent, LegendComponent, DataZoomComponent]);
 
 const props = defineProps<{}>();
 

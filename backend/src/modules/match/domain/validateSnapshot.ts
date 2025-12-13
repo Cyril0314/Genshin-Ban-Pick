@@ -1,7 +1,7 @@
 // src/modules/match/domain/validateSnapshot.ts
 
 import { InvalidFieldsError } from '../../../errors/AppError';
-import { IMatchSnapshot } from './IMatchSnapshot';
+import type { IMatchSnapshot } from './IMatchSnapshot';
 
 export function validateSnapshot(snapshot: IMatchSnapshot) {
     const { roomSetting, teamMembersMap, boardImageMap, teamTacticalCellImageMap } = snapshot;

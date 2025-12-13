@@ -4,10 +4,11 @@
 import { ref } from 'vue';
 import { storeToRefs } from 'pinia';
 
-import ChatRoomDrawer from '@/modules/chat/ui/components/ChatRoomDrawer.vue';
+import ChatFloatWindow from '@/modules/chat/ui/components/ChatFloatWindow.vue';
 import TacticalBoardPanelDrawer from '@/modules/tactical/ui/components/TacticalBoardPanelDrawer.vue';
 import AnalysisDrawer from '@/modules/analysis/ui/components/AnalysisDrawer.vue';
 import { useAuthStore } from '@/modules/auth';
+import { useChatWindow } from '@/modules/chat/ui/composables/useChatWindow';
 
 const emit = defineEmits<{
     (e: 'image-map-reset'): void;
@@ -16,8 +17,9 @@ const emit = defineEmits<{
 
 const authStore = useAuthStore();
 const { isAdmin } = storeToRefs(authStore);
+const { isChatOpen, hasUnreadMessage } = useChatWindow()
+
 const isTacticalDrawerOpen = ref(false);
-const isChatRoomDrawerOpen = ref(false);
 const isAnalysisDrawerOpen = ref(false);
 
 function handleTacticalButtonClickEvent() {
@@ -27,7 +29,7 @@ function handleTacticalButtonClickEvent() {
 
 function handleChatButtonClickEvent() {
     console.debug('[TOOL BAR] Handle chat button click event');
-    isChatRoomDrawerOpen.value = !isChatRoomDrawerOpen.value;
+    isChatOpen.value = !isChatOpen.value;
 }
 
 function handleAnalysisButtonClickEvent() {
@@ -51,17 +53,18 @@ function handleSaveButtonClickEvent() {
         <button class="toolbar__button toolbar__button--tactical" @click="handleTacticalButtonClickEvent">編隊</button>
         <TacticalBoardPanelDrawer v-model:open="isTacticalDrawerOpen" />
 
-        <button class="toolbar__button toolbar__button--chat" @click="handleChatButtonClickEvent">聊天</button>
-        <ChatRoomDrawer v-model:open="isChatRoomDrawerOpen" />
+        <div class="toolbar__button-wrapper">
+            <button class="toolbar__button toolbar__button--chat" @click="handleChatButtonClickEvent">聊天</button>
+            <div v-if="hasUnreadMessage" class="toolbar__notification-dot"></div>
+        </div>
+        <ChatFloatWindow v-model:open="isChatOpen" />
 
         <button class="toolbar__button toolbar__button--analysis" @click="handleAnalysisButtonClickEvent">報表</button>
         <AnalysisDrawer v-model:open="isAnalysisDrawerOpen" />
 
-        <button v-if="isAdmin" class="toolbar__button toolbar__button--reset"
-            @click="handleResetButtonClickEvent">重置</button>
+        <button v-if="isAdmin" class="toolbar__button toolbar__button--reset" @click="handleResetButtonClickEvent">重置</button>
 
-        <button v-if="isAdmin" class="toolbar__button toolbar__button--save"
-            @click="handleSaveButtonClickEvent">紀錄</button>
+        <button v-if="isAdmin" class="toolbar__button toolbar__button--save" @click="handleSaveButtonClickEvent">紀錄</button>
     </div>
 </template>
 
@@ -101,5 +104,23 @@ function handleSaveButtonClickEvent() {
 
 .toolbar__button:active {
     transform: scale(0.98);
+}
+
+.toolbar__button-wrapper {
+    position: relative;
+    display: inline-flex;
+}
+
+.toolbar__notification-dot {
+    --dot-size: calc(var(--base-size) * 0.75);
+    position: absolute;
+    top: calc(var(--dot-size) * -0.5);
+    right: calc(var(--dot-size) * -0.5);
+    width: calc(var(--dot-size));
+    height: calc(var(--dot-size));
+    background-color: var(--md-sys-color-error-container);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1;
 }
 </style>

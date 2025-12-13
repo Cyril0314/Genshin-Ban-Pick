@@ -1,8 +1,9 @@
 // backend/src/modules/room/application/room.service.ts
 
-import IRoomStateRepository from '../domain/IRoomStateRepository';
 import { createRoomSetting } from '../domain/createRoomSetting';
 import { createRoomState } from '../domain/createRoomState';
+
+import type { IRoomStateRepository } from '../domain/IRoomStateRepository';
 
 export default class RoomService {
     constructor(private roomStateRepository: IRoomStateRepository) {}

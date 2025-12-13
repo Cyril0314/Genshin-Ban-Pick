@@ -3,16 +3,16 @@
 import { onMounted, ref } from 'vue';
 
 import { useSocketStore } from '@/app/stores/socketStore';
-import { authUseCase } from '@/modules/auth';
+import { useAuthUseCase } from '@/modules/auth';
 
 export function useAppInitializer() {
     const isInitializing = ref(true);
-    const { autoLogin } = authUseCase();
+    const authUseCase = useAuthUseCase();
     const socketStore = useSocketStore();
 
     onMounted(async () => {
         try {
-            const result = await autoLogin();
+            const result = await authUseCase.autoLogin();
             if (result?.token) {
                 socketStore.connect(result.token);
             }

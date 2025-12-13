@@ -4,11 +4,12 @@ import { PrismaClient } from '@prisma/client/extension';
 
 import MatchController from './controller/match.controller';
 import MatchService from './application/match.service';
-import { createMatchesRouter } from './http/matches.routes';
+import createMatchesRouter from './http/matches.routes';
 
-import IRoomStateManager from '../socket/domain/IRoomStateManager';
 import MatchSnapshotRepository from './infra/MatchSnapshotRepository';
-import { MatchRepository } from './infra/MatchRepository';
+import MatchRepository from './infra/MatchRepository';
+
+import type { IRoomStateManager } from '../socket/domain/IRoomStateManager';
 
 export function createMatchModule(prisma: PrismaClient, roomStateManager: IRoomStateManager) {
     const matchRepository = new MatchRepository(prisma);

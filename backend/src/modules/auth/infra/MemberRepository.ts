@@ -1,9 +1,11 @@
 // src/modules/auth/infra/MemberRepository.ts
 
-import { PrismaClient, Member } from '@prisma/client';
-import IMemberRepository from '../domain/IMemberRepository';
-import { MemberRole } from '@shared/contracts/auth/value_type'
-import { IMemberData } from '../types/IMemberData';
+import { PrismaClient } from '@prisma/client';
+
+import type { Member } from '@prisma/client';
+import type { MemberRole } from '@shared/contracts/auth/value_types'
+import type { IMemberRepository } from '../domain/IMemberRepository';
+import type { IMemberData } from '../types/IMemberData';
 
 export default class MemberRepository implements IMemberRepository {
     constructor(private prisma: PrismaClient) {}

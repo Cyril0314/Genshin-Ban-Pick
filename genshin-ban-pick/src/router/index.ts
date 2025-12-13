@@ -1,3 +1,4 @@
+// src/router/index.ts
 import { createRouter, createWebHistory } from 'vue-router';
 
 import BanPickView from '@/modules/banPick/ui/views/BanPickView.vue';
@@ -6,7 +7,7 @@ import RegisterView from '@/modules/auth/ui/views/RegisterView.vue';
 import RoomSettingView from '@/modules/room/ui/views/RoomSettingView.vue';
 import RoomListView from '@/modules/room/ui/views/RoomListView.vue';
 
-import { authUseCase, useAuthStore } from '@/modules/auth';
+import { useAuthUseCase, useAuthStore } from '@/modules/auth';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -46,10 +47,10 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
     const auth = useAuthStore();
-    const { autoLogin } = authUseCase();
+    const authUseCase = useAuthUseCase()
 
     if (!auth.isInitialized) {
-        await autoLogin();
+        await authUseCase.autoLogin();
     }
 
     if (to.meta.requiresAuth && !auth.isLoggedIn) {

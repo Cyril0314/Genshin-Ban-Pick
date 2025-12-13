@@ -11,4 +11,9 @@ export default class MatchController {
         const matchData = await this.matchService.saveMatch(roomId);
         res.status(200).json(matchData);
     };
+
+    fetchMatchTeamMembers = async(req: Request, res: Response) => {
+        const matchTeamMembers = await this.matchService.fetchMatchTeamMembers();
+        res.status(200).json(matchTeamMembers);
+    };
 }

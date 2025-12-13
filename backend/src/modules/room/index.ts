@@ -1,7 +1,6 @@
 // src/modules/room/index.ts
 
 import { PrismaClient } from '@prisma/client/extension';
-import IRoomStateManager from '../socket/domain/IRoomStateManager';
 
 import RoomController from './controller/room.controller';
 import RoomService from './application/room.service';
@@ -9,7 +8,8 @@ import RoomUserService from './application/roomUser.service';
 import RoomStateRepository from './infra/RoomStateRepository';
 import createRoomsRouter from './http/rooms.routes';
 
-import type IRoomStateRepository from './domain/IRoomStateRepository';
+import type { IRoomStateRepository } from './domain/IRoomStateRepository';
+import type { IRoomStateManager } from '../socket/domain/IRoomStateManager';
 
 // import {  } from './domain/IRoomState'
 

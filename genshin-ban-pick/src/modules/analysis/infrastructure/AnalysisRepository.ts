@@ -1,0 +1,39 @@
+// src/modules/analysis/infrastructure/AnalysisRepository.ts
+
+import type { SynergyMode } from '@shared/contracts/analysis/value-types';
+import type AnalysisService from './AnalysisService';
+import type { MatchTeamMemberUniqueIdentity } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
+
+export default class AnalysisRepository {
+    constructor(private analysisService: AnalysisService) {}
+
+    async fetchTacticalUsages() {
+        const response = await this.analysisService.getTacticalUsages();
+        return response.data;
+    }
+
+    async fetchCharacteSynergyMatrix(payload: { mode: SynergyMode }) {
+        const response = await this.analysisService.getCharacterSynergyMatrix(payload);
+        return response.data;
+    }
+
+    async fetchCharacterSynergyGraph() {
+        const response = await this.analysisService.getCharacterSynergyGraph();
+        return response.data;
+    }
+
+    async fetchCharacterClusters() {
+        const response = await this.analysisService.getCharacterClusters();
+        return response.data;
+    }
+
+    async fetchPlayerPreference() {
+        const response = await this.analysisService.getPlayerPreference();
+        return response.data;
+    }
+
+    async fetchPlayerStyle(payload: { identity: MatchTeamMemberUniqueIdentity }) {
+        const response = await this.analysisService.getPlayerStyle(payload);
+        return response.data;
+    }
+}   

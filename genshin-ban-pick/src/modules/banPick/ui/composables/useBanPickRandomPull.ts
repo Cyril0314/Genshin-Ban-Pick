@@ -3,11 +3,11 @@
 import { randomPullUseCase, useBoardSync } from '@/modules/board';
 
 import type { Ref } from 'vue';
-import type { CharacterFilterKey } from '@shared/contracts/character/value-types';
 import type { IRoomSetting } from '@shared/contracts/room/IRoomSetting';
 import type { BoardImageMap } from '@shared/contracts/board/BoardImageMap.ts';
 import type { ZoneType } from '@shared/contracts/board/value-types.ts';
 import type { ICharacterRandomContext } from '@shared/contracts/character/ICharacterRandomContext';
+import type { CharacterFilterKey } from '@shared/contracts/character/CharacterFilterKey';
 
 export function useBanPickRandomPull(roomSetting: Ref<IRoomSetting | null>, filteredCharacterKeys: Ref<string[]>, characterFilter: Ref<Record<CharacterFilterKey, string[]>>, boardImageMap: Ref<BoardImageMap>) {
     const { randomPull: handleRandomPull } = randomPullUseCase()

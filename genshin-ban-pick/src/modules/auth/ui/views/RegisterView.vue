@@ -5,10 +5,10 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { useSocketStore } from '@/app/stores/socketStore';
-import { authUseCase } from '../../application/authUseCase';
+import { useAuthUseCase } from '../composables/useAuthUseCase';
 
 const router = useRouter();
-const { registerMember } = authUseCase();
+const authUseCase = useAuthUseCase();
 const socketStore = useSocketStore();
 
 const accountInput = ref('');
@@ -22,7 +22,7 @@ async function handleRegisterMemberSubmit() {
         return;
     }
     try {
-        const { token } = await registerMember(accountInput.value, passwordInput.value, nicknameInput.value);
+        const { token } = await authUseCase.registerMember(accountInput.value, passwordInput.value, nicknameInput.value);
         socketStore.connect(token);
         router.push(`/room-list`);
     } catch (error: any) {
@@ -144,7 +144,7 @@ async function handleRegisterMemberSubmit() {
 }
 
 .form__group input:focus {
-    outline: 1px solid color-mix(in srgb, var(--md-sys-color-on-surface-variant) 80%, white 80%);
+    outline: 1px solid color-mix(in srgb, var(--md-sys-color-on-surface-variant) 20%, white 80%);
 }
 
 .layout__actions {

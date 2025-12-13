@@ -1,10 +1,14 @@
 import { PrismaClient } from '@prisma/client';
 
-import { TeamMember } from '@shared/contracts/team/TeamMember';
-import { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';
+import MatchRepository from '../src/modules/match/infra/MatchRepository';
 import { ZoneType } from '@shared/contracts/board/value-types';
 import { createRoomSetting } from '../src/modules/room/domain/createRoomSetting';
-import { MatchRepository } from '../src/modules/match/infra/MatchRepository';
+
+import type { TeamMember } from '@shared/contracts/team/TeamMember';
+import type { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';
+import type { CharacterRandomContextMap } from '@shared/contracts/character/CharacterRandomContextMap';
+import type { ICharacter } from '@shared/contracts/character/ICharacter';
+import { mapCharacter } from '../src/modules/character';
 
 async function main() {
     const prisma = new PrismaClient();
@@ -54,33 +58,32 @@ async function main() {
     console.log(`teamMembersMap`, teamMembersMap);
 
     const characters = await prisma.character.findMany({
-        select: { key: true },
         orderBy: { id: 'asc' }, // 可按需求排序
     });
-    const characterKeys = characters.map((character) => character.key);
-    const bpCharacters = selectN(characterKeys, roomSetting.matchFlow.steps.length);
+    const bpCharacters = selectN(characters.map(mapCharacter), roomSetting.matchFlow.steps.length);
     let boardImageMap: Record<number, string> = {};
-
     let teamCharacterPools: Record<number, string[]> = {};
+    let characterRandomContextMap: CharacterRandomContextMap = {};
 
     for (const step of roomSetting.matchFlow.steps) {
-        const characterKey = bpCharacters[step.index];
-        boardImageMap[step.zoneId] = characterKey;
+        const character = bpCharacters[step.index];
+        boardImageMap[step.zoneId] = character.key;
         const zone = roomSetting.zoneMetaTable[step.zoneId];
         switch (zone.type) {
             case ZoneType.Utility:
                 for (const team of roomSetting.teams) {
                     const teamPool = teamCharacterPools[team.slot] || [];
-                    teamPool.push(characterKey);
+                    teamPool.push(character.key);
                     teamCharacterPools[team.slot] = teamPool;
                 }
 
+                characterRandomContextMap[character.key] = generateRandomContext(character);
                 break;
 
             case ZoneType.Pick:
                 if (step.teamSlot !== null) {
                     const teamPool = teamCharacterPools[step.teamSlot] || [];
-                    teamPool.push(characterKey);
+                    teamPool.push(character.key);
                     teamCharacterPools[step.teamSlot] = teamPool;
                 }
 
@@ -102,17 +105,20 @@ async function main() {
     // 3) 呼叫 save() 寫入資料庫
 
     const repository = new MatchRepository(prisma);
-    const result = await repository.create({
-        roomId: 'test',
-        roomSetting,
-        teamMembersMap,
-        boardImageMap,
-        teamTacticalCellImageMap,
-        characterRandomContextMap: {},
-    }, true);
+    const result = await repository.create(
+        {
+            roomId: 'test',
+            roomSetting,
+            teamMembersMap,
+            boardImageMap,
+            teamTacticalCellImageMap,
+            characterRandomContextMap,
+        },
+        true,
+    );
 
     console.log('\n✅ Match saved successfully!');
-    console.log('Match ID:', result);
+    // console.log('Match:', JSON.stringify(result.moves, null, 2));
 
     function shuffled<T>(arr: T[]): T[] {
         return [...arr].sort(() => Math.random() - 0.5);
@@ -136,6 +142,20 @@ async function main() {
         }
 
         return map;
+    }
+
+    function generateRandomContext(useredByCharacter: ICharacter) {
+        return {
+            characterFilter: {
+                ['rarity']: [useredByCharacter.rarity],
+                ['weapon']: [useredByCharacter.weapon],
+                ['element']: [useredByCharacter.element],
+                ['region']: [useredByCharacter.region],
+                ['role']: [useredByCharacter.role],
+                ['modelType']: [useredByCharacter.modelType],
+                ['wish']: [useredByCharacter.wish],
+            },
+        };
     }
 }
 

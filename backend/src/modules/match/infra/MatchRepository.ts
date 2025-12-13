@@ -2,9 +2,6 @@
 
 import { Prisma, PrismaClient } from '@prisma/client';
 
-import IMatchRepository from '../domain/IMatchRepository';
-import { IMatchSnapshot } from '../domain/IMatchSnapshot';
-
 import MatchCreator from '../application/creators/MatchCreator';
 import MatchTeamCreator from '../application/creators/MatchTeamCreator';
 import MatchTeamMemberCreator from '../application/creators/MatchTeamMemberCreator';
@@ -12,17 +9,21 @@ import MatchMoveCreator from '../application/creators/MatchMoveCreator';
 import MatchTacticalUsageCreator from '../application/creators/MatchTacticalUsageCreator';
 import { DbConnectionError, DbForeignKeyConstraintError, DbUniqueConstraintError, DryRunError } from '../../../errors/AppError';
 import { createLogger } from '../../../utils/logger';
+import { mapMatchFromPrisma } from '../domain/mapMatchFromPrisma';
+
+import type { IMatchRepository } from '../domain/IMatchRepository';
+import type { IMatchSnapshot } from '../domain/IMatchSnapshot';
+import type { IMatch } from '@shared/contracts/match/IMatch';
+import type { MatchTeamMemberUniqueIdentity } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
 
 const logger = createLogger('MATCH:Repository');
 
-export class MatchRepository implements IMatchRepository {
+export default class MatchRepository implements IMatchRepository {
     constructor(private prisma: PrismaClient) {}
-
-    async create(snapshot: IMatchSnapshot, dryRun: boolean = false) {
+    async create(snapshot: IMatchSnapshot, dryRun: boolean): Promise<IMatch> {
         const { roomSetting } = snapshot;
-
         try {
-            return await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+            const match = await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
                 const flowVersion = roomSetting.matchFlow.version;
                 // 1. Match: 對局
                 const match = await MatchCreator.createMatch(tx, flowVersion);
@@ -93,10 +94,11 @@ export class MatchRepository implements IMatchRepository {
                 } satisfies Prisma.MatchFindUniqueArgs;
 
                 const allMatchData = await tx.match.findUnique(matchQuery);
-
-                if (dryRun) throw new DryRunError(allMatchData);
-                return allMatchData;
+                const aggregate = mapMatchFromPrisma(allMatchData);
+                if (dryRun) throw new DryRunError(aggregate);
+                return aggregate;
             });
+            return match;
         } catch (err: any) {
             if (err instanceof DryRunError) {
                 logger.warn('Block dry run data', err.data);
@@ -114,5 +116,80 @@ export class MatchRepository implements IMatchRepository {
 
             throw new DbConnectionError(err);
         }
+    }
+
+    async findAllMatchTeamMemberUniqueIdentities(): Promise<MatchTeamMemberUniqueIdentity[]> {
+        const teamMembers = await this.prisma.matchTeamMember.findMany({
+            select: {
+                id: true,
+                name: true,
+                memberRef: true,
+                guestRef: true,
+                member: {
+                    select: {
+                        id: true,
+                        nickname: true,
+                    },
+                },
+                guest: {
+                    select: {
+                        id: true,
+                        nickname: true,
+                    },
+                },
+            },
+        });
+
+        const identityMap = new Map<string, MatchTeamMemberUniqueIdentity>();
+
+        for (const teamMember of teamMembers) {
+            if (teamMember.memberRef && teamMember.member) {
+                const key = `member:${teamMember.memberRef}`;
+                if (!identityMap.has(key)) {
+                    identityMap.set(key, {
+                        type: 'Member',
+                        id: teamMember.memberRef,
+                        name: teamMember.member.nickname,
+                    });
+                }
+                continue;
+            }
+
+            if (teamMember.guestRef && teamMember.guest) {
+                const key = `guest:${teamMember.guestRef}`;
+                if (!identityMap.has(key)) {
+                    identityMap.set(key, {
+                        type: 'Guest',
+                        id: teamMember.guestRef,
+                        name: teamMember.guest.nickname,
+                    });
+                }
+                continue;
+            }
+
+            // name-only
+            if (teamMember.name) {
+                const key = `name:${teamMember.name}`;
+                if (!identityMap.has(key)) {
+                    identityMap.set(key, {
+                        type: 'Name',
+                        name: teamMember.name,
+                    });
+                }
+            }
+        }
+
+        const identityOrder: Record<MatchTeamMemberUniqueIdentity['type'], number> = {
+            Member: 0,
+            Guest: 1,
+            Name: 2,
+        };
+
+        return Array.from(identityMap.values()).sort((a, b) => {
+            const typeDiff = identityOrder[a.type] - identityOrder[b.type];
+            if (typeDiff !== 0) return typeDiff;
+
+            return a.name.localeCompare(b.name, 'zh-Hant');
+        });
     }
 }

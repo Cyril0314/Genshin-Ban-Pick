@@ -1,26 +1,29 @@
-// backend/src/modules/socket/managers/IRoomStateManager.ts
+// backend/src/modules/socket/domain/IRoomStateManager.ts
 
-import { IChatMessageDTO } from '@shared/contracts/chat/IChatMessageDTO';
-import { IRoomUser } from '@shared/contracts/room/IRoomUser';
-import { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';
-import { IRoomState } from '@shared/contracts/room/IRoomState';
-import { BoardImageMap } from '@shared/contracts/board/BoardImageMap';
-import { TeamTacticalCellImageMap } from '@shared/contracts/tactical/TeamTacticalCellImageMap';
-import { CharacterRandomContextMap } from '@shared/contracts/character/CharacterRandomContextMap';
+import type { IChatMessage } from '@shared/contracts/chat/IChatMessage';
+import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
+import type { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';
+import type { IRoomState } from '@shared/contracts/room/IRoomState';
+import type { BoardImageMap } from '@shared/contracts/board/BoardImageMap';
+import type { TeamTacticalCellImageMap } from '@shared/contracts/tactical/TeamTacticalCellImageMap';
+import type { CharacterRandomContextMap } from '@shared/contracts/character/CharacterRandomContextMap';
 
-
-export default interface IRoomStateManager {
+export interface IRoomStateManager {
   getRoomStates(): Record<string, IRoomState>;
   setRoomState(roomId: string, roomState: IRoomState): void;
   get(roomId: string): IRoomState | null;
   remove(roomId: string): void;
 
-  getUsers(roomId: string): IRoomUser[];
+  getUsers(roomId: string): IRoomUser[] | null;
   setUsers(roomId: string, users: IRoomUser[]): void;
-  getChatMessages(roomId: string): IChatMessageDTO[];
-  getBoardImageMap(roomId: string): BoardImageMap;
-  getCharacterRandomContextMap(roomId: string): CharacterRandomContextMap;
-  getTeamMembersMap(roomId: string): TeamMembersMap;
-  getStepIndex(roomId: string): number;
-  getTeamTacticalCellImageMap(roomId: string): TeamTacticalCellImageMap;
+  getChatMessages(roomId: string): IChatMessage[] | null;
+  setChatMessages(roomId: string, chatMessages: IChatMessage[]): void;
+  getBoardImageMap(roomId: string): BoardImageMap | null;
+  setBoardImageMap(roomId: string, boardImageMap: BoardImageMap): void;
+  getCharacterRandomContextMap(roomId: string): CharacterRandomContextMap | null;
+  setCharacterRandomContextMap(roomId: string, characterRandomContextMap: CharacterRandomContextMap): void;
+  getTeamMembersMap(roomId: string): TeamMembersMap | null;
+  setTeamMembersMap(roomId: string, teamMembersMap: TeamMembersMap): void
+  getTeamTacticalCellImageMap(roomId: string): TeamTacticalCellImageMap | null;
+  setTeamTacticalCellImageMap(roomId: string, teamTacticalCellImageMap: TeamTacticalCellImageMap): void;
 }

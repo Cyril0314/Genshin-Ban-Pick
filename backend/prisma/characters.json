@@ -325,6 +325,19 @@
         "wish": "Standard Wish"
     },
     {
+        "icon": "Durin Icon",
+        "name": "Durin",
+        "rarity": "5 Stars",
+        "element": "Pyro",
+        "weapon": "Sword",
+        "region": "Mondstadt",
+        "model_type": "Medium Male",
+        "release_date": "December 03, 2025",
+        "version": "Luna III",
+        "role": "Sub DPS",
+        "wish": "Limited-Time Event Wish"
+    },
+    {
         "icon": "Emilie Icon",
         "name": "Emilie",
         "rarity": "5 Stars",
@@ -529,6 +542,19 @@
         "model_type": "Tall Female",
         "release_date": "September 28, 2020",
         "version": "1.0",
+        "role": "Support",
+        "wish": "Standard Wish"
+    },
+    {
+        "icon": "Jahoda Icon",
+        "name": "Jahoda",
+        "rarity": "4 Stars",
+        "element": "Anemo",
+        "weapon": "Bow",
+        "region": "Nod Krai",
+        "model_type": "Medium Female",
+        "release_date": "December 03, 2025",
+        "version": "Luna III",
         "role": "Support",
         "wish": "Standard Wish"
     },

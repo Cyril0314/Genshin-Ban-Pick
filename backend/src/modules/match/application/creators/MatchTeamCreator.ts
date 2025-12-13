@@ -1,8 +1,8 @@
-// backend/src/modules/match/application/MatchTeamCreator.ts
+// backend/src/modules/match/application/creators/MatchTeamCreator.ts
 
 import { Prisma } from "@prisma/client";
 
-import { ITeam } from '@shared/contracts/team/ITeam';
+import type { ITeam } from '@shared/contracts/team/ITeam';
 
 export default class MatchTeamCreator {
     static async createMatchTeams(tx: Prisma.TransactionClient, matchId: number, teams: ITeam[]) {

@@ -1,7 +1,9 @@
 // src/modules/board/domain/findZoneIdByImageIdDomain.ts
 
+import type { BoardImageMap } from "@shared/contracts/board/BoardImageMap";
+
 export function findZoneIdByImageIdDomain(
-    boardImageMap: Record<number, string>,
+    boardImageMap: BoardImageMap,
     imgId: string
 ): number | null {
     for (const [zoneId, id] of Object.entries(boardImageMap)) {

@@ -1,4 +1,4 @@
-// backend/src/index.js
+// backend/src/index.ts
 
 import http from 'http';
 import path from 'path';
@@ -12,9 +12,9 @@ import express from 'express';
 import { createLogger } from './utils/logger';
 import { errorHandler } from './middlewares/errorHandler';
 import { registerAppRouters } from './app/appRouter';
-
 import { createSocketApp } from './modules/socket/index';
 import RoomStateManager from './modules/socket/infra/RoomStateManager';
+import AuthValidator from './modules/socket/infra/AuthValidator';
 
 import type { Request, Response } from 'express';
 
@@ -75,7 +75,8 @@ const modules = registerAppRouters(app, prisma, roomStateManager);
 // 🧩 8. Socket 初始化
 // ---------------------------------------------------------
 logger.info('Init Socket');
-createSocketApp(server, roomStateManager, modules.authModule.authService);
+const authValidator = new AuthValidator(modules.authModule.authService)
+createSocketApp(server, roomStateManager, authValidator);
 
 // ---------------------------------------------------------
 // 🧩 9. Error Handler (一定要最後)

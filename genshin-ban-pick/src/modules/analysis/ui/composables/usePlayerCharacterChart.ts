@@ -4,21 +4,21 @@ import { computed, onMounted, ref } from 'vue';
 
 import { useEchartTheme } from '@/modules/shared/ui/composables/useEchartTheme';
 import { useDesignTokens } from '@/modules/shared/ui/composables/useDesignTokens';
-import { getCharacterDisplayName } from '@/modules/shared/domain/getCharacterDisplayName';
-import { analysisUseCase } from '../../application/analysisUseCase';
-
+import { useAnalysisUseCase } from './useAnalysisUseCase';
+import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
 import type { CallbackDataParams } from 'echarts/types/dist/shared';
-import type { IPreference } from '../../types/IPreference';
+import type { KeyIndexedMatrix } from '@shared/contracts/analysis/KeyIndexedMatrix';
 
 export function usePlayerCharacterChart() {
+    const { getByKey: getCharacterDisplayName } = useCharacterDisplayName();
     const designTokens = useDesignTokens();
     const { gridStyle, tooltipStyle, dataZoomStyle } = useEchartTheme();
-    const { fetchPreference } = analysisUseCase();
+    const analysisUseCase = useAnalysisUseCase();
 
-    const preference = ref<IPreference[] | null>(null);
+    const preference = ref<KeyIndexedMatrix<string, string> | null>(null);
 
     onMounted(async () => {
-        preference.value = await fetchPreference();
+        preference.value = await analysisUseCase.fetchPlayerPreference();
     });
 
     const option = computed(() => {
@@ -102,47 +102,63 @@ export function usePlayerCharacterChart() {
         };
     });
 
-    function buildHeatmapData(preference: IPreference[], topN = 100) {
+    function buildHeatmapData(preference: KeyIndexedMatrix<string, string>, topN = 100) {
         // 1) 找出全角色使用總次數
-        const globalCount: Record<string, number> = {};
-        for (const data of preference) {
-            for (const character of data.characters) {
-                globalCount[character.characterKey] = (globalCount[character.characterKey] || 0) + character.count;
+        const characterCountMap: Record<string, number> = {};
+        const playerCountMap: Record<string, number> = {};
+
+        for (const [player, characterMap] of Object.entries(preference)) {
+            for (const [characterKey, count] of Object.entries(characterMap)) {
+                characterCountMap[characterKey] = (characterCountMap[characterKey] || 0) + (count ?? 0);
+                playerCountMap[player] = (playerCountMap[player] || 0) + (count ?? 0);
             }
         }
 
-        // 2) 找出最熱門角色 (Top N)
-        const topCharacters = Object.entries(globalCount)
+        console.log(`preference`, preference)
+
+        const topCharacters = Object.entries(characterCountMap)
             .sort((a, b) => b[1] - a[1])
-            .slice(0, topN)
+            // .slice(0, topN)
             .map(([k]) => k);
 
-        // 3) 整理玩家列表
-        const players = preference.map((data) => data.player);
+        const topPlayers = Object.entries(playerCountMap)
+            .sort((a, b) => b[1] - a[1])
+            .map(([k]) => k);
 
-        // 4) 建立 role → index / player → index
-        const roleIndex = Object.fromEntries(topCharacters.map((c, i) => [c, i]));
-        const playerIndex = Object.fromEntries(players.map((p, i) => [p, i]));
+        console.log(`topCharacters`, topCharacters);
+        console.log(`topPlayers`, topPlayers);
 
-        // 5) 初始化完整矩陣 → 全部設 0
-        const matrix = Array(players.length)
+        const characterIndices = Object.fromEntries(topCharacters.map((c, i) => [c, i]));
+        const playerIndices = Object.fromEntries(topPlayers.map((p, i) => [p, i]));
+
+        console.log(`characterIndices`, characterIndices);
+        console.log(`playerIndices`, playerIndices);
+
+        const matrix = Array(topPlayers.length)
             .fill(null)
             .map(() => Array(topCharacters.length).fill(0));
 
-        // 6) 把有使用紀錄的覆蓋進去
-        for (const p of preference) {
-            for (const c of p.characters) {
-                if (roleIndex[c.characterKey] !== undefined) {
-                    const x = roleIndex[c.characterKey];
-                    const y = playerIndex[p.player];
-                    matrix[y][x] = c.count;
+        for (const player of topPlayers) {
+            const playerIndex = playerIndices[player];
+            if (playerIndex === undefined) {
+                console.error('playerIndex undefined:', player, playerIndices);
+                continue;
+            }
+            for (const characterKey of topCharacters) {
+                const characterIndex = characterIndices[characterKey];
+
+                if (characterIndex === undefined) {
+                    console.error('characterIndex undefined:', characterKey, characterIndices);
+                    continue;
                 }
+
+                const count = preference[player][characterKey] ?? 0;
+                matrix[playerIndex][characterIndex] = count;
             }
         }
 
-        // 7) 轉成 ECharts 格式
-        const data = [];
-        for (let y = 0; y < players.length; y++) {
+        const data: [number, number, number][] = [];
+        for (let y = 0; y < topPlayers.length; y++) {
             for (let x = 0; x < topCharacters.length; x++) {
                 data.push([x, y, matrix[y][x]]);
             }
@@ -150,7 +166,7 @@ export function usePlayerCharacterChart() {
 
         return {
             xAxis: topCharacters,
-            yAxis: players,
+            yAxis: topPlayers,
             data,
         };
     }

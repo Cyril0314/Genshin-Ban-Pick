@@ -1,98 +1,131 @@
-// backend/src/modules/analyses/application/analysis.service.ts
+// backend/src/modules/analysis/application/analysis.service.ts
 
-import { Prisma, PrismaClient } from '@prisma/client';
+import CharacterSynergyCalculator from '../infra/synergy/CharacterSynergyCalculator';
+import CharacterCommunityScanEngine from '../infra/clustering/CharacterCommunityScanEngine';
+import CharacterSynergyGraphBuilder from '../infra/graph/CharacterSynergyGraphBuilder';
+import CharacterFeatureMatrixBuilder from '../infra/character/CharacterFeatureMatrixBuilder';
+import { computeCharacterTacticalUsage } from '../infra/tactical/computeCharacterTacticalUsage';
+import { computePlayerStyle } from '../infra/statistics/computePlayerStyle';
+import { createLogger } from '../../../utils/logger';
 
-import { SynergyNormalizationService } from './synergy/SynergyNormalizationService';
-import { SynergyService } from './synergy/SynergyService';
-import { ProjectionService } from './projection/ProjectionService';
-import { ClusteringService } from './clustering/ClusteringService';
-import { computeTacticalUsage } from './tactical/computeTacticalUsages';
-import { SynergyMode } from './synergy/types/SynergyMode';
-import ICharacterRepository from '../../character/domain/ICharacterRepository';
+import type { ICharacterRepository } from '../../character/domain/ICharacterRepository';
+import type { IAnalysisRepository } from '../domain/IAnalysisRepository';
+import type { ICharacterClusters } from '@shared/contracts/analysis/ICharacterClusters';
+import type { IArchetypePoint } from '@shared/contracts/analysis/IArchetypePoint';
+import type { CharacterSynergyMatrix } from '@shared/contracts/analysis/CharacterSynergyMatrix';
+import type { ICharacterTacticalUsage } from '@shared/contracts/analysis/ICharacterTacticalUsage';
+import type { IPlayerStyleStats } from '@shared/contracts/analysis/IPlayerStyleStats';
+import type { SynergyMode } from '@shared/contracts/analysis/value-types';
+import type { ICharacterGraphLink } from '@shared/contracts/analysis/character/ICharacterGraphLink';
+import type { KeyIndexedMatrix } from '@shared/contracts/analysis/KeyIndexedMatrix';
+import type { MatchTeamMemberUniqueIdentity } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
+
+const logger = createLogger('ANALYSIS')
 
 export default class AnalysisService {
-    constructor(private prisma: PrismaClient, private synergyNormalizationService: SynergyNormalizationService, private synergyService: SynergyService, private clusteringService: ClusteringService, private projectionService: ProjectionService, private characterRepository: ICharacterRepository) {
+    constructor(
+        private analysisRepository: IAnalysisRepository,
+        private characterSynergyCalculator: CharacterSynergyCalculator,
+        private characterSynergyGraphBuilder: CharacterSynergyGraphBuilder,
+        private characterFeatureMatrixBuilder: CharacterFeatureMatrixBuilder,
+        private characterCommunityScanEngine: CharacterCommunityScanEngine,
+        private characterRepository: ICharacterRepository,
+    ) {}
 
+    async fetchTacticalUsages(): Promise<ICharacterTacticalUsage[]> {
+        const matches = await this.analysisRepository.findAllMatchMinimalTimestamps();
+        const matcheMoves = await this.analysisRepository.findAllMatchMoveCoreForWeightCalc();
+        const matchTacticalUsages = await this.analysisRepository.findAllMatchTacticalUsageForAnalysis();
+        return computeCharacterTacticalUsage(matches, matcheMoves, matchTacticalUsages);
     }
 
-    async fetchTacticalUsages() {
-        return computeTacticalUsage(this.prisma);
-    }
-
-    async fetchPreference() {
-        type MatchTacticalUsage = Prisma.MatchTacticalUsageGetPayload<{
-            include: {
-                teamMember: {
-                    include: {
-                        member: true;
-                        guest: true;
-                    };
-                };
-            };
-        }>;
-
-        const usages: MatchTacticalUsage[] = await this.prisma.matchTacticalUsage.findMany({
-            include: {
-                teamMember: {
-                    include: {
-                        member: true,
-                        guest: true,
-                    },
-                },
-            },
-        });
-
-        // 計算偏好
-        const preferenceMap: Record<string, Record<string, number>> = {};
-
-        for (const u of usages) {
-            const playerName = u.teamMember.member?.nickname ?? u.teamMember.guest?.nickname ?? u.teamMember.name;
-            const charKey = u.characterKey;
-
-            if (!preferenceMap[playerName]) preferenceMap[playerName] = {};
-            if (!preferenceMap[playerName][charKey]) preferenceMap[playerName][charKey] = 0;
-
-            preferenceMap[playerName][charKey]++;
-        }
-
-        // 排序成曲線
-        const playerPreferences = Object.entries(preferenceMap).map(([player, table]) => {
-            const sorted = Object.entries(table)
-                .sort((a, b) => b[1] - a[1]) // 次數降序
-                .map(([characterKey, count]) => ({ characterKey, count }));
-            return { player, characters: sorted };
-        });
-
-        // console.dir(playerPreferences)
-        // logger.info('playerPreferences =\n' + JSON.stringify(playerPreferences, null, 2));
-
-        return playerPreferences;
-    }
-
-    async fetchSynergy(mode: SynergyMode = 'setup') {
-        const raw = await this.synergyService.getRawTacticalUsages();
-        const groups = this.synergyService.buildCooccurrenceGroups(raw, mode);
-        const synergy = this.synergyService.buildSynergyMatrix(groups);
+    async fetchCharacterSynergyMatrix(mode: SynergyMode = 'setup'): Promise<CharacterSynergyMatrix> {
+        const matchTacticalUsages = await this.analysisRepository.findAllMatchTacticalUsageForAnalysis();
+        const groups = this.characterSynergyCalculator.buildCooccurrenceGroups(matchTacticalUsages, mode);
+        const synergy = this.characterSynergyCalculator.buildSynergyMatrix(groups);
         return synergy;
     }
 
-    async fetchCharacterClusters() {
+    async fetchCharacterSynergyGraph() {
         const characters = await this.characterRepository.findAll();
         const characterMap = Object.fromEntries(characters.map((character) => [character.key, character]));
-        const synergy = await this.fetchSynergy();
+        const synergyMatrix = await this.fetchCharacterSynergyMatrix();
+        const graph = await this.characterSynergyGraphBuilder.build(synergyMatrix, characterMap)
+        const nodes: string[] = graph.nodes()
 
-        const { archetypes, projected, clusterMedoids, bridgeScores } = await this.clusteringService.computeClusters(synergy, characterMap);
+        const links: ICharacterGraphLink[] = graph.edges().map((edgeKey) => {
+            const attrs = graph.getEdgeAttributes(edgeKey);
+            const source = graph.source(edgeKey);
+            const target = graph.target(edgeKey);
+            return {
+                source,
+                target,
+                weight: attrs.weight,
+            };
+        });
+        console.log(nodes, links)
+        return { nodes, links };
+    }
 
-        const archetypePoints = archetypes.map((archetype, i) => ({
+    async fetchCharacterClusters(): Promise<ICharacterClusters> {
+        const characters = await this.characterRepository.findAll();
+        const characterMap = Object.fromEntries(characters.map((character) => [character.key, character]));
+        const synergyMatrix = await this.fetchCharacterSynergyMatrix();
+        const graph = await this.characterSynergyGraphBuilder.build(synergyMatrix, characterMap)
+
+        const featureMatrix = this.characterFeatureMatrixBuilder.build(characters)
+        const { archetypes, projected, clusterMedoids, bridgeScores } = await this.characterCommunityScanEngine.computeClusters(
+            graph,
+            synergyMatrix,
+            featureMatrix,
+        );
+
+        const archetypePoints: IArchetypePoint[] = archetypes.map((archetype, i: number) => ({
             characterKey: archetype.characterKey,
             clusterId: archetype.clusterId,
             x: projected[i][0],
             y: projected[i][1],
         }));
+
         return {
             archetypePoints,
             bridgeScores,
             clusterMedoids,
         };
+    }
+
+    async fetchPlayerPreference(): Promise<KeyIndexedMatrix<string, string>> {
+        const matchTacticalUsages = await this.analysisRepository.findAllMatchTacticalUsageIdentities();
+
+        const matrix: KeyIndexedMatrix<string, string> = {};
+
+        for (const u of matchTacticalUsages) {
+            const playerName = u.memberNickname ?? u.guestNickname ?? u.teamMemberName;
+            const charKey = u.characterKey;
+
+            if (!matrix[playerName]) matrix[playerName] = {};
+            if (!matrix[playerName][charKey]) matrix[playerName][charKey] = 0;
+
+            matrix[playerName][charKey]++;
+        }
+
+        return matrix
+
+        // 排序成曲線
+        // const playerPreferences = Object.entries(preferenceMap).map(([player, table]) => {
+        //     const sorted = Object.entries(table)
+        //         .sort((a, b) => b[1] - a[1]) // 次數降序
+        //         .map(([characterKey, count]) => ({ characterKey, count }));
+        //     return { player, characters: sorted };
+        // });
+
+        // return playerPreferences;
+    }
+
+    async fetchPlayerStyle(identity: MatchTeamMemberUniqueIdentity): Promise<IPlayerStyleStats> {
+        const memberUsages = await this.analysisRepository.findMatchTacticalUsageWithCharacterByIdentity(identity);
+        const allUsages = await this.analysisRepository.findAllMatchTacticalUsageWithCharacter();
+        // logger.debug("memberMatchMoves", memberUsages)
+        return computePlayerStyle(memberUsages, allUsages)
     }
 }

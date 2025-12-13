@@ -1,8 +1,8 @@
 // backend/src/modules/character/application/character.service.ts
 
-import ICharacterRepository from '../domain/ICharacterRepository';
-
 import { DataNotFoundError } from '../../../errors/AppError';
+
+import type { ICharacterRepository } from '../domain/ICharacterRepository';
 
 export default class CharacterService {
     constructor(private characterRepository: ICharacterRepository) {}

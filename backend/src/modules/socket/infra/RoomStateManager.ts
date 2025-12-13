@@ -1,9 +1,15 @@
-// backend/src/modules/socket/managers/RoomStateManager.ts
+// backend/src/modules/socket/infra/RoomStateManager.ts
 
-import IRoomStateManager from '../domain/IRoomStateManager';
-import { IRoomUser } from '@shared/contracts/room/IRoomUser';
-import { IRoomState } from '@shared/contracts/room/IRoomState';
 import { createLogger } from '../../../utils/logger';
+
+import type { IRoomStateManager } from '../domain/IRoomStateManager';
+import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
+import type { IRoomState } from '@shared/contracts/room/IRoomState';
+import type { BoardImageMap } from '@shared/contracts/board/BoardImageMap';
+import type { CharacterRandomContextMap } from '@shared/contracts/character/CharacterRandomContextMap';
+import type { IChatMessage } from '@shared/contracts/chat/IChatMessage';
+import type { TeamTacticalCellImageMap } from '@shared/contracts/tactical/TeamTacticalCellImageMap';
+import type { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';
 
 const logger = createLogger('ROOM STATE MANAGER');
 
@@ -29,7 +35,7 @@ export default class RoomStateManager implements IRoomStateManager {
         return this.get(roomId).users;
     }
 
-    setUsers(roomId: string, users: IRoomUser[]){
+    setUsers(roomId: string, users: IRoomUser[]) {
         this.roomStates[roomId].users = users;
     }
 
@@ -37,23 +43,39 @@ export default class RoomStateManager implements IRoomStateManager {
         return this.get(roomId).chatMessages;
     }
 
+    setChatMessages(roomId: string, chatMessages: IChatMessage[]): void {
+        this.roomStates[roomId].chatMessages = chatMessages;
+    }
+
     getBoardImageMap(roomId: string) {
         return this.get(roomId).boardImageMap;
+    }
+
+    setBoardImageMap(roomId: string, boardImageMap: BoardImageMap) {
+        this.roomStates[roomId].boardImageMap = boardImageMap;
     }
 
     getCharacterRandomContextMap(roomId: string) {
         return this.get(roomId).characterRandomContextMap;
     }
 
+    setCharacterRandomContextMap(roomId: string, characterRandomContextMap: CharacterRandomContextMap) {
+        this.roomStates[roomId].characterRandomContextMap = characterRandomContextMap;
+    }
+
     getTeamMembersMap(roomId: string) {
         return this.get(roomId).teamMembersMap;
     }
 
-    getStepIndex(roomId: string) {
-        return this.get(roomId).stepIndex;
+    setTeamMembersMap(roomId: string, teamMembersMap: TeamMembersMap): void {
+        this.roomStates[roomId].teamMembersMap = teamMembersMap;
     }
-
+    
     getTeamTacticalCellImageMap(roomId: string) {
         return this.get(roomId).teamTacticalCellImageMap;
+    }
+
+    setTeamTacticalCellImageMap(roomId: string, teamTacticalCellImageMap: TeamTacticalCellImageMap): void {
+        this.roomStates[roomId].teamTacticalCellImageMap = teamTacticalCellImageMap;
     }
 }

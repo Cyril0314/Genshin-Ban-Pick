@@ -1,10 +1,11 @@
 // backend/src/modules/room/domain/createRoomSetting.ts
 
-import { IRoomSetting } from '@shared/contracts/room/IRoomSetting';
-import { ITeam } from '@shared/contracts/team/ITeam';
 import { createDefaultTeams } from './createDefaultTeams';
 import { createMatchFlow } from './createMatchFlow';
 import { createZoneMetaTable } from './createZoneMetaTable';
+
+import type { IRoomSetting } from '@shared/contracts/room/IRoomSetting';
+import type { ITeam } from '@shared/contracts/team/ITeam';
 
 const defaultFlowVersion = 1;
 const defaultTotalRounds = 2;

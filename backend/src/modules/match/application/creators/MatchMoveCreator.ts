@@ -1,12 +1,11 @@
-// backend/src/modules/match/application/MatchMoveCreator.ts
+// backend/src/modules/match/application/creators/MatchMoveCreator.ts
 
 import { Prisma } from '@prisma/client';
 
-import { IZone } from '@shared/contracts/board/IZone';
-import { IMatchStep } from '@shared/contracts/match/IMatchStep';
-import { BoardImageMap } from '@shared/contracts/board/BoardImageMap';
-import { CharacterRandomContextMap } from '@shared/contracts/character/CharacterRandomContextMap';
-
+import type { IZone } from '@shared/contracts/board/IZone';
+import type { IMatchStep } from '@shared/contracts/match/IMatchStep';
+import type { BoardImageMap } from '@shared/contracts/board/BoardImageMap';
+import type { CharacterRandomContextMap } from '@shared/contracts/character/CharacterRandomContextMap';
 
 export default class MatchMoveCreator {
     static async createMatchMoves(

@@ -1,7 +1,8 @@
 // backend/src/modules/room/domain/createZoneMetaTable.ts
 
-import { IZone } from '@shared/contracts/board/IZone';
 import { ZoneType } from '@shared/contracts/board/value-types';
+
+import type { IZone } from '@shared/contracts/board/IZone';
 
 export function createZoneMetaTable({
     numberOfUtility,

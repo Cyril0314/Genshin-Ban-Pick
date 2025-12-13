@@ -3,7 +3,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed, watch } from 'vue';
 
-import { MemberRole } from '@shared/contracts/auth/value_type';
+import { MemberRole } from '@shared/contracts/auth/value_types';
 import { tokenStorage } from '../infrastructure/tokenStorage';
 
 import type { Identity } from '../types/Identity';

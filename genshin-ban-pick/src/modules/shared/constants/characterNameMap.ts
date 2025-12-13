@@ -105,5 +105,7 @@ export const characterNameMap: Record<string, string> = {
     "aino": "愛諾",
     "lauma": "菈烏瑪",
     "flins": "菲林斯",
-    "nefer": "奈芙爾"
+    "nefer": "奈芙爾",
+    "durin": "杜林",
+    "jahoda": "雅珂達",
 };

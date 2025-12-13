@@ -4,23 +4,27 @@ import { computed, onMounted, ref, watch } from 'vue';
 
 import { useDesignTokens } from '@/modules/shared/ui/composables/useDesignTokens';
 import { useEchartTheme } from '@/modules/shared/ui/composables/useEchartTheme';
-import { getCharacterDisplayName } from '@/modules/shared/domain/getCharacterDisplayName';
-import { analysisUseCase } from '../../application/analysisUseCase';
+import { useAnalysisUseCase } from './useAnalysisUseCase';
+import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
+
+import type { SynergyMode } from '@shared/contracts/analysis/value-types';
+import type { CharacterSynergyMatrix } from '@shared/contracts/analysis/CharacterSynergyMatrix';
 
 export function useCharacterSynergyChart() {
+    const { getByKey: getCharacterDisplayName } = useCharacterDisplayName();
     const designTokens = useDesignTokens();
     const { gridStyle, tooltipStyle, dataZoomStyle } = useEchartTheme();
-    const { fetchSynergy } = analysisUseCase();
+    const analysisUseCase = useAnalysisUseCase();
 
-    const scope = ref<'match' | 'team' | 'setup'>('setup');
-    const synergy = ref<Record<string, Record<string, number>> | null>(null);
+    const scope = ref<SynergyMode>('setup');
+    const synergy = ref<CharacterSynergyMatrix | null>(null);
 
     onMounted(async () => {
-        synergy.value = await fetchSynergy({ mode: scope.value });
+        synergy.value = await analysisUseCase.fetchCharacteSynergyMatrix({ mode: scope.value });
     });
 
     watch(scope, async () => {
-        synergy.value = await fetchSynergy({ mode: scope.value });
+        synergy.value = await analysisUseCase.fetchCharacteSynergyMatrix({ mode: scope.value });
     });
 
     const option = computed(() => {

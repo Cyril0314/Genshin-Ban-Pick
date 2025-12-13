@@ -1,9 +1,8 @@
 // src/modules/board/index.ts
 
-export * from './application/boardUseCase'
-export * from './application/matchStepUseCase'
+export * from './application/BoardUseCase'
+export * from './ui/composables/useBoardUseCase'
 export * from './application/randomPullUseCase'
 export * from './sync/useBoardSync';
-export * from './sync/useMatchStepSync';
-export * from './store/boardImageStore';
-export * from './store/matchStepStore';
+export * from './store/boardStore';
+export * from './registerBoardDependencies'

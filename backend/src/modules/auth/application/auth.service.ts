@@ -2,11 +2,12 @@
 
 import MemberService from './member.service';
 import GuestService from './guest.service';
-import { IJwtProvider } from '../domain/IJwtProvider';
-import { UserNotFoundError } from '../../../errors/AppError';
 import { createLogger } from '../../../utils/logger';
-import { IGuestData } from '../types/IGuestData';
-import { IMemberData } from '../types/IMemberData';
+import { UserNotFoundError } from '../../../errors/AppError';
+
+import type { IJwtProvider } from '../domain/IJwtProvider';
+import type { IGuestData } from '../types/IGuestData';
+import type { IMemberData } from '../types/IMemberData';
 
 const logger = createLogger('AUTH');
 export default class AuthService {

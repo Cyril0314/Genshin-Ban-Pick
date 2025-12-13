@@ -8,7 +8,7 @@ import { storeToRefs } from 'pinia';
 import { DragTypes } from '@/app/constants/customMIMETypes'
 import { getWishImagePath } from '@/modules/shared/infrastructure/imageRegistry'
 import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
-import { useMatchStepStore } from '../../store/matchStepStore';
+import { useBoardStore } from '../../store/boardStore';
 
 import type { IZone } from '@shared/contracts/board/IZone';
 
@@ -27,8 +27,8 @@ const isOver = ref(false)
 
 const imageId = computed(() => props.boardImageMap[props.zone.id] ?? '')
 
-const matchStepStore = useMatchStepStore()
-const { currentStep } = storeToRefs(matchStepStore)
+const boardStore = useBoardStore();
+const { currentStep } = storeToRefs(boardStore)
 
 const teamTheme = computed(() => {
   const slot = currentStep.value?.teamSlot ?? null;

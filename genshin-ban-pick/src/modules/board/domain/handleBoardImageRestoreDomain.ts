@@ -2,10 +2,12 @@
 
 import { removeImageDomain } from "./removeImageDomain";
 
+import type { BoardImageMap } from "@shared/contracts/board/BoardImageMap";
+
 export function handleBoardImageRestoreDomain(
-    boardImageMap: Record<number, string>,
+    boardImageMap: BoardImageMap,
     zoneId: number,
-):  Record<number, string> {
+): BoardImageMap {
     let nextMap = { ...boardImageMap };
     nextMap = removeImageDomain(nextMap, zoneId)
     return nextMap;

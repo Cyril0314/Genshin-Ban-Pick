@@ -3,16 +3,14 @@
 import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
 
-import { useBoardImageStore, useMatchStepStore } from '@/modules/board';
+import { useBoardStore } from '@/modules/board';
 import { useTeamInfoStore } from '@/modules/team';
 import { useTacticalBoardStore } from '../../store/tacticalBoardStore';
 import { ZoneType } from '@shared/contracts/board/value-types';
 
 export function useTacticalPool() {
-    const boardStore = useBoardImageStore();
-    const { zoneMetaTable, boardImageMap } = storeToRefs(boardStore);
-    const matchStepStore = useMatchStepStore();
-    const { matchSteps } = storeToRefs(matchStepStore);
+    const boardStore = useBoardStore();
+    const { zoneMetaTable, boardImageMap, matchSteps } = storeToRefs(boardStore);
     const teamInfoStore = useTeamInfoStore();
     const { teams } = storeToRefs(teamInfoStore);
     const tacticalBoardStore = useTacticalBoardStore();
