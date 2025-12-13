@@ -1,7 +1,9 @@
 // backend/src/modules/match/domain/restoreFilterFromJson.ts
 
 import { Prisma } from '@prisma/client';
-import { CharacterFilterKey } from '@shared/contracts/character/value-types';
+import { characterFilterKeys } from '@shared/contracts/character/CharacterFilterKey';
+
+import type { CharacterFilterKey } from '@shared/contracts/character/CharacterFilterKey';
 
 export function restoreFiltersFromJson(json: Prisma.JsonValue): Record<CharacterFilterKey, string[]> {
     if (!json || typeof json !== 'object') {
@@ -9,7 +11,7 @@ export function restoreFiltersFromJson(json: Prisma.JsonValue): Record<Character
     }
     const result: Partial<Record<CharacterFilterKey, string[]>> = {};
 
-    const validKeys = Object.values(CharacterFilterKey);
+    const validKeys = Object.keys(characterFilterKeys) as CharacterFilterKey[];
 
     for (const [rawKey, rawValue] of Object.entries(json as any)) {
         // 取回 key → enum（確保 key 存在於 CharacterFilterKey）

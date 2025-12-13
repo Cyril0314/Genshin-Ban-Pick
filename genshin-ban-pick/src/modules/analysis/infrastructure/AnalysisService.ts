@@ -2,6 +2,7 @@
 
 import type { HttpClient } from '@/app/infrastructure/http/httpClient';
 import type { SynergyMode } from '@shared/contracts/analysis/value-types';
+import type { MatchTeamMemberUniqueIdentity } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
 
 export default class AnalysisService {
     constructor(private client: HttpClient) {}
@@ -10,19 +11,24 @@ export default class AnalysisService {
         return this.client.get(`/analyses/tactical-usages`);
     }
 
-    async getPreference() {
-        return this.client.get('/analyses/preference');
+    async getCharacterSynergyMatrix(payload: { mode: SynergyMode }) {
+        return this.client.get(`/analyses/character/synergy-matrix`, { params: payload });
     }
 
-    async getSynergy(payload: { mode: SynergyMode }) {
-        return this.client.get(`/analyses/synergy`, { params: payload });
+    async getCharacterSynergyGraph() {
+        return this.client.get(`/analyses/character/synergy-graph`);
     }
-
+    
     async getCharacterClusters() {
-        return this.client.get(`/analyses/character-clusters`);
+        return this.client.get(`/analyses/character/clusters`);
     }
 
-    async getPlayerStyle(memberId: number) {
-        return this.client.get(`/analyses/member/${memberId}/style`);
+    async getPlayerPreference() {
+        return this.client.get('/analyses/player/preference');
+    }
+
+    async getPlayerStyle(payload: { identity: MatchTeamMemberUniqueIdentity }) {
+        console.log(`payload`, payload)
+        return this.client.get(`/analyses/player/style`, { params: payload });
     }
 }

@@ -11,10 +11,12 @@ const logger = createLogger('CHARACTER');
 export default function createAnalysesRouter(analysisController: AnalysisController) {
     const router = express.Router();
     router.get('/tactical-usages', asyncHandler(analysisController.fetchTacticalUsages));
-    router.get('/preference', asyncHandler(analysisController.fetchPreference));
-    router.get('/synergy', asyncHandler(analysisController.fetchSynergy));
-    router.get('/character-clusters', asyncHandler(analysisController.fetchCharacterClusters));
-    router.get('/member/:memberId/style', asyncHandler(analysisController.fetchPlayerStyle));
+    
+    router.get('/character/synergy-matrix', asyncHandler(analysisController.fetchCharacterSynergyMatrix));
+    router.get('/character/synergy-graph', asyncHandler(analysisController.fetchCharacterSynergyGraph))
+    router.get('/character/clusters', asyncHandler(analysisController.fetchCharacterClusters));
+    router.get('/player/preference', asyncHandler(analysisController.fetchPlayerPreference));
+    router.get('/player/style', asyncHandler(analysisController.fetchPlayerStyle));
 
     return router;
 }

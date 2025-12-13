@@ -1,4 +1,6 @@
 // backend/src/modules/match/domain/matchMapper.ts
+import { mapCharacter } from '../../character';
+
 import type {
     Character,
     Guest,
@@ -16,7 +18,6 @@ import type { IMatchTeamMember } from '@shared/contracts/match/IMatchTeamMember'
 import type { IMatchTacticalUsage } from '@shared/contracts/match/IMatchTacticalUsage';
 import type { IMatchMove } from '@shared/contracts/match/IMatchMove';
 import type { MoveSource, MoveType } from '@shared/contracts/match/value-types';
-import { mapCharacterFromPrisma } from '../../character/domain/mapCharacterFromPrisma';
 
 // type PrismaMatchResult = Prisma.MatchGetPayload<typeof matchQuery>;
 
@@ -81,14 +82,14 @@ function mapMove(move: MatchMove & { character?: Character; randomMoveContext?: 
         matchId: move.matchId,
         teamId: move.teamId ?? null,
         characterKey: move.characterKey,
-        character: mapCharacter(move.character),
+        character: move.character === undefined ? null : mapCharacter(move.character),
         randomMoveContext: move.randomMoveContext ?? null,
     };
 }
 
-function mapCharacter(character?: Character) {
-    if (!character) {
-        return null;
-    }
-    return mapCharacterFromPrisma(character);
-}
+// function mapCharacter(character?: Character) {
+//     if (!character) {
+//         return null;
+//     }
+//     return mapCharacter(character);
+// }

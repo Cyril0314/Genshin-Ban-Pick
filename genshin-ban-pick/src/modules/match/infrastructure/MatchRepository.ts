@@ -10,4 +10,10 @@ export default class MatchRepository {
         const matchData = response.data;
         return matchData;
     }
+
+    async fetchMatchTeamMembers() {
+        const response = await this.matchService.getMatchTeamMembers();
+        const matchTeamMembers = response.data;
+        return matchTeamMembers;
+    }
 }

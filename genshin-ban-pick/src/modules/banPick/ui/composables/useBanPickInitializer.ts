@@ -13,7 +13,7 @@ import { useChatSync } from '@/modules/chat';
 import { registerAllSyncModules } from '@/app/bootstrap/registerAllSyncModules';
 
 import type { IRoomSetting } from '@shared/contracts/room/IRoomSetting.ts';
-import type { CharacterFilterKey } from '@shared/contracts/character/value-types';
+import type { CharacterFilterKey } from '@shared/contracts/character/CharacterFilterKey';
 
 export function useBanPickInitializer(roomId: string) {
     // --- states ---

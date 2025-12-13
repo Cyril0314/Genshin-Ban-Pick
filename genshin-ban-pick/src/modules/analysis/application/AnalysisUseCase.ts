@@ -2,6 +2,7 @@
 
 import type { SynergyMode } from '@shared/contracts/analysis/value-types';
 import type AnalysisRepository from '../infrastructure/AnalysisRepository';
+import type { MatchTeamMemberUniqueIdentity } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
 
 export default class AnalysisUseCase {
     constructor(private analysisRepository: AnalysisRepository) {}
@@ -10,19 +11,23 @@ export default class AnalysisUseCase {
         return await this.analysisRepository.fetchTacticalUsages();
     }
 
-    async fetchPreference() {
-        return await this.analysisRepository.fetchPreference();
+    async fetchCharacteSynergyMatrix(payload: { mode: SynergyMode }) {
+        return await this.analysisRepository.fetchCharacteSynergyMatrix(payload);
     }
 
-    async fetchSynergy(payload: { mode: SynergyMode }) {
-        return await this.analysisRepository.fetchSynergy(payload);
+    async fetchCharacterSynergyGraph() {
+        return await this.analysisRepository.fetchCharacterSynergyGraph();
     }
 
     async fetchCharacterClusters() {
         return await this.analysisRepository.fetchCharacterClusters();
     }
 
-    async fetchPlayerStyle(memberId: number) {
-        return await this.analysisRepository.fetchPlayerStyle(memberId);
+    async fetchPlayerPreference() {
+        return await this.analysisRepository.fetchPlayerPreference();
+    }
+
+    async fetchPlayerStyle(payload: { identity: MatchTeamMemberUniqueIdentity }) {
+        return await this.analysisRepository.fetchPlayerStyle(payload);
     }
 }

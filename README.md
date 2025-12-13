@@ -61,6 +61,7 @@ psql -h localhost -p 5432 -U postgres -d postgres -c "DROP DATABASE genshin_banp
 psql -h localhost -p 5432 -U wangxiaoyu -d postgres -c "DROP DATABASE genshin_banpick;"
 
 psql -h localhost -p 5432 -U postgres -d postgres -c "CREATE DATABASE genshin_banpick;"
+psql -h localhost -p 5432 -U wangxiaoyu -d postgres -c "CREATE DATABASE genshin_banpick;"
 
 ### 匯入正式資料 → 本機
 pg_restore -h localhost -p 5432 -U postgres -d genshin_banpick -F c prod_dump.backup

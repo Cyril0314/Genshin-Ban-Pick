@@ -24,4 +24,8 @@ export default class MatchService {
         validateSnapshot(snapshot);
         return this.matchRepository.create(snapshot, false);
     }
+
+    async fetchMatchTeamMembers() {
+        return this.matchRepository.findAllMatchTeamMemberUniqueIdentities()
+    }
 }

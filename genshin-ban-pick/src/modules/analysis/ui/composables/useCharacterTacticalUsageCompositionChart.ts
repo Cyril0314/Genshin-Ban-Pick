@@ -7,13 +7,14 @@ import { useCharacterStore } from '@/modules/character';
 import { useDesignTokens } from '@/modules/shared/ui/composables/useDesignTokens';
 import { useEchartTheme } from '@/modules/shared/ui/composables/useEchartTheme';
 import { ZoneType } from '@shared/contracts/board/value-types';
-import { getCharacterDisplayName } from '@/modules/shared/domain/getCharacterDisplayName';
 import { useAnalysisUseCase } from './useAnalysisUseCase';
+import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
 
 import type { ICharacterTacticalUsage } from '@shared/contracts/analysis/ICharacterTacticalUsage';
 import type { CallbackDataParams } from 'echarts/types/dist/shared';
 
 export function useCharacterTacticalUsageCompositionChart(topN = 120) {
+    const { getByKey: getCharacterDisplayName } = useCharacterDisplayName();
     const designTokens = useDesignTokens();
     const { gridStyle, xAxisStyle, yAxisStyle, legendStyle, tooltipStyle, dataZoomStyle } = useEchartTheme();
     const analysisUseCase = useAnalysisUseCase();

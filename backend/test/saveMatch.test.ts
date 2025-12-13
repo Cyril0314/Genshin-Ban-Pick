@@ -2,14 +2,13 @@ import { PrismaClient } from '@prisma/client';
 
 import MatchRepository from '../src/modules/match/infra/MatchRepository';
 import { ZoneType } from '@shared/contracts/board/value-types';
-import { CharacterFilterKey } from '@shared/contracts/character/value-types';
 import { createRoomSetting } from '../src/modules/room/domain/createRoomSetting';
-import { mapCharacterFromPrisma } from '../src/modules/character/domain/mapCharacterFromPrisma';
 
 import type { TeamMember } from '@shared/contracts/team/TeamMember';
 import type { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';
 import type { CharacterRandomContextMap } from '@shared/contracts/character/CharacterRandomContextMap';
 import type { ICharacter } from '@shared/contracts/character/ICharacter';
+import { mapCharacter } from '../src/modules/character';
 
 async function main() {
     const prisma = new PrismaClient();
@@ -61,7 +60,7 @@ async function main() {
     const characters = await prisma.character.findMany({
         orderBy: { id: 'asc' }, // 可按需求排序
     });
-    const bpCharacters = selectN(characters.map(mapCharacterFromPrisma), roomSetting.matchFlow.steps.length);
+    const bpCharacters = selectN(characters.map(mapCharacter), roomSetting.matchFlow.steps.length);
     let boardImageMap: Record<number, string> = {};
     let teamCharacterPools: Record<number, string[]> = {};
     let characterRandomContextMap: CharacterRandomContextMap = {};
@@ -119,7 +118,7 @@ async function main() {
     );
 
     console.log('\n✅ Match saved successfully!');
-    console.log('Match:', JSON.stringify(result.moves, null, 2));
+    // console.log('Match:', JSON.stringify(result.moves, null, 2));
 
     function shuffled<T>(arr: T[]): T[] {
         return [...arr].sort(() => Math.random() - 0.5);
@@ -148,13 +147,13 @@ async function main() {
     function generateRandomContext(useredByCharacter: ICharacter) {
         return {
             characterFilter: {
-                [CharacterFilterKey.Rarity]: [useredByCharacter.rarity],
-                [CharacterFilterKey.Weapon]: [useredByCharacter.weapon],
-                [CharacterFilterKey.Element]: [useredByCharacter.element],
-                [CharacterFilterKey.Region]: [useredByCharacter.region],
-                [CharacterFilterKey.CharacterRole]: [useredByCharacter.role],
-                [CharacterFilterKey.ModelType]: [useredByCharacter.modelType],
-                [CharacterFilterKey.Wish]: [useredByCharacter.wish],
+                ['rarity']: [useredByCharacter.rarity],
+                ['weapon']: [useredByCharacter.weapon],
+                ['element']: [useredByCharacter.element],
+                ['region']: [useredByCharacter.region],
+                ['role']: [useredByCharacter.role],
+                ['modelType']: [useredByCharacter.modelType],
+                ['wish']: [useredByCharacter.wish],
             },
         };
     }

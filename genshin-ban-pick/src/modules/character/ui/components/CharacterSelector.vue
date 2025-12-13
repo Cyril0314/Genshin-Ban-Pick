@@ -9,9 +9,9 @@ import { useSelectorOptions, CommonOption } from '../composables/useSelectorOpti
 import { useFilteredCharacters } from '../composables/useFilteredCharacters';
 import { ZoneType } from '@shared/contracts/board/value-types';
 
-import type { CharacterFilterKey } from '@shared/contracts/character/value-types';
 import type { SelectorOption } from '../composables/useSelectorOptions';
 import type { ICharacter } from '@shared/contracts/character/ICharacter';
+import type { CharacterFilterKey } from '@shared/contracts/character/CharacterFilterKey';
 
 const props = defineProps<{
     characterMap: Record<string, ICharacter>;

@@ -8,4 +8,8 @@ export default class MatchService {
     async post(payload: { roomId: string }) {
         return this.client.post(`/matches`, payload);
     }
+
+    async getMatchTeamMembers() {
+        return this.client.get(`/matches/team-members`);
+    }
 }

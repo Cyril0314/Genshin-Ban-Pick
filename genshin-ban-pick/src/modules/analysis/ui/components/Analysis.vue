@@ -9,19 +9,22 @@ import CharacterTacticalUsagesChart from './CharacterTacticalUsagesChart.vue';
 import CharacterTacticalUsageCompositionChart from './CharacterTacticalUsageCompositionChart.vue';
 import PlayerCharacterChart from './PlayerCharacterChart.vue';
 import PlayerStyleRadarChart from './PlayerStyleRadarChart.vue';
+import CharacterSynergyGraphChart from './CharacterSynergyGraphChart.vue';
 
 const props = defineProps<{}>();
 
 const emit = defineEmits<{}>();
 
 const tabs = [
+    { name: '玩家風格雷達', component: PlayerStyleRadarChart },
     { name: '角色使用權重', component: CharacterTacticalUsagesChart },
     { name: '角色使用構成', component: CharacterTacticalUsageCompositionChart },
     { name: '角色共現熱圖', component: CharacterSynergyChart },
+    // { name: '角色圖', component: CharacterSynergyGraphChart },
     { name: '角色群聚圖', component: CharacterClustersChart },
 
     { name: '玩家偏好角色', component: PlayerCharacterChart },
-    { name: '玩家風格雷達', component: PlayerStyleRadarChart },
+    
 ];
 
 const currentTabIndex = ref<number>(0);

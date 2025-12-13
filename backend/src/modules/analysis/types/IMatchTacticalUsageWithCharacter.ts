@@ -1,13 +1,8 @@
 // src/modules/analysis/types/IMatchTacticalUsageWithCharacter.ts
 
-import type { CharacterRole, Element, Rarity, Weapon } from '@prisma/client';
+import { ICharacter } from "@shared/contracts/character/ICharacter";
 
 export interface IMatchTacticalUsageWithCharacter {
     characterKey: string;
-    character: {
-        role: CharacterRole;
-        element: Element;
-        weapon: Weapon;
-        rarity: Rarity;
-    };
+    character: ICharacter;
 }

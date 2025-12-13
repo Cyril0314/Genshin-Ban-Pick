@@ -14,6 +14,7 @@ import { mapMatchFromPrisma } from '../domain/mapMatchFromPrisma';
 import type { IMatchRepository } from '../domain/IMatchRepository';
 import type { IMatchSnapshot } from '../domain/IMatchSnapshot';
 import type { IMatch } from '@shared/contracts/match/IMatch';
+import type { MatchTeamMemberUniqueIdentity } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
 
 const logger = createLogger('MATCH:Repository');
 
@@ -115,5 +116,80 @@ export default class MatchRepository implements IMatchRepository {
 
             throw new DbConnectionError(err);
         }
+    }
+
+    async findAllMatchTeamMemberUniqueIdentities(): Promise<MatchTeamMemberUniqueIdentity[]> {
+        const teamMembers = await this.prisma.matchTeamMember.findMany({
+            select: {
+                id: true,
+                name: true,
+                memberRef: true,
+                guestRef: true,
+                member: {
+                    select: {
+                        id: true,
+                        nickname: true,
+                    },
+                },
+                guest: {
+                    select: {
+                        id: true,
+                        nickname: true,
+                    },
+                },
+            },
+        });
+
+        const identityMap = new Map<string, MatchTeamMemberUniqueIdentity>();
+
+        for (const teamMember of teamMembers) {
+            if (teamMember.memberRef && teamMember.member) {
+                const key = `member:${teamMember.memberRef}`;
+                if (!identityMap.has(key)) {
+                    identityMap.set(key, {
+                        type: 'Member',
+                        id: teamMember.memberRef,
+                        name: teamMember.member.nickname,
+                    });
+                }
+                continue;
+            }
+
+            if (teamMember.guestRef && teamMember.guest) {
+                const key = `guest:${teamMember.guestRef}`;
+                if (!identityMap.has(key)) {
+                    identityMap.set(key, {
+                        type: 'Guest',
+                        id: teamMember.guestRef,
+                        name: teamMember.guest.nickname,
+                    });
+                }
+                continue;
+            }
+
+            // name-only
+            if (teamMember.name) {
+                const key = `name:${teamMember.name}`;
+                if (!identityMap.has(key)) {
+                    identityMap.set(key, {
+                        type: 'Name',
+                        name: teamMember.name,
+                    });
+                }
+            }
+        }
+
+        const identityOrder: Record<MatchTeamMemberUniqueIdentity['type'], number> = {
+            Member: 0,
+            Guest: 1,
+            Name: 2,
+        };
+
+        return Array.from(identityMap.values()).sort((a, b) => {
+            const typeDiff = identityOrder[a.type] - identityOrder[b.type];
+            if (typeDiff !== 0) return typeDiff;
+
+            return a.name.localeCompare(b.name, 'zh-Hant');
+        });
     }
 }

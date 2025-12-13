@@ -2,6 +2,7 @@
 
 import { Prisma, PrismaClient } from '@prisma/client';
 import { restoreFiltersFromJson } from '../../match/domain/restoreFilterFromJson';
+import { mapCharacter } from '../../character';
 
 import type { IAnalysisRepository } from '../domain/IAnalysisRepository';
 import type { IMatchTimeMinimal } from '../types/IMatchTimeMinimal';
@@ -10,7 +11,8 @@ import type { IMatchTacticalUsageExpandedRefs } from '../types/IMatchTacticalUsa
 import type { IMatchTacticalUsageTeamMemberIdentityRefs } from '../types/IMatchTacticalUsageUserPreferenceCore';
 import type { IMatchTacticalUsageWithCharacter } from '../types/IMatchTacticalUsageWithCharacter';
 import type { MoveSource, MoveType } from '@shared/contracts/match/value-types';
-import type { CharacterFilterKey } from '@shared/contracts/character/value-types';
+import type { CharacterFilterKey } from '@shared/contracts/character/CharacterFilterKey';
+import type { MatchTeamMemberUniqueIdentity } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
 
 export default class AnalysisRepository implements IAnalysisRepository {
     constructor(private prisma: PrismaClient) {}
@@ -24,30 +26,30 @@ export default class AnalysisRepository implements IAnalysisRepository {
     async findAllMatchMoveCoreForWeightCalc(): Promise<IMatchMoveWeightCalcCore[]> {
         type Entity = Prisma.MatchMoveGetPayload<typeof matchMoveWeightCalcCoreQuery>;
 
-        const rows: Entity[] = await this.prisma.matchMove.findMany(matchMoveWeightCalcCoreQuery);
+        const entities: Entity[] = await this.prisma.matchMove.findMany(matchMoveWeightCalcCoreQuery);
 
-        return rows.map((r) => {
+        return entities.map((entity) => {
             let randomMoveContext: {
                 id: number;
                 filters: Record<CharacterFilterKey, string[]>;
                 matchMoveId: number;
             } | null;
-            if (r.randomMoveContext) {
+            if (entity.randomMoveContext) {
                 randomMoveContext = {
-                    id: r.randomMoveContext.id,
-                    filters: restoreFiltersFromJson(r.randomMoveContext.filters),
-                    matchMoveId: r.randomMoveContext.matchMoveId,
+                    id: entity.randomMoveContext.id,
+                    filters: restoreFiltersFromJson(entity.randomMoveContext.filters),
+                    matchMoveId: entity.randomMoveContext.matchMoveId,
                 };
             } else {
                 randomMoveContext = null;
             }
 
             return {
-                characterKey: r.characterKey,
-                type: r.type as MoveType,
-                source: r.source as MoveSource,
-                matchId: r.matchId,
-                characterReleaseDate: r.character.releaseDate,
+                characterKey: entity.characterKey,
+                type: entity.type as MoveType,
+                source: entity.source as MoveSource,
+                matchId: entity.matchId,
+                characterReleaseDate: entity.character.releaseDate,
                 randomMoveContext: randomMoveContext,
             };
         });
@@ -58,13 +60,13 @@ export default class AnalysisRepository implements IAnalysisRepository {
 
         const entities: Entity[] = await this.prisma.matchTacticalUsage.findMany(matchTacticalUsageTeamMemberIdentityRefsQuery);
 
-        return entities.map((r) => ({
-            teamId: r.teamMember.teamId,
-            setupNumber: r.setupNumber,
-            characterKey: r.characterKey,
-            teamMemberName: r.teamMember.name,
-            memberNickname: r.teamMember.member?.nickname ?? null,
-            guestNickname: r.teamMember.guest?.nickname ?? null,
+        return entities.map((entity) => ({
+            teamId: entity.teamMember.teamId,
+            setupNumber: entity.setupNumber,
+            characterKey: entity.characterKey,
+            teamMemberName: entity.teamMember.name,
+            memberNickname: entity.teamMember.member?.nickname ?? null,
+            guestNickname: entity.teamMember.guest?.nickname ?? null,
         }));
     }
 
@@ -73,33 +75,64 @@ export default class AnalysisRepository implements IAnalysisRepository {
 
         const entities: Entity[] = await this.prisma.matchTacticalUsage.findMany(matchTacticalUsageExpandedRefsQuery);
 
-        return entities.map((r) => ({
-            matchId: r.teamMember.team.matchId,
-            teamId: r.teamMember.teamId,
-            setupNumber: r.setupNumber,
-            characterKey: r.characterKey,
+        return entities.map((entity) => ({
+            matchId: entity.teamMember.team.matchId,
+            teamId: entity.teamMember.teamId,
+            setupNumber: entity.setupNumber,
+            characterKey: entity.characterKey,
         }));
     }
 
     async findAllMatchTacticalUsageWithCharacter(): Promise<IMatchTacticalUsageWithCharacter[]> {
-        return await this.prisma.matchTacticalUsage.findMany({
+        const entities = await this.prisma.matchTacticalUsage.findMany({
             include: {
                 character: true,
             },
         });
+
+        return entities.map((entity) => ({
+            characterKey: entity.characterKey,
+            character: mapCharacter(entity.character),
+        }));
     }
 
-    async findMatchTacticalUsageWithCharacterByMemberId(memberId: number): Promise<IMatchTacticalUsageWithCharacter[]> {
-        return await this.prisma.matchTacticalUsage.findMany({
-            where: {
-                teamMember: {
-                    memberRef: memberId,
-                },
-            },
+    async findMatchTacticalUsageWithCharacterByIdentity(identity: MatchTeamMemberUniqueIdentity): Promise<IMatchTacticalUsageWithCharacter[]> {
+        let whereInput: Parameters<typeof this.prisma.matchTacticalUsage.findMany>[0]['where'];
+        switch (identity.type) {
+            case 'Member':
+                whereInput = {
+                    teamMember: {
+                        memberRef: identity.id,
+                    },
+                };
+                break;
+            case 'Guest':
+                whereInput = {
+                    teamMember: {
+                        guestRef: identity.id,
+                    },
+                };
+                break;
+            case 'Name':
+                whereInput = {
+                    teamMember: {
+                        name: identity.name,
+                    },
+                };
+                break;
+        }
+
+        const entities = await this.prisma.matchTacticalUsage.findMany({
+            where: whereInput,
             include: {
                 character: true,
             },
         });
+
+        return entities.map((entity) => ({
+            characterKey: entity.characterKey,
+            character: mapCharacter(entity.character),
+        }));
     }
 }
 

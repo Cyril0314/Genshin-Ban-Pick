@@ -14,3 +14,5 @@ export function createCharacterModule(prisma: PrismaClient) {
     const router = createCharactersRouter(controller);
     return { router, controller, service, repository };
 }
+
+export * from './domain/mapCharacter'

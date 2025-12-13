@@ -9,41 +9,58 @@ import betweenness from 'graphology-metrics/centrality/betweenness';
 import modularity from 'graphology-metrics/graph/modularity';
 import louvain from 'graphology-communities-louvain';
 
-import SynergyFeatureNormalizer from '../synergy/SynergyFeatureNormalizer';
-
+import FeatureMatrixBuilder from '../matrix/FeatureMatrixBuilder';
+import MatrixNormalizer from '../matrix/MatrixNormalizer';
 import DimensionProjector from '../projection/DimensionProjector';
 
 import type { ICommunityScanResult } from '../../domain/ICommunityScanResult';
-import type { ISynergyMatrix } from '@shared/contracts/analysis/ISynergyMatrix';
+import type { CharacterSynergyMatrix } from '@shared/contracts/analysis/CharacterSynergyMatrix';
 import type { IBridgeScoreResult } from '@shared/contracts/analysis/IBridgeScoreResult';
 import type { IArchetypePoint } from '@shared/contracts/analysis/IArchetypePoint';
+import CharacterFeatureMatrixBuilder from '../character/CharacterFeatureMatrixBuilder';
+import { FeatureMatrix } from '@shared/contracts/analysis/FeatureMatrix';
+import { FEATURE_BLOCKS } from '../character/featureBlocks';
+import BlockScaler from '../character/BlockScaler';
+import UMAPProjector from '../projection/UMAPProjector';
 
 export default class CharacterCommunityScanEngine {
     private rng: () => number;
+    private rng2: () => number;
     constructor(
+        private umapProjector: UMAPProjector,
         private dimensionProjector: DimensionProjector,
-        private synergyFeatureNormalizer: SynergyFeatureNormalizer,
-        seed: number = 20251114,
+        private featureMatrixBuilder: FeatureMatrixBuilder,
+        private matrixNormalizer: MatrixNormalizer,
+        seed: number = 2025,
     ) {
         this.rng = createSeededRandom(seed);
+        this.rng2 = createSeededRandom2(seed);
     }
 
-    async computeClusters(synergy: ISynergyMatrix, characterMap: Record<string, any>) {
-        const graph = await this.buildSynergyGraph(synergy, characterMap);
+    async computeClusters(graph: UndirectedGraph, synergy: CharacterSynergyMatrix, characterFeatureMatrix: FeatureMatrix<string, string>) {
         const k = await this.findBestClusterCount(graph);
+        const synergySignatureFeatureMatrix = this.featureMatrixBuilder.buildSynergySignatureFeatureMatrix(synergy);
+        // const featureMatrix = this.mergeFeatureMatrices(synergySignatureFeatureMatrix, characterFeatureMatrix);
+        
+        // const blockScaler = new BlockScaler(FEATURE_BLOCKS);
+        // const scaledFM = blockScaler.applyScaling(featureMatrix);
 
-        const { chars, matrix } = this.synergyFeatureNormalizer.normalizeForClustering(synergy);
-        const clusterIds = this.clusterCharacters(matrix, k);
+        // this.debugMatrix(featureMatrix)
 
-        const projected = this.dimensionProjector.projectCharacters2D(matrix, 2);
+        const { rowKeys, colKeys, data } = this.matrixNormalizer.normalize(synergySignatureFeatureMatrix);
+        const clusterIds = this.clusterCharacters(data, k);
 
-        const archetypes = chars.map((c, i) => ({
+        // const projected = this.umapProjector.project(data, 2, this.rng2);
+        const projected= this.dimensionProjector.project(data)
+        
+
+        const archetypes = rowKeys.map((c, i) => ({
             characterKey: c,
             clusterId: clusterIds[i],
         }));
 
-        const clusterMedoids: IArchetypePoint[] = this.computeClusterMedoids(chars, clusterIds, projected);
-        const bridgeScores = this.computeBridgeScores(graph, chars, clusterIds, projected);
+        const clusterMedoids: IArchetypePoint[] = this.computeClusterMedoids(rowKeys, clusterIds, projected);
+        const bridgeScores = this.computeBridgeScores(graph, rowKeys, clusterIds, projected);
         return {
             archetypes,
             // matrix,
@@ -61,9 +78,9 @@ export default class CharacterCommunityScanEngine {
         return best.clusters;
     }
 
-    clusterCharacters(matrix: Matrix, k: number): number[] {
+    clusterCharacters(data: number[][], k: number): number[] {
         // @ts-ignore
-        const result = kmeans.kmeans(matrix.to2DArray(), k, {
+        const result = kmeans.kmeans(data, k, {
             initialization: 'kmeans++',
             seed: this.rng(),
         });
@@ -230,92 +247,6 @@ export default class CharacterCommunityScanEngine {
         return results.sort((a, b) => b.bridgeScore - a.bridgeScore);
     }
 
-    // ... (constructor 和其他方法省略)
-
-    /**
-     * @description 建立協同圖：使用 Adaptive Thresholding 和 Top-K 策略進行預處理
-     * @param K_NEIGHBORS 每個節點至少保留的連線數 (K)
-     * @param ADAPTIVE_FACTOR 局部平均的比例 (0.6 意味著保留大於 60% 局部平均的連線)
-     * @param WEIGHT_POWER 權重壓縮程度 (1.5 比 2.0 更溫和)
-     */
-    async buildSynergyGraph(
-        synergy: ISynergyMatrix,
-        characterMap: Record<string, any>,
-        K_NEIGHBORS: number = 6,
-        ADAPTIVE_FACTOR: number = 0.6,
-        WEIGHT_POWER: number = 1.5,
-    ): Promise<UndirectedGraph> {
-        const graph = new UndirectedGraph();
-        // 確保 normalizationService 輸出的是 0-1 的標準化權重
-        const normalSynergy = this.synergyFeatureNormalizer.normalizeForGraph(synergy, 'jaccard');
-
-        const chars = Object.keys(synergy);
-        chars.forEach((char) => graph.addNode(char, characterMap[char]));
-
-        // 步驟 1: 預處理並收集所有潛在的 Edge，同時計算局部平均 degree-aware thresholding
-        const potentialEdges: { a: string; b: string; w: number }[] = [];
-        const localMeans: Record<string, number> = {};
-
-        for (const charA of chars) {
-            const weights = Object.values(normalSynergy[charA] ?? {}).filter((w) => w > 0);
-
-            // 計算局部平均 (Local Mean, μ)
-            const sum = weights.reduce((acc, w) => acc + w, 0);
-            localMeans[charA] = sum / weights.length || 0;
-
-            for (const charB of chars) {
-                if (charA >= charB) continue;
-
-                const w = normalSynergy[charA]?.[charB] ?? 0;
-                if (w > 0) {
-                    potentialEdges.push({ a: charA, b: charB, w });
-                }
-            }
-        }
-
-        // 步驟 2: 進行 Adaptive Thresholding 和 Top-K Pruning
-        const finalEdges: Record<string, { b: string; w: number }[]> = {}; // 儲存每個節點的候選連線
-
-        // 初始化 finalEdges 結構
-        chars.forEach((char) => (finalEdges[char] = []));
-
-        for (const { a, b, w } of potentialEdges) {
-            // 檢查 Adaptive Threshold
-            // 必須大於 A 的局部平均 * 因子 AND 大於 B 的局部平均 * 因子 (取較鬆的條件，讓連線更容易建立)
-            const thresholdA = localMeans[a] * ADAPTIVE_FACTOR;
-            const thresholdB = localMeans[b] * ADAPTIVE_FACTOR;
-
-            // 只要大於任一邊的閾值，就納入 Top-K 候選名單 (防止冷門角色被殺光)
-            if (w > thresholdA || w > thresholdB) {
-                finalEdges[a].push({ b, w });
-                finalEdges[b].push({ b: a, w }); // 紀錄反向，方便Top-K處理
-            }
-        }
-
-        const addedEdges = new Set<string>();
-
-        // 步驟 3: Top-K Pruning + 權重強化
-        for (const charA of chars) {
-            // 排序並只保留 K_NEIGHBORS (Top-K)
-            const topEdges = finalEdges[charA].sort((x, y) => y.w - x.w).slice(0, K_NEIGHBORS);
-
-            for (const { b, w } of topEdges) {
-                // 使用字典序確保每條邊只加一次
-                const key = charA < b ? `${charA}-${b}` : `${b}-${charA}`;
-
-                if (!addedEdges.has(key)) {
-                    // 權重強化：w' = w^1.5 (溫和壓縮)
-                    const poweredWeight = Math.pow(w, WEIGHT_POWER);
-
-                    graph.addUndirectedEdgeWithKey(key, charA, b, { weight: poweredWeight });
-                    addedEdges.add(key);
-                }
-            }
-        }
-
-        return graph;
-    }
-
     private runLouvainOnGraph(graph: UndirectedGraph, resolutions: number[]): ICommunityScanResult[] {
         const result: ICommunityScanResult[] = [];
 
@@ -341,6 +272,49 @@ export default class CharacterCommunityScanEngine {
 
         return result;
     }
+
+    mergeFeatureMatrices<RowKey extends string>(A: FeatureMatrix<RowKey, string>, B: FeatureMatrix<RowKey, string>): FeatureMatrix<RowKey, string> {
+        // Step 1. 以 A 作為 row domain
+        const rowKeys = [...A.rowKeys].sort();
+
+        // Step 2. 建立 col domain
+        const colKeys = [...A.colKeys, ...B.colKeys];
+
+        const data = rowKeys.map((rk) => {
+            const aIndex = A.rowKeys.indexOf(rk);
+
+            const bIndex = B.rowKeys.indexOf(rk);
+            const bVec = bIndex >= 0 ? B.data[bIndex] : new Array(B.colKeys.length).fill(0);
+
+            return [...A.data[aIndex], ...bVec];
+        });
+
+        return { rowKeys, colKeys, data };
+    }
+
+    debugMatrix(raw: FeatureMatrix<any, any, number>) {
+        const { rowKeys, colKeys, data } = raw;
+
+        console.log('------ MATRIX DEBUG START ------');
+        console.log('rowKeys.length =', rowKeys.length);
+        console.log('data.length =', data.length);
+        console.log('colKeys.length =', colKeys.length);
+
+        // 檢查 row 數量一致性
+        if (rowKeys.length !== data.length) {
+            console.error('❌ rowKeys.length != data.length');
+        }
+
+        // 檢查每列長度
+        const expectedCols = colKeys.length;
+        data.forEach((row, i) => {
+            if (row.length !== expectedCols) {
+                console.error(`❌ Row ${i} length mismatch: got ${row.length}, expected ${expectedCols}, rowKey=${rowKeys[i]}`);
+            }
+        });
+
+        console.log('------ MATRIX DEBUG END ------');
+    }
 }
 
 function createSeededRandom(seed = 123456) {
@@ -348,5 +322,13 @@ function createSeededRandom(seed = 123456) {
     return function random() {
         state = (state * 20251120) % 2147483647;
         return Math.floor((state - 1) / 2147483646);
+    };
+}
+
+function createSeededRandom2(seed = 123456) {
+    let state = seed;
+    return function random() {
+        state = (state * 16807) % 2147483647;
+        return (state - 1) / 2147483646; // 0～1 浮點數
     };
 }

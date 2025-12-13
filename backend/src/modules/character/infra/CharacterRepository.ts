@@ -1,8 +1,7 @@
 // src/modules/character/infra/CharacterRepository.ts
 
 import { PrismaClient } from '@prisma/client';
-
-import { mapCharacterFromPrisma } from '../domain/mapCharacterFromPrisma';
+import { mapCharacter } from '../domain/mapCharacter';
 
 import type { ICharacterRepository } from '../domain/ICharacterRepository';
 
@@ -13,6 +12,6 @@ export default class CharacterRepository implements ICharacterRepository {
         const characters = await this.prisma.character.findMany({
             orderBy: { id: 'asc' },
         });
-        return characters.map(mapCharacterFromPrisma);
+        return characters.map(mapCharacter);
     }
 }

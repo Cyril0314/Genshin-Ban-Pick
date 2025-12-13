@@ -1,10 +1,33 @@
 // backend/src/modules/analysis/infra/synergy/CharacterSynergyCalculator.ts
 
 import type { SynergyMode } from '@shared/contracts/analysis/value-types';
-import type { ISynergyMatrix } from '@shared/contracts/analysis/ISynergyMatrix';
 import type { IMatchTacticalUsageExpandedRefs } from '../../types/IMatchTacticalUsageExpandedRefs';
+import type { CharacterSynergyMatrix } from '@shared/contracts/analysis/CharacterSynergyMatrix';
 
 export default class CharacterSynergyCalculator {
+    buildSynergyMatrix(groups: Record<string, string[]>): CharacterSynergyMatrix {
+        const synergyMatrix: CharacterSynergyMatrix = {};
+
+        for (const characters of Object.values(groups)) {
+            // 去重，避免同一 group 同一角色被算兩次
+            const uniq = [...new Set(characters)];
+
+            for (let i = 0; i < uniq.length; i++) {
+                for (let j = i + 1; j < uniq.length; j++) {
+                    const a = uniq[i];
+                    const b = uniq[j];
+
+                    synergyMatrix[a] ??= {};
+                    synergyMatrix[b] ??= {};
+                    synergyMatrix[a][b] = (synergyMatrix[a][b] || 0) + 1;
+                    synergyMatrix[b][a] = (synergyMatrix[b][a] || 0) + 1;
+                }
+            }
+        }
+
+        return synergyMatrix;
+    }
+
     buildCooccurrenceGroups(usages: IMatchTacticalUsageExpandedRefs[], mode: SynergyMode): Record<string, string[]> {
         const groups: Record<string, string[]> = {};
 
@@ -17,29 +40,6 @@ export default class CharacterSynergyCalculator {
         return groups;
     }
 
-    buildSynergyMatrix(groups: Record<string, string[]>): ISynergyMatrix {
-        const synergy: ISynergyMatrix = {};
-
-        for (const characters of Object.values(groups)) {
-            // 去重，避免同一 group 同一角色被算兩次
-            const uniq = [...new Set(characters)];
-
-            for (let i = 0; i < uniq.length; i++) {
-                for (let j = i + 1; j < uniq.length; j++) {
-                    const a = uniq[i];
-                    const b = uniq[j];
-
-                    synergy[a] ??= {};
-                    synergy[b] ??= {};
-
-                    synergy[a][b] = (synergy[a][b] || 0) + 1;
-                    synergy[b][a] = (synergy[b][a] || 0) + 1;
-                }
-            }
-        }
-
-        return synergy;
-    }
 
     private buildCooccurrenceGroupKey(rawTacticalUsage: IMatchTacticalUsageExpandedRefs, mode: SynergyMode): string {
         switch (mode) {

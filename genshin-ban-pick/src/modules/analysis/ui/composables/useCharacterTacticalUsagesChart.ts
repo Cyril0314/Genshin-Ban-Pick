@@ -7,14 +7,15 @@ import type { CallbackDataParams } from 'echarts/types/dist/shared';
 
 import { useCharacterStore } from '@/modules/character';
 import { useDesignTokens } from '@/modules/shared/ui/composables/useDesignTokens';
-import { ElementColors } from '@/modules/shared/ui/composables/useElementColor';
 import { useEchartTheme } from '@/modules/shared/ui/composables/useEchartTheme';
-import { getCharacterDisplayName } from '@/modules/shared/domain/getCharacterDisplayName';
 import { useAnalysisUseCase } from './useAnalysisUseCase';
+import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
+import { elementColors } from '@/modules/shared/ui/constants/elementColors';
 
 import type { ICharacterTacticalUsage } from '@shared/contracts/analysis/ICharacterTacticalUsage';
 
 export function useCharacterTacticalUsagesChart(topN = 120) {
+    const { getByKey: getCharacterDisplayName } = useCharacterDisplayName();
     const designTokens = useDesignTokens();
     const { gridStyle, xAxisStyle, yAxisStyle, legendStyle, tooltipStyle, dataZoomStyle } = useEchartTheme();
     const analysisUseCase = useAnalysisUseCase();
@@ -75,12 +76,12 @@ export function useCharacterTacticalUsagesChart(topN = 120) {
                     {
                         name: '僅計算登場後的有效權重',
                         icon: 'roundRect',
-                        itemStyle: { color: tinycolor(ElementColors['Pyro']!.main).darken(10).toRgbString() },
+                        itemStyle: { color: tinycolor(elementColors['Pyro']!.main).darken(10).toRgbString() },
                     },
                     {
                         name: '綜合全期平均與有效權重',
                         icon: 'roundRect',
-                        itemStyle: { color: tinycolor(ElementColors['Pyro']!.main).brighten(10).toRgbString() },
+                        itemStyle: { color: tinycolor(elementColors['Pyro']!.main).brighten(10).toRgbString() },
                     },
                 ],
             },
@@ -105,7 +106,7 @@ export function useCharacterTacticalUsagesChart(topN = 120) {
                         color: (params: CallbackDataParams) => {
                             const key = top[params.dataIndex].characterKey;
                             const element = characterMap.value[key].element;
-                            const base = ElementColors[element]?.main ?? '#fff';
+                            const base = elementColors[element]?.main ?? '#fff';
                             return tinycolor(base).darken(10).toRgbString();
                         },
                         borderRadius: [0, parseFloat(designTokens.radiusSm.value!), parseFloat(designTokens.radiusSm.value!), 0],
@@ -133,7 +134,7 @@ export function useCharacterTacticalUsagesChart(topN = 120) {
                             const d = top[params.dataIndex];
                             const characterKey = top[params.dataIndex].characterKey;
                             const element = characterMap.value[characterKey].element;
-                            const base = ElementColors[element]?.main ?? '#bdbdbd';
+                            const base = elementColors[element]?.main ?? '#bdbdbd';
                             // const alpha = Math.min(0.45 + d.tacticalUsage / 1, 1);
                             return tinycolor(base).brighten(10).toRgbString();
                         },

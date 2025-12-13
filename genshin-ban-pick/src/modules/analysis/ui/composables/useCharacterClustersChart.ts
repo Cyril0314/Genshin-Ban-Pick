@@ -4,20 +4,19 @@ import { computed, onMounted, ref } from 'vue';
 
 import { useEchartTheme } from '@/modules/shared/ui/composables/useEchartTheme';
 import { useDesignTokens } from '@/modules/shared/ui/composables/useDesignTokens';
-import { getCharacterDisplayName } from '@/modules/shared/domain/getCharacterDisplayName';
+import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
 import { useAnalysisUseCase } from './useAnalysisUseCase';
+import { chartColors } from '@/modules/shared/ui/constants/chartColors';
 
 import type { CallbackDataParams } from 'echarts/types/dist/shared';
 import type { ICharacterClusters } from '@shared/contracts/analysis/ICharacterClusters';
 import type { ICharacterTacticalUsage } from '@shared/contracts/analysis/ICharacterTacticalUsage';
 
 export function useCharacterClustersChart() {
+    const { getByKey: getCharacterDisplayName } = useCharacterDisplayName();
     const designTokens = useDesignTokens();
     const { gridStyle, xAxisStyle, yAxisStyle, tooltipStyle, dataZoomStyle, legendStyle } = useEchartTheme();
     const analysisUseCase = useAnalysisUseCase();
-
-    // const clusterColors = ['#ff5964', '#526dff', '#6bf178', '#ffe74c', '#FF922B', '#65def1', '#df4be4ff', '#b1e022ff', '#e02248ff'];
-    const clusterColors = ['#f2002b', '#f64021', '#f98016', '#fcc00b', '#ffff00', '#00cc66', '#496ddb', '#a010ff', '#ff1cc2'];
     const tacticalUsages = ref<ICharacterTacticalUsage[] | null>(null);
     const characterClusters = ref<ICharacterClusters | null>(null);
 
@@ -118,7 +117,7 @@ export function useCharacterClustersChart() {
                         symbol: 'pin',
                         itemStyle: {
                             color: designTokens.colorSurfaceContainerHighest.value,
-                            borderColor: clusterColors[m.clusterId],
+                            borderColor: chartColors[m.clusterId],
                             borderWidth: 2,
                             position: 'top',
                             distance: 10,
@@ -127,7 +126,7 @@ export function useCharacterClustersChart() {
                         label: {
                             show: false,
                             // formatter: '中心',
-                            color: clusterColors[m.clusterId],
+                            color: chartColors[m.clusterId],
                             fontWeight: 'bold',
                         },
                     })),
@@ -149,7 +148,7 @@ export function useCharacterClustersChart() {
         return Array.from({ length: maxClusterId + 1 }).map((_, cid) => ({
             name: `群 ${cid}`,
             icon: 'circle',
-            itemStyle: { color: clusterColors[cid] },
+            itemStyle: { color: chartColors[cid] },
         }));
     });
 
@@ -175,12 +174,12 @@ export function useCharacterClustersChart() {
                             value: [jitter(p.x), jitter(p.y)],
                             itemStyle: {
                                 borderWidth: 3,
-                                borderColor: isBridgeCharacter ? '#ffffff' : clusterColors[cid],
+                                borderColor: isBridgeCharacter ? '#ffffff' : chartColors[cid],
                             },
                         };
                     }),
                 itemStyle: {
-                    color: clusterColors[cid],
+                    color: chartColors[cid],
                 },
                 symbolSize: (value: any, params: any) => {
                     const effectiveUsage = effectiveUsageMap.value[params.data?.characterKey as string];

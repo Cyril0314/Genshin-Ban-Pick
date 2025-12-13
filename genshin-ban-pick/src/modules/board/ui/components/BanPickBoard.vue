@@ -14,9 +14,9 @@ import { useTeamInfoStore } from '@/modules/team';
 import { useBoardZonesLayout } from '../composables/useBoardZonesLayout';
 
 import type { ZoneType } from '@shared/contracts/board/value-types';
-import type { CharacterFilterKey } from '@shared/contracts/character/value-types';
 import type { ICharacter } from '@shared/contracts/character/ICharacter';
 import type { IRoomSetting } from '@shared/contracts/room/IRoomSetting';
+import type { CharacterFilterKey } from '@shared/contracts/character/CharacterFilterKey';
 
 const props = defineProps<{
     roomSetting: IRoomSetting;

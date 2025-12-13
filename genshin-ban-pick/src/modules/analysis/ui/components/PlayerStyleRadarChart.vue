@@ -2,13 +2,13 @@
 import VChart from 'vue-echarts';
 import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
-import { RadarChart } from 'echarts/charts';
+import { RadarChart, PieChart } from 'echarts/charts';
 import { GridComponent, TooltipComponent, LegendComponent } from 'echarts/components';
 import { usePlayerStyleChart } from '../composables/usePlayerStyleChart';
 
-use([CanvasRenderer, RadarChart, GridComponent, TooltipComponent, LegendComponent]);
+use([CanvasRenderer, RadarChart, PieChart, GridComponent, TooltipComponent, LegendComponent]);
 
-const { option } = usePlayerStyleChart();
+const { players, selectedPlayerKey, option, getPlayerKey } = usePlayerStyleChart();
 </script>
 
 <template>
@@ -16,13 +16,32 @@ const { option } = usePlayerStyleChart();
         <header class="chart__header">
             <div class="chart__title">
                 <h2>玩家風格雷達圖</h2>
-                <p class="chart-desc">本圖顯示玩家在五個維度上的風格傾向：進攻型、防守型、絕活哥、Meta奴、元素偏好。</p>
+                <p class="chart-desc">根據玩家在對局中的角色選擇，分析其多樣性、主流取向與偏好結構。</p>
+
             </div>
+            <div class="chart__settings">
+                <span class="chart-player__text">玩家：</span>
+                <select v-model="selectedPlayerKey" class="chart-player__select">
+                    <option v-for="p in players" :key="getPlayerKey(p)" :value="getPlayerKey(p)">
+                        <span v-if="p.type === 'Member'">✨</span>
+                        <span v-else-if="p.type === 'Guest'">❓</span>
+                        <span v-else>🪪</span>
+                        {{ p.name }}
+                    </option>
+                </select>
+            </div>
+
         </header>
         <div class="chart">
             <VChart v-if="option" :option="option" autoresize />
             <div v-else class="chart__empty">尚無足夠數據進行分析</div>
         </div>
+        <footer class="chart__footer">
+            <small>
+                ※ 本分析僅反映玩家的選角分佈與偏好結構，並不代表角色強度或表現。<br />
+                ※ 各維度數值為相對於全體玩家資料的調整結果，用於描述風格差異。
+            </small>
+        </footer>
     </div>
 </template>
 
@@ -53,6 +72,45 @@ const { option } = usePlayerStyleChart();
     margin-top: var(--space-xs);
 }
 
+.chart__settings {
+    display: flex;
+    flex-direction: row;
+    align-items: top;
+    height: fit-content;
+    gap: var(--space-sm);
+    color: var(--md-sys-color-on-surface);
+    font-size: var(--font-size-md);
+}
+
+.chart-player__text {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    color: var(--md-sys-color-on-surface);
+}
+
+.chart-player__select {
+    color: var(--md-sys-color-on-surface);
+    background-color: var(--md-sys-color-surface-container-high);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    width: var(--size-chart-select);
+    border-radius: var(--radius-md);
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    outline: none;
+    border: none;
+}
+
+.chart-player__select:focus {
+    outline: none;
+    border: none;
+}
+
+.chart-player__select:hover {
+    transform: scale(1.05);
+}
+
 .chart {
     display: flex;
     width: 100%;
@@ -63,6 +121,13 @@ const { option } = usePlayerStyleChart();
 
 .chart__empty {
     color: var(--md-sys-color-on-surface-variant);
+    font-size: var(--font-size-md);
+}
+
+.chart__footer {
+    display: flex;
+    color: var(--md-sys-color-on-surface-variant);
+    padding: var(--space-md);
     font-size: var(--font-size-md);
 }
 </style>
