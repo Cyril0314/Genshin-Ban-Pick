@@ -12,6 +12,12 @@ export default class MatchController {
         res.status(200).json(matchData);
     };
 
+    deleteMatch = async(req: Request, res: Response) => {
+        const { matchId } = req.params;
+        await this.matchService.deleteMatch(Number(matchId));
+        res.status(204).end();
+    };
+
     fetchMatchTeamMembers = async(req: Request, res: Response) => {
         const matchTeamMembers = await this.matchService.fetchMatchTeamMembers();
         res.status(200).json(matchTeamMembers);

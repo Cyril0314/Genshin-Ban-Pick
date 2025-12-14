@@ -11,6 +11,10 @@ export default class MatchUseCase {
         return matchResult;
     }
 
+    async deleteMatch(matchId: number) {
+        await this.matchRepository.deleteMatch(matchId);
+    }
+
     async fetchMatchTeamMembers() {
         const matchTeamMembers = await this.matchRepository.fetchMatchTeamMembers()
         return matchTeamMembers

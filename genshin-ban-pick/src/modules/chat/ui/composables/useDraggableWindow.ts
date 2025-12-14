@@ -9,8 +9,8 @@ interface UseDraggableOptions {
 
 export function useDraggableWindow(options: UseDraggableOptions = {}) {
     const position = ref({
-        x: options.initialX ?? window.innerWidth * 0.85,
-        y: options.initialY ?? window.innerHeight * 0.57,
+        x: 0,
+        y: 0,
     });
 
     const isDragging = ref(false);

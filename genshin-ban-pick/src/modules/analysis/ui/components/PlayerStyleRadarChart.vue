@@ -8,7 +8,7 @@ import { usePlayerStyleChart } from '../composables/usePlayerStyleChart';
 
 use([CanvasRenderer, RadarChart, PieChart, GridComponent, TooltipComponent, LegendComponent]);
 
-const { players, selectedPlayerKey, option, getPlayerKey } = usePlayerStyleChart();
+const { playerSelectOptions, globalOption, option, selectedOptionKey, getOptionKey } = usePlayerStyleChart();
 </script>
 
 <template>
@@ -21,12 +21,21 @@ const { players, selectedPlayerKey, option, getPlayerKey } = usePlayerStyleChart
             </div>
             <div class="chart__settings">
                 <span class="chart-player__text">玩家：</span>
-                <select v-model="selectedPlayerKey" class="chart-player__select">
-                    <option v-for="p in players" :key="getPlayerKey(p)" :value="getPlayerKey(p)">
-                        <span v-if="p.type === 'Member'">✨</span>
-                        <span v-else-if="p.type === 'Guest'">❓</span>
-                        <span v-else>🪪</span>
-                        {{ p.name }}
+                <select v-model="selectedOptionKey" class="chart-player__select">
+                    <option v-for="option in playerSelectOptions" :key="getOptionKey(option)"
+                        :value="getOptionKey(option)">
+                        <!-- Global -->
+                        <template v-if="option.type === 'Global'">
+                            ✨ 全體玩家
+                        </template>
+
+                        <!-- Player -->
+                        <template v-else>
+                            <span v-if="option.identity.type === 'Member'">✨</span>
+                            <span v-else-if="option.identity.type === 'Guest'">❓</span>
+                            <span v-else>🪪</span>
+                            {{ option.identity.name }}
+                        </template>
                     </option>
                 </select>
             </div>

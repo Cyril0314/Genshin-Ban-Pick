@@ -9,6 +9,10 @@ export default class MatchService {
         return this.client.post(`/matches`, payload);
     }
 
+    async delete(payload: { matchId: number }) {
+        return this.client.delete(`/matches/${payload.matchId}`);
+    }
+
     async getMatchTeamMembers() {
         return this.client.get(`/matches/team-members`);
     }

@@ -5,7 +5,7 @@ import CharacterCommunityScanEngine from '../infra/clustering/CharacterCommunity
 import CharacterSynergyGraphBuilder from '../infra/graph/CharacterSynergyGraphBuilder';
 import CharacterFeatureMatrixBuilder from '../infra/character/CharacterFeatureMatrixBuilder';
 import { computeCharacterTacticalUsage } from '../infra/tactical/computeCharacterTacticalUsage';
-import { computePlayerStyle } from '../infra/statistics/computePlayerStyle';
+import { computePlayerStyleProfile } from '../infra/statistics/computePlayerStyleProfile';
 import { createLogger } from '../../../utils/logger';
 
 import type { ICharacterRepository } from '../../character/domain/ICharacterRepository';
@@ -14,7 +14,7 @@ import type { ICharacterClusters } from '@shared/contracts/analysis/ICharacterCl
 import type { IArchetypePoint } from '@shared/contracts/analysis/IArchetypePoint';
 import type { CharacterSynergyMatrix } from '@shared/contracts/analysis/CharacterSynergyMatrix';
 import type { ICharacterTacticalUsage } from '@shared/contracts/analysis/ICharacterTacticalUsage';
-import type { IPlayerStyleStats } from '@shared/contracts/analysis/IPlayerStyleStats';
+import type { IPlayerStyleProfile } from '@shared/contracts/analysis/IPlayerStyleProfile';
 import type { SynergyMode } from '@shared/contracts/analysis/value-types';
 import type { ICharacterGraphLink } from '@shared/contracts/analysis/character/ICharacterGraphLink';
 import type { KeyIndexedMatrix } from '@shared/contracts/analysis/KeyIndexedMatrix';
@@ -122,10 +122,10 @@ export default class AnalysisService {
         // return playerPreferences;
     }
 
-    async fetchPlayerStyle(identity: MatchTeamMemberUniqueIdentity): Promise<IPlayerStyleStats> {
+    async fetchPlayerStyleProfile(identity: MatchTeamMemberUniqueIdentity): Promise<IPlayerStyleProfile> {
         const memberUsages = await this.analysisRepository.findMatchTacticalUsageWithCharacterByIdentity(identity);
         const allUsages = await this.analysisRepository.findAllMatchTacticalUsageWithCharacter();
         // logger.debug("memberMatchMoves", memberUsages)
-        return computePlayerStyle(memberUsages, allUsages)
+        return computePlayerStyleProfile(memberUsages, allUsages)
     }
 }

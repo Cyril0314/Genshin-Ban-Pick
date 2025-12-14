@@ -1,8 +1,6 @@
-// backend/src/modules/analysis/infra/statistics/computePlayerStyle.ts
+// backend/src/modules/analysis/infra/statistics/computePlayerStyleProfile.ts
 
-import { Element, Weapon } from '@shared/contracts/character/value-types';
-
-import type { IPlayerStyleStats } from '@shared/contracts/analysis/IPlayerStyleStats';
+import type { IPlayerStyleProfile } from '@shared/contracts/analysis/IPlayerStyleProfile';
 import type { IMatchTacticalUsageWithCharacter } from '../../types/IMatchTacticalUsageWithCharacter';
 import type { ICharacter } from '@shared/contracts/character/ICharacter';
 
@@ -28,10 +26,10 @@ export function computeGlobalBaseline(allUsuages: IMatchTacticalUsageWithCharact
     console.log(`roleCounts`, roleCounts);
 }
 
-export function computePlayerStyle(
+export function computePlayerStyleProfile(
     memberUsages: IMatchTacticalUsageWithCharacter[],
     globalUsages: IMatchTacticalUsageWithCharacter[],
-): IPlayerStyleStats | null {
+): IPlayerStyleProfile | null {
     const playerTotalPicks = memberUsages.length;
 
     if (playerTotalPicks === 0) { return null }
@@ -86,12 +84,6 @@ export function computePlayerStyle(
     const rarityAdjustedBias = computeGlobalAdjustedEntropy(playerRarityCounts, globalRarityCounts);
     const rarityAdjustedDiversity = 100 - rarityAdjustedBias
 
-    console.log(`elementAdjustedBias`, elementAdjustedBias)
-    console.log(`weaponAdjustedBias`, weaponAdjustedBias)
-
-    // const rarityCounts = countBy(memberUsages, "rarity")
-    // console.log(`rarityCounts`, rarityCounts)
-
     return {
         versatility,
         metaAffinity,
@@ -107,6 +99,12 @@ export function computePlayerStyle(
         playerModelTypeCounts,
         playerRegionCounts,
         playerRarityCounts,
+        globalRoleCounts,
+        globalElementCounts,
+        globalWeaponCounts,
+        globalModelTypeCounts,
+        globalRegionCounts,
+        globalRarityCounts,
     };
 }
 

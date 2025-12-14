@@ -32,8 +32,8 @@ export default class AnalysisRepository {
         return response.data;
     }
 
-    async fetchPlayerStyle(payload: { identity: MatchTeamMemberUniqueIdentity }) {
-        const response = await this.analysisService.getPlayerStyle(payload);
+    async fetchPlayerStyleProfile(payload: { identity: MatchTeamMemberUniqueIdentity }) {
+        const response = await this.analysisService.getPlayerStyleProfile(payload);
         return response.data;
     }
 }   

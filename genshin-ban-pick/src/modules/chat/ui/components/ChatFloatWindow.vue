@@ -13,10 +13,7 @@ const emit = defineEmits<{
     (e: 'update:open', value: boolean): void;
 }>();
 
-const { position, handleMouseDown } = useDraggableWindow({
-    // initialX: window.innerWidth - 370,
-    // initialY: window.innerHeight - 520,
-});
+const { position, handleMouseDown } = useDraggableWindow({});
 
 </script>
 

@@ -27,7 +27,7 @@ export default class AnalysisUseCase {
         return await this.analysisRepository.fetchPlayerPreference();
     }
 
-    async fetchPlayerStyle(payload: { identity: MatchTeamMemberUniqueIdentity }) {
-        return await this.analysisRepository.fetchPlayerStyle(payload);
+    async fetchPlayerStyleProfile(payload: { identity: MatchTeamMemberUniqueIdentity }) {
+        return await this.analysisRepository.fetchPlayerStyleProfile(payload);
     }
 }

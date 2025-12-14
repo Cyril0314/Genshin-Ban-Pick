@@ -27,8 +27,7 @@ export default class AnalysisService {
         return this.client.get('/analyses/player/preference');
     }
 
-    async getPlayerStyle(payload: { identity: MatchTeamMemberUniqueIdentity }) {
-        console.log(`payload`, payload)
-        return this.client.get(`/analyses/player/style`, { params: payload });
+    async getPlayerStyleProfile(payload: { identity: MatchTeamMemberUniqueIdentity }) {
+        return this.client.get(`/analyses/player/style-profile`, { params: payload });
     }
 }

@@ -16,7 +16,7 @@ export default function createAnalysesRouter(analysisController: AnalysisControl
     router.get('/character/synergy-graph', asyncHandler(analysisController.fetchCharacterSynergyGraph))
     router.get('/character/clusters', asyncHandler(analysisController.fetchCharacterClusters));
     router.get('/player/preference', asyncHandler(analysisController.fetchPlayerPreference));
-    router.get('/player/style', asyncHandler(analysisController.fetchPlayerStyle));
+    router.get('/player/style-profile', asyncHandler(analysisController.fetchPlayerStyleProfile));
 
     return router;
 }

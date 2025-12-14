@@ -35,9 +35,9 @@ export default class AnalysisController {
         res.status(200).json(preference);
     };
 
-    fetchPlayerStyle = async (req: Request, res: Response) => {
+    fetchPlayerStyleProfile = async (req: Request, res: Response) => {
         const { identity } = req.query;
-        const style = await this.analysisService.fetchPlayerStyle(this.convertIdentity(identity as { type: string; id?: string; name: string }));
+        const style = await this.analysisService.fetchPlayerStyleProfile(this.convertIdentity(identity as { type: string; id?: string; name: string }));
         res.status(200).json(style);
     };
 
