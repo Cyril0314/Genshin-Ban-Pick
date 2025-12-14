@@ -11,6 +11,7 @@ const logger = createLogger('MATCH');
 export default function createMatchesRouter(matchController: MatchController) {
     const router = express.Router();
     router.post('/', asyncHandler(matchController.saveMatch))
+    router.delete('/:matchId', asyncHandler(matchController.deleteMatch))
     router.get('/team-members', asyncHandler(matchController.fetchMatchTeamMembers))
     return router;
 }

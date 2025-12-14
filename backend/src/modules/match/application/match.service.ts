@@ -25,6 +25,10 @@ export default class MatchService {
         return this.matchRepository.create(snapshot, false);
     }
 
+    async deleteMatch(matchId: number) {
+        await this.matchRepository.delete(matchId)
+    }
+
     async fetchMatchTeamMembers() {
         return this.matchRepository.findAllMatchTeamMemberUniqueIdentities()
     }

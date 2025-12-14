@@ -20,6 +20,7 @@ const logger = createLogger('MATCH:Repository');
 
 export default class MatchRepository implements IMatchRepository {
     constructor(private prisma: PrismaClient) {}
+
     async create(snapshot: IMatchSnapshot, dryRun: boolean): Promise<IMatch> {
         const { roomSetting } = snapshot;
         try {
@@ -116,6 +117,12 @@ export default class MatchRepository implements IMatchRepository {
 
             throw new DbConnectionError(err);
         }
+    }
+
+    async delete(matchId: number) {
+        await this.prisma.match.delete({
+            where: { id: matchId },
+        });
     }
 
     async findAllMatchTeamMemberUniqueIdentities(): Promise<MatchTeamMemberUniqueIdentity[]> {

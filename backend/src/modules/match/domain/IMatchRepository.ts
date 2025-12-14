@@ -7,5 +7,7 @@ import type { MatchTeamMemberUniqueIdentity } from '@shared/contracts/match/Matc
 export interface IMatchRepository {
     create(snapshot: IMatchSnapshot, dryRun?: boolean): Promise<IMatch>;
 
+    delete(matchId: number): Promise<void>;
+
     findAllMatchTeamMemberUniqueIdentities(): Promise<MatchTeamMemberUniqueIdentity[]>;
 }
