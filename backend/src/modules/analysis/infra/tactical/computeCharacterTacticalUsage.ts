@@ -43,9 +43,14 @@ export function computeCharacterTacticalUsage(matches: IMatchTimeMinimal[], matc
 
         weights.set(key, (weights.get(key) ?? 0) + w);
 
-        const prev = contextMap.get(key) ?? JSON.parse(JSON.stringify(ctx));
-        mergeContext(prev, ctx);
-        contextMap.set(key, prev);
+        const prev = contextMap.get(key);
+
+        if (!prev) {
+            contextMap.set(key, JSON.parse(JSON.stringify(ctx)));
+        } else {
+            mergeContext(prev, ctx);
+            contextMap.set(key, prev);
+        }
     }
 
     const sortedMatches = matches.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
