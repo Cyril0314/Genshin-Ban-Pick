@@ -7,8 +7,12 @@ import type { MatchTeamMemberUniqueIdentity } from '@shared/contracts/match/Matc
 export default class AnalysisService {
     constructor(private client: HttpClient) {}
 
-    async getTacticalUsages() {
-        return this.client.get(`/analyses/tactical-usages`);
+    async getCharacterTacticalUsages() {
+        return this.client.get(`/analyses/character/tactical-usages`);
+    }
+
+    async getCharacterPickPriority() {
+        return this.client.get(`/analyses/character/pick-priority`);
     }
 
     async getCharacterSynergyMatrix(payload: { mode: SynergyMode }) {
@@ -18,7 +22,7 @@ export default class AnalysisService {
     async getCharacterSynergyGraph() {
         return this.client.get(`/analyses/character/synergy-graph`);
     }
-    
+
     async getCharacterClusters() {
         return this.client.get(`/analyses/character/clusters`);
     }

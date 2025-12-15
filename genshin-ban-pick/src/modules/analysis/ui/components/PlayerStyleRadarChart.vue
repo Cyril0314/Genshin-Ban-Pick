@@ -26,7 +26,7 @@ const { playerSelectOptions, globalOption, option, selectedOptionKey, getOptionK
                         :value="getOptionKey(option)">
                         <!-- Global -->
                         <template v-if="option.type === 'Global'">
-                            ✨ 全體玩家
+                            🌐 全體玩家
                         </template>
 
                         <!-- Player -->

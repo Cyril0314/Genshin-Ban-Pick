@@ -5,6 +5,7 @@ import CharacterCommunityScanEngine from '../infra/clustering/CharacterCommunity
 import CharacterSynergyGraphBuilder from '../infra/graph/CharacterSynergyGraphBuilder';
 import CharacterFeatureMatrixBuilder from '../infra/character/CharacterFeatureMatrixBuilder';
 import { computeCharacterTacticalUsage } from '../infra/tactical/computeCharacterTacticalUsage';
+import { computeCharacterPickPriority } from '../infra/tactical/computeCharacterPickPriority';
 import { computePlayerStyleProfile } from '../infra/statistics/computePlayerStyleProfile';
 import { createLogger } from '../../../utils/logger';
 
@@ -19,8 +20,9 @@ import type { SynergyMode } from '@shared/contracts/analysis/value-types';
 import type { ICharacterGraphLink } from '@shared/contracts/analysis/character/ICharacterGraphLink';
 import type { KeyIndexedMatrix } from '@shared/contracts/analysis/KeyIndexedMatrix';
 import type { MatchTeamMemberUniqueIdentity } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
+import type { ICharacterPickPriority } from '@shared/contracts/analysis/ICharacterPickPriority';
 
-const logger = createLogger('ANALYSIS')
+const logger = createLogger('ANALYSIS');
 
 export default class AnalysisService {
     constructor(
@@ -32,11 +34,16 @@ export default class AnalysisService {
         private characterRepository: ICharacterRepository,
     ) {}
 
-    async fetchTacticalUsages(): Promise<ICharacterTacticalUsage[]> {
+    async fetchCharacterTacticalUsages(): Promise<ICharacterTacticalUsage[]> {
         const matches = await this.analysisRepository.findAllMatchMinimalTimestamps();
         const matcheMoves = await this.analysisRepository.findAllMatchMoveCoreForWeightCalc();
         const matchTacticalUsages = await this.analysisRepository.findAllMatchTacticalUsageForAnalysis();
         return computeCharacterTacticalUsage(matches, matcheMoves, matchTacticalUsages);
+    }
+
+    async fetchCharacterPickPriority(): Promise<ICharacterPickPriority[]> {
+        const matcheMoves = await this.analysisRepository.findAllMatchMoveCoreForWeightCalc();
+        return computeCharacterPickPriority(matcheMoves);
     }
 
     async fetchCharacterSynergyMatrix(mode: SynergyMode = 'setup'): Promise<CharacterSynergyMatrix> {
@@ -50,8 +57,8 @@ export default class AnalysisService {
         const characters = await this.characterRepository.findAll();
         const characterMap = Object.fromEntries(characters.map((character) => [character.key, character]));
         const synergyMatrix = await this.fetchCharacterSynergyMatrix();
-        const graph = await this.characterSynergyGraphBuilder.build(synergyMatrix, characterMap)
-        const nodes: string[] = graph.nodes()
+        const graph = await this.characterSynergyGraphBuilder.build(synergyMatrix, characterMap);
+        const nodes: string[] = graph.nodes();
 
         const links: ICharacterGraphLink[] = graph.edges().map((edgeKey) => {
             const attrs = graph.getEdgeAttributes(edgeKey);
@@ -63,7 +70,7 @@ export default class AnalysisService {
                 weight: attrs.weight,
             };
         });
-        console.log(nodes, links)
+        console.log(nodes, links);
         return { nodes, links };
     }
 
@@ -71,9 +78,9 @@ export default class AnalysisService {
         const characters = await this.characterRepository.findAll();
         const characterMap = Object.fromEntries(characters.map((character) => [character.key, character]));
         const synergyMatrix = await this.fetchCharacterSynergyMatrix();
-        const graph = await this.characterSynergyGraphBuilder.build(synergyMatrix, characterMap)
+        const graph = await this.characterSynergyGraphBuilder.build(synergyMatrix, characterMap);
 
-        const featureMatrix = this.characterFeatureMatrixBuilder.build(characters)
+        const featureMatrix = this.characterFeatureMatrixBuilder.build(characters);
         const { archetypes, projected, clusterMedoids, bridgeScores } = await this.characterCommunityScanEngine.computeClusters(
             graph,
             synergyMatrix,
@@ -109,7 +116,7 @@ export default class AnalysisService {
             matrix[playerName][charKey]++;
         }
 
-        return matrix
+        return matrix;
 
         // 排序成曲線
         // const playerPreferences = Object.entries(preferenceMap).map(([player, table]) => {
@@ -126,6 +133,6 @@ export default class AnalysisService {
         const memberUsages = await this.analysisRepository.findMatchTacticalUsageWithCharacterByIdentity(identity);
         const allUsages = await this.analysisRepository.findAllMatchTacticalUsageWithCharacter();
         // logger.debug("memberMatchMoves", memberUsages)
-        return computePlayerStyleProfile(memberUsages, allUsages)
+        return computePlayerStyleProfile(memberUsages, allUsages);
     }
 }

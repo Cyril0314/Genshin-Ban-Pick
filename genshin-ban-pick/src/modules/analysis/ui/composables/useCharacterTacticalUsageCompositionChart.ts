@@ -13,10 +13,10 @@ import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useChar
 import type { ICharacterTacticalUsage } from '@shared/contracts/analysis/ICharacterTacticalUsage';
 import type { CallbackDataParams } from 'echarts/types/dist/shared';
 
-export function useCharacterTacticalUsageCompositionChart(topN = 120) {
+export function useCharacterTacticalUsageCompositionChart() {
     const { getByKey: getCharacterDisplayName } = useCharacterDisplayName();
     const designTokens = useDesignTokens();
-    const { gridStyle, xAxisStyle, yAxisStyle, legendStyle, tooltipStyle, dataZoomStyle } = useEchartTheme();
+    const { gridStyle, valueAxisStyle, categoryAxisStyle, legendStyle, tooltipStyle, dataZoomStyle } = useEchartTheme();
     const analysisUseCase = useAnalysisUseCase();
     const characterStore = useCharacterStore();
     const { characterMap } = storeToRefs(characterStore);
@@ -27,13 +27,12 @@ export function useCharacterTacticalUsageCompositionChart(topN = 120) {
     const data = ref<ICharacterTacticalUsage[] | null>(null);
 
     onMounted(async () => {
-        data.value = await analysisUseCase.fetchTacticalUsages();
+        data.value = await analysisUseCase.fetchCharacterTacticalUsages();
     });
 
     const option = computed(() => {
         if (!data.value || !characterMap.value) return null;
-        const sorted = [...data.value].sort((a, b) => b.effectiveUsage - a.effectiveUsage);
-        const top = sorted.slice(0, topN);
+        const sorted = [...data.value].sort((a, b) => a.effectiveUsage - b.effectiveUsage);
         return {
             tooltip: {
                 ...tooltipStyle('axis'),
@@ -43,7 +42,7 @@ export function useCharacterTacticalUsageCompositionChart(topN = 120) {
                         if (!v) return '';
                         return `<span style="color:${param.color};">●</span> ${param.seriesName}: ${v}`;
                     });
-                    const name = getCharacterDisplayName(top[params[0].dataIndex].characterKey);
+                    const name = getCharacterDisplayName(sorted[params[0].dataIndex].characterKey);
                     return `<b>${name}</b><br/>${lines.join('<br/>')}`;
                 },
             },
@@ -51,18 +50,16 @@ export function useCharacterTacticalUsageCompositionChart(topN = 120) {
                 ...gridStyle('tight', true),
             },
             xAxis: {
-                ...xAxisStyle(),
+                ...valueAxisStyle(),
                 name: isPercentage.value ? '%' : '次數',
-                type: 'value',
                 axisLabel: {
                     color: '#999',
                     formatter: (v: number) => (isPercentage.value ? `${(v * 100).toFixed(0)}%` : v.toFixed(0)),
                 },
             },
             yAxis: {
-                ...yAxisStyle(),
-                data: top.map((d) => getCharacterDisplayName(d.characterKey)),
-                type: 'category',
+                ...categoryAxisStyle(),
+                data: sorted.map((d) => getCharacterDisplayName(d.characterKey)),
             },
             legend: {
                 ...legendStyle('top'),
@@ -73,12 +70,12 @@ export function useCharacterTacticalUsageCompositionChart(topN = 120) {
                 {
                     ...dataZoomStyle,
                     type: 'inside',
-                    start: 0,
-                    end: 20,
+                    start: 80,
+                    end: 100,
                     yAxisIndex: 0,
                 },
             ],
-            series: makeActiveSeries(top, activeType.value),
+            series: makeActiveSeries(sorted, activeType.value),
         };
     });
 

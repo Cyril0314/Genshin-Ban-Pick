@@ -7,8 +7,12 @@ import type { MatchTeamMemberUniqueIdentity } from '@shared/contracts/match/Matc
 export default class AnalysisUseCase {
     constructor(private analysisRepository: AnalysisRepository) {}
 
-    async fetchTacticalUsages() {
-        return await this.analysisRepository.fetchTacticalUsages();
+    async fetchCharacterTacticalUsages() {
+        return await this.analysisRepository.fetchCharacterTacticalUsages();
+    }
+
+    async fetchCharacterPickPriority() {
+        return await this.analysisRepository.fetchCharacterPickPriority();
     }
 
     async fetchCharacteSynergyMatrix(payload: { mode: SynergyMode }) {

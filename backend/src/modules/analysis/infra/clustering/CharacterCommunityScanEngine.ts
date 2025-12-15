@@ -31,7 +31,7 @@ export default class CharacterCommunityScanEngine {
         private dimensionProjector: DimensionProjector,
         private featureMatrixBuilder: FeatureMatrixBuilder,
         private matrixNormalizer: MatrixNormalizer,
-        seed: number = 2025,
+        seed: number = 1,
     ) {
         this.rng = createSeededRandom(seed);
         this.rng2 = createSeededRandom2(seed);

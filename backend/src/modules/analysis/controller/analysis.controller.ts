@@ -9,9 +9,14 @@ import type { MatchTeamMemberUniqueIdentity } from '@shared/contracts/match/Matc
 export default class AnalysisController {
     constructor(private analysisService: AnalysisService) {}
 
-    fetchTacticalUsages = async (req: Request, res: Response) => {
-        const tacticalUsages = await this.analysisService.fetchTacticalUsages();
+    fetchCharacterTacticalUsages = async (req: Request, res: Response) => {
+        const tacticalUsages = await this.analysisService.fetchCharacterTacticalUsages();
         res.status(200).json(tacticalUsages);
+    };
+
+    fetchCharacterPickPriority = async (req: Request, res: Response) => {
+        const result = await this.analysisService.fetchCharacterPickPriority();
+        res.status(200).json(result);
     };
 
     fetchCharacterSynergyMatrix = async (req: Request, res: Response) => {
@@ -37,7 +42,9 @@ export default class AnalysisController {
 
     fetchPlayerStyleProfile = async (req: Request, res: Response) => {
         const { identity } = req.query;
-        const style = await this.analysisService.fetchPlayerStyleProfile(this.convertIdentity(identity as { type: string; id?: string; name: string }));
+        const style = await this.analysisService.fetchPlayerStyleProfile(
+            this.convertIdentity(identity as { type: string; id?: string; name: string }),
+        );
         res.status(200).json(style);
     };
 

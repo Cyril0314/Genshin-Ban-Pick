@@ -14,10 +14,10 @@ import { elementColors } from '@/modules/shared/ui/constants/elementColors';
 
 import type { ICharacterTacticalUsage } from '@shared/contracts/analysis/ICharacterTacticalUsage';
 
-export function useCharacterTacticalUsagesChart(topN = 120) {
+export function useCharacterTacticalUsagesChart() {
     const { getByKey: getCharacterDisplayName } = useCharacterDisplayName();
     const designTokens = useDesignTokens();
-    const { gridStyle, xAxisStyle, yAxisStyle, legendStyle, tooltipStyle, dataZoomStyle } = useEchartTheme();
+    const { gridStyle, valueAxisStyle, categoryAxisStyle, legendStyle, tooltipStyle, dataZoomStyle } = useEchartTheme();
     const analysisUseCase = useAnalysisUseCase();
     const characterStore = useCharacterStore();
     const { characterMap } = storeToRefs(characterStore);
@@ -25,18 +25,17 @@ export function useCharacterTacticalUsagesChart(topN = 120) {
     const data = ref<ICharacterTacticalUsage[] | null>(null);
 
     onMounted(async () => {
-        data.value = await analysisUseCase.fetchTacticalUsages();
+        data.value = await analysisUseCase.fetchCharacterTacticalUsages();
     });
 
     const option = computed(() => {
         if (!data.value || !characterMap.value) return null;
-        const sorted = [...data.value].sort((a, b) => b.effectiveUsage - a.effectiveUsage);
-        const top = sorted.slice(0, topN);
+        const sorted = [...data.value].sort((a, b) => a.effectiveUsage - b.effectiveUsage);
         return {
             tooltip: {
                 ...tooltipStyle('single'),
                 formatter: (p: CallbackDataParams) => {
-                    const d = top[p.dataIndex];
+                    const d = sorted[p.dataIndex];
                     return `
                         <b>${getCharacterDisplayName(d.characterKey)}</b><br/>
                         <b>僅計算登場後的有效權重: ${d.effectiveUsage.toFixed(2)}</b><br/>
@@ -59,13 +58,13 @@ export function useCharacterTacticalUsagesChart(topN = 120) {
                 ...gridStyle('tight', true),
             },
             xAxis: {
-                ...xAxisStyle(),
+                ...valueAxisStyle(),
                 name: '權重',
                 type: 'value',
             },
             yAxis: {
-                ...yAxisStyle(),
-                data: top.map((d) => getCharacterDisplayName(d.characterKey)),
+                ...categoryAxisStyle(),
+                data: sorted.map((d) => getCharacterDisplayName(d.characterKey)),
                 type: 'category',
             },
             legend: {
@@ -89,8 +88,8 @@ export function useCharacterTacticalUsagesChart(topN = 120) {
                 {
                     ...dataZoomStyle,
                     type: 'inside',
-                    start: 0,
-                    end: 15,
+                    start: 85,
+                    end: 100,
                     yAxisIndex: 0,
                 },
             ],
@@ -98,13 +97,13 @@ export function useCharacterTacticalUsagesChart(topN = 120) {
                 {
                     name: '僅計算登場後的有效權重',
                     type: 'bar',
-                    data: top.map((d) => d.effectiveUsage),
+                    data: sorted.map((d) => d.effectiveUsage.toFixed(2)),
                     // barWidth: parseFloat(designTokens.baseSize.value!) * 8,
                     // barCategoryGap: '30%',
                     
                     itemStyle: {
                         color: (params: CallbackDataParams) => {
-                            const key = top[params.dataIndex].characterKey;
+                            const key = sorted[params.dataIndex].characterKey;
                             const element = characterMap.value[key].element;
                             const base = elementColors[element]?.main ?? '#fff';
                             return tinycolor(base).darken(10).toRgbString();
@@ -118,21 +117,21 @@ export function useCharacterTacticalUsagesChart(topN = 120) {
                         color: designTokens.colorOnSurface.value,
                         fontSize: designTokens.fontSizeSm.value,
 
-                        formatter: (p: any) => `${top[p.dataIndex].effectiveUsage.toFixed(2)}`,
+                        formatter: (p: any) => `${sorted[p.dataIndex].effectiveUsage.toFixed(2)}`,
                     },
                     z: 1,
                 },
                 {
                     name: '綜合全期平均與有效權重',
                     type: 'bar',
-                    data: top.map((d) => d.tacticalUsage.toFixed(3)),
+                    data: sorted.map((d) => d.tacticalUsage.toFixed(2)),
                     // barWidth: parseFloat(designTokens.baseSize.value!) * 12,
                     barCategoryGap: '40%',
                     barGap: '-100%',
                     itemStyle: {
                         color: (params: CallbackDataParams) => {
-                            const d = top[params.dataIndex];
-                            const characterKey = top[params.dataIndex].characterKey;
+                            const d = sorted[params.dataIndex];
+                            const characterKey = sorted[params.dataIndex].characterKey;
                             const element = characterMap.value[characterKey].element;
                             const base = elementColors[element]?.main ?? '#bdbdbd';
                             // const alpha = Math.min(0.45 + d.tacticalUsage / 1, 1);
@@ -146,7 +145,7 @@ export function useCharacterTacticalUsagesChart(topN = 120) {
                         color: designTokens.colorOnSurface.value,
                         fontSize: designTokens.fontSizeSm.value,
 
-                        formatter: (p: any) => `${top[p.dataIndex].tacticalUsage.toFixed(2)}`,
+                        formatter: (p: any) => `${sorted[p.dataIndex].tacticalUsage.toFixed(2)}`,
                     },
                     z: 2,
                 },

@@ -15,7 +15,7 @@ import type { ICharacterTacticalUsage } from '@shared/contracts/analysis/ICharac
 export function useCharacterClustersChart() {
     const { getByKey: getCharacterDisplayName } = useCharacterDisplayName();
     const designTokens = useDesignTokens();
-    const { gridStyle, xAxisStyle, yAxisStyle, tooltipStyle, dataZoomStyle, legendStyle } = useEchartTheme();
+    const { gridStyle, tooltipStyle, dataZoomStyle, legendStyle } = useEchartTheme();
     const analysisUseCase = useAnalysisUseCase();
     const tacticalUsages = ref<ICharacterTacticalUsage[] | null>(null);
     const characterClusters = ref<ICharacterClusters | null>(null);
@@ -28,7 +28,7 @@ export function useCharacterClustersChart() {
     });
 
     onMounted(async () => {
-        tacticalUsages.value = await analysisUseCase.fetchTacticalUsages();
+        tacticalUsages.value = await analysisUseCase.fetchCharacterTacticalUsages();
         characterClusters.value = await analysisUseCase.fetchCharacterClusters();
         console.log(`characterClusters`, characterClusters.value);
     });

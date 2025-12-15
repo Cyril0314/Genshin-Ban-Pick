@@ -17,9 +17,9 @@ export default class CharacterSynergyGraphBuilder {
     async build(
         synergyMatrix: CharacterSynergyMatrix,
         characterMap: Record<string, any>,
-        K_NEIGHBORS: number = 12,
-        ADAPTIVE_FACTOR: number = 0.4,
-        WEIGHT_POWER: number = 1.2,
+        K_NEIGHBORS: number = 8,
+        ADAPTIVE_FACTOR: number = 0.8,
+        WEIGHT_POWER: number = 1.5,
     ): Promise<UndirectedGraph> {
         const graph = new UndirectedGraph();
         // 相似度分析

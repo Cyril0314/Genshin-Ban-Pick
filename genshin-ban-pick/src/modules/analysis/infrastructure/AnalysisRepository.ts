@@ -7,8 +7,13 @@ import type { MatchTeamMemberUniqueIdentity } from '@shared/contracts/match/Matc
 export default class AnalysisRepository {
     constructor(private analysisService: AnalysisService) {}
 
-    async fetchTacticalUsages() {
-        const response = await this.analysisService.getTacticalUsages();
+    async fetchCharacterTacticalUsages() {
+        const response = await this.analysisService.getCharacterTacticalUsages();
+        return response.data;
+    }
+
+    async fetchCharacterPickPriority() {
+        const response = await this.analysisService.getCharacterPickPriority();
         return response.data;
     }
 
@@ -36,4 +41,4 @@ export default class AnalysisRepository {
         const response = await this.analysisService.getPlayerStyleProfile(payload);
         return response.data;
     }
-}   
+}
