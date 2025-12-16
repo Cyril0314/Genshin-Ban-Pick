@@ -25,7 +25,7 @@ export function registerAppRouters(app: Express, prisma: PrismaClient, roomState
     const matchModule = createMatchModule(prisma, roomStateManager);
     app.use('/api/matches', matchModule.router);
 
-    const analysisModule = createAnalysisModule(prisma, characterModule.repository);
+    const analysisModule = createAnalysisModule(prisma, characterModule.repository, matchModule.repository);
     app.use('/api/analyses', analysisModule.router);
 
     return {

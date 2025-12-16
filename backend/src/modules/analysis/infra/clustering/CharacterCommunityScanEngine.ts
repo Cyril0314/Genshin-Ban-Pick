@@ -31,7 +31,7 @@ export default class CharacterCommunityScanEngine {
         private dimensionProjector: DimensionProjector,
         private featureMatrixBuilder: FeatureMatrixBuilder,
         private matrixNormalizer: MatrixNormalizer,
-        seed: number = 1,
+        seed: number = 19940519,
     ) {
         this.rng = createSeededRandom(seed);
         this.rng2 = createSeededRandom2(seed);
@@ -51,9 +51,8 @@ export default class CharacterCommunityScanEngine {
         const clusterIds = this.clusterCharacters(data, k);
 
         // const projected = this.umapProjector.project(data, 2, this.rng2);
-        const projected= this.dimensionProjector.project(data)
+        const projected = this.dimensionProjector.project(data)
         
-
         const archetypes = rowKeys.map((c, i) => ({
             characterKey: c,
             clusterId: clusterIds[i],

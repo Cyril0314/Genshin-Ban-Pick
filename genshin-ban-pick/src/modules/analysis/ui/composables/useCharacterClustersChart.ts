@@ -27,6 +27,9 @@ export function useCharacterClustersChart() {
         return [...(characterClusters.value?.bridgeScores ?? [])].sort((a, b) => b.bridgeScore - a.bridgeScore).slice(0, 5);
     });
 
+
+    const clusterNames: string[] = ['群0', '群1', '群2', '群3', '群4', '連續過渡地帶', '群6', '群7',]
+
     onMounted(async () => {
         tacticalUsages.value = await analysisUseCase.fetchCharacterTacticalUsages();
         characterClusters.value = await analysisUseCase.fetchCharacterClusters();
@@ -35,6 +38,7 @@ export function useCharacterClustersChart() {
 
     const option = computed(() => {
         if (!archetypePoints.value || !tacticalUsages.value || !medoidPoints.value || !topBridges.value) return null;
+
         return {
             tooltip: {
                 ...tooltipStyle('single'),
@@ -49,8 +53,6 @@ export function useCharacterClustersChart() {
             },
             xAxis: {
                 type: 'value',
-                min: (value: any) => Math.floor(value.min * 0.95),
-                max: (value: any) => Math.ceil(value.max * 1.05),
                 splitLine: {
                     show: true,
                     lineStyle: {
@@ -62,8 +64,6 @@ export function useCharacterClustersChart() {
             },
             yAxis: {
                 type: 'value',
-                min: (value: any) => Math.floor(value.min * 0.95),
-                max: (value: any) => Math.ceil(value.max * 1.05),
                 splitLine: {
                     show: true,
                     lineStyle: {
@@ -146,7 +146,7 @@ export function useCharacterClustersChart() {
         const maxClusterId = Math.max(...archetypePoints.value.map((p) => p.clusterId));
 
         return Array.from({ length: maxClusterId + 1 }).map((_, cid) => ({
-            name: `群 ${cid}`,
+            name: clusterNames[cid],
             icon: 'circle',
             itemStyle: { color: chartColors[cid] },
         }));
@@ -161,7 +161,7 @@ export function useCharacterClustersChart() {
 
         for (let cid = 0; cid <= maxClusterId; cid++) {
             series.push({
-                name: `群 ${cid}`,
+                name: clusterNames[cid],
                 type: 'scatter',
                 data: archetypePoints.value
                     .filter((p) => p.clusterId === cid)

@@ -17,5 +17,5 @@ export function createMatchModule(prisma: PrismaClient, roomStateManager: IRoomS
     const service = new MatchService(matchRepository, matchSnapshotRepository);
     const controller = new MatchController(service);
     const router = createMatchesRouter(controller);
-    return { router, controller, service };
+    return { router, controller, service, repository: matchRepository };
 }

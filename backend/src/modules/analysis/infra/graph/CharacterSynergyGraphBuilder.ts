@@ -17,13 +17,15 @@ export default class CharacterSynergyGraphBuilder {
     async build(
         synergyMatrix: CharacterSynergyMatrix,
         characterMap: Record<string, any>,
-        K_NEIGHBORS: number = 8,
-        ADAPTIVE_FACTOR: number = 0.8,
+        pickCounts: Record<string, number>,
+        K_NEIGHBORS: number = 10,
+        ADAPTIVE_FACTOR: number = 0.6,
         WEIGHT_POWER: number = 1.5,
     ): Promise<UndirectedGraph> {
         const graph = new UndirectedGraph();
         // 相似度分析
-        const similarityMatrix = this.squareSimilarityMatrixBuilder.build(synergyMatrix, 'jaccard');
+        const mode = 'ochiai';
+        const similarityMatrix = this.squareSimilarityMatrixBuilder.build(synergyMatrix, mode, pickCounts);
 
         const chars = Object.keys(similarityMatrix);
         chars.forEach((char) => graph.addNode(char, characterMap[char]));
@@ -41,9 +43,9 @@ export default class CharacterSynergyGraphBuilder {
 
             for (const charB of chars) {
                 if (charA >= charB) continue;
-
                 const w = similarityMatrix[charA]?.[charB] ?? 0;
                 if (w > 0) {
+                    // console.log(`charA ${charA} charB ${charB} sum ${sum} w ${w}`)
                     potentialEdges.push({ a: charA, b: charB, w });
                 }
             }
@@ -63,6 +65,7 @@ export default class CharacterSynergyGraphBuilder {
 
             // 只要大於任一邊的閾值，就納入 Top-K 候選名單 (防止冷門角色被殺光)
             if (w > thresholdA || w > thresholdB) {
+                // console.log(`a ${a} b ${b} w ${w} thresholdA ${thresholdA} thresholdB ${thresholdB}`)
                 finalEdges[a].push({ b, w });
                 finalEdges[b].push({ b: a, w }); // 紀錄反向，方便Top-K處理
             }
@@ -82,7 +85,7 @@ export default class CharacterSynergyGraphBuilder {
                 if (!addedEdges.has(key)) {
                     // 權重強化：w' = w^1.5 (溫和壓縮)
                     const poweredWeight = Math.pow(w, WEIGHT_POWER);
-
+                    // console.log(`charA ${charA} charB ${b} w ${w} poweredWeight ${poweredWeight}`)
                     graph.addUndirectedEdgeWithKey(key, charA, b, { weight: poweredWeight });
                     addedEdges.add(key);
                 }

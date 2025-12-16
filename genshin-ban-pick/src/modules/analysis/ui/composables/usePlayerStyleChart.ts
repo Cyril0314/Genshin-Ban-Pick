@@ -144,34 +144,190 @@ export function usePlayerStyleChart() {
         const rarityCounts = isGlobal ? stats.globalRarityCounts : stats.playerRarityCounts;
         const modelTypeCounts = isGlobal ? stats.globalModelTypeCounts : stats.playerModelTypeCounts;
 
+        return isGlobal
+            ? {
+                  tooltip: {
+                      ...tooltipStyle('single'),
+                  },
+                  radar: null,
+                  series: [
+                      // --- Pie 1: 元素 ---
+                      {
+                          type: 'pie',
+                          radius: ['20%', '30%'],
+                          center: ['60%', '15%'],
+                          data: toPieSorted('element', elementCounts, elementTranslator),
+                          label: { color: designTokens.colorOnSurface.value },
+                      },
+
+                      // --- Pie 2: 武器 ---
+                      {
+                          type: 'pie',
+                          radius: ['20%', '30%'],
+                          center: ['85%', '15%'],
+                          data: toPieSorted('weapon', weaponCounts, weaponTranslator),
+                          label: { color: designTokens.colorOnSurface.value },
+                      },
+
+                      // --- Pie 3: 體型 ---
+                      {
+                          type: 'pie',
+                          radius: ['20%', '30%'],
+                          center: ['60%', '50%'],
+                          data: toPieSorted('modelType', modelTypeCounts, modelTypeTranslator),
+                          label: { color: designTokens.colorOnSurface.value },
+                      },
+
+                      // --- Pie 4: 定位 ---
+                      {
+                          type: 'pie',
+                          radius: ['20%', '30%'],
+                          center: ['85%', '50%'],
+                          data: toPieSorted('role', roleCounts, roleTranslator),
+                          label: { color: designTokens.colorOnSurface.value },
+                      },
+
+                      // --- Pie 5: 國家 ---
+                      {
+                          type: 'pie',
+                          radius: ['20%', '30%'],
+                          center: ['60%', '85%'],
+                          data: toPieSorted('region', regionCounts, regionTranslator),
+                          label: { color: designTokens.colorOnSurface.value },
+                      },
+
+                      // --- Pie 5: 稀有度 ---
+                      {
+                          type: 'pie',
+                          radius: ['20%', '30%'],
+                          center: ['85%', '85%'],
+                          data: toPieSorted('rarity', rarityCounts, rarityTranslator),
+                          label: { color: designTokens.colorOnSurface.value },
+                      },
+                  ],
+              }
+            : {
+                  tooltip: {
+                      ...tooltipStyle('single'),
+                  },
+                  radar: {
+                      indicator: [
+                          { name: '角色多樣性', max: 100 },
+                          { name: 'Meta', max: 100 },
+                          { name: '元素多樣性', max: 100 },
+                          { name: '定位多樣性', max: 100 },
+                          { name: '武器多樣性', max: 100 },
+                          { name: '體型多樣性', max: 100 },
+                          { name: '地區多樣性', max: 100 },
+                          { name: '稀有度多樣性', max: 100 },
+                      ],
+                      center: ['25%', '40%'],
+                      radius: '40%',
+                      splitNumber: 4,
+                      axisName: {
+                          color: designTokens.colorOnSurface.value,
+                      },
+                      splitLine: {
+                          lineStyle: {
+                              color: designTokens.colorOnSurfaceVariant.value,
+                          },
+                      },
+                      splitArea: { show: false },
+                      axisLine: {
+                          lineStyle: {
+                              color: designTokens.colorOnSurfaceVariant.value,
+                          },
+                      },
+                  },
+                  series: [
+                      {
+                          type: 'radar',
+                          data: [
+                              {
+                                  value: [
+                                      stats.versatility.toFixed(2),
+                                      stats.metaAffinity.toFixed(2),
+                                      stats.elementAdjustedDiversity.toFixed(2),
+                                      stats.roleAdjustedDiversity.toFixed(2),
+                                      stats.weaponAdjustedDiversity.toFixed(2),
+                                      stats.modelTypeAdjustedDiversity.toFixed(2),
+                                      stats.regionAdjustedDiversity.toFixed(2),
+                                      stats.rarityAdjustedDiversity.toFixed(2),
+                                  ],
+                                  name: '玩家風格',
+                                  itemStyle: {
+                                      color: designTokens.colorPrimary.value,
+                                  },
+                                  areaStyle: {
+                                      color: designTokens.colorPrimary.value,
+                                      opacity: 0.2,
+                                  },
+                                  emphasis: { disabled: true },
+                              },
+                          ],
+                      },
+                      // --- Pie 1: 元素 ---
+                      {
+                          type: 'pie',
+                          radius: ['20%', '30%'],
+                          center: ['60%', '15%'],
+                          data: toPieSorted('element', elementCounts, elementTranslator),
+                          label: { color: designTokens.colorOnSurface.value },
+                      },
+
+                      // --- Pie 2: 武器 ---
+                      {
+                          type: 'pie',
+                          radius: ['20%', '30%'],
+                          center: ['85%', '15%'],
+                          data: toPieSorted('weapon', weaponCounts, weaponTranslator),
+                          label: { color: designTokens.colorOnSurface.value },
+                      },
+
+                      // --- Pie 3: 體型 ---
+                      {
+                          type: 'pie',
+                          radius: ['20%', '30%'],
+                          center: ['60%', '50%'],
+                          data: toPieSorted('modelType', modelTypeCounts, modelTypeTranslator),
+                          label: { color: designTokens.colorOnSurface.value },
+                      },
+
+                      // --- Pie 4: 定位 ---
+                      {
+                          type: 'pie',
+                          radius: ['20%', '30%'],
+                          center: ['85%', '50%'],
+                          data: toPieSorted('role', roleCounts, roleTranslator),
+                          label: { color: designTokens.colorOnSurface.value },
+                      },
+
+                      // --- Pie 5: 國家 ---
+                      {
+                          type: 'pie',
+                          radius: ['20%', '30%'],
+                          center: ['60%', '85%'],
+                          data: toPieSorted('region', regionCounts, regionTranslator),
+                          label: { color: designTokens.colorOnSurface.value },
+                      },
+
+                      // --- Pie 5: 稀有度 ---
+                      {
+                          type: 'pie',
+                          radius: ['20%', '30%'],
+                          center: ['85%', '85%'],
+                          data: toPieSorted('rarity', rarityCounts, rarityTranslator),
+                          label: { color: designTokens.colorOnSurface.value },
+                      },
+                  ],
+              };
+
         return {
             tooltip: {
                 ...tooltipStyle('single'),
-                // formatter: (params: CallbackDataParams) => {
-                //     const values = Array.isArray(params.value) ? params.value : [];
-
-                //     const labels = [
-                //         '冷門角 (Versatility)',
-                //         'Meta (Meta Affinity)',
-                //         '定位多樣性 (Role Diversity)',
-                //         '元素多樣性 (Element Diversity)',
-                //         '武器多樣性 (Weapon Diversity)',
-                //         '體型多樣性 (Model Type Diversity)',
-                //     ];
-
-                //     return values
-                //         .map((v, i) => {
-                //             if (typeof v === 'number') {
-                //                 return `${labels[i]}：${v.toFixed(2)}%`;
-                //             } else {
-                //                 return null
-                //             }
-                //         })
-                //         .join('<br/>');
-                // },
             },
             ...(isGlobal
-                ? {}
+                ? null
                 : {
                       radar: {
                           indicator: [
@@ -204,8 +360,9 @@ export function usePlayerStyleChart() {
                       },
                   }),
             series: [
-                ...(!isGlobal
-                    ? [
+                ...(isGlobal
+                    ? []
+                    : [
                           {
                               type: 'radar',
                               data: [
@@ -232,8 +389,7 @@ export function usePlayerStyleChart() {
                                   },
                               ],
                           },
-                      ]
-                    : []),
+                      ]),
                 // --- Pie 1: 元素 ---
                 {
                     type: 'pie',

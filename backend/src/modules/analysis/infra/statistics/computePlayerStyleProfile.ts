@@ -4,28 +4,6 @@ import type { IPlayerStyleProfile } from '@shared/contracts/analysis/IPlayerStyl
 import type { IMatchTacticalUsageWithCharacter } from '../../types/IMatchTacticalUsageWithCharacter';
 import type { ICharacter } from '@shared/contracts/character/ICharacter';
 
-export function computeGlobalBaseline(allUsuages: IMatchTacticalUsageWithCharacter[]) {
-    const total = allUsuages.length;
-
-    const elementCounts = countBy(allUsuages, 'element');
-    console.log(`elementCounts`, elementCounts);
-
-    const weaponCounts = countBy(allUsuages, 'weapon');
-    console.log(`weaponCounts`, weaponCounts);
-
-    const regionCounts = countBy(allUsuages, 'region');
-    console.log(`regionCounts`, regionCounts);
-
-    const rarityCounts = countBy(allUsuages, 'rarity');
-    console.log(`rarityCounts`, rarityCounts);
-
-    const modelTypeCounts = countBy(allUsuages, 'modelType');
-    console.log(`modelTypeCounts`, modelTypeCounts);
-
-    const roleCounts = countBy(allUsuages, 'role');
-    console.log(`roleCounts`, roleCounts);
-}
-
 export function computePlayerStyleProfile(
     memberUsages: IMatchTacticalUsageWithCharacter[],
     globalUsages: IMatchTacticalUsageWithCharacter[],
@@ -119,17 +97,6 @@ function countBy<T extends keyof ICharacter>(usages: { character: ICharacter }[]
 
     return counts;
 }
-
-// function computeEntropy(counts: Record<string, number>, total: number): number {
-//     let entropy = 0;
-
-//     Object.values(counts).forEach((count) => {
-//         const p = count / total;
-//         entropy -= p * Math.log2(p);
-//     });
-
-//     return entropy;
-// }
 
 function computeEntropy(distribution: number[]): number {
     return distribution.reduce((acc, p) => {

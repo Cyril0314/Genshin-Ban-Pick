@@ -10,6 +10,7 @@ import { computePlayerStyleProfile } from '../infra/statistics/computePlayerStyl
 import { createLogger } from '../../../utils/logger';
 
 import type { ICharacterRepository } from '../../character/domain/ICharacterRepository';
+import type { IMatchRepository } from '../../match/domain/IMatchRepository';
 import type { IAnalysisRepository } from '../domain/IAnalysisRepository';
 import type { ICharacterClusters } from '@shared/contracts/analysis/ICharacterClusters';
 import type { IArchetypePoint } from '@shared/contracts/analysis/IArchetypePoint';
@@ -32,6 +33,7 @@ export default class AnalysisService {
         private characterFeatureMatrixBuilder: CharacterFeatureMatrixBuilder,
         private characterCommunityScanEngine: CharacterCommunityScanEngine,
         private characterRepository: ICharacterRepository,
+        private matchRepository: IMatchRepository,
     ) {}
 
     async fetchCharacterTacticalUsages(): Promise<ICharacterTacticalUsage[]> {
@@ -54,31 +56,58 @@ export default class AnalysisService {
     }
 
     async fetchCharacterSynergyGraph() {
-        const characters = await this.characterRepository.findAll();
-        const characterMap = Object.fromEntries(characters.map((character) => [character.key, character]));
-        const synergyMatrix = await this.fetchCharacterSynergyMatrix();
-        const graph = await this.characterSynergyGraphBuilder.build(synergyMatrix, characterMap);
-        const nodes: string[] = graph.nodes();
+        // const characters = await this.characterRepository.findAll();
+        // const characterMap = Object.fromEntries(characters.map((character) => [character.key, character]));
 
-        const links: ICharacterGraphLink[] = graph.edges().map((edgeKey) => {
-            const attrs = graph.getEdgeAttributes(edgeKey);
-            const source = graph.source(edgeKey);
-            const target = graph.target(edgeKey);
-            return {
-                source,
-                target,
-                weight: attrs.weight,
-            };
-        });
-        console.log(nodes, links);
-        return { nodes, links };
+        // // Re-implement logic to get pickCounts + synergy matrix together to ensure consistency
+        // const matchTacticalUsages = await this.analysisRepository.findAllMatchTacticalUsageForAnalysis();
+        // const groups = this.characterSynergyCalculator.buildCooccurrenceGroups(matchTacticalUsages, 'setup');
+        // const synergyMatrix = this.characterSynergyCalculator.buildSynergyMatrix(groups);
+
+        // // Calculate pick counts from groups
+        // const pickCounts: Record<string, number> = {};
+        // for (const members of Object.values(groups)) {
+        //     const unique = new Set(members);
+        //     for (const char of unique) {
+        //         pickCounts[char] = (pickCounts[char] || 0) + 1;
+        //     }
+        // }
+
+        // const graph = await this.characterSynergyGraphBuilder.build(synergyMatrix, characterMap, pickCounts);
+        // const nodes: string[] = graph.nodes();
+
+        // const links: ICharacterGraphLink[] = graph.edges().map((edgeKey) => {
+        //     const attrs = graph.getEdgeAttributes(edgeKey);
+        //     const source = graph.source(edgeKey);
+        //     const target = graph.target(edgeKey);
+        //     return {
+        //         source,
+        //         target,
+        //         weight: attrs.weight,
+        //     };
+        // });
+        // console.log(nodes, links);
+        // return { nodes, links };
     }
 
     async fetchCharacterClusters(): Promise<ICharacterClusters> {
         const characters = await this.characterRepository.findAll();
         const characterMap = Object.fromEntries(characters.map((character) => [character.key, character]));
-        const synergyMatrix = await this.fetchCharacterSynergyMatrix();
-        const graph = await this.characterSynergyGraphBuilder.build(synergyMatrix, characterMap);
+
+        // Consistent calculation
+        const matchTacticalUsages = await this.analysisRepository.findAllMatchTacticalUsageForAnalysis();
+        const groups = this.characterSynergyCalculator.buildCooccurrenceGroups(matchTacticalUsages, 'setup');
+        const synergyMatrix = this.characterSynergyCalculator.buildSynergyMatrix(groups);
+
+        const pickCounts: Record<string, number> = {};
+        for (const matchTacticalUsage of matchTacticalUsages) {
+            const characterKey = matchTacticalUsage.characterKey
+            pickCounts[characterKey] = (pickCounts[characterKey] || 0) + 1;
+        }
+
+        // console.log('pickCounts', pickCounts)
+
+        const graph = await this.characterSynergyGraphBuilder.build(synergyMatrix, characterMap, pickCounts);
 
         const featureMatrix = this.characterFeatureMatrixBuilder.build(characters);
         const { archetypes, projected, clusterMedoids, bridgeScores } = await this.characterCommunityScanEngine.computeClusters(
@@ -117,16 +146,6 @@ export default class AnalysisService {
         }
 
         return matrix;
-
-        // 排序成曲線
-        // const playerPreferences = Object.entries(preferenceMap).map(([player, table]) => {
-        //     const sorted = Object.entries(table)
-        //         .sort((a, b) => b[1] - a[1]) // 次數降序
-        //         .map(([characterKey, count]) => ({ characterKey, count }));
-        //     return { player, characters: sorted };
-        // });
-
-        // return playerPreferences;
     }
 
     async fetchPlayerStyleProfile(identity: MatchTeamMemberUniqueIdentity): Promise<IPlayerStyleProfile> {
@@ -134,5 +153,11 @@ export default class AnalysisService {
         const allUsages = await this.analysisRepository.findAllMatchTacticalUsageWithCharacter();
         // logger.debug("memberMatchMoves", memberUsages)
         return computePlayerStyleProfile(memberUsages, allUsages);
+    }
+
+    async fetchGlobalStatistic(): Promise<IGlobalStatistic> {
+        const matches = await this.matchRepository.findAllMatches()
+        console.log('macthes', JSON.stringify(matches, null, 2))
+        return {}
     }
 }

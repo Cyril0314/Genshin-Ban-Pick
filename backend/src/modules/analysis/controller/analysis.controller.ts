@@ -48,6 +48,11 @@ export default class AnalysisController {
         res.status(200).json(style);
     };
 
+    fetchGlobalStatistic = async (req: Request, res: Response) => {
+        const statistic = await this.analysisService.fetchGlobalStatistic();
+        res.status(200).json(statistic);
+    };
+
     convertIdentity(input: { type: string; id?: string; name: string }): MatchTeamMemberUniqueIdentity | null {
         const { type, id, name } = input;
 

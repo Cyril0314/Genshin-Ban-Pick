@@ -19,7 +19,7 @@ const props = defineProps<{}>();
 const emit = defineEmits<{}>();
 
 const tabs = [
-    { name: '玩家風格雷達', component: PlayerStyleRadarChart },
+    { name: '玩家統計數據', component: PlayerStyleRadarChart },
     { name: '角色使用權重', component: CharacterTacticalUsagesChart },
     { name: '搶角優先級', component: CharacterPickPriorityChart },
     { name: '角色定位象限', component: CharacterScatterChart },
@@ -27,7 +27,6 @@ const tabs = [
     // { name: '角色共現熱圖', component: CharacterSynergyChart },
     // { name: '角色圖', component: CharacterSynergyGraphChart },
     { name: '角色群聚圖', component: CharacterClustersChart },
-
     { name: '玩家偏好角色', component: PlayerCharacterChart },
 ];
 

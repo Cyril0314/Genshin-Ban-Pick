@@ -42,7 +42,7 @@ const { playerSelectOptions, globalOption, option, selectedOptionKey, getOptionK
 
         </header>
         <div class="chart">
-            <VChart v-if="option" :option="option" autoresize />
+            <VChart v-if="option" :option="option" :update-options="{ notMerge: true }" autoresize />
             <div v-else class="chart__empty">尚無足夠數據進行分析</div>
         </div>
         <footer class="chart__footer">
