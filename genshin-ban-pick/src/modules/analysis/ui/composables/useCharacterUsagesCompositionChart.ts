@@ -1,4 +1,4 @@
-// src/modules/analysis/ui/composables/useCharacterTacticalUsageCompositionChart.ts
+// src/modules/analysis/ui/composables/useCharacterUsagesCompositionChart.ts
 
 import { computed, onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
@@ -10,10 +10,10 @@ import { ZoneType } from '@shared/contracts/board/value-types';
 import { useAnalysisUseCase } from './useAnalysisUseCase';
 import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
 
-import type { ICharacterTacticalUsage } from '@shared/contracts/analysis/ICharacterTacticalUsage';
+import type { ICharacterUsage } from '@shared/contracts/analysis/ICharacterUsage';
 import type { CallbackDataParams } from 'echarts/types/dist/shared';
 
-export function useCharacterTacticalUsageCompositionChart() {
+export function useCharacterUsagesCompositionChart() {
     const { getByKey: getCharacterDisplayName } = useCharacterDisplayName();
     const designTokens = useDesignTokens();
     const { gridStyle, valueAxisStyle, categoryAxisStyle, legendStyle, tooltipStyle, dataZoomStyle } = useEchartTheme();
@@ -24,15 +24,15 @@ export function useCharacterTacticalUsageCompositionChart() {
     const isPercentage = ref(false);
     const activeType = ref<'All' | ZoneType>('All');
 
-    const data = ref<ICharacterTacticalUsage[] | null>(null);
+    const usages = ref<ICharacterUsage[] | null>(null);
 
     onMounted(async () => {
-        data.value = await analysisUseCase.fetchCharacterTacticalUsages();
+        usages.value = await analysisUseCase.fetchCharacterUsageSummary();
     });
 
     const option = computed(() => {
-        if (!data.value || !characterMap.value) return null;
-        const sorted = [...data.value].sort((a, b) => a.effectiveUsage - b.effectiveUsage);
+        if (!usages.value || !characterMap.value) return null;
+        const sorted = [...usages.value].sort((a, b) => a.effectiveUsage - b.effectiveUsage);
         return {
             tooltip: {
                 ...tooltipStyle('axis'),
@@ -79,7 +79,7 @@ export function useCharacterTacticalUsageCompositionChart() {
         };
     });
 
-    function getTotal(data: ICharacterTacticalUsage, activeType: ZoneType | 'All') {
+    function getTotal(data: ICharacterUsage, activeType: ZoneType | 'All') {
         switch (activeType) {
             case ZoneType.Ban:
                 return data.context.ban.total;
@@ -107,7 +107,7 @@ export function useCharacterTacticalUsageCompositionChart() {
         };
     }
 
-    function makeActiveSeries(top: ICharacterTacticalUsage[], activeType: ZoneType | 'All') {
+    function makeActiveSeries(top: ICharacterUsage[], activeType: ZoneType | 'All') {
         switch (activeType) {
             case ZoneType.Ban:
                 return [
@@ -234,5 +234,5 @@ export function useCharacterTacticalUsageCompositionChart() {
         }
     }
 
-    return { isPercentage, activeType, option, data };
+    return { isPercentage, activeType, option };
 }

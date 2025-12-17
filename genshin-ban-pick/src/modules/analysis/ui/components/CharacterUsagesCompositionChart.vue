@@ -1,4 +1,4 @@
-<!-- src/modules/analysis/ui/components/CharacterTacticalUsageCompositionChart.vue -->
+<!-- src/modules/analysis/ui/components/CharacterUsagesCompositionChart.vue -->
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
@@ -8,7 +8,7 @@ import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { BarChart } from 'echarts/charts';
 import { GridComponent, TooltipComponent, VisualMapComponent, LegendComponent, DataZoomComponent } from 'echarts/components';
-import { useCharacterTacticalUsageCompositionChart } from '../composables/useCharacterTacticalUsageCompositionChart';
+import { useCharacterUsagesCompositionChart } from '../composables/useCharacterUsagesCompositionChart';
 
 use([CanvasRenderer, BarChart, GridComponent, TooltipComponent, VisualMapComponent, LegendComponent, DataZoomComponent]);
 
@@ -16,7 +16,7 @@ const props = defineProps<{}>();
 
 const emit = defineEmits<{}>();
 
-const { isPercentage, activeType, option } = useCharacterTacticalUsageCompositionChart();
+const { isPercentage, activeType, option } = useCharacterUsagesCompositionChart();
 </script>
 
 <template>

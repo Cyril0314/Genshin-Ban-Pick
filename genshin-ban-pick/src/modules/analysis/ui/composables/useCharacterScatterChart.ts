@@ -7,7 +7,7 @@ import { useCharacterStore } from '@/modules/character';
 import { storeToRefs } from 'pinia';
 import { elementColors } from '@/modules/shared/ui/constants/elementColors';
 import type { CallbackDataParams } from 'echarts/types/dist/shared';
-import type { ICharacterTacticalUsage } from '@shared/contracts/analysis/ICharacterTacticalUsage';
+import type { ICharacterUsage } from '@shared/contracts/analysis/ICharacterUsage';
 import type { ICharacterPickPriority } from '@shared/contracts/analysis/ICharacterPickPriority';
 
 interface IScatterPoint {
@@ -29,27 +29,27 @@ export function useCharacterScatterChart() {
     const characterStore = useCharacterStore();
     const { characterMap } = storeToRefs(characterStore);
 
-    const tacticalUsages = ref<ICharacterTacticalUsage[]>([]);
+    const characterUsages = ref<ICharacterUsage[]>([]);
     const pickPriorities = ref<ICharacterPickPriority[]>([]);
 
     onMounted(async () => {
         const [usages, priorities] = await Promise.all([
-            analysisUseCase.fetchCharacterTacticalUsages(),
-            analysisUseCase.fetchCharacterPickPriority(),
+            analysisUseCase.fetchCharacterUsageSummary(),
+            analysisUseCase.fetchCharacterUsagePickPriority(),
         ]);
-        tacticalUsages.value = usages;
+        characterUsages.value = usages;
         pickPriorities.value = priorities;
     });
 
     const option = computed(() => {
-        if (!tacticalUsages.value.length || !pickPriorities.value.length || !characterMap.value) return null;
+        if (!characterUsages.value.length || !pickPriorities.value.length || !characterMap.value) return null;
 
         // Merge Data
         const points: IScatterPoint[] = [];
         const priorityMap = new Map<string, ICharacterPickPriority>();
         pickPriorities.value.forEach((p) => priorityMap.set(p.characterKey, p));
 
-        tacticalUsages.value.forEach((u) => {
+        characterUsages.value.forEach((u) => {
             const p = priorityMap.get(u.characterKey);
             if (p) {
                 points.push({

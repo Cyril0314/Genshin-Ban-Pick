@@ -23,7 +23,7 @@ export function useCharacterPickPriorityChart() {
     const data = ref<ICharacterPickPriority[] | null>(null);
 
     onMounted(async () => {
-        data.value = await analysisUseCase.fetchCharacterPickPriority();
+        data.value = await analysisUseCase.fetchCharacterUsagePickPriority();
     });
 
     const option = computed(() => {

@@ -3,6 +3,7 @@
 import type { IPlayerStyleProfile } from '@shared/contracts/analysis/IPlayerStyleProfile';
 import type { IMatchTacticalUsageWithCharacter } from '../../types/IMatchTacticalUsageWithCharacter';
 import type { ICharacter } from '@shared/contracts/character/ICharacter';
+import { computeCharacterAttributeDistributions } from '../character/computeCharacterAttributeDistributions';
 
 export function computePlayerStyleProfile(
     memberUsages: IMatchTacticalUsageWithCharacter[],
@@ -30,36 +31,25 @@ export function computePlayerStyleProfile(
     const avgPickRate = totalMetaScore / playerTotalPicks;
     const metaAffinity = maxPickRate > 0 ? (avgPickRate / maxPickRate) * 100 : 0;
 
-    const playerRoleCounts = countBy(memberUsages, 'role');
-    const playerElementCounts = countBy(memberUsages, 'element');
-    const playerWeaponCounts = countBy(memberUsages, 'weapon');
-    const playerModelTypeCounts = countBy(memberUsages, 'modelType');
-    const playerRegionCounts = countBy(memberUsages, 'region');
-    const playerRarityCounts = countBy(memberUsages, 'rarity');
+    const playerDistributions = computeCharacterAttributeDistributions(memberUsages)
+    const globalDistributions = computeCharacterAttributeDistributions(globalUsages)
 
-    const globalRoleCounts = countBy(globalUsages, 'role');
-    const globalElementCounts = countBy(globalUsages, 'element');
-    const globalWeaponCounts = countBy(globalUsages, 'weapon');
-    const globalModelTypeCounts = countBy(globalUsages, 'modelType');
-    const globalRegionCounts = countBy(globalUsages, 'region');
-    const globalRarityCounts = countBy(globalUsages, 'rarity');
-
-    const roleAdjustedBias = computeGlobalAdjustedEntropy(playerRoleCounts, globalRoleCounts);
+    const roleAdjustedBias = computeGlobalAdjustedEntropy(playerDistributions.roleDistribution, globalDistributions.roleDistribution);
     const roleAdjustedDiversity = 100 - roleAdjustedBias
 
-    const elementAdjustedBias = computeGlobalAdjustedEntropy(playerElementCounts, globalElementCounts);
+    const elementAdjustedBias = computeGlobalAdjustedEntropy(playerDistributions.elementDistribution, globalDistributions.elementDistribution);
     const elementAdjustedDiversity = 100 - elementAdjustedBias
 
-    const weaponAdjustedBias = computeGlobalAdjustedEntropy(playerWeaponCounts, globalWeaponCounts);
+    const weaponAdjustedBias = computeGlobalAdjustedEntropy(playerDistributions.weaponDistribution, globalDistributions.weaponDistribution);
     const weaponAdjustedDiversity = 100 - weaponAdjustedBias
 
-    const modelTypeAdjustedBias = computeGlobalAdjustedEntropy(playerModelTypeCounts, globalModelTypeCounts);
+    const modelTypeAdjustedBias = computeGlobalAdjustedEntropy(playerDistributions.modelTypeDistribution, globalDistributions.modelTypeDistribution);
     const modelTypeAdjustedDiversity = 100 - modelTypeAdjustedBias
 
-    const regionAdjustedBias = computeGlobalAdjustedEntropy(playerRegionCounts, globalRegionCounts);
+    const regionAdjustedBias = computeGlobalAdjustedEntropy(playerDistributions.regionDistribution, globalDistributions.regionDistribution);
     const regionAdjustedDiversity = 100 - regionAdjustedBias
 
-    const rarityAdjustedBias = computeGlobalAdjustedEntropy(playerRarityCounts, globalRarityCounts);
+    const rarityAdjustedBias = computeGlobalAdjustedEntropy(playerDistributions.rarityDistribution, globalDistributions.rarityDistribution);
     const rarityAdjustedDiversity = 100 - rarityAdjustedBias
 
     return {
@@ -71,18 +61,7 @@ export function computePlayerStyleProfile(
         modelTypeAdjustedDiversity,
         regionAdjustedDiversity,
         rarityAdjustedDiversity,
-        playerRoleCounts,
-        playerElementCounts,
-        playerWeaponCounts,
-        playerModelTypeCounts,
-        playerRegionCounts,
-        playerRarityCounts,
-        globalRoleCounts,
-        globalElementCounts,
-        globalWeaponCounts,
-        globalModelTypeCounts,
-        globalRegionCounts,
-        globalRarityCounts,
+        characterAttributeDistributions: playerDistributions,
     };
 }
 

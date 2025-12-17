@@ -12,7 +12,7 @@ import type { IMatchTacticalUsageTeamMemberIdentityRefs } from '../types/IMatchT
 import type { IMatchTacticalUsageWithCharacter } from '../types/IMatchTacticalUsageWithCharacter';
 import type { MoveSource, MoveType } from '@shared/contracts/match/value-types';
 import type { CharacterFilterKey } from '@shared/contracts/character/CharacterFilterKey';
-import type { MatchTeamMemberUniqueIdentity } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
+import type { MatchTeamMemberUniqueIdentityKey } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
 
 export default class AnalysisRepository implements IAnalysisRepository {
     constructor(private prisma: PrismaClient) {}
@@ -97,27 +97,28 @@ export default class AnalysisRepository implements IAnalysisRepository {
         }));
     }
 
-    async findMatchTacticalUsageWithCharacterByIdentity(identity: MatchTeamMemberUniqueIdentity): Promise<IMatchTacticalUsageWithCharacter[]> {
+    async findMatchTacticalUsageWithCharacterByIdentityKey(identityKey: MatchTeamMemberUniqueIdentityKey): Promise<IMatchTacticalUsageWithCharacter[]> {
+        console.log('identityKey', identityKey)
         let whereInput: Parameters<typeof this.prisma.matchTacticalUsage.findMany>[0]['where'];
-        switch (identity.type) {
+        switch (identityKey.type) {
             case 'Member':
                 whereInput = {
                     teamMember: {
-                        memberRef: identity.id,
+                        memberRef: identityKey.id,
                     },
                 };
                 break;
             case 'Guest':
                 whereInput = {
                     teamMember: {
-                        guestRef: identity.id,
+                        guestRef: identityKey.id,
                     },
                 };
                 break;
             case 'Name':
                 whereInput = {
                     teamMember: {
-                        name: identity.name,
+                        name: identityKey.name,
                     },
                 };
                 break;

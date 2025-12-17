@@ -1,4 +1,4 @@
-<!-- src/modules/analysis/ui/components/CharacterClustersChart.vue -->
+<!-- src/modules/analysis/ui/components/CharacterClusterChart.vue -->
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
@@ -8,14 +8,14 @@ import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { ScatterChart } from 'echarts/charts';
 import { GridComponent, TooltipComponent, VisualMapComponent, LegendComponent } from 'echarts/components';
-import { useCharacterClustersChart } from '../composables/useCharacterClustersChart';
+import { useCharacterClusterChart } from '../composables/useCharacterClusterChart';
 
 use([CanvasRenderer, ScatterChart, GridComponent, TooltipComponent, VisualMapComponent, LegendComponent]);
 
 const props = defineProps<{}>();
 const emit = defineEmits<{}>();
 
-const { option } = useCharacterClustersChart()
+const { option } = useCharacterClusterChart()
 
 </script>
 

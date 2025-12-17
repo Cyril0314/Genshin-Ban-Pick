@@ -2,17 +2,21 @@
 
 import type { SynergyMode } from '@shared/contracts/analysis/value-types';
 import type AnalysisRepository from '../infrastructure/AnalysisRepository';
-import type { MatchTeamMemberUniqueIdentity } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
+import type { MatchTeamMemberUniqueIdentityKey } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
 
 export default class AnalysisUseCase {
     constructor(private analysisRepository: AnalysisRepository) {}
 
-    async fetchCharacterTacticalUsages() {
-        return await this.analysisRepository.fetchCharacterTacticalUsages();
+    async fetchOverview() {
+        return await this.analysisRepository.fetchOverview();
     }
 
-    async fetchCharacterPickPriority() {
-        return await this.analysisRepository.fetchCharacterPickPriority();
+    async fetchCharacterUsageSummary() {
+        return await this.analysisRepository.fetchCharacterUsageSummary();
+    }
+
+    async fetchCharacterUsagePickPriority() {
+        return await this.analysisRepository.fetchCharacterUsagePickPriority();
     }
 
     async fetchCharacteSynergyMatrix(payload: { mode: SynergyMode }) {
@@ -23,15 +27,19 @@ export default class AnalysisUseCase {
         return await this.analysisRepository.fetchCharacterSynergyGraph();
     }
 
-    async fetchCharacterClusters() {
-        return await this.analysisRepository.fetchCharacterClusters();
+    async fetchCharacterCluster() {
+        return await this.analysisRepository.fetchCharacterCluster();
     }
 
-    async fetchPlayerPreference() {
-        return await this.analysisRepository.fetchPlayerPreference();
+    async fetchPlayerCharacterUsage() {
+        return await this.analysisRepository.fetchPlayerCharacterUsage();
     }
 
-    async fetchPlayerStyleProfile(payload: { identity: MatchTeamMemberUniqueIdentity }) {
-        return await this.analysisRepository.fetchPlayerStyleProfile(payload);
+    async fetchPlayerStyleProfile(identityKey: MatchTeamMemberUniqueIdentityKey) {
+        return await this.analysisRepository.fetchPlayerStyleProfile(identityKey);
+    }
+
+    async fetchGlobalCharacterAttributeDistributions() {
+        return await this.analysisRepository.fetchCharacterAttributeDistributions({ type: 'Global' });
     }
 }

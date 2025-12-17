@@ -1,4 +1,4 @@
-// src/modules/analysis/ui/composables/useCharacterTacticalUsagesChart.ts
+// src/modules/analysis/ui/composables/useCharacterUsagesChart.ts
 
 import { computed, onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
@@ -12,9 +12,9 @@ import { useAnalysisUseCase } from './useAnalysisUseCase';
 import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
 import { elementColors } from '@/modules/shared/ui/constants/elementColors';
 
-import type { ICharacterTacticalUsage } from '@shared/contracts/analysis/ICharacterTacticalUsage';
+import type { ICharacterUsage } from '@shared/contracts/analysis/ICharacterUsage';
 
-export function useCharacterTacticalUsagesChart() {
+export function useCharacterUsagesChart() {
     const { getByKey: getCharacterDisplayName } = useCharacterDisplayName();
     const designTokens = useDesignTokens();
     const { gridStyle, valueAxisStyle, categoryAxisStyle, legendStyle, tooltipStyle, dataZoomStyle } = useEchartTheme();
@@ -22,15 +22,15 @@ export function useCharacterTacticalUsagesChart() {
     const characterStore = useCharacterStore();
     const { characterMap } = storeToRefs(characterStore);
 
-    const data = ref<ICharacterTacticalUsage[] | null>(null);
+    const usages = ref<ICharacterUsage[] | null>(null);
 
     onMounted(async () => {
-        data.value = await analysisUseCase.fetchCharacterTacticalUsages();
+        usages.value = await analysisUseCase.fetchCharacterUsageSummary();
     });
 
     const option = computed(() => {
-        if (!data.value || !characterMap.value) return null;
-        const sorted = [...data.value].sort((a, b) => a.effectiveUsage - b.effectiveUsage);
+        if (!usages.value || !characterMap.value) return null;
+        const sorted = [...usages.value].sort((a, b) => a.effectiveUsage - b.effectiveUsage);
         return {
             tooltip: {
                 ...tooltipStyle('single'),
@@ -153,5 +153,5 @@ export function useCharacterTacticalUsagesChart() {
         };
     });
 
-    return { option, data };
+    return { option };
 }

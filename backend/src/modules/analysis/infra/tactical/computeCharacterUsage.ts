@@ -7,9 +7,9 @@ import type { IMatchTimeMinimal } from '../../types/IMatchTimeMinimal';
 import type { IMatchTacticalUsageExpandedRefs } from '../../types/IMatchTacticalUsageExpandedRefs';
 import type { IMatchMoveWeightCalcCore } from '../../types/IMatchMoveWeightCalcCore';
 import type { IWeightContext } from '@shared/contracts/analysis/IWeightContext';
-import type { ICharacterTacticalUsage } from '@shared/contracts/analysis/ICharacterTacticalUsage';
+import type { ICharacterUsage } from '@shared/contracts/analysis/ICharacterUsage';
 
-export function computeCharacterTacticalUsage(matches: IMatchTimeMinimal[], matchMoves: IMatchMoveWeightCalcCore[], matchTacticalUsages: IMatchTacticalUsageExpandedRefs[]): ICharacterTacticalUsage[] {
+export function computeCharacterUsage(matches: IMatchTimeMinimal[], matchMoves: IMatchMoveWeightCalcCore[], matchTacticalUsages: IMatchTacticalUsageExpandedRefs[]): ICharacterUsage[] {
     const matchCount = matches.length;
 
     const usedSet = new Set(matchTacticalUsages.map((u) => `${u.matchId}:${u.characterKey}`));

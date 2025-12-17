@@ -45,7 +45,7 @@ export function createAnalysisModule(prisma: PrismaClient, characterRepository: 
     const controller = new AnalysisController(service);
     const router = createAnalysesRouter(controller);
 
-    service.fetchGlobalStatistic();
+    // service.fetchGlobalStatistic();
 
     return { router, controller, service };
 }

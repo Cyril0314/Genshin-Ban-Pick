@@ -37,7 +37,7 @@ export default class CharacterCommunityScanEngine {
         this.rng2 = createSeededRandom2(seed);
     }
 
-    async computeClusters(graph: UndirectedGraph, synergy: CharacterSynergyMatrix, characterFeatureMatrix: FeatureMatrix<string, string>) {
+    async computeCluster(graph: UndirectedGraph, synergy: CharacterSynergyMatrix, characterFeatureMatrix: FeatureMatrix<string, string>) {
         const k = await this.findBestClusterCount(graph);
         const synergySignatureFeatureMatrix = this.featureMatrixBuilder.buildSynergySignatureFeatureMatrix(synergy);
         // const featureMatrix = this.mergeFeatureMatrices(synergySignatureFeatureMatrix, characterFeatureMatrix);

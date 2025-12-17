@@ -15,16 +15,16 @@ export function usePlayerCharacterChart() {
     const { gridStyle, tooltipStyle, dataZoomStyle } = useEchartTheme();
     const analysisUseCase = useAnalysisUseCase();
 
-    const preference = ref<KeyIndexedMatrix<string, string> | null>(null);
+    const matrix = ref<KeyIndexedMatrix<string, string> | null>(null);
 
     onMounted(async () => {
-        preference.value = await analysisUseCase.fetchPlayerPreference();
+        matrix.value = await analysisUseCase.fetchPlayerCharacterUsage();
     });
 
     const option = computed(() => {
-        if (!preference.value) return null;
+        if (!matrix.value) return null;
 
-        const top = buildHeatmapData(preference.value);
+        const top = buildHeatmapData(matrix.value);
 
         return {
             tooltip: {

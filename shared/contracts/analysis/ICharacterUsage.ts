@@ -1,6 +1,6 @@
 import type { IWeightContext } from "./IWeightContext";
 
-export interface ICharacterTacticalUsage {
+export interface ICharacterUsage {
     characterKey: string;
     tacticalUsage: number;
     globalUsage: number;

@@ -16,16 +16,19 @@ const logger = createLogger('ANALYSIS');
 
 export default function createAnalysesRouter(analysisController: AnalysisController) {
     const router = express.Router();
-    router.get('/character/tactical-usages', asyncHandler(analysisController.fetchCharacterTacticalUsages));
-    router.get('/character/pick-priority', asyncHandler(analysisController.fetchCharacterPickPriority));
+    router.get('/overview',  asyncHandler(analysisController.fetchOverview))
+    
+    router.get('/character-usages/summary', asyncHandler(analysisController.fetchCharacterUsageSummary));
+    router.get('/character-usages/pick-priority', asyncHandler(analysisController.fetchCharacterUsagePickPriority));
 
-    router.get('/character/synergy-matrix', asyncHandler(analysisController.fetchCharacterSynergyMatrix));
-    router.get('/character/synergy-graph', asyncHandler(analysisController.fetchCharacterSynergyGraph));
-    router.get('/character/clusters', asyncHandler(analysisController.fetchCharacterClusters));
-    router.get('/player/preference', asyncHandler(analysisController.fetchPlayerPreference));
-    router.get('/player/style-profile', asyncHandler(analysisController.fetchPlayerStyleProfile));
+    router.get('/character-synergy/matrix', asyncHandler(analysisController.fetchCharacterSynergyMatrix));
+    router.get('/character-synergy/graph', asyncHandler(analysisController.fetchCharacterSynergyGraph));
+    router.get('/character-cluster', asyncHandler(analysisController.fetchCharacterCluster));
 
-    router.get('/global/statistic', asyncHandler(analysisController.fetchGlobalStatistic))
+    router.get('/player-character-usages', asyncHandler(analysisController.fetchPlayerCharacterUsage));
+    router.get('/player-style/profile', asyncHandler(analysisController.fetchPlayerStyleProfile));
+
+    router.get('/character-attribute/distributions', asyncHandler(analysisController.fetchCharacterAttributeDistributions))
 
     return router;
 }

@@ -4,24 +4,29 @@ import CharacterSynergyCalculator from '../infra/synergy/CharacterSynergyCalcula
 import CharacterCommunityScanEngine from '../infra/clustering/CharacterCommunityScanEngine';
 import CharacterSynergyGraphBuilder from '../infra/graph/CharacterSynergyGraphBuilder';
 import CharacterFeatureMatrixBuilder from '../infra/character/CharacterFeatureMatrixBuilder';
-import { computeCharacterTacticalUsage } from '../infra/tactical/computeCharacterTacticalUsage';
+import { computeCharacterUsage } from '../infra/tactical/computeCharacterUsage';
 import { computeCharacterPickPriority } from '../infra/tactical/computeCharacterPickPriority';
 import { computePlayerStyleProfile } from '../infra/statistics/computePlayerStyleProfile';
+import { computeCharacterAttributeDistributions } from '../infra/character/computeCharacterAttributeDistributions';
 import { createLogger } from '../../../utils/logger';
 
 import type { ICharacterRepository } from '../../character/domain/ICharacterRepository';
 import type { IMatchRepository } from '../../match/domain/IMatchRepository';
 import type { IAnalysisRepository } from '../domain/IAnalysisRepository';
-import type { ICharacterClusters } from '@shared/contracts/analysis/ICharacterClusters';
+import type { ICharacterCluster } from '@shared/contracts/analysis/ICharacterCluster';
 import type { IArchetypePoint } from '@shared/contracts/analysis/IArchetypePoint';
 import type { CharacterSynergyMatrix } from '@shared/contracts/analysis/CharacterSynergyMatrix';
-import type { ICharacterTacticalUsage } from '@shared/contracts/analysis/ICharacterTacticalUsage';
+import type { ICharacterUsage } from '@shared/contracts/analysis/ICharacterUsage';
 import type { IPlayerStyleProfile } from '@shared/contracts/analysis/IPlayerStyleProfile';
 import type { SynergyMode } from '@shared/contracts/analysis/value-types';
 import type { ICharacterGraphLink } from '@shared/contracts/analysis/character/ICharacterGraphLink';
 import type { KeyIndexedMatrix } from '@shared/contracts/analysis/KeyIndexedMatrix';
-import type { MatchTeamMemberUniqueIdentity } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
+import type { MatchTeamMemberUniqueIdentityKey } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
 import type { ICharacterPickPriority } from '@shared/contracts/analysis/ICharacterPickPriority';
+import type { ICharacterAttributeDistributions } from '@shared/contracts/analysis/character/ICharacterAttributeDistributions';
+import type { IMatchTacticalUsageWithCharacter } from '../types/IMatchTacticalUsageWithCharacter';
+import type { IAnalysisOverview } from '@shared/contracts/analysis/IAnalysisOverview';
+
 
 const logger = createLogger('ANALYSIS');
 
@@ -36,14 +41,18 @@ export default class AnalysisService {
         private matchRepository: IMatchRepository,
     ) {}
 
-    async fetchCharacterTacticalUsages(): Promise<ICharacterTacticalUsage[]> {
+    async fetchOverview(): Promise<IAnalysisOverview> {
+        const matches = await this.matchRepository.findAllMatches()
+    }
+
+    async fetchCharacterUsageSummary(): Promise<ICharacterUsage[]> {
         const matches = await this.analysisRepository.findAllMatchMinimalTimestamps();
         const matcheMoves = await this.analysisRepository.findAllMatchMoveCoreForWeightCalc();
         const matchTacticalUsages = await this.analysisRepository.findAllMatchTacticalUsageForAnalysis();
-        return computeCharacterTacticalUsage(matches, matcheMoves, matchTacticalUsages);
+        return computeCharacterUsage(matches, matcheMoves, matchTacticalUsages);
     }
 
-    async fetchCharacterPickPriority(): Promise<ICharacterPickPriority[]> {
+    async fetchCharacterUsagePickPriority(): Promise<ICharacterPickPriority[]> {
         const matcheMoves = await this.analysisRepository.findAllMatchMoveCoreForWeightCalc();
         return computeCharacterPickPriority(matcheMoves);
     }
@@ -90,7 +99,7 @@ export default class AnalysisService {
         // return { nodes, links };
     }
 
-    async fetchCharacterClusters(): Promise<ICharacterClusters> {
+    async fetchCharacterCluster(): Promise<ICharacterCluster> {
         const characters = await this.characterRepository.findAll();
         const characterMap = Object.fromEntries(characters.map((character) => [character.key, character]));
 
@@ -105,12 +114,10 @@ export default class AnalysisService {
             pickCounts[characterKey] = (pickCounts[characterKey] || 0) + 1;
         }
 
-        // console.log('pickCounts', pickCounts)
-
         const graph = await this.characterSynergyGraphBuilder.build(synergyMatrix, characterMap, pickCounts);
 
         const featureMatrix = this.characterFeatureMatrixBuilder.build(characters);
-        const { archetypes, projected, clusterMedoids, bridgeScores } = await this.characterCommunityScanEngine.computeClusters(
+        const { archetypes, projected, clusterMedoids, bridgeScores } = await this.characterCommunityScanEngine.computeCluster(
             graph,
             synergyMatrix,
             featureMatrix,
@@ -130,7 +137,7 @@ export default class AnalysisService {
         };
     }
 
-    async fetchPlayerPreference(): Promise<KeyIndexedMatrix<string, string>> {
+    async fetchPlayerCharacterUsage(): Promise<KeyIndexedMatrix<string, string>> {
         const matchTacticalUsages = await this.analysisRepository.findAllMatchTacticalUsageIdentities();
 
         const matrix: KeyIndexedMatrix<string, string> = {};
@@ -148,16 +155,28 @@ export default class AnalysisService {
         return matrix;
     }
 
-    async fetchPlayerStyleProfile(identity: MatchTeamMemberUniqueIdentity): Promise<IPlayerStyleProfile> {
-        const memberUsages = await this.analysisRepository.findMatchTacticalUsageWithCharacterByIdentity(identity);
+    async fetchPlayerStyleProfile(identityKey: MatchTeamMemberUniqueIdentityKey): Promise<IPlayerStyleProfile> {
+        const memberUsages = await this.analysisRepository.findMatchTacticalUsageWithCharacterByIdentityKey(identityKey);
         const allUsages = await this.analysisRepository.findAllMatchTacticalUsageWithCharacter();
-        // logger.debug("memberMatchMoves", memberUsages)
         return computePlayerStyleProfile(memberUsages, allUsages);
     }
 
-    async fetchGlobalStatistic(): Promise<IGlobalStatistic> {
-        const matches = await this.matchRepository.findAllMatches()
-        console.log('macthes', JSON.stringify(matches, null, 2))
-        return {}
+    async fetchCharacterAttributeDistributions(scope: { type: 'Player'; identityKey: MatchTeamMemberUniqueIdentityKey } | { type: 'Global' }): Promise<ICharacterAttributeDistributions> {
+        let usages: IMatchTacticalUsageWithCharacter[]
+        switch (scope.type) {
+            case 'Global':
+                usages = await this.analysisRepository.findAllMatchTacticalUsageWithCharacter();
+                break
+            case 'Player':
+                usages = await this.analysisRepository.findMatchTacticalUsageWithCharacterByIdentityKey(scope.identityKey);
+                break
+        }
+        return computeCharacterAttributeDistributions(usages)
     }
+
+    // async fetchCharacterAttributeDistributions(): Promise<IGlobalStatistic> {
+    //     const matches = await this.matchRepository.findAllMatches()
+    //     console.log('macthes', JSON.stringify(matches, null, 2))
+    //     return {}
+    // }
 }
