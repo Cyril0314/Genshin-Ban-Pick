@@ -5,6 +5,7 @@ import { restoreFiltersFromJson } from '../../match/domain/restoreFilterFromJson
 import { mapCharacter } from '../../character';
 
 import type { IAnalysisRepository } from '../domain/IAnalysisRepository';
+import type { IMatchStatisticsOverview } from '../types/IMatchStatisticsOverview';
 import type { IMatchTimeMinimal } from '../types/IMatchTimeMinimal';
 import type { IMatchMoveWeightCalcCore } from '../types/IMatchMoveWeightCalcCore';
 import type { IMatchTacticalUsageExpandedRefs } from '../types/IMatchTacticalUsageExpandedRefs';
@@ -16,6 +17,53 @@ import type { MatchTeamMemberUniqueIdentityKey } from '@shared/contracts/match/M
 
 export default class AnalysisRepository implements IAnalysisRepository {
     constructor(private prisma: PrismaClient) {}
+
+    async findMatchStatisticsOverview(): Promise<IMatchStatisticsOverview> {
+        const [totalMatches, totalMoves, totalTacticalUsages, dateRange, uniqueCharacters, memberCount, guestCount, onlyNameCount] =
+            await Promise.all([
+                this.prisma.match.count(),
+                this.prisma.matchMove.count(),
+                this.prisma.matchTacticalUsage.count(),
+                this.prisma.match.aggregate({
+                    _min: { createdAt: true },
+                    _max: { createdAt: true },
+                }),
+                this.prisma.matchTacticalUsage.findMany({
+                    distinct: ['characterKey'],
+                    select: { characterKey: true },
+                }),
+                this.prisma.matchTeamMember.findMany({
+                    where: { memberRef: { not: null } },
+                    distinct: ['memberRef'],
+                    select: { memberRef: true },
+                }),
+                this.prisma.matchTeamMember.findMany({
+                    where: { guestRef: { not: null } },
+                    distinct: ['guestRef'],
+                    select: { guestRef: true },
+                }),
+                this.prisma.matchTeamMember.findMany({
+                    where: {
+                        memberRef: null,
+                        guestRef: null,
+                    },
+                    distinct: ['name'],
+                    select: { name: true },
+                }),
+            ]);
+        const uniquePlayers = memberCount.length + guestCount.length + onlyNameCount.length;
+        return {
+            totalMatches,
+            totalMoves,
+            totalTacticalUsages,
+            uniqueCharacters: uniqueCharacters.length,
+            uniquePlayers,
+            dateRange: {
+                from: dateRange._min.createdAt!,
+                to: dateRange._max.createdAt!,
+            },
+        };
+    }
 
     async findAllMatchMinimalTimestamps(): Promise<IMatchTimeMinimal[]> {
         return await this.prisma.match.findMany({
@@ -97,8 +145,10 @@ export default class AnalysisRepository implements IAnalysisRepository {
         }));
     }
 
-    async findMatchTacticalUsageWithCharacterByIdentityKey(identityKey: MatchTeamMemberUniqueIdentityKey): Promise<IMatchTacticalUsageWithCharacter[]> {
-        console.log('identityKey', identityKey)
+    async findMatchTacticalUsageWithCharacterByIdentityKey(
+        identityKey: MatchTeamMemberUniqueIdentityKey,
+    ): Promise<IMatchTacticalUsageWithCharacter[]> {
+        console.log('identityKey', identityKey);
         let whereInput: Parameters<typeof this.prisma.matchTacticalUsage.findMany>[0]['where'];
         switch (identityKey.type) {
             case 'Member':

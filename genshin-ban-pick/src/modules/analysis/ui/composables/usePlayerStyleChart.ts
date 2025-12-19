@@ -63,6 +63,8 @@ export function usePlayerStyleChart() {
     const characterAttributeDistributions = ref<ICharacterAttributeDistributions | null>(null);
 
     onMounted(async () => {
+        const overview = await analysisUseCase.fetchOverview();
+        console.log('overview', overview)
         players.value = await matchUseCase.fetchMatchTeamMembers();
 
         const self = players.value.find((player) => player.type === identity.value?.type && player.id === identity.value?.user.id);

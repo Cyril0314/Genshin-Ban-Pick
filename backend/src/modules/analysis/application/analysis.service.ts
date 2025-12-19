@@ -42,7 +42,18 @@ export default class AnalysisService {
     ) {}
 
     async fetchOverview(): Promise<IAnalysisOverview> {
-        const matches = await this.matchRepository.findAllMatches()
+        const overview = await this.analysisRepository.findMatchStatisticsOverview()
+        return {
+            volume: {
+                matchCount: overview.totalMatches,
+                playerCount: overview.uniquePlayers,
+                characterCount: overview.uniqueCharacters,
+            },
+            activity: {
+                earliestMatchAt: overview.dateRange.from.toISOString(),
+                latestMatchAt: overview.dateRange.to.toISOString()
+            }
+        }
     }
 
     async fetchCharacterUsageSummary(): Promise<ICharacterUsage[]> {

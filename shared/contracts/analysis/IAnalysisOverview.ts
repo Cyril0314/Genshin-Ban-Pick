@@ -7,10 +7,10 @@ interface OverviewVolume {
   matchCount: number
   playerCount: number
   characterCount: number
-  tacticalUsageCount: number
 }
 
 interface OverviewActivity {
+  earliestMatchAt: string
   latestMatchAt: string
 }
 
