@@ -7,9 +7,9 @@ import type { IMatchTimeMinimal } from '../../types/IMatchTimeMinimal';
 import type { IMatchTacticalUsageExpandedRefs } from '../../types/IMatchTacticalUsageExpandedRefs';
 import type { IMatchMoveWeightCalcCore } from '../../types/IMatchMoveWeightCalcCore';
 import type { IWeightContext } from '@shared/contracts/analysis/IWeightContext';
-import type { ICharacterTacticalUsage } from '@shared/contracts/analysis/ICharacterTacticalUsage';
+import type { ICharacterUsage } from '@shared/contracts/analysis/ICharacterUsage';
 
-export function computeCharacterTacticalUsage(matches: IMatchTimeMinimal[], matchMoves: IMatchMoveWeightCalcCore[], matchTacticalUsages: IMatchTacticalUsageExpandedRefs[]): ICharacterTacticalUsage[] {
+export function computeCharacterUsage(matches: IMatchTimeMinimal[], matchMoves: IMatchMoveWeightCalcCore[], matchTacticalUsages: IMatchTacticalUsageExpandedRefs[]): ICharacterUsage[] {
     const matchCount = matches.length;
 
     const usedSet = new Set(matchTacticalUsages.map((u) => `${u.matchId}:${u.characterKey}`));
@@ -30,7 +30,7 @@ export function computeCharacterTacticalUsage(matches: IMatchTimeMinimal[], matc
         const wasUsed = usedSet.has(`${matchId}:${key}`);
         const usedBoth = (usageCountByMatch.get(`${matchId}:${key}`) ?? 0) >= 2;
 
-        releaseMap.set(key, matchMove.characterReleaseDate ?? null);
+        releaseMap.set(key, matchMove.characterReleaseAt ?? null);
 
         const ctx = aggregateMoveWeightContext({
             type: matchMove.type,
@@ -43,20 +43,25 @@ export function computeCharacterTacticalUsage(matches: IMatchTimeMinimal[], matc
 
         weights.set(key, (weights.get(key) ?? 0) + w);
 
-        const prev = contextMap.get(key) ?? JSON.parse(JSON.stringify(ctx));
-        mergeContext(prev, ctx);
-        contextMap.set(key, prev);
+        const prev = contextMap.get(key);
+
+        if (!prev) {
+            contextMap.set(key, JSON.parse(JSON.stringify(ctx)));
+        } else {
+            mergeContext(prev, ctx);
+            contextMap.set(key, prev);
+        }
     }
 
     const sortedMatches = matches.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
     const effectiveMatchCount = new Map<string, number>();
 
-    for (const [key, releaseDate] of releaseMap.entries()) {
-        if (!releaseDate) {
+    for (const [key, releaseAt] of releaseMap.entries()) {
+        if (!releaseAt) {
             effectiveMatchCount.set(key, matchCount);
             continue;
         }
-        const idx = sortedMatches.findIndex((m) => m.createdAt >= releaseDate);
+        const idx = sortedMatches.findIndex((m) => m.createdAt >= releaseAt);
         effectiveMatchCount.set(key, idx === -1 ? matchCount : matchCount - idx);
     }
 

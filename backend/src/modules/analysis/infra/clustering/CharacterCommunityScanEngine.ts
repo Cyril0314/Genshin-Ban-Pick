@@ -31,13 +31,13 @@ export default class CharacterCommunityScanEngine {
         private dimensionProjector: DimensionProjector,
         private featureMatrixBuilder: FeatureMatrixBuilder,
         private matrixNormalizer: MatrixNormalizer,
-        seed: number = 2025,
+        seed: number = 19940519,
     ) {
         this.rng = createSeededRandom(seed);
         this.rng2 = createSeededRandom2(seed);
     }
 
-    async computeClusters(graph: UndirectedGraph, synergy: CharacterSynergyMatrix, characterFeatureMatrix: FeatureMatrix<string, string>) {
+    async computeCluster(graph: UndirectedGraph, synergy: CharacterSynergyMatrix, characterFeatureMatrix: FeatureMatrix<string, string>) {
         const k = await this.findBestClusterCount(graph);
         const synergySignatureFeatureMatrix = this.featureMatrixBuilder.buildSynergySignatureFeatureMatrix(synergy);
         // const featureMatrix = this.mergeFeatureMatrices(synergySignatureFeatureMatrix, characterFeatureMatrix);
@@ -51,9 +51,8 @@ export default class CharacterCommunityScanEngine {
         const clusterIds = this.clusterCharacters(data, k);
 
         // const projected = this.umapProjector.project(data, 2, this.rng2);
-        const projected= this.dimensionProjector.project(data)
+        const projected = this.dimensionProjector.project(data)
         
-
         const archetypes = rowKeys.map((c, i) => ({
             characterKey: c,
             clusterId: clusterIds[i],

@@ -21,6 +21,40 @@ const logger = createLogger('MATCH:Repository');
 export default class MatchRepository implements IMatchRepository {
     constructor(private prisma: PrismaClient) {}
 
+    async findAllMatches(): Promise<IMatch[]> {
+        const matchQuery = Prisma.validator<Prisma.MatchFindManyArgs>()({
+            include: {
+                teams: {
+                    include: {
+                        teamMembers: {
+                            include: {
+                                tacticalUsages: {
+                                    include: {
+                                        character: true,
+                                    },
+                                },
+                                member: true,
+                                guest: true,
+                            },
+                        },
+                    },
+                },
+                moves: {
+                    include: {
+                        randomMoveContext: true,
+                        character: true,
+                    },
+                },
+            },
+        });
+
+        type Entity = Prisma.MatchGetPayload<typeof matchQuery>;
+
+        const entities: Entity[] = await this.prisma.match.findMany(matchQuery);
+        const matches = entities.map(mapMatchFromPrisma);
+        return matches;
+    }
+
     async create(snapshot: IMatchSnapshot, dryRun: boolean): Promise<IMatch> {
         const { roomSetting } = snapshot;
         try {

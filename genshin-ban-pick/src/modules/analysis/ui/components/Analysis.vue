@@ -3,10 +3,13 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-import CharacterClustersChart from './CharacterClustersChart.vue';
+import CharacterClusterChart from './CharacterClusterChart.vue';
 import CharacterSynergyChart from './CharacterSynergyChart.vue';
-import CharacterTacticalUsagesChart from './CharacterTacticalUsagesChart.vue';
-import CharacterTacticalUsageCompositionChart from './CharacterTacticalUsageCompositionChart.vue';
+import CharacterUsagesChart from './CharacterUsagesChart.vue';
+import CharacterUsagesCompositionChart from './CharacterUsagesCompositionChart.vue';
+import CharacterPickPriorityChart from './CharacterPickPriorityChart.vue';
+import CharacterScatterChart from './CharacterScatterChart.vue';
+
 import PlayerCharacterChart from './PlayerCharacterChart.vue';
 import PlayerStyleRadarChart from './PlayerStyleRadarChart.vue';
 import CharacterSynergyGraphChart from './CharacterSynergyGraphChart.vue';
@@ -16,15 +19,15 @@ const props = defineProps<{}>();
 const emit = defineEmits<{}>();
 
 const tabs = [
-    { name: '玩家風格雷達', component: PlayerStyleRadarChart },
-    { name: '角色使用權重', component: CharacterTacticalUsagesChart },
-    { name: '角色使用構成', component: CharacterTacticalUsageCompositionChart },
-    { name: '角色共現熱圖', component: CharacterSynergyChart },
+    { name: '玩家統計數據', component: PlayerStyleRadarChart },
+    { name: '角色使用權重', component: CharacterUsagesChart },
+    { name: '搶角優先級', component: CharacterPickPriorityChart },
+    { name: '角色定位象限', component: CharacterScatterChart },
+    { name: '角色使用構成', component: CharacterUsagesCompositionChart },
+    // { name: '角色共現熱圖', component: CharacterSynergyChart },
     // { name: '角色圖', component: CharacterSynergyGraphChart },
-    { name: '角色群聚圖', component: CharacterClustersChart },
-
+    { name: '角色群聚圖', component: CharacterClusterChart },
     { name: '玩家偏好角色', component: PlayerCharacterChart },
-    
 ];
 
 const currentTabIndex = ref<number>(0);

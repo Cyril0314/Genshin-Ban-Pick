@@ -21,8 +21,9 @@ import type { IPlayerStyleProfile } from '@shared/contracts/analysis/IPlayerStyl
 import type { CharacterFilterKey } from '@shared/contracts/character/CharacterFilterKey';
 import type { MatchTeamMemberUniqueIdentity } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
 import type { EnumOrderValue } from '@/modules/shared/ui/composables/useCharacterSorter';
+import type { ICharacterAttributeDistributions } from '@shared/contracts/analysis/character/ICharacterAttributeDistributions';
 
-type PlayerSelectOption = { type: 'Player'; identity: MatchTeamMemberUniqueIdentity } | { type: 'Global' };
+type Scope = { type: 'Player'; identity: MatchTeamMemberUniqueIdentity } | { type: 'Global' };
 
 export function usePlayerStyleChart() {
     const { tooltipStyle } = useEchartTheme();
@@ -35,75 +36,70 @@ export function usePlayerStyleChart() {
 
     const players = ref<MatchTeamMemberUniqueIdentity[]>([]);
 
-    const playerSelectOptions = computed<PlayerSelectOption[]>(() => {
-        const global: PlayerSelectOption = { type: 'Global' };
+    const scopes = computed<Scope[]>(() => {
+        const globalScope: Scope = { type: 'Global' };
 
-        const playersOptions: PlayerSelectOption[] = players.value.map((p) => ({
+        const playerScopes: Scope[] = players.value.map((p) => ({
             type: 'Player',
             identity: p,
         }));
 
-        return [global, ...playersOptions];
+        return [globalScope, ...playerScopes];
     });
 
-    const globalOption = computed<PlayerSelectOption>(() => ({
-        type: 'Global',
-    }));
+    const selectedScopeKey = ref<string | null>(null);
 
-    const playerOptions = computed<PlayerSelectOption[]>(() =>
-        players.value.map((p) => ({
-            type: 'Player',
-            identity: p,
-        })),
-    );
-
-    const selectedOptionKey = ref<string | null>(null);
-
-    const selectedOption = computed<PlayerSelectOption | null>({
+    const selectedScope = computed<Scope | null>({
         get() {
-            if (!selectedOptionKey.value) return null;
-            return playerSelectOptions.value.find((option) => getOptionKey(option) === selectedOptionKey.value) ?? null;
+            if (!selectedScopeKey.value) return null;
+            return scopes.value.find((scope) => getScopeKey(scope) === selectedScopeKey.value) ?? null;
         },
-        set(option) {
-            selectedOptionKey.value = option ? getOptionKey(option) : null;
+        set(scope) {
+            selectedScopeKey.value = scope ? getScopeKey(scope) : null;
         },
     });
+
     const playerStyle = ref<IPlayerStyleProfile | null>(null);
+    const characterAttributeDistributions = ref<ICharacterAttributeDistributions | null>(null);
 
     onMounted(async () => {
+        const overview = await analysisUseCase.fetchOverview();
+        console.log('overview', overview)
         players.value = await matchUseCase.fetchMatchTeamMembers();
 
         const self = players.value.find((player) => player.type === identity.value?.type && player.id === identity.value?.user.id);
         if (self) {
-            selectedOption.value = { type: 'Player', identity: self };
+            selectedScope.value = { type: 'Player', identity: self };
+            playerStyle.value = await analysisUseCase.fetchPlayerStyleProfile(selectedScope.value.identity);
+            characterAttributeDistributions.value = playerStyle.value?.characterAttributeDistributions ?? null;
         } else {
-            selectedOption.value = { type: 'Player', identity: players.value[0] };
-        }
-
-        if (selectedOption.value.type === 'Player') {
-            playerStyle.value = await analysisUseCase.fetchPlayerStyleProfile({ identity: selectedOption.value.identity });
+            selectedScope.value = { type: 'Global' };
+            characterAttributeDistributions.value = await analysisUseCase.fetchGlobalCharacterAttributeDistributions();
         }
     });
 
-    watch(selectedOption, async () => {
-        if (!selectedOption.value) return;
-        if (selectedOption.value.type === 'Player') {
-            playerStyle.value = await analysisUseCase.fetchPlayerStyleProfile({ identity: selectedOption.value.identity });
+    watch(selectedScope, async () => {
+        if (!selectedScope.value) return;
+        if (selectedScope.value.type === 'Player') {
+            playerStyle.value = await analysisUseCase.fetchPlayerStyleProfile(selectedScope.value.identity);
+            characterAttributeDistributions.value = playerStyle.value?.characterAttributeDistributions ?? null;
+        } else {
+            characterAttributeDistributions.value = await analysisUseCase.fetchGlobalCharacterAttributeDistributions();
         }
     });
 
-    function getOptionKey(option: PlayerSelectOption): string {
-        switch (option.type) {
+    function getScopeKey(scope: Scope): string {
+        switch (scope.type) {
             case 'Global':
                 return 'global';
             case 'Player':
-                switch (option.identity.type) {
+                switch (scope.identity.type) {
                     case 'Member':
-                        return `member:${option.identity.id}`;
+                        return `member:${scope.identity.id}`;
                     case 'Guest':
-                        return `guest:${option.identity.id}`;
+                        return `guest:${scope.identity.id}`;
                     case 'Name':
-                        return `name:${option.identity.name}`;
+                        return `name:${scope.identity.name}`;
                 }
         }
     }
@@ -131,165 +127,195 @@ export function usePlayerStyleChart() {
     }
 
     const option = computed(() => {
-        if (!playerStyle.value || !selectedOption.value) return null;
+        if (!characterAttributeDistributions.value || !selectedScope.value) return null;
 
-        const stats = playerStyle.value;
+        const scopeType = selectedScope.value.type;
+        const isGlobal = scopeType === 'Global';
+        const elementDistribution = characterAttributeDistributions.value.elementDistribution;
+        const roleDistribution = characterAttributeDistributions.value.roleDistribution;
+        const weaponDistribution = characterAttributeDistributions.value.weaponDistribution;
+        const regionDistribution = characterAttributeDistributions.value.regionDistribution;
+        const rarityDistribution = characterAttributeDistributions.value.rarityDistribution;
+        const modelTypeDistribution = characterAttributeDistributions.value.modelTypeDistribution;
 
-        const optionType = selectedOption.value.type;
-        const isGlobal = optionType === 'Global';
-        const elementCounts = isGlobal ? stats.globalElementCounts : stats.playerElementCounts;
-        const roleCounts = isGlobal ? stats.globalRoleCounts : stats.playerRoleCounts;
-        const weaponCounts = isGlobal ? stats.globalWeaponCounts : stats.playerWeaponCounts;
-        const regionCounts = isGlobal ? stats.globalRegionCounts : stats.playerRegionCounts;
-        const rarityCounts = isGlobal ? stats.globalRarityCounts : stats.playerRarityCounts;
-        const modelTypeCounts = isGlobal ? stats.globalModelTypeCounts : stats.playerModelTypeCounts;
+        return isGlobal
+            ? {
+                  tooltip: {
+                      ...tooltipStyle('single'),
+                  },
+                  radar: null,
+                  series: [
+                      // --- Pie 1: 元素 ---
+                      {
+                          type: 'pie',
+                          radius: ['20%', '30%'],
+                          center: ['60%', '15%'],
+                          data: toPieSorted('element', elementDistribution, elementTranslator),
+                          label: { color: designTokens.colorOnSurface.value },
+                      },
 
-        return {
-            tooltip: {
-                ...tooltipStyle('single'),
-                // formatter: (params: CallbackDataParams) => {
-                //     const values = Array.isArray(params.value) ? params.value : [];
+                      // --- Pie 2: 武器 ---
+                      {
+                          type: 'pie',
+                          radius: ['20%', '30%'],
+                          center: ['85%', '15%'],
+                          data: toPieSorted('weapon', weaponDistribution, weaponTranslator),
+                          label: { color: designTokens.colorOnSurface.value },
+                      },
 
-                //     const labels = [
-                //         '冷門角 (Versatility)',
-                //         'Meta (Meta Affinity)',
-                //         '定位多樣性 (Role Diversity)',
-                //         '元素多樣性 (Element Diversity)',
-                //         '武器多樣性 (Weapon Diversity)',
-                //         '體型多樣性 (Model Type Diversity)',
-                //     ];
+                      // --- Pie 3: 體型 ---
+                      {
+                          type: 'pie',
+                          radius: ['20%', '30%'],
+                          center: ['60%', '50%'],
+                          data: toPieSorted('modelType', modelTypeDistribution, modelTypeTranslator),
+                          label: { color: designTokens.colorOnSurface.value },
+                      },
 
-                //     return values
-                //         .map((v, i) => {
-                //             if (typeof v === 'number') {
-                //                 return `${labels[i]}：${v.toFixed(2)}%`;
-                //             } else {
-                //                 return null
-                //             }
-                //         })
-                //         .join('<br/>');
-                // },
-            },
-            ...(isGlobal
-                ? {}
-                : {
-                      radar: {
-                          indicator: [
-                              { name: '角色多樣性', max: 100 },
-                              { name: 'Meta', max: 100 },
-                              { name: '元素多樣性', max: 100 },
-                              { name: '定位多樣性', max: 100 },
-                              { name: '武器多樣性', max: 100 },
-                              { name: '體型多樣性', max: 100 },
-                              { name: '地區多樣性', max: 100 },
-                              { name: '稀有度多樣性', max: 100 },
-                          ],
-                          center: ['25%', '40%'],
-                          radius: '40%',
-                          splitNumber: 4,
-                          axisName: {
-                              color: designTokens.colorOnSurface.value,
-                          },
-                          splitLine: {
-                              lineStyle: {
-                                  color: designTokens.colorOnSurfaceVariant.value,
-                              },
-                          },
-                          splitArea: { show: false },
-                          axisLine: {
-                              lineStyle: {
-                                  color: designTokens.colorOnSurfaceVariant.value,
-                              },
+                      // --- Pie 4: 定位 ---
+                      {
+                          type: 'pie',
+                          radius: ['20%', '30%'],
+                          center: ['85%', '50%'],
+                          data: toPieSorted('role', roleDistribution, roleTranslator),
+                          label: { color: designTokens.colorOnSurface.value },
+                      },
+
+                      // --- Pie 5: 國家 ---
+                      {
+                          type: 'pie',
+                          radius: ['20%', '30%'],
+                          center: ['60%', '85%'],
+                          data: toPieSorted('region', regionDistribution, regionTranslator),
+                          label: { color: designTokens.colorOnSurface.value },
+                      },
+
+                      // --- Pie 5: 稀有度 ---
+                      {
+                          type: 'pie',
+                          radius: ['20%', '30%'],
+                          center: ['85%', '85%'],
+                          data: toPieSorted('rarity', rarityDistribution, rarityTranslator),
+                          label: { color: designTokens.colorOnSurface.value },
+                      },
+                  ],
+              }
+            : {
+                  tooltip: {
+                      ...tooltipStyle('single'),
+                  },
+                  radar: {
+                      indicator: [
+                          { name: '角色多樣性', max: 100 },
+                          { name: 'Meta', max: 100 },
+                          { name: '元素多樣性', max: 100 },
+                          { name: '定位多樣性', max: 100 },
+                          { name: '武器多樣性', max: 100 },
+                          { name: '體型多樣性', max: 100 },
+                          { name: '地區多樣性', max: 100 },
+                          { name: '稀有度多樣性', max: 100 },
+                      ],
+                      center: ['25%', '40%'],
+                      radius: '40%',
+                      splitNumber: 4,
+                      axisName: {
+                          color: designTokens.colorOnSurface.value,
+                      },
+                      splitLine: {
+                          lineStyle: {
+                              color: designTokens.colorOnSurfaceVariant.value,
                           },
                       },
-                  }),
-            series: [
-                ...(!isGlobal
-                    ? [
-                          {
-                              type: 'radar',
-                              data: [
-                                  {
-                                      value: [
-                                          stats.versatility.toFixed(2),
-                                          stats.metaAffinity.toFixed(2),
-                                          stats.elementAdjustedDiversity.toFixed(2),
-                                          stats.roleAdjustedDiversity.toFixed(2),
-                                          stats.weaponAdjustedDiversity.toFixed(2),
-                                          stats.modelTypeAdjustedDiversity.toFixed(2),
-                                          stats.regionAdjustedDiversity.toFixed(2),
-                                          stats.rarityAdjustedDiversity.toFixed(2),
-                                      ],
-                                      name: '玩家風格',
-                                      itemStyle: {
-                                          color: designTokens.colorPrimary.value,
-                                      },
-                                      areaStyle: {
-                                          color: designTokens.colorPrimary.value,
-                                          opacity: 0.2,
-                                      },
-                                      emphasis: { disabled: true },
-                                  },
-                              ],
+                      splitArea: { show: false },
+                      axisLine: {
+                          lineStyle: {
+                              color: designTokens.colorOnSurfaceVariant.value,
                           },
-                      ]
-                    : []),
-                // --- Pie 1: 元素 ---
-                {
-                    type: 'pie',
-                    radius: ['20%', '30%'],
-                    center: ['60%', '15%'],
-                    data: toPieSorted('element', elementCounts, elementTranslator),
-                    label: { color: designTokens.colorOnSurface.value },
-                },
+                      },
+                  },
+                  series: [
+                      {
+                          type: 'radar',
+                          data: [
+                              {
+                                  value: [
+                                      playerStyle.value?.versatility.toFixed(2),
+                                      playerStyle.value?.metaAffinity.toFixed(2),
+                                      playerStyle.value?.elementAdjustedDiversity.toFixed(2),
+                                      playerStyle.value?.roleAdjustedDiversity.toFixed(2),
+                                      playerStyle.value?.weaponAdjustedDiversity.toFixed(2),
+                                      playerStyle.value?.modelTypeAdjustedDiversity.toFixed(2),
+                                      playerStyle.value?.regionAdjustedDiversity.toFixed(2),
+                                      playerStyle.value?.rarityAdjustedDiversity.toFixed(2),
+                                  ],
+                                  name: '玩家風格',
+                                  itemStyle: {
+                                      color: designTokens.colorPrimary.value,
+                                  },
+                                  areaStyle: {
+                                      color: designTokens.colorPrimary.value,
+                                      opacity: 0.2,
+                                  },
+                                  emphasis: { disabled: true },
+                              },
+                          ],
+                      },
+                      // --- Pie 1: 元素 ---
+                      {
+                          type: 'pie',
+                          radius: ['20%', '30%'],
+                          center: ['60%', '15%'],
+                          data: toPieSorted('element', elementDistribution, elementTranslator),
+                          label: { color: designTokens.colorOnSurface.value },
+                      },
 
-                // --- Pie 2: 武器 ---
-                {
-                    type: 'pie',
-                    radius: ['20%', '30%'],
-                    center: ['85%', '15%'],
-                    data: toPieSorted('weapon', weaponCounts, weaponTranslator),
-                    label: { color: designTokens.colorOnSurface.value },
-                },
+                      // --- Pie 2: 武器 ---
+                      {
+                          type: 'pie',
+                          radius: ['20%', '30%'],
+                          center: ['85%', '15%'],
+                          data: toPieSorted('weapon', weaponDistribution, weaponTranslator),
+                          label: { color: designTokens.colorOnSurface.value },
+                      },
 
-                // --- Pie 3: 體型 ---
-                {
-                    type: 'pie',
-                    radius: ['20%', '30%'],
-                    center: ['60%', '50%'],
-                    data: toPieSorted('modelType', modelTypeCounts, modelTypeTranslator),
-                    label: { color: designTokens.colorOnSurface.value },
-                },
+                      // --- Pie 3: 體型 ---
+                      {
+                          type: 'pie',
+                          radius: ['20%', '30%'],
+                          center: ['60%', '50%'],
+                          data: toPieSorted('modelType', modelTypeDistribution, modelTypeTranslator),
+                          label: { color: designTokens.colorOnSurface.value },
+                      },
 
-                // --- Pie 4: 定位 ---
-                {
-                    type: 'pie',
-                    radius: ['20%', '30%'],
-                    center: ['85%', '50%'],
-                    data: toPieSorted('role', roleCounts, roleTranslator),
-                    label: { color: designTokens.colorOnSurface.value },
-                },
+                      // --- Pie 4: 定位 ---
+                      {
+                          type: 'pie',
+                          radius: ['20%', '30%'],
+                          center: ['85%', '50%'],
+                          data: toPieSorted('role', roleDistribution, roleTranslator),
+                          label: { color: designTokens.colorOnSurface.value },
+                      },
 
-                // --- Pie 5: 國家 ---
-                {
-                    type: 'pie',
-                    radius: ['20%', '30%'],
-                    center: ['60%', '85%'],
-                    data: toPieSorted('region', regionCounts, regionTranslator),
-                    label: { color: designTokens.colorOnSurface.value },
-                },
+                      // --- Pie 5: 國家 ---
+                      {
+                          type: 'pie',
+                          radius: ['20%', '30%'],
+                          center: ['60%', '85%'],
+                          data: toPieSorted('region', regionDistribution, regionTranslator),
+                          label: { color: designTokens.colorOnSurface.value },
+                      },
 
-                // --- Pie 5: 稀有度 ---
-                {
-                    type: 'pie',
-                    radius: ['20%', '30%'],
-                    center: ['85%', '85%'],
-                    data: toPieSorted('rarity', rarityCounts, rarityTranslator),
-                    label: { color: designTokens.colorOnSurface.value },
-                },
-            ],
-        };
+                      // --- Pie 5: 稀有度 ---
+                      {
+                          type: 'pie',
+                          radius: ['20%', '30%'],
+                          center: ['85%', '85%'],
+                          data: toPieSorted('rarity', rarityDistribution, rarityTranslator),
+                          label: { color: designTokens.colorOnSurface.value },
+                      },
+                  ],
+              };
     });
 
-    return { playerSelectOptions, playerOptions, globalOption, selectedOptionKey, selectedOption, option, getOptionKey };
+    return { scopes, selectedScopeKey, selectedScope, option, getScopeKey };
 }

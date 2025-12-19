@@ -13,12 +13,13 @@ import FeatureMatrixBuilder from './infra/matrix/FeatureMatrixBuilder';
 import CharacterFeatureMatrixBuilder from './infra/character/CharacterFeatureMatrixBuilder';
 import MatrixNormalizer from './infra/matrix/MatrixNormalizer';
 import DimensionProjector from './infra/projection/DimensionProjector';
+import UMAPProjector from './infra/projection/UMAPProjector';
 import CharacterCommunityScanEngine from './infra/clustering/CharacterCommunityScanEngine';
 
 import type { ICharacterRepository } from '../character/domain/ICharacterRepository';
-import UMAPProjector from './infra/projection/UMAPProjector';
+import type { IMatchRepository } from '../match/domain/IMatchRepository';
 
-export function createAnalysisModule(prisma: PrismaClient, characterRepository: ICharacterRepository) {
+export function createAnalysisModule(prisma: PrismaClient, characterRepository: ICharacterRepository, matchRepository: IMatchRepository) {
     const analysisRepository = new AnalysisRepository(prisma)
 
     const matrixNormalizer = new MatrixNormalizer();
@@ -38,9 +39,13 @@ export function createAnalysisModule(prisma: PrismaClient, characterRepository: 
         characterFeatureMatrixBuilder,
         characterCommunityScanEngine,
         characterRepository,
+        matchRepository,
     );
 
     const controller = new AnalysisController(service);
     const router = createAnalysesRouter(controller);
+
+    // service.fetchGlobalStatistic();
+
     return { router, controller, service };
 }

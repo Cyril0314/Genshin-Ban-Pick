@@ -52,8 +52,9 @@ export function useEchartTheme(selector = '.scale-context') {
     }
 
     // X 軸（value）
-    function xAxisStyle(): XAXisComponentOption {
+    function valueAxisStyle(): XAXisComponentOption {
         return {
+            type: 'value',
             nameGap: parseFloat(tokens.spaceMd.value),
             nameLocation: 'end',
             nameTextStyle: {
@@ -75,9 +76,9 @@ export function useEchartTheme(selector = '.scale-context') {
         };
     }
 
-    // Y 軸（category）
-    function yAxisStyle(): YAXisComponentOption {
+    function categoryAxisStyle(): YAXisComponentOption {
         return {
+            type: 'category',
             axisLabel: {
                 color: tokens.colorOnSurface.value,
                 fontSize: tokens.fontSizeMd.value,
@@ -147,8 +148,8 @@ export function useEchartTheme(selector = '.scale-context') {
 
     return {
         gridStyle,
-        xAxisStyle,
-        yAxisStyle,
+        valueAxisStyle,
+        categoryAxisStyle,
         legendStyle,
         tooltipStyle,
         dataZoomStyle,

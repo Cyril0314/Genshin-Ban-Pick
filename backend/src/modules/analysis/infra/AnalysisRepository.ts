@@ -5,6 +5,7 @@ import { restoreFiltersFromJson } from '../../match/domain/restoreFilterFromJson
 import { mapCharacter } from '../../character';
 
 import type { IAnalysisRepository } from '../domain/IAnalysisRepository';
+import type { IMatchStatisticsOverview } from '../types/IMatchStatisticsOverview';
 import type { IMatchTimeMinimal } from '../types/IMatchTimeMinimal';
 import type { IMatchMoveWeightCalcCore } from '../types/IMatchMoveWeightCalcCore';
 import type { IMatchTacticalUsageExpandedRefs } from '../types/IMatchTacticalUsageExpandedRefs';
@@ -12,10 +13,57 @@ import type { IMatchTacticalUsageTeamMemberIdentityRefs } from '../types/IMatchT
 import type { IMatchTacticalUsageWithCharacter } from '../types/IMatchTacticalUsageWithCharacter';
 import type { MoveSource, MoveType } from '@shared/contracts/match/value-types';
 import type { CharacterFilterKey } from '@shared/contracts/character/CharacterFilterKey';
-import type { MatchTeamMemberUniqueIdentity } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
+import type { MatchTeamMemberUniqueIdentityKey } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
 
 export default class AnalysisRepository implements IAnalysisRepository {
     constructor(private prisma: PrismaClient) {}
+
+    async findMatchStatisticsOverview(): Promise<IMatchStatisticsOverview> {
+        const [totalMatches, totalMoves, totalTacticalUsages, dateRange, uniqueCharacters, memberCount, guestCount, onlyNameCount] =
+            await Promise.all([
+                this.prisma.match.count(),
+                this.prisma.matchMove.count(),
+                this.prisma.matchTacticalUsage.count(),
+                this.prisma.match.aggregate({
+                    _min: { createdAt: true },
+                    _max: { createdAt: true },
+                }),
+                this.prisma.matchTacticalUsage.findMany({
+                    distinct: ['characterKey'],
+                    select: { characterKey: true },
+                }),
+                this.prisma.matchTeamMember.findMany({
+                    where: { memberRef: { not: null } },
+                    distinct: ['memberRef'],
+                    select: { memberRef: true },
+                }),
+                this.prisma.matchTeamMember.findMany({
+                    where: { guestRef: { not: null } },
+                    distinct: ['guestRef'],
+                    select: { guestRef: true },
+                }),
+                this.prisma.matchTeamMember.findMany({
+                    where: {
+                        memberRef: null,
+                        guestRef: null,
+                    },
+                    distinct: ['name'],
+                    select: { name: true },
+                }),
+            ]);
+        const uniquePlayers = memberCount.length + guestCount.length + onlyNameCount.length;
+        return {
+            totalMatches,
+            totalMoves,
+            totalTacticalUsages,
+            uniqueCharacters: uniqueCharacters.length,
+            uniquePlayers,
+            dateRange: {
+                from: dateRange._min.createdAt!,
+                to: dateRange._max.createdAt!,
+            },
+        };
+    }
 
     async findAllMatchMinimalTimestamps(): Promise<IMatchTimeMinimal[]> {
         return await this.prisma.match.findMany({
@@ -49,7 +97,8 @@ export default class AnalysisRepository implements IAnalysisRepository {
                 type: entity.type as MoveType,
                 source: entity.source as MoveSource,
                 matchId: entity.matchId,
-                characterReleaseDate: entity.character.releaseDate,
+                order: entity.order,
+                characterReleaseAt: entity.character.releaseAt,
                 randomMoveContext: randomMoveContext,
             };
         });
@@ -96,27 +145,30 @@ export default class AnalysisRepository implements IAnalysisRepository {
         }));
     }
 
-    async findMatchTacticalUsageWithCharacterByIdentity(identity: MatchTeamMemberUniqueIdentity): Promise<IMatchTacticalUsageWithCharacter[]> {
+    async findMatchTacticalUsageWithCharacterByIdentityKey(
+        identityKey: MatchTeamMemberUniqueIdentityKey,
+    ): Promise<IMatchTacticalUsageWithCharacter[]> {
+        console.log('identityKey', identityKey);
         let whereInput: Parameters<typeof this.prisma.matchTacticalUsage.findMany>[0]['where'];
-        switch (identity.type) {
+        switch (identityKey.type) {
             case 'Member':
                 whereInput = {
                     teamMember: {
-                        memberRef: identity.id,
+                        memberRef: identityKey.id,
                     },
                 };
                 break;
             case 'Guest':
                 whereInput = {
                     teamMember: {
-                        guestRef: identity.id,
+                        guestRef: identityKey.id,
                     },
                 };
                 break;
             case 'Name':
                 whereInput = {
                     teamMember: {
-                        name: identity.name,
+                        name: identityKey.name,
                     },
                 };
                 break;
@@ -141,8 +193,9 @@ const matchMoveWeightCalcCoreQuery = Prisma.validator<Prisma.MatchMoveFindManyAr
         type: true,
         source: true,
         matchId: true,
+        order: true,
         characterKey: true,
-        character: { select: { releaseDate: true } },
+        character: { select: { releaseAt: true } },
         randomMoveContext: true,
     },
 });

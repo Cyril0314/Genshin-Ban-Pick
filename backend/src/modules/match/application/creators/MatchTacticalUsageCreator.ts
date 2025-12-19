@@ -23,7 +23,7 @@ export default class MatchTacticalUsageCreator {
                 orderBy: { slot: 'asc' },
             });
 
-            const usages = Object.entries(tacticalCellImageMap)
+            const usagesData = Object.entries(tacticalCellImageMap)
                 .sort(([a], [b]) => Number(a) - Number(b))
                 .map(([cellIndexString, characterKey]) => {
                     const cellIndex = Number(cellIndexString);
@@ -44,9 +44,9 @@ export default class MatchTacticalUsageCreator {
                 })
                 .filter((entry) => entry !== null);
 
-            const usuages = await tx.matchTacticalUsage.createMany({ data: usages });
+            const usages = await tx.matchTacticalUsage.createMany({ data: usagesData });
 
-            matchTacticalUsages.push(usuages);
+            matchTacticalUsages.push(usages);
         }
 
         return matchTacticalUsages;

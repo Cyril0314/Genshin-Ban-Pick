@@ -9,32 +9,36 @@ import { useAnalysisUseCase } from './useAnalysisUseCase';
 import { chartColors } from '@/modules/shared/ui/constants/chartColors';
 
 import type { CallbackDataParams } from 'echarts/types/dist/shared';
-import type { ICharacterClusters } from '@shared/contracts/analysis/ICharacterClusters';
-import type { ICharacterTacticalUsage } from '@shared/contracts/analysis/ICharacterTacticalUsage';
+import type { ICharacterCluster } from '@shared/contracts/analysis/ICharacterCluster';
+import type { ICharacterUsage } from '@shared/contracts/analysis/ICharacterUsage';
 
-export function useCharacterClustersChart() {
+export function useCharacterClusterChart() {
     const { getByKey: getCharacterDisplayName } = useCharacterDisplayName();
     const designTokens = useDesignTokens();
-    const { gridStyle, xAxisStyle, yAxisStyle, tooltipStyle, dataZoomStyle, legendStyle } = useEchartTheme();
+    const { gridStyle, tooltipStyle, dataZoomStyle, legendStyle } = useEchartTheme();
     const analysisUseCase = useAnalysisUseCase();
-    const tacticalUsages = ref<ICharacterTacticalUsage[] | null>(null);
-    const characterClusters = ref<ICharacterClusters | null>(null);
+    const usages = ref<ICharacterUsage[] | null>(null);
+    const characterCluster = ref<ICharacterCluster | null>(null);
 
-    const effectiveUsageMap = computed(() => Object.fromEntries((tacticalUsages.value ?? []).map((u) => [u.characterKey, u.effectiveUsage])));
-    const archetypePoints = computed(() => characterClusters.value?.archetypePoints);
-    const medoidPoints = computed(() => characterClusters.value?.clusterMedoids);
+    const effectiveUsageMap = computed(() => Object.fromEntries((usages.value ?? []).map((u) => [u.characterKey, u.effectiveUsage])));
+    const archetypePoints = computed(() => characterCluster.value?.archetypePoints);
+    const medoidPoints = computed(() => characterCluster.value?.clusterMedoids);
     const topBridges = computed(() => {
-        return [...(characterClusters.value?.bridgeScores ?? [])].sort((a, b) => b.bridgeScore - a.bridgeScore).slice(0, 5);
+        return [...(characterCluster.value?.bridgeScores ?? [])].sort((a, b) => b.bridgeScore - a.bridgeScore).slice(0, 5);
     });
 
+
+    const clusterNames: string[] = ['群0', '群1', '群2', '群3', '群4', '連續過渡地帶', '群6', '群7',]
+
     onMounted(async () => {
-        tacticalUsages.value = await analysisUseCase.fetchTacticalUsages();
-        characterClusters.value = await analysisUseCase.fetchCharacterClusters();
-        console.log(`characterClusters`, characterClusters.value);
+        usages.value = await analysisUseCase.fetchCharacterUsageSummary();
+        characterCluster.value = await analysisUseCase.fetchCharacterCluster();
+        console.log(`characterClusters`, characterCluster.value);
     });
 
     const option = computed(() => {
-        if (!archetypePoints.value || !tacticalUsages.value || !medoidPoints.value || !topBridges.value) return null;
+        if (!archetypePoints.value || !usages.value || !medoidPoints.value || !topBridges.value) return null;
+
         return {
             tooltip: {
                 ...tooltipStyle('single'),
@@ -49,8 +53,6 @@ export function useCharacterClustersChart() {
             },
             xAxis: {
                 type: 'value',
-                min: (value: any) => Math.floor(value.min * 0.95),
-                max: (value: any) => Math.ceil(value.max * 1.05),
                 splitLine: {
                     show: true,
                     lineStyle: {
@@ -62,8 +64,6 @@ export function useCharacterClustersChart() {
             },
             yAxis: {
                 type: 'value',
-                min: (value: any) => Math.floor(value.min * 0.95),
-                max: (value: any) => Math.ceil(value.max * 1.05),
                 splitLine: {
                     show: true,
                     lineStyle: {
@@ -146,7 +146,7 @@ export function useCharacterClustersChart() {
         const maxClusterId = Math.max(...archetypePoints.value.map((p) => p.clusterId));
 
         return Array.from({ length: maxClusterId + 1 }).map((_, cid) => ({
-            name: `群 ${cid}`,
+            name: clusterNames[cid],
             icon: 'circle',
             itemStyle: { color: chartColors[cid] },
         }));
@@ -161,7 +161,7 @@ export function useCharacterClustersChart() {
 
         for (let cid = 0; cid <= maxClusterId; cid++) {
             series.push({
-                name: `群 ${cid}`,
+                name: clusterNames[cid],
                 type: 'scatter',
                 data: archetypePoints.value
                     .filter((p) => p.clusterId === cid)

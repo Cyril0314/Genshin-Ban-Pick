@@ -13,8 +13,7 @@ export function mapCharacter(raw: any): ICharacter {
         weapon: raw.weapon as Weapon,
         region: raw.region as Region,
         modelType: raw.modelType as ModelType,
-        releaseDate: raw.releaseDate,
-        version: raw.version,
+        releaseAt: raw.releaseAt,
         role: raw.role as CharacterRole,
         wish: raw.wish as Wish,
     };

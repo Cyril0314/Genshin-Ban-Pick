@@ -8,7 +8,7 @@ import { usePlayerStyleChart } from '../composables/usePlayerStyleChart';
 
 use([CanvasRenderer, RadarChart, PieChart, GridComponent, TooltipComponent, LegendComponent]);
 
-const { playerSelectOptions, globalOption, option, selectedOptionKey, getOptionKey } = usePlayerStyleChart();
+const { option, scopes, selectedScopeKey, getScopeKey } = usePlayerStyleChart();
 </script>
 
 <template>
@@ -21,20 +21,20 @@ const { playerSelectOptions, globalOption, option, selectedOptionKey, getOptionK
             </div>
             <div class="chart__settings">
                 <span class="chart-player__text">玩家：</span>
-                <select v-model="selectedOptionKey" class="chart-player__select">
-                    <option v-for="option in playerSelectOptions" :key="getOptionKey(option)"
-                        :value="getOptionKey(option)">
+                <select v-model="selectedScopeKey" class="chart-player__select">
+                    <option v-for="scope in scopes" :key="getScopeKey(scope)"
+                        :value="getScopeKey(scope)">
                         <!-- Global -->
-                        <template v-if="option.type === 'Global'">
-                            ✨ 全體玩家
+                        <template v-if="scope.type === 'Global'">
+                            🌐 全體玩家
                         </template>
 
                         <!-- Player -->
                         <template v-else>
-                            <span v-if="option.identity.type === 'Member'">✨</span>
-                            <span v-else-if="option.identity.type === 'Guest'">❓</span>
+                            <span v-if="scope.identity.type === 'Member'">✨</span>
+                            <span v-else-if="scope.identity.type === 'Guest'">❓</span>
                             <span v-else>🪪</span>
-                            {{ option.identity.name }}
+                            {{ scope.identity.name }}
                         </template>
                     </option>
                 </select>
@@ -42,7 +42,7 @@ const { playerSelectOptions, globalOption, option, selectedOptionKey, getOptionK
 
         </header>
         <div class="chart">
-            <VChart v-if="option" :option="option" autoresize />
+            <VChart v-if="option" :option="option" :update-options="{ notMerge: true }" autoresize />
             <div v-else class="chart__empty">尚無足夠數據進行分析</div>
         </div>
         <footer class="chart__footer">
