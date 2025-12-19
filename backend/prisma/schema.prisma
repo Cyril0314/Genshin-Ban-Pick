@@ -204,8 +204,6 @@ enum Wish {
 
 model Character {
   id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
   key         String         @unique
   name        String
@@ -216,9 +214,24 @@ model Character {
   modelType   ModelType
   role        CharacterRole?
   wish        Wish?
-  releaseDate DateTime?
-  version     String?
+  releaseAt   DateTime?
+  genshinVersionId Int?
 
   matchMoves          MatchMove[]
   matchTacticalUsages MatchTacticalUsage[]
+  genshinVersion      GenshinVersion? @relation(fields: [genshinVersionId], references: [id])
+
+  @@index([genshinVersionId])
+}
+
+model GenshinVersion {
+  id        Int      @id @default(autoincrement())
+
+  order   Int        @unique
+  code    String     @unique
+  name    String
+  startAt DateTime
+  endAt   DateTime?
+
+  characters Character[]
 }

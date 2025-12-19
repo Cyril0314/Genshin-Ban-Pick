@@ -98,7 +98,7 @@ export default class AnalysisRepository implements IAnalysisRepository {
                 source: entity.source as MoveSource,
                 matchId: entity.matchId,
                 order: entity.order,
-                characterReleaseDate: entity.character.releaseDate,
+                characterReleaseAt: entity.character.releaseAt,
                 randomMoveContext: randomMoveContext,
             };
         });
@@ -195,7 +195,7 @@ const matchMoveWeightCalcCoreQuery = Prisma.validator<Prisma.MatchMoveFindManyAr
         matchId: true,
         order: true,
         characterKey: true,
-        character: { select: { releaseDate: true } },
+        character: { select: { releaseAt: true } },
         randomMoveContext: true,
     },
 });

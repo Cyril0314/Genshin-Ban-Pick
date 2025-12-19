@@ -1,60 +1,59 @@
+// backend/prisma/seed.ts
+
 import { PrismaClient, Rarity, Element, Weapon, Region, ModelType, CharacterRole, Wish } from '@prisma/client';
 import fs from 'node:fs';
 
-const prisma = new PrismaClient();
-const rawData = JSON.parse(fs.readFileSync('./prisma/characters.json', 'utf-8'));
+// const prisma = new PrismaClient();
+// const charactersRawData = JSON.parse(fs.readFileSync('./prisma/characters.json', 'utf-8'));
+// const versionsRawData = JSON.parse(fs.readFileSync('./prisma/genshin_version.json', 'utf-8'));
 
-function normalizeKey(name: string): string {
-    return name
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '_') // 空白 & 符號 → _
-        .replace(/^_+|_+$/g, ''); // 去掉頭尾底線
-}
+// (async () => {
+//     await main();
+//     await prisma.$disconnect();
+// })();
 
-function normalizeRarity(r: string): Rarity {
-    return r === '5 Stars' ? Rarity.FiveStar : Rarity.FourStar;
-}
+// async function main() {
+//     await seedGenshinVersion();
+//     await seedCharacter();
+// }
 
-function normalizeWish(w: string): Wish {
-    if (w.startsWith('Limited')) return Wish.Limited;
-    if (w.startsWith('Standard')) return Wish.Standard;
-    return Wish.None;
-}
+// async function seedCharacter() {
+//     const characters = charactersRawData
+//         .map((raw: any) => ({
+//             key: normalizeKey(raw.name),
+//             name: raw.name,
+//             rarity: normalizeRarity(raw.rarity),
+//             element: raw.element as Element,
+//             weapon: raw.weapon as Weapon,
+//             region: normalizeRegion(raw.region),
+//             modelType: normalizeModelType(raw.model_type),
+//             role: normalizeRole(raw.role),
+//             wish: normalizeWish(raw.wish),
+//             releaseDate: new Date(raw.release_date),
+//             version: raw.version,
+//         }))
+//         .sort((a: any, b: any) => a.releaseDate.getTime() - b.releaseDate.getTime());
 
-function normalizeModelType(m: string): ModelType {
-    return m.replace(/\s+/g, '') as ModelType;
-}
+//     await prisma.character.createMany({
+//         data: characters,
+//         skipDuplicates: true, // 防止重複執行 seed
+//     });
 
-function normalizeRegion(r: string): Region {
-    return r.replace(/\s+/g, '') as Region;
-}
+//     console.log(`✅ Done! Inserted ${characters.length} characters.`);
+// }
 
-function normalizeRole(r: string): CharacterRole {
-    return r.replace(/\s+/g, '') as CharacterRole;
-}
-
-(async () => {
-    const characters = rawData
-        .map((raw: any) => ({
-            key: normalizeKey(raw.name),
-            name: raw.name,
-            rarity: normalizeRarity(raw.rarity),
-            element: raw.element as Element,
-            weapon: raw.weapon as Weapon,
-            region: normalizeRegion(raw.region),
-            modelType: normalizeModelType(raw.model_type),
-            role: normalizeRole(raw.role),
-            wish: normalizeWish(raw.wish),
-            releaseDate: new Date(raw.release_date),
-            version: raw.version,
-        }))
-        .sort((a: any, b: any) => a.releaseDate.getTime() - b.releaseDate.getTime());
-
-    await prisma.character.createMany({
-        data: characters,
-        skipDuplicates: true, // 防止重複執行 seed
-    });
-
-    console.log(`✅ Done! Inserted ${characters.length} characters.`);
-    await prisma.$disconnect();
-})();
+// async function seedGenshinVersion() {
+//     for (const version of versionsRawData) {
+//         await prisma.genshinVersion.upsert({
+//             where: { code: version.code },
+//             update: {}, // 不動既有資料
+//             create: {
+//                 order: version.order,
+//                 code: version.code,
+//                 name: version.name,
+//                 startAt: parseUTC(version.startAt),
+//                 endAt: version.endAt ? parseUTC(version.endAt) : null,
+//             },
+//         });
+//     }
+// }

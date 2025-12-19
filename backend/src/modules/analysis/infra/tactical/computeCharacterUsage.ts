@@ -30,7 +30,7 @@ export function computeCharacterUsage(matches: IMatchTimeMinimal[], matchMoves: 
         const wasUsed = usedSet.has(`${matchId}:${key}`);
         const usedBoth = (usageCountByMatch.get(`${matchId}:${key}`) ?? 0) >= 2;
 
-        releaseMap.set(key, matchMove.characterReleaseDate ?? null);
+        releaseMap.set(key, matchMove.characterReleaseAt ?? null);
 
         const ctx = aggregateMoveWeightContext({
             type: matchMove.type,
@@ -56,12 +56,12 @@ export function computeCharacterUsage(matches: IMatchTimeMinimal[], matchMoves: 
     const sortedMatches = matches.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
     const effectiveMatchCount = new Map<string, number>();
 
-    for (const [key, releaseDate] of releaseMap.entries()) {
-        if (!releaseDate) {
+    for (const [key, releaseAt] of releaseMap.entries()) {
+        if (!releaseAt) {
             effectiveMatchCount.set(key, matchCount);
             continue;
         }
-        const idx = sortedMatches.findIndex((m) => m.createdAt >= releaseDate);
+        const idx = sortedMatches.findIndex((m) => m.createdAt >= releaseAt);
         effectiveMatchCount.set(key, idx === -1 ? matchCount : matchCount - idx);
     }
 

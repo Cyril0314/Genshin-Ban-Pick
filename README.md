@@ -6,6 +6,8 @@
 #### 需要資料庫資料回填：
 -   手動新增 SQL Migration 檔案！
 -   npx prisma migrate dev
+-   
+#### 有刪除資料的 migration 要分兩次部署
 
 ### 遠端套用 migration
 

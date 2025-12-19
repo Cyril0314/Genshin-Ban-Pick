@@ -33,7 +33,7 @@ export default class AnalysisService {
     }
 
     async getCharacterCluster() {
-        return this.client.get(`/analyses/character-clusters`);
+        return this.client.get(`/analyses/character-cluster`);
     }
 
     async getPlayerCharacterUsage() {
