@@ -13,7 +13,10 @@
 
 -   npx prisma generate 產生 Prisma Client
 -   npx prisma migrate deploy 套用已存在的 migration 到資料庫
--   npx prisma db seed 執行種子資料程式
+-   
+-   npx tsx prisma/scripts/importGenshinVersions.ts 匯入版本靜態資料
+-   npx tsx prisma/scripts/importCharacters.ts 匯入角色靜態資料
+<!-- -   npx prisma db seed 執行種子資料程式 -->
 
 ## Clean Architecture
 
