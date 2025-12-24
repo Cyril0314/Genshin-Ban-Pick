@@ -7,7 +7,7 @@ import { io, type Socket } from 'socket.io-client';
 import { computed, ref } from 'vue';
 
 export const useSocketStore = defineStore('socket', () => {
-    const socket = ref<Socket | null>(null);
+    const socket = ref<Socket>();
     const connected = computed(() => socket.value?.connected ?? false);
 
     function connect(token: string) {

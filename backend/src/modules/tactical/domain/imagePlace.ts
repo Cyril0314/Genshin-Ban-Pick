@@ -10,20 +10,20 @@ export function imagePlace(tacticalCellImageMap: TacticalCellImageMap, cellId: n
     let nextMap = { ...tacticalCellImageMap };
 
     const previousCellId = findCellIdByImageId(nextMap, imgId);
-    const displacedImgId = nextMap[cellId] ?? null;
+    const displacedImgId = nextMap[cellId] ?? undefined;
 
     // 移除原本出現的位置
-    if (previousCellId !== null) {
+    if (previousCellId !== undefined) {
         nextMap = removeCellImage(nextMap, previousCellId);
     }
 
     // 移除被擠掉的圖片
-    if (displacedImgId !== null) {
+    if (displacedImgId !== undefined) {
         nextMap = removeCellImage(nextMap, cellId);
     }
 
     // 若兩邊都有圖片且 cell 不相同 → 交換
-    if (previousCellId !== null && displacedImgId !== null && previousCellId !== cellId) {
+    if (previousCellId !== undefined && displacedImgId !== undefined && previousCellId !== cellId) {
         nextMap = placeCellImage(nextMap, previousCellId, displacedImgId);
     }
 

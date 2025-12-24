@@ -18,7 +18,7 @@ export const useBoardStore = defineStore('boardImage', () => {
             return !boardImageMap.value[step.zoneId];
         });
         if (!step) {
-            return null;
+            return undefined;
         }
         return step;
     });

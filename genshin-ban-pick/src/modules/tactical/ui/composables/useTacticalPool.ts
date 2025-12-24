@@ -23,7 +23,7 @@ export function useTacticalPool() {
             const zone = zoneMetaTable.value[Number(zoneId)];
             if (zone.type === ZoneType.Pick) {
                 const teamSlot = findTeamSlot(Number(zoneId));
-                if (teamSlot != null) {
+                if (teamSlot != undefined) {
                     if (!tacticalPoolMap[teamSlot]) {
                         tacticalPoolMap[teamSlot] = [];
                     }
@@ -61,7 +61,7 @@ export function useTacticalPool() {
 
     function findTeamSlot(zoneId: number) {
         const match = matchSteps.value.find((f) => f.zoneId === zoneId);
-        return match?.teamSlot ?? null;
+        return match?.teamSlot ?? undefined;
     }
 
     return { tacticalPoolMap, displayPoolImageIdsMap };

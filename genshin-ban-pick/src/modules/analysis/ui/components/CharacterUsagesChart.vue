@@ -22,8 +22,10 @@ const { option } = useCharacterUsagesChart();
 <template>
     <div class="layout__chart">
         <header class="chart__header">
-            <h2>角色使用權重分析</h2>
-            <p class="chart-desc">綜合全期平均與有效期表現，平衡穩定性與即戰力。</p>
+            <div class="chart__title">
+                <h2>角色使用權重分析</h2>
+                <p class="chart__desc">綜合全期平均與有效期表現，平衡穩定性與即戰力。</p>
+            </div>
         </header>
         <div class="chart">
             <VChart v-if="option" :option="option" />
@@ -48,10 +50,22 @@ const { option } = useCharacterUsagesChart();
 
 .chart__header {
     display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: var(--space-sm);
+}
+
+.chart__title {
+    display: flex;
     flex-direction: column;
-    padding: var(--space-md);
     color: var(--md-sys-color-on-surface);
     font-size: var(--font-size-md);
+    gap: var(--space-sm);
+}
+
+.chart__desc {
+    font-size: var(--font-size-sm);
+    color: var(--md-sys-color-on-surface-variant);
 }
 
 .chart {

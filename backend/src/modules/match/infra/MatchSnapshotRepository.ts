@@ -7,9 +7,9 @@ import type { IRoomStateManager } from '../../socket/domain/IRoomStateManager';
 export default class MatchSnapshotRepository implements IMatchSnapshotRepository {
     constructor(private readonly roomStateManager: IRoomStateManager) {}
 
-    findById(roomId: string): IMatchSnapshot | null {
+    findById(roomId: string): IMatchSnapshot | undefined {
         const roomState = this.roomStateManager.get(roomId);
-        if (!roomState) return null;
+        if (!roomState) return undefined;
 
         return {
             roomId,

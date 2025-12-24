@@ -1,4 +1,4 @@
-export interface ICharacterAttributeDistributionsQuery {
+export interface IAnalysisScopeWithPlayerIdentityQuery {
     scope: 'global' | 'player'
     type?: 'member' | 'guest' | 'name'
     id?: number

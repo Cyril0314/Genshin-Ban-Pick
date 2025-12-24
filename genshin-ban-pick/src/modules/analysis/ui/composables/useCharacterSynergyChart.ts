@@ -17,7 +17,7 @@ export function useCharacterSynergyChart() {
     const analysisUseCase = useAnalysisUseCase();
 
     const scope = ref<SynergyMode>('setup');
-    const synergy = ref<CharacterSynergyMatrix | null>(null);
+    const synergy = ref<CharacterSynergyMatrix>();
 
     onMounted(async () => {
         synergy.value = await analysisUseCase.fetchCharacteSynergyMatrix({ mode: scope.value });
@@ -28,7 +28,7 @@ export function useCharacterSynergyChart() {
     });
 
     const option = computed(() => {
-        if (!synergy.value) return null;
+        if (!synergy.value) return undefined;
         const chars = Object.keys(synergy.value).sort();
         const matrix: [number, number, number][] = [];
         for (let i = 0; i < chars.length; i++) {

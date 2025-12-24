@@ -9,10 +9,10 @@ export interface IMatchMoveWeightCalcCore {
     source: MoveSource;
     matchId: number;
     order: number;
-    characterReleaseAt: Date | null;
-    randomMoveContext: {
+    characterReleaseAt?: Date;
+    randomMoveContext?: {
         id: number;
         filters: Record<CharacterFilterKey, string[]>;
         matchMoveId: number;
-    } | null;
+    };
 }

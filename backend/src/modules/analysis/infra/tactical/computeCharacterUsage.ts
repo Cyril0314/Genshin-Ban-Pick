@@ -3,7 +3,7 @@
 import { aggregateMoveWeightContext } from './aggregateMoveWeightContext';
 import { calculateTacticalWeight } from './calculateTacticalWeight';
 
-import type { IMatchTimeMinimal } from '../../types/IMatchTimeMinimal';
+import type { IMatchTimeMinimal } from '@shared/contracts/analysis/IMatchTimeMinimal';
 import type { IMatchTacticalUsageExpandedRefs } from '../../types/IMatchTacticalUsageExpandedRefs';
 import type { IMatchMoveWeightCalcCore } from '../../types/IMatchMoveWeightCalcCore';
 import type { IWeightContext } from '@shared/contracts/analysis/IWeightContext';
@@ -22,7 +22,7 @@ export function computeCharacterUsage(matches: IMatchTimeMinimal[], matchMoves: 
 
     const weights = new Map<string, number>();
     const contextMap = new Map<string, IWeightContext>();
-    const releaseMap = new Map<string, Date | null>();
+    const releaseMap = new Map<string, Date | undefined>();
 
     for (const matchMove of matchMoves) {
         const key = matchMove.characterKey;
@@ -30,7 +30,7 @@ export function computeCharacterUsage(matches: IMatchTimeMinimal[], matchMoves: 
         const wasUsed = usedSet.has(`${matchId}:${key}`);
         const usedBoth = (usageCountByMatch.get(`${matchId}:${key}`) ?? 0) >= 2;
 
-        releaseMap.set(key, matchMove.characterReleaseAt ?? null);
+        releaseMap.set(key, matchMove.characterReleaseAt ?? undefined);
 
         const ctx = aggregateMoveWeightContext({
             type: matchMove.type,

@@ -51,7 +51,7 @@ const themeVars = computed(() => {
   return useTeamTheme(props.teamSlot).themeVars.value
 })
 
-const imageId = (cellId: number) => tacticalCellImageMap.value[cellId] ?? null;
+const imageId = (cellId: number) => tacticalCellImageMap.value[cellId];
 
 function handleImageDrop({ cellId, imgId }: { cellId: number; imgId: string }) {
     console.debug(`[TATICAL BOARD] Handle image drop`, imgId, cellId);

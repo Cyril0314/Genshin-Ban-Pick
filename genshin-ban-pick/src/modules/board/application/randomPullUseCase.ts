@@ -13,11 +13,11 @@ export function randomPullUseCase() {
         roomSetting: IRoomSetting,
         boardImageMap: Record<number, string>,
         filteredCharacterKeys: string[],
-    ): { zoneId: number; imgId: string } | null {
+    ): { zoneId: number; imgId: string } | undefined {
         const zoneId = findNextMatchStepZoneIdDomain(zoneType, roomSetting.matchFlow.steps, roomSetting.zoneMetaTable, boardImageMap);
         const availableImageIds = getAvailableImageIdsDomain(boardImageMap, filteredCharacterKeys);
         const randomImgId = pickRandomImageDomain(availableImageIds);
-        if (zoneId === null || randomImgId === null) return null;
+        if (zoneId === undefined || randomImgId === undefined) return undefined;
         console.debug(`[RANDOM PULL] Get random image ${randomImgId} and find drop zoneId ${zoneId}`);
         return { zoneId, imgId: randomImgId };
     }

@@ -32,7 +32,7 @@ export default class MatchTacticalUsageCreator {
                     const setupNumber = Math.floor(cellIndex / numberOfSetupCharacter); // ← 第幾個格子（0~3）
 
                     const targetMember = targetMembers[playerIndex];
-                    if (!targetMember) return null;
+                    if (!targetMember) return undefined;
 
                     return {
                         modelVersion: tacticalVersion,
@@ -42,7 +42,7 @@ export default class MatchTacticalUsageCreator {
                         characterKey,
                     };
                 })
-                .filter((entry) => entry !== null);
+                .filter((entry) => entry !== undefined);
 
             const usages = await tx.matchTacticalUsage.createMany({ data: usagesData });
 

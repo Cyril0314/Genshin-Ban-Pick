@@ -7,7 +7,7 @@ export interface IMemberRepository {
 
     existsByAccount(account: string): Promise<boolean>;
 
-    findById(id: number): Promise<IMemberData | null>;
+    findById(id: number): Promise<IMemberData | undefined>;
 
-    findByAccount(account: string): Promise<IMemberData | null>;
+    findByAccount(account: string): Promise<IMemberData | undefined>;
 }

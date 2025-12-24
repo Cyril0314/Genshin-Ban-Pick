@@ -17,8 +17,8 @@ export function useCharacterClusterChart() {
     const designTokens = useDesignTokens();
     const { gridStyle, tooltipStyle, dataZoomStyle, legendStyle } = useEchartTheme();
     const analysisUseCase = useAnalysisUseCase();
-    const usages = ref<ICharacterUsage[] | null>(null);
-    const characterCluster = ref<ICharacterCluster | null>(null);
+    const usages = ref<ICharacterUsage[]>();
+    const characterCluster = ref<ICharacterCluster>();
 
     const effectiveUsageMap = computed(() => Object.fromEntries((usages.value ?? []).map((u) => [u.characterKey, u.effectiveUsage])));
     const archetypePoints = computed(() => characterCluster.value?.archetypePoints);
@@ -37,7 +37,7 @@ export function useCharacterClusterChart() {
     });
 
     const option = computed(() => {
-        if (!archetypePoints.value || !usages.value || !medoidPoints.value || !topBridges.value) return null;
+        if (!archetypePoints.value || !usages.value || !medoidPoints.value || !topBridges.value) return undefined;
 
         return {
             tooltip: {

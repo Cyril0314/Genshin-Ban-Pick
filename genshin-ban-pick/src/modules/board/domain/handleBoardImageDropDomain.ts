@@ -14,20 +14,20 @@ export function handleBoardImageDropDomain(
     let nextMap = { ...boardImageMap };
 
     const previousZoneId = findZoneIdByImageIdDomain(nextMap, imgId);
-    const displacedImgId = nextMap[zoneId] ?? null;
+    const displacedImgId = nextMap[zoneId] ?? undefined;
 
     // 移除原本出現的位置
-    if (previousZoneId !== null) {
+    if (previousZoneId !== undefined) {
         nextMap = removeImageDomain(nextMap, previousZoneId)
     }
 
     // 移除被擠掉的圖片
-    if (displacedImgId !== null) {
+    if (displacedImgId !== undefined) {
         nextMap = removeImageDomain(nextMap, zoneId)
     }
 
     // 若兩邊都有圖片且 zone 不相同 → 交換
-    if (previousZoneId !== null && displacedImgId !== null && previousZoneId !== zoneId) {
+    if (previousZoneId !== undefined && displacedImgId !== undefined && previousZoneId !== zoneId) {
         nextMap = placeImageDomain(nextMap, previousZoneId, displacedImgId)
     }
 

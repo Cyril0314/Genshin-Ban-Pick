@@ -31,8 +31,8 @@ const boardStore = useBoardStore();
 const { currentStep } = storeToRefs(boardStore)
 
 const teamTheme = computed(() => {
-  const slot = currentStep.value?.teamSlot ?? null;
-  return slot === null ? null : useTeamTheme(slot);
+  const slot = currentStep.value?.teamSlot ?? undefined;
+  return slot === undefined ? undefined : useTeamTheme(slot);
 });
 
 const highlightColor = computed(() => {

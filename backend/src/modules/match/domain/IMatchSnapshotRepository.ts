@@ -3,5 +3,5 @@
 import type { IMatchSnapshot } from './IMatchSnapshot';
 
 export interface IMatchSnapshotRepository {
-    findById(roomId: string): IMatchSnapshot | null;
+    findById(roomId: string): IMatchSnapshot | undefined;
 }

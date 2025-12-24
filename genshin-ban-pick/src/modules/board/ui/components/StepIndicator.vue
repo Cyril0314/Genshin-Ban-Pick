@@ -18,12 +18,12 @@ const { teams } = storeToRefs(teamInfoStore);
 
 const currentTeam = computed(() => {
   const slot = currentStep.value?.teamSlot
-  return teams.value.find((t) => t.slot === slot) ?? null
+  return teams.value.find((t) => t.slot === slot) ?? undefined
 })
 
 const teamColorRGB = computed(() => {
   const slot = currentStep.value?.teamSlot
-  if (slot == null) return 'var(--md-sys-color-on-surface-rgb)'
+  if (slot === undefined) return 'var(--md-sys-color-on-surface-rgb)'
   return useTeamTheme(slot).themeVars.value['--team-color-rgb']
 })
 

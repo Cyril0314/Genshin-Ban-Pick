@@ -22,22 +22,22 @@ export function imageDrop(
     let nextCharacterRandomContextMap = { ...characterRandomContextMap };
 
     const previousZoneId = findZoneIdByImageId(nextBoardImageMap, imgId);
-    const displacedImgId = nextBoardImageMap[zoneId] ?? null;
+    const displacedImgId = nextBoardImageMap[zoneId] ?? undefined;
 
     // 移除原本出現的位置
-    if (previousZoneId !== null) {
+    if (previousZoneId !== undefined) {
         nextBoardImageMap = removeImage(nextBoardImageMap, previousZoneId);
     }
 
-    const previousRandomContext = displacedImgId === null ? null : nextCharacterRandomContextMap[displacedImgId];
+    const previousRandomContext = displacedImgId === undefined ? undefined : nextCharacterRandomContextMap[displacedImgId];
 
     // 移除被擠掉的圖片
-    if (displacedImgId !== null) {
+    if (displacedImgId !== undefined) {
         nextBoardImageMap = removeImage(nextBoardImageMap, zoneId);
     }
 
     // 若兩邊都有圖片且 zone 不相同 → 交換
-    if (previousZoneId !== null && displacedImgId !== null && previousZoneId !== zoneId) {
+    if (previousZoneId !== undefined && displacedImgId !== undefined && previousZoneId !== zoneId) {
         nextBoardImageMap = placeImage(nextBoardImageMap, previousZoneId, displacedImgId);
     }
 
@@ -48,7 +48,7 @@ export function imageDrop(
         nextCharacterRandomContextMap = addRandomContext(nextCharacterRandomContextMap, imgId, randomContext);
     }
 
-    if (previousRandomContext && displacedImgId !== null && !findZoneIdByImageId(nextBoardImageMap, displacedImgId)) {
+    if (previousRandomContext && displacedImgId !== undefined && !findZoneIdByImageId(nextBoardImageMap, displacedImgId)) {
         nextCharacterRandomContextMap = removeRandomContext(nextCharacterRandomContextMap, displacedImgId);
     }
 

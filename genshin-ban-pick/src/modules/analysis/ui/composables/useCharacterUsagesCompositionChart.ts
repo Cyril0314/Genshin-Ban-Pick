@@ -24,14 +24,14 @@ export function useCharacterUsagesCompositionChart() {
     const isPercentage = ref(false);
     const activeType = ref<'All' | ZoneType>('All');
 
-    const usages = ref<ICharacterUsage[] | null>(null);
+    const usages = ref<ICharacterUsage[]>();
 
     onMounted(async () => {
         usages.value = await analysisUseCase.fetchCharacterUsageSummary();
     });
 
     const option = computed(() => {
-        if (!usages.value || !characterMap.value) return null;
+        if (!usages.value || !characterMap.value) return undefined;
         const sorted = [...usages.value].sort((a, b) => a.effectiveUsage - b.effectiveUsage);
         return {
             tooltip: {

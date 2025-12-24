@@ -20,14 +20,14 @@ export function useCharacterPickPriorityChart() {
     const characterStore = useCharacterStore();
     const { characterMap } = storeToRefs(characterStore);
 
-    const data = ref<ICharacterPickPriority[] | null>(null);
+    const data = ref<ICharacterPickPriority[]>();
 
     onMounted(async () => {
         data.value = await analysisUseCase.fetchCharacterUsagePickPriority();
     });
 
     const option = computed(() => {
-        if (!data.value || !characterMap.value) return null;
+        if (!data.value || !characterMap.value) return undefined;
 
         const sorted = [...data.value].sort((a, b) => b.pickPriority - a.pickPriority);
 

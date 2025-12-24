@@ -17,7 +17,7 @@ async function importGenshinVersions() {
             code: raw.code,
             name: raw.name,
             startAt: parseUTC(raw.start_at),
-            endAt: raw.end_at ? parseUTC(raw.end_at) : null,
+            endAt: raw.end_at ? parseUTC(raw.end_at) : undefined,
         }))
         .sort((a: any, b: any) => a.order - b.order);
 

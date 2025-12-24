@@ -7,11 +7,11 @@ export interface IMatchTeamMember {
     name: string;
 
     teamId: number;
-    memberRef?: number | null;
-    guestRef?: number | null;
+    memberRef?: number;
+    guestRef?: number;
 
     tacticalUsages: IMatchTacticalUsage[];
 
-    member: IMatchMemberUser | null;
-    guest: IMatchMemberUser | null;
+    member?: IMatchMemberUser;
+    guest?: IMatchMemberUser;
 }

@@ -19,8 +19,10 @@ const { option } = useCharacterPickPriorityChart();
 <template>
     <div class="layout__chart">
         <header class="chart__header">
-            <h2>搶角優先級分析 (Pick Priority)</h2>
-            <p class="chart-desc">分析角色在BP過程中的被選擇順位。優先級越高代表玩家越急著根據場合搶下該角色。</p>
+            <div class="chart__title">
+                <h2>搶角優先級分析</h2>
+                <p class="chart__desc">分析角色在BP過程中的被選擇順位。優先級越高代表玩家越急著根據場合搶下該角色。</p>
+            </div>
         </header>
         <div class="chart">
             <VChart v-if="option" :option="option" autoresize />
@@ -44,16 +46,22 @@ const { option } = useCharacterPickPriorityChart();
 
 .chart__header {
     display: flex;
-    flex-direction: column;
-    padding: var(--space-md);
-    color: var(--md-sys-color-on-surface);
-    font-size: var(--font-size-md);
+    flex-direction: row;
+    justify-content: space-between;
+    padding: var(--space-sm);
 }
 
-.chart-desc {
+.chart__title {
+    display: flex;
+    flex-direction: column;
+    color: var(--md-sys-color-on-surface);
+    font-size: var(--font-size-md);
+    gap: var(--space-sm);
+}
+
+.chart__desc {
     font-size: var(--font-size-sm);
     color: var(--md-sys-color-on-surface-variant);
-    margin-top: var(--space-xs);
 }
 
 .chart {

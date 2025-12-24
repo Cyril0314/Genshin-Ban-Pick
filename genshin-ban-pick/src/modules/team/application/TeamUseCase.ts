@@ -25,7 +25,7 @@ export default class TeamUseCase {
     handleMemberInput(name: string, teamSlot: number, memberSlot: number) {
         const prevMap = this.teamInfoStore.teamMembersMap;
         const teamMember = handleMemberInputDomain(prevMap, teamSlot, name);
-        if (!teamMember) return null
+        if (!teamMember) return undefined
         this.handleMemberJoin(teamSlot, memberSlot, teamMember)
         return teamMember
     }
@@ -33,7 +33,7 @@ export default class TeamUseCase {
     handleMemberDrop(roomUsers: IRoomUser[], identityKey: string, teamSlot: number, memberSlot: number) {
         const prevMap = this.teamInfoStore.teamMembersMap;
         const teamMember = handleMemberDropDomain(prevMap, roomUsers, identityKey, teamSlot);
-        if (!teamMember) return null
+        if (!teamMember) return undefined
         this.handleMemberJoin(teamSlot, memberSlot, teamMember)
         return teamMember
     }

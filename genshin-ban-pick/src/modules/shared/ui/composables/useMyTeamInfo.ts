@@ -16,7 +16,7 @@ export function useMyTeamInfo() {
         const map = teamMembersMap.value;
         // console.log('[USE MY TEAM INFO] Re-computing myTeamSlot', { myIdentityKey, mapKeys: Object.keys(map) });
 
-        if (!myIdentityKey) return null;
+        if (!myIdentityKey) return undefined;
 
         for (const [teamSlot, members] of Object.entries(map)) {
             const memberList = Object.values(members);
@@ -26,7 +26,7 @@ export function useMyTeamInfo() {
                 return Number(teamSlot);
             }
         }
-        return null;
+        return undefined;
     });
 
     return {

@@ -24,7 +24,7 @@ const { scope, option } = useCharacterSynergyChart();
         <header class="chart__header">
             <div class="chart__title">
                 <h2>角色共現熱圖</h2>
-                <p class="chart-desc">本圖顯示角色間的共現頻率矩陣。顏色越深代表兩個角色越常在同一配置中同時出現。可切換分析範圍（同場 / 同組 / 同隊）以觀察角色之間的搭配傾向。</p>
+                <p class="chart__desc">本圖顯示角色間的共現頻率矩陣。顏色越深代表兩個角色越常在同一配置中同時出現。可切換分析範圍（同場 / 同組 / 同隊）以觀察角色之間的搭配傾向。</p>
             </div>
             <div class="chart__modes">
                 <span class="chart-mode__text">範圍：</span>
@@ -59,7 +59,7 @@ const { scope, option } = useCharacterSynergyChart();
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    padding: var(--space-md);
+    padding: var(--space-sm);
 }
 
 .chart__title {
@@ -67,6 +67,12 @@ const { scope, option } = useCharacterSynergyChart();
     flex-direction: column;
     color: var(--md-sys-color-on-surface);
     font-size: var(--font-size-md);
+    gap: var(--space-sm);
+}
+
+.chart__desc {
+    font-size: var(--font-size-sm);
+    color: var(--md-sys-color-on-surface-variant);
 }
 
 .chart__modes {

@@ -3,8 +3,12 @@
 import type { SynergyMode } from '@shared/contracts/analysis/value-types';
 import type AnalysisService from './AnalysisService';
 import type { MatchTeamMemberUniqueIdentityKey } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
-import type { IPlayerStyleProfileQuery } from '@shared/contracts/analysis/dto/IPlayerStyleProfileQuery';
-import type { ICharacterAttributeDistributionsQuery } from '@shared/contracts/analysis/dto/ICharacterAttributeDistributionsQuery';
+import type { IPlayerIdentityQuery } from '@shared/contracts/analysis/dto/IPlayerIdentityQuery';
+import type { IAnalysisScopeWithPlayerIdentityQuery } from '@shared/contracts/analysis/dto/IAnalysisScopeWithPlayerIdentityQuery';
+import type { IAnalysisTimeWindowQuery } from '@shared/contracts/analysis/dto/IAnalysisTimeWindowQuery';
+import type { IAnalysisTimeWindow } from '@shared/contracts/analysis/IAnalysisTimeWindow';
+import type { IMatchTimeMinimal } from '@shared/contracts/analysis/IMatchTimeMinimal';
+import { create } from 'naive-ui';
 
 export default class AnalysisRepository {
     constructor(private analysisService: AnalysisService) {}
@@ -14,8 +18,32 @@ export default class AnalysisRepository {
         return response.data;
     }
 
-    async fetchCharacterUsageSummary() {
-        const response = await this.analysisService.getCharacterUsageSummary();
+    async fetchMatchTimeline(timeWindow?: IAnalysisTimeWindow) {
+        var query: IAnalysisTimeWindowQuery = { };
+        if (timeWindow?.startAt) {
+            query.startAt = timeWindow.startAt.toISOString()
+        }
+        if (timeWindow?.endAt) {
+            query.endAt = timeWindow.endAt.toISOString()
+        }
+        const response = await this.analysisService.getMatchTimeline(query);
+        const matchTimestamps: IMatchTimeMinimal[] = response.data.map((m: any) => ({
+            id: m.id,
+            createdAt: new Date(m.createdAt)
+        }))
+        return matchTimestamps;
+    }
+
+
+    async fetchCharacterUsageSummary(timeWindow?: IAnalysisTimeWindow) {
+        var query: IAnalysisTimeWindowQuery = { };
+        if (timeWindow?.startAt) {
+            query.startAt = timeWindow.startAt.toISOString()
+        }
+        if (timeWindow?.endAt) {
+            query.endAt = timeWindow.endAt.toISOString()
+        }
+        const response = await this.analysisService.getCharacterUsageSummary(query);
         return response.data;
     }
 
@@ -25,7 +53,7 @@ export default class AnalysisRepository {
     }
 
     async fetchCharacterAttributeDistributions(scope: { type: 'Player'; identityKey: MatchTeamMemberUniqueIdentityKey } | { type: 'Global' }) {
-        let query: ICharacterAttributeDistributionsQuery;
+        let query: IAnalysisScopeWithPlayerIdentityQuery;
         switch (scope.type) {
             case 'Global':
                 query = {
@@ -83,7 +111,7 @@ export default class AnalysisRepository {
     }
 
     async fetchPlayerStyleProfile(identityKey: MatchTeamMemberUniqueIdentityKey) {
-        let query: IPlayerStyleProfileQuery;
+        let query: IPlayerIdentityQuery;
         switch (identityKey.type) {
             case 'Guest':
                 query = {

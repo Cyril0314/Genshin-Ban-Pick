@@ -13,6 +13,7 @@ import router from './router';
 import { registerHttpClient } from './app/bootstrap/registerHttpClient';
 import api from './app/infrastructure/http/httpClient';
 import { registerAuthDependencies, useAuthStore } from './modules/auth';
+import { registerGenshinVersionDependencies } from './modules/genshinVersion';
 import { registerCharacterDependencies, useCharacterStore } from './modules/character';
 import { registerBoardDependencies, useBoardStore } from './modules/board';
 import { registerChatDependencies, useChatStore} from './modules/chat';
@@ -41,6 +42,7 @@ const chatStore = useChatStore(pinia);
 
 registerHttpClient(authStore);
 registerAuthDependencies(app, httpClient, authStore);
+registerGenshinVersionDependencies(app, httpClient)
 registerCharacterDependencies(app, httpClient, characterStore);
 registerMatchDependencies(app, httpClient)
 registerAnalysisDependencies(app, httpClient)

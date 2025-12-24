@@ -12,7 +12,20 @@ export default class CharacterRepository {
 
         const map: Record<string, ICharacter> = {};
         characters.forEach((char: any) => {
-            map[char.key] = char;
+
+            map[char.key] = {
+                  id: char.id,
+                  key: char.key,
+                  name: char.name,
+                  rarity: char.rarity,
+                  element: char.element,
+                  weapon: char.weapon,
+                  region: char.region,
+                  modelType: char.modelType,
+                  releaseAt: char.releaseAt ? new Date(char.releaseAt) : undefined,
+                  role: char.role,
+                  wish: char.wish,
+            };
         });
         return map;
     }

@@ -3,13 +3,13 @@
 import type { ResolvedIdentity } from "../types/ResolvedIdentity";
 import type { TeamMember } from '@shared/contracts/team/TeamMember';
 
-export function resolveIdentity(teamMember: TeamMember): ResolvedIdentity | null {
+export function resolveIdentity(teamMember: TeamMember): ResolvedIdentity | undefined {
     if (teamMember.type === 'Manual') {
         return {
             kind: 'Manual',
             name: teamMember.name,
-            memberRef: null,
-            guestRef: null,
+            memberRef: undefined,
+            guestRef: undefined,
         };
     }
 
@@ -23,7 +23,7 @@ export function resolveIdentity(teamMember: TeamMember): ResolvedIdentity | null
             kind: 'Member',
             name: nickname,
             memberRef: id,
-            guestRef: null,
+            guestRef: undefined,
         };
     }
 
@@ -31,10 +31,10 @@ export function resolveIdentity(teamMember: TeamMember): ResolvedIdentity | null
         return {
             kind: 'Guest',
             name: nickname,
-            memberRef: null,
+            memberRef: undefined,
             guestRef: id,
         };
     }
 
-    return null;
+    return undefined;
 }

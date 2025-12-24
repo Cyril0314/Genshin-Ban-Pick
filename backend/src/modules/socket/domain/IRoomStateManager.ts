@@ -11,19 +11,19 @@ import type { CharacterRandomContextMap } from '@shared/contracts/character/Char
 export interface IRoomStateManager {
   getRoomStates(): Record<string, IRoomState>;
   setRoomState(roomId: string, roomState: IRoomState): void;
-  get(roomId: string): IRoomState | null;
+  get(roomId: string): IRoomState | undefined;
   remove(roomId: string): void;
 
-  getUsers(roomId: string): IRoomUser[] | null;
+  getUsers(roomId: string): IRoomUser[] | undefined;
   setUsers(roomId: string, users: IRoomUser[]): void;
-  getChatMessages(roomId: string): IChatMessage[] | null;
+  getChatMessages(roomId: string): IChatMessage[] | undefined;
   setChatMessages(roomId: string, chatMessages: IChatMessage[]): void;
-  getBoardImageMap(roomId: string): BoardImageMap | null;
+  getBoardImageMap(roomId: string): BoardImageMap | undefined;
   setBoardImageMap(roomId: string, boardImageMap: BoardImageMap): void;
-  getCharacterRandomContextMap(roomId: string): CharacterRandomContextMap | null;
+  getCharacterRandomContextMap(roomId: string): CharacterRandomContextMap | undefined;
   setCharacterRandomContextMap(roomId: string, characterRandomContextMap: CharacterRandomContextMap): void;
-  getTeamMembersMap(roomId: string): TeamMembersMap | null;
+  getTeamMembersMap(roomId: string): TeamMembersMap | undefined;
   setTeamMembersMap(roomId: string, teamMembersMap: TeamMembersMap): void
-  getTeamTacticalCellImageMap(roomId: string): TeamTacticalCellImageMap | null;
+  getTeamTacticalCellImageMap(roomId: string): TeamTacticalCellImageMap | undefined;
   setTeamTacticalCellImageMap(roomId: string, teamTacticalCellImageMap: TeamTacticalCellImageMap): void;
 }

@@ -11,7 +11,7 @@ export interface ICharacter {
   weapon: Weapon
   region: Region
   modelType: ModelType
-  releaseAt: Date | null
+  releaseAt?: Date
   role: CharacterRole
   wish: Wish
 }
