@@ -46,31 +46,68 @@ const { option, overview } = useMatchOverviewChart();
 
                 <div class="stat__card">
                     <span class="stat__label">總玩家數</span>
-                    <span class="stat__value">{{ overview.volume.player.total }} <small>人</small></span>
-                    <div class="stat__breakdown">
-                        <span title="會員">會員 {{ overview.volume.player.member }}</span>
-                        <span title="訪客">訪客 {{ overview.volume.player.guest }}</span>
-                        <span title="僅名稱">僅名稱 {{ overview.volume.player.onlyName }}</span>
+                    <span class="stat__value">{{ overview.volume.players.total }} <small>人</small></span>
+                    <div class="stat__breakdowns">
+                        <div class="stat__breakdown">
+                            <span title="會員">會員 {{ overview.volume.players.member }}</span>
+                            <span title="訪客">訪客 {{ overview.volume.players.guest }}</span>
+                            <span title="僅名稱">僅名稱 {{ overview.volume.players.onlyName }}</span>
+                        </div>
                     </div>
                 </div>
 
                 <div class="stat__card">
                     <span class="stat__label">出場角色數</span>
-                    <span class="stat__value">{{ overview.volume.characterCount }} <small>名</small></span>
+                    <span class="stat__value">{{ overview.volume.characters.total }} <small>名</small></span>
+                    <div class="stat__breakdowns">
+                        <div class="stat__breakdown">
+                            <span title="5★">5★ {{ overview.volume.characters.byRarity.fiveStar }}</span>
+                            <span title="4★">4★ {{ overview.volume.characters.byRarity.fourStar }}</span>
+                        </div>
+                        <div class="stat__breakdown">
+                            <span title="風">風 {{ overview.volume.characters.byElement.anemo }}</span>
+                            <span title="岩">岩 {{ overview.volume.characters.byElement.geo }}</span>
+                            <span title="雷">雷 {{ overview.volume.characters.byElement.electro }}</span>
+                            <span title="草">草 {{ overview.volume.characters.byElement.dendro }}</span>
+                            <span title="水">水 {{ overview.volume.characters.byElement.hydro }}</span>
+                            <span title="火">火 {{ overview.volume.characters.byElement.pryo }}</span>
+                            <span title="冰">冰 {{ overview.volume.characters.byElement.cryo }}</span>
+                            <span title="無">無 {{ overview.volume.characters.byElement.none }}</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="stat__card">
                     <span class="stat__label">總移動次數</span>
                     <span class="stat__value">{{ overview.volume.moves.total }} <small>次</small></span>
-                    <div class="stat__breakdown">
-                        <span title="Ban">Ban {{ overview.volume.moves.byType.ban }}</span>
-                        <span title="Pick">Pick {{ overview.volume.moves.byType.pick }}</span>
-                        <span title="Utility">Utility {{ overview.volume.moves.byType.utility }}</span>
+                    <div class="stat__breakdowns">
+                        <div class="stat__breakdown">
+                            <span title="Ban">Ban {{ overview.volume.moves.byType.ban }}</span>
+                            <span title="Pick">Pick {{ overview.volume.moves.byType.pick }}</span>
+                            <span title="Utility">Utility {{ overview.volume.moves.byType.utility }}</span>
+                        </div>
+                        <div class="stat__breakdown">
+                            <span title="手動">手動 {{ overview.volume.moves.bySource.manual }}</span>
+                            <span title="隨機">隨機 {{ overview.volume.moves.bySource.random }}</span>
+                        </div>
                     </div>
+                </div>
+
+                <div class="stat__card">
+                    <span class="stat__label">橫跨版本數</span>
+                    <span class="stat__value">{{ overview.activity.versionSpan.total }} <small>個</small></span>
                     <div class="stat__breakdown">
-                        <span title="手動">手動 {{ overview.volume.moves.bySource.manual }}</span>
-                        <span title="隨機">隨機 {{ overview.volume.moves.bySource.random }}</span>
+                        <span title="First">{{ overview.activity.versionSpan.from.name }}</span>
+                        <span title="Last">{{ overview.activity.versionSpan.to.name }}</span>
                     </div>
+                </div>
+                <div class="stat__card">
+                    <span class="stat__label">不重複玩家組合數</span>
+                    <span class="stat__value">{{ overview.volume.matchTeamMemberCombinationCount }} <small>組</small></span>
+                </div>
+                <div class="stat__card">
+                    <span class="stat__label">不重複角色組合數</span>
+                    <span class="stat__value">{{ overview.volume.matchCharacterCombinationCount }} <small>組</small></span>
                 </div>
             </div>
         </div>
@@ -90,6 +127,7 @@ const { option, overview } = useMatchOverviewChart();
 
 <style scoped>
 .layout__chart {
+    --size-stats-grid: calc(var(--base-size) * 15);
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -124,22 +162,35 @@ const { option, overview } = useMatchOverviewChart();
 /* 網格佈局 */
 .stats__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(var(--size-stats-grid), 1fr));
     gap: var(--space-md);
 }
 
 .stat__card {
-    background: var(--md-sys-color-surface-container-high);
+    background: linear-gradient(135deg, var(--md-sys-color-surface-container-low), var(--md-sys-color-surface-container));
     padding: var(--space-md);
     border-radius: var(--radius-lg);
     display: flex;
     flex-direction: column;
-    gap: var(--space-md);
+    gap: var(--space-sm);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.stat__card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--elevation-2);
+    border-color: var(--md-sys-color-outline);
 }
 
 .stat__label {
-    font-size: var(--font-size-sm);
-    color: var(--md-sys-color-on-surface-variant);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    color: var(--md-sys-color-on-surface);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .stat__value {
@@ -154,21 +205,31 @@ const { option, overview } = useMatchOverviewChart();
     margin-left: 2px;
 }
 
-/* 玩家組成細項 */
+.stat__breakdowns {
+    display: flex;
+    flex-direction: column;
+}
+
 .stat__breakdown {
     display: flex;
+    flex-wrap: wrap;
     gap: var(--space-sm);
-    margin-top: var(--space-xs);
-    font-size: 12px;
+    padding: var(--space-xs) 0;
+    font-size: var(--font-size-xs);
     border-top: 1px solid var(--md-sys-color-outline-variant);
-    padding-top: var(--space-xs);
     color: var(--md-sys-color-on-surface-variant);
+}
+
+.stat__breakdown span {
+    background-color: var(--md-sys-color-surface-container-high);
+    padding: calc(var(--space-xs) / 2) var(--space-xs);
+    border-radius: var(--radius-sm);
 }
 
 .chart {
     display: flex;
     width: 100%;
-    height: 20%;
+    height: 100%;
 }
 
 .chart__footer {

@@ -48,18 +48,21 @@ export default class AnalysisService {
         return {
             volume: {
                 matchCount: overview.totalMatches,
-                player: {
-                    total: overview.uniquePlayers.memberCount + overview.uniquePlayers.guestCount + overview.uniquePlayers.onlyNameCount,
-                    member: overview.uniquePlayers.memberCount,
-                    guest: overview.uniquePlayers.guestCount,
-                    onlyName: overview.uniquePlayers.onlyNameCount,
+                matchCharacterCombinationCount: overview.uniqueCharacterCombinations,
+                matchTeamMemberCombinationCount: overview.uniqueTeamMemberCombinations,
+                players: {
+                    total: overview.uniquePlayers.member + overview.uniquePlayers.guest + overview.uniquePlayers.onlyName,
+                    member: overview.uniquePlayers.member,
+                    guest: overview.uniquePlayers.guest,
+                    onlyName: overview.uniquePlayers.onlyName,
                 },
-                characterCount: overview.uniqueCharacters,
+                characters: overview.uniqueCharacters,
                 moves: overview.moves
             },
             activity: {
                 earliestMatchAt: overview.dateRange.from.toISOString(),
-                latestMatchAt: overview.dateRange.to.toISOString()
+                latestMatchAt: overview.dateRange.to.toISOString(),
+                versionSpan: overview.versionSpan
             }
         }
     }

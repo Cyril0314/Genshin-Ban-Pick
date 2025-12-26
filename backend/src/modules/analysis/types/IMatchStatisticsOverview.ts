@@ -2,13 +2,31 @@
 
 export interface IMatchStatisticsOverview {
     totalMatches: number;
-    totalTacticalUsages: number;
+    uniqueCharacterCombinations: number;
+    uniqueTeamMemberCombinations: number;
 
-    uniqueCharacters: number;
+    uniqueCharacters: {
+        total: number;
+        byRarity: {
+            fourStar: number;
+            fiveStar: number;
+        };
+        byElement: {
+            anemo: number;
+            geo: number;
+            electro: number;
+            dendro: number;
+            hydro: number;
+            pryo: number;
+            cryo: number
+            none: number
+        };
+    };
+
     uniquePlayers: {
-        memberCount: number;
-        guestCount: number;
-        onlyNameCount: number;
+        member: number;
+        guest: number;
+        onlyName: number;
     };
 
     moves: {
@@ -28,4 +46,15 @@ export interface IMatchStatisticsOverview {
         from: Date;
         to: Date;
     };
+
+    versionSpan: {
+        total: number;
+        from: IVersion;
+        to: IVersion;
+    }
+}
+
+interface IVersion {
+    name: string
+    code: string
 }

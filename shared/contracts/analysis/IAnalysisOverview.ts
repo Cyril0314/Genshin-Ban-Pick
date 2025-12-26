@@ -1,17 +1,35 @@
 export interface IAnalysisOverview {
-    volume: OverviewVolume;
-    activity: OverviewActivity;
+    volume: IOverviewVolume;
+    activity: IOverviewActivity;
 }
 
-interface OverviewVolume {
+interface IOverviewVolume {
     matchCount: number;
-    player: {
+    matchCharacterCombinationCount: number;
+    matchTeamMemberCombinationCount: number;
+    players: {
       total: number;
       member: number;
       guest: number;
       onlyName: number;
     };
-    characterCount: number;
+    characters: {
+        total: number;
+        byRarity: {
+            fourStar: number;
+            fiveStar: number;
+        };
+        byElement: {
+            anemo: number;
+            geo: number;
+            electro: number;
+            dendro: number;
+            hydro: number;
+            pryo: number;
+            cryo: number
+            none: number
+        };
+    };
     moves: {
         total: number,
         byType: {
@@ -26,7 +44,17 @@ interface OverviewVolume {
     }
 }
 
-interface OverviewActivity {
+interface IOverviewActivity {
     earliestMatchAt: string;
     latestMatchAt: string;
+    versionSpan: {
+        total: number;
+        from: IVersion;
+        to: IVersion;
+    };
+}
+
+interface IVersion {
+    name: string
+    code: string
 }

@@ -63,9 +63,9 @@ export function useMatchOverviewChart() {
                 yAxis: 0,
                 itemStyle: {
                     color: tinycolor(chartColors[index % chartColors.length])
-                        .brighten(20)
+                        .brighten(10)
+                        .setAlpha(0.2)
                         .toRgbString(),
-                    opacity: 0.4,
                 },
                 label: {
                     show: true,
@@ -102,10 +102,14 @@ export function useMatchOverviewChart() {
             return {
                 value: [group.releaseAt, 0.1],
                 characters: group.characters,
+                symbol: 'circle',
+                symbolSize: 8,
                 itemStyle: {
                     color: '#ccc',
+                    opacity: 0.8,
+                    shadowBlur: 2,
+                    shadowColor: 'rgba(0,0,0,0.1)',
                 },
-                symbol: 'pin'
             };
         });
 
@@ -115,9 +119,13 @@ export function useMatchOverviewChart() {
                 id: m.id,
                 type: 'match',
                 itemStyle: {
-                    color: chartColors[0],
-                    opacity: 0.6,
+                    color: designTokens.colorPrimary.value,
+                    opacity: 0.9,
+                    shadowBlur: 4,
+                    shadowColor: designTokens.colorPrimary.value,
                 },
+                symbol: 'diamond',
+                symbolSize: 10,
             })) ?? [];
 
         return {

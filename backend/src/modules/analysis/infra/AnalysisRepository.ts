@@ -21,20 +21,37 @@ export default class AnalysisRepository implements IAnalysisRepository {
 
     async findMatchStatisticsOverview(): Promise<IMatchStatisticsOverview> {
         const [
-            totalMatches,
+            matches,
             totalMoves,
-            totalTacticalUsages,
+            matchTacticalUsages,
             dateRange,
             uniqueCharacters,
+            uniqueCharacterRarityCounts,
+            uniqueCharacterElementCounts,
             memberCount,
             guestCount,
             onlyNameCount,
             moveTypeCounts,
             moveSourceCounts,
         ] = await Promise.all([
-            this.prisma.match.count(),
+            this.prisma.match.findMany({
+                select: {
+                    id: true,
+                    teams: {
+                        select: {
+                            teamMembers: {
+                                select: {
+                                    memberRef: true,
+                                    guestRef: true,
+                                    name: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            }),
             this.prisma.matchMove.count(),
-            this.prisma.matchTacticalUsage.count(),
+            this.prisma.matchTacticalUsage.findMany(matchTacticalUsageExpandedRefsQuery),
             this.prisma.match.aggregate({
                 _min: { createdAt: true },
                 _max: { createdAt: true },
@@ -42,6 +59,28 @@ export default class AnalysisRepository implements IAnalysisRepository {
             this.prisma.matchTacticalUsage.findMany({
                 distinct: ['characterKey'],
                 select: { characterKey: true },
+            }),
+            this.prisma.character.groupBy({
+                by: ['rarity'],
+                where: {
+                    matchTacticalUsages: {
+                        some: {}, // 至少出現過一次
+                    },
+                },
+                _count: {
+                    _all: true,
+                },
+            }),
+            this.prisma.character.groupBy({
+                by: ['element'],
+                where: {
+                    matchTacticalUsages: {
+                        some: {}, // 至少出現過一次
+                    },
+                },
+                _count: {
+                    _all: true,
+                },
             }),
             this.prisma.matchTeamMember.findMany({
                 where: { memberRef: { not: null } },
@@ -71,19 +110,88 @@ export default class AnalysisRepository implements IAnalysisRepository {
             }),
         ]);
 
-        const moveTypeGroupCount = this.mapGroupCount(moveTypeCounts, 'type')
-        const moveSourceGroupCount = this.mapGroupCount(moveSourceCounts, 'source')
+        const characterRarityGroupCount = this.mapGroupCount(uniqueCharacterRarityCounts, 'rarity');
+        const characterElementGroupCount = this.mapGroupCount(uniqueCharacterElementCounts, 'element');
 
-        console.log('moveSourceCounts', moveSourceCounts);
+        const moveTypeGroupCount = this.mapGroupCount(moveTypeCounts, 'type');
+        const moveSourceGroupCount = this.mapGroupCount(moveSourceCounts, 'source');
+
+        const setupMap = new Map<string, string[]>();
+
+        for (const matchTacticalUsage of matchTacticalUsages) {
+            const setupKey = this.setupKey(matchTacticalUsage);
+
+            if (!setupMap.has(setupKey)) {
+                setupMap.set(setupKey, []);
+            }
+            setupMap.get(setupKey)!.push(matchTacticalUsage.characterKey);
+        }
+        const characterCombinationGroupCount = new Map<string, number>();
+
+        for (const characters of setupMap.values()) {
+            const signature = characters.sort().join('|');
+
+            characterCombinationGroupCount.set(signature, (characterCombinationGroupCount.get(signature) ?? 0) + 1);
+        }
+
+        const uniqueCharacterCombinations = characterCombinationGroupCount.size;
+        console.log(`characterCombinationGroupCount`, characterCombinationGroupCount)
+        // const repeatedCombinations = Array.from(characterCombinationGroupCount.entries())
+        //     .map(([key, count]) => ({
+        //         characters: key.split('|'),
+        //         count,
+        //     }))
+        //     .sort((a, b) => b.count - a.count);
+
+        const teamMemberCombinationGroupCount = new Map<string, number>();
+        for (const match of matches) {
+            for (const matchTeam of match.teams) {
+                const signature = matchTeam.teamMembers.map(this.identityKey).sort().join('|');
+                teamMemberCombinationGroupCount.set(signature, (teamMemberCombinationGroupCount.get(signature) ?? 0) + 1);
+            }
+        }
+        const uniqueTeamMemberCombinations = teamMemberCombinationGroupCount.size;
+        console.log(`teamMemberCombinationGroupCount`, teamMemberCombinationGroupCount)
+
+        const versions = await this.prisma.genshinVersion.findMany({
+            where: {
+                startAt: { lte: dateRange._max.createdAt! },
+                OR: [{ endAt: null }, { endAt: { gte: dateRange._min.createdAt! } }],
+            },
+            orderBy: { order: 'asc' },
+            select: {
+                id: true,
+                order: true,
+                code: true,
+                name: true,
+            },
+        });
 
         return {
-            totalMatches,
-            totalTacticalUsages,
-            uniqueCharacters: uniqueCharacters.length,
+            totalMatches: matches.length,
+            uniqueCharacterCombinations,
+            uniqueTeamMemberCombinations,
+            uniqueCharacters: {
+                total: uniqueCharacters.length,
+                byRarity: {
+                    fourStar: characterRarityGroupCount.FourStar,
+                    fiveStar: characterRarityGroupCount.FiveStar,
+                },
+                byElement: {
+                    anemo: characterElementGroupCount.Anemo,
+                    geo: characterElementGroupCount.Geo,
+                    electro: characterElementGroupCount.Electro,
+                    dendro: characterElementGroupCount.Dendro,
+                    hydro: characterElementGroupCount.Hydro,
+                    pryo: characterElementGroupCount.Pyro,
+                    cryo: characterElementGroupCount.Cryo,
+                    none: characterElementGroupCount.None,
+                },
+            },
             uniquePlayers: {
-                memberCount: memberCount.length,
-                guestCount: guestCount.length,
-                onlyNameCount: onlyNameCount.length,
+                member: memberCount.length,
+                guest: guestCount.length,
+                onlyName: onlyNameCount.length,
             },
             moves: {
                 total: totalMoves,
@@ -100,6 +208,11 @@ export default class AnalysisRepository implements IAnalysisRepository {
             dateRange: {
                 from: dateRange._min.createdAt!,
                 to: dateRange._max.createdAt!,
+            },
+            versionSpan: {
+                total: versions.length,
+                from: versions[0],
+                to: versions[versions.length - 1],
             },
         };
     }
@@ -267,6 +380,21 @@ export default class AnalysisRepository implements IAnalysisRepository {
             },
             {} as Record<T, number>,
         );
+    }
+
+    identityKey(m: { memberRef: number | null; guestRef: number | null; name: string }) {
+        if (m.memberRef) return `member:${m.memberRef}`;
+        if (m.guestRef) return `guest:${m.guestRef}`;
+        return `name:${m.name}`;
+    }
+
+    setupKey(entity: Prisma.MatchTacticalUsageGetPayload<typeof matchTacticalUsageExpandedRefsQuery>) {
+        const matchId = entity.teamMember.team.matchId;
+        const teamId = entity.teamMember.teamId;
+        const setupNumber = entity.setupNumber;
+
+        const setupKey = `${matchId}|${teamId}|${setupNumber}`;
+        return setupKey;
     }
 }
 
