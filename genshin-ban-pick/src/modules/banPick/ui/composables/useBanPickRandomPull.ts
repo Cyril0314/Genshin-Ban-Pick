@@ -9,7 +9,7 @@ import type { ZoneType } from '@shared/contracts/board/value-types.ts';
 import type { ICharacterRandomContext } from '@shared/contracts/character/ICharacterRandomContext';
 import type { CharacterFilterKey } from '@shared/contracts/character/CharacterFilterKey';
 
-export function useBanPickRandomPull(roomSetting: Ref<IRoomSetting>, filteredCharacterKeys: Ref<string[]>, characterFilter: Ref<Record<CharacterFilterKey, string[]>>, boardImageMap: Ref<BoardImageMap>) {
+export function useBanPickRandomPull(roomSetting: Ref<IRoomSetting | undefined>, filteredCharacterKeys: Ref<string[]>, characterFilter: Ref<Record<CharacterFilterKey, string[]>>, boardImageMap: Ref<BoardImageMap>) {
     const { randomPull: handleRandomPull } = randomPullUseCase()
     const { boardImageDrop } = useBoardSync()
 

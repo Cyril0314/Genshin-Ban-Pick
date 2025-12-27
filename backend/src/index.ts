@@ -34,7 +34,7 @@ const app = express();
 const server = http.createServer(app);
 app.use(
     cors({
-        origin: ['http://localhost:5173', 'http://52.87.171.134:3000'], // ✅ 允許來源
+        origin: ['http://localhost:5173', 'http://52.90.128.200:3000'], // ✅ 允許來源
         credentials: true, // ✅ 若要傳 cookie 或 token
     }),
 );

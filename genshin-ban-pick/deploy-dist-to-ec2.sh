@@ -2,7 +2,7 @@
 
 ### === 設定參數 === ###
 EC2_USER=ec2-user
-EC2_HOST=52.87.171.134
+EC2_HOST=52.90.128.200
 PEM_FILE="/Users/wangxiaoyu/Desktop/aws key/aws-discord-bot-farmer-licence-key.pem"
 REMOTE_DIR=/home/ec2-user/Genshin-Ban-Pick/Genshin-Ban-Pick/genshin-ban-pick
 
