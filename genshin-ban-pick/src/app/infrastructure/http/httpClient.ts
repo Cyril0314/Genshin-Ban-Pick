@@ -3,9 +3,9 @@
 import axios from 'axios';
 import { TokenNotFound } from '@/app/errors/AppError';
 
-let tokenProvider: (() => string | null) | null = null;
+let tokenProvider: (() => string | undefined) | undefined = undefined;
 
-export function setTokenProvider(fn: () => string | null) {
+export function setTokenProvider(fn: () => string | undefined) {
     tokenProvider = fn;
 }
 
@@ -18,7 +18,7 @@ api.interceptors.request.use((config) => {
     const withToken = config.withToken ?? true;
 
     if (withToken) {
-        const token = tokenProvider ? tokenProvider() : null;
+        const token = tokenProvider ? tokenProvider() : undefined;
         if (!token) throw new TokenNotFound();
 
         config.headers = config.headers || {};

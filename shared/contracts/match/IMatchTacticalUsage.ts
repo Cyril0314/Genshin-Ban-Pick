@@ -8,5 +8,5 @@ export interface IMatchTacticalUsage {
     teamMemberId: number;
     characterKey: string;
 
-    character: ICharacter | null;
+    character?: ICharacter;
 }

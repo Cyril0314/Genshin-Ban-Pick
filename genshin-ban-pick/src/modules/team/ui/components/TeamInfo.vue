@@ -30,13 +30,13 @@ const totalSlots = computed(() =>
   Array.from({ length: props.numberOfSetupCharacter + numberOfReservedSlot })
 )
 
-function getTeamMember(memberSlot: number): TeamMember | null {
-    return props.teamInfo.members[memberSlot] ?? null
+function getTeamMember(memberSlot: number): TeamMember | undefined {
+    return props.teamInfo.members[memberSlot] ?? undefined
 }
 
-function getTeamMemberName(memberSlot: number): string | null {
+function getTeamMemberName(memberSlot: number): string | undefined {
     const member = getTeamMember(memberSlot)
-    if (!member) return null;
+    if (!member) return undefined;
     return member.type === 'Manual' ? member.name : member.user.nickname
 }
 

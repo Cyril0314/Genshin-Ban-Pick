@@ -15,14 +15,14 @@ export function usePlayerCharacterChart() {
     const { gridStyle, tooltipStyle, dataZoomStyle } = useEchartTheme();
     const analysisUseCase = useAnalysisUseCase();
 
-    const matrix = ref<KeyIndexedMatrix<string, string> | null>(null);
+    const matrix = ref<KeyIndexedMatrix<string, string>>();
 
     onMounted(async () => {
         matrix.value = await analysisUseCase.fetchPlayerCharacterUsage();
     });
 
     const option = computed(() => {
-        if (!matrix.value) return null;
+        if (!matrix.value) return undefined;
 
         const top = buildHeatmapData(matrix.value);
 

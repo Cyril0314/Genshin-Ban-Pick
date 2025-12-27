@@ -38,7 +38,7 @@ export default class AuthUseCase {
         const token = this.authStore.getToken();
         if (!token) {
             this.authStore.setInitialized(true);
-            return { identity: null, token: null };
+            return { identity: undefined, token: undefined };
         }
 
         try {
@@ -46,16 +46,16 @@ export default class AuthUseCase {
             this.authStore.setIdentity(identity);
             return { identity, token };
         } catch (error) {
-            this.authStore.setToken(null);
-            this.authStore.setIdentity(null);
-            return { identity: null, token: null };
+            this.authStore.setToken(undefined);
+            this.authStore.setIdentity(undefined);
+            return { identity: undefined, token: undefined };
         } finally {
             this.authStore.setInitialized(true);
         }
     }
 
     logout() {
-        this.authStore.setIdentity(null);
-        this.authStore.setToken(null);
+        this.authStore.setIdentity(undefined);
+        this.authStore.setToken(undefined);
     }
 }

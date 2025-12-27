@@ -81,7 +81,7 @@ async function main() {
                 break;
 
             case ZoneType.Pick:
-                if (step.teamSlot !== null) {
+                if (step.teamSlot !== undefined) {
                     const teamPool = teamCharacterPools[step.teamSlot] || [];
                     teamPool.push(character.key);
                     teamCharacterPools[step.teamSlot] = teamPool;

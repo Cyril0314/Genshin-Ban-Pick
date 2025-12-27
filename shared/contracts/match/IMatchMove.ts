@@ -9,9 +9,9 @@ export interface IMatchMove {
     source: MoveSource;
 
     matchId: number;
-    teamId?: number | null;
+    teamId?: number;
     characterKey: string;
 
-    character: ICharacter | null;
-    randomMoveContext: IRandomMoveContext | null;
+    character?: ICharacter;
+    randomMoveContext?: IRandomMoveContext;
 }

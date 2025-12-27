@@ -23,7 +23,7 @@ const props = defineProps<{
     characterMap: Record<string, ICharacter>;
     boardImageMap: Record<number, string>;
     usedImageIds: string[];
-    filteredCharacterKeys: string[] | null;
+    filteredCharacterKeys?: string[];
 }>();
 
 const emit = defineEmits<{

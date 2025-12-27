@@ -10,25 +10,25 @@ import type { TeamTacticalCellImageMap } from '@shared/contracts/tactical/TeamTa
 
 export interface IRoomStateRepository {
     findAll(): Record<string, IRoomState>;
-    findById(roomId: string): IRoomState | null;
+    findById(roomId: string): IRoomState | undefined;
     create(roomId: string, state: IRoomState): IRoomState;
     upsert(roomId: string, state: IRoomState): IRoomState;
 
-    findRoomUsersById(roomId: string): IRoomUser[] | null;
+    findRoomUsersById(roomId: string): IRoomUser[] | undefined;
     updateRoomUsersById(roomId: string, users: IRoomUser[]): number;
 
-    findBoardImageMapById(roomId: string): BoardImageMap| null ;
+    findBoardImageMapById(roomId: string): BoardImageMap| undefined ;
     updateBoardImageMapById(roomId: string, boardImageMap: BoardImageMap): number;
 
-    findCharacterRandomContextMapById(roomId: string): CharacterRandomContextMap | null ;
+    findCharacterRandomContextMapById(roomId: string): CharacterRandomContextMap | undefined ;
     updateCharacterRandomContextMapById(roomId: string, characterRandomContextMap: CharacterRandomContextMap): number;
 
-    findChatMessagesById(roomId: string): IChatMessage[] | null;
+    findChatMessagesById(roomId: string): IChatMessage[] | undefined;
     updateChatMessagesById(roomId: string, chatMessages: IChatMessage[]): number;
 
-    findTeamMembersMapById(roomId: string): TeamMembersMap | null;
+    findTeamMembersMapById(roomId: string): TeamMembersMap | undefined;
     updateTeamMembersMapById(roomId: string, teamMembersMap: TeamMembersMap): number;
 
-    findTeamTacticalCellImageMapById(roomId: string): TeamTacticalCellImageMap | null;
+    findTeamTacticalCellImageMapById(roomId: string): TeamTacticalCellImageMap | undefined;
     updateTeamTacticalCellImageMapById(roomId: string, teamTacticalCellImageMap: TeamTacticalCellImageMap): number;
 }

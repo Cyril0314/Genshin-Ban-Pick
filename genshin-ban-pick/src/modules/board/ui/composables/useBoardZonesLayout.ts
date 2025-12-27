@@ -65,7 +65,7 @@ export function useBoardZonesLayout(roomSetting: IRoomSetting, teamInfoPair: { l
             .filter(zone => zone.type === ZoneType.Pick)
             .map(zone => {
                 const step = matchFlow.steps.find(s => s.zoneId === zone.id);
-                return step ? { zone, stepIndex: step.index } : null;
+                return step ? { zone, stepIndex: step.index } : undefined;
             })
             .filter(item => item && matchFlow.steps[item.stepIndex].teamSlot === teamSlot)
             .sort((a, b) => a!.stepIndex - b!.stepIndex)

@@ -9,10 +9,10 @@ export function handleMemberInputDomain(
     teamMembersMap: TeamMembersMap,
     teamSlot: number,
     name: string,
-): TeamMember | null {
+): TeamMember | undefined {
     const teamMembers = Object.values(teamMembersMap[teamSlot]);
     if (teamMembers.some((m) => m.type === 'Manual' && m.name === name)) {
-        return null;
+        return undefined;
     }
     let teamMember = createManualMemberDomain(name);
     return teamMember

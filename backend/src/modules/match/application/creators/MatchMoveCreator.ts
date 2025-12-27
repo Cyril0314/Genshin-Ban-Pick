@@ -19,11 +19,11 @@ export default class MatchMoveCreator {
     ) {
         const matchMoves = [];
         for (const step of steps) {
-            const matchTeamId = step.teamSlot === null ? null : matchTeamIdMap[step.teamSlot];
+            const matchTeamId = step.teamSlot === undefined ? undefined : matchTeamIdMap[step.teamSlot];
             const zone = zoneMetaTable[step.zoneId];
             const characterKey = boardImageMap[step.zoneId];
 
-            const randomContext = characterRandomContextMap[characterKey] ?? null;
+            const randomContext = characterRandomContextMap[characterKey] ?? undefined;
             const matchMove = await tx.matchMove.create({
                 data: {
                     order: step.index,

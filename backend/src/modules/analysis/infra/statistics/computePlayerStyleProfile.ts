@@ -8,10 +8,10 @@ import { computeCharacterAttributeDistributions } from '../character/computeChar
 export function computePlayerStyleProfile(
     memberUsages: IMatchTacticalUsageWithCharacter[],
     globalUsages: IMatchTacticalUsageWithCharacter[],
-): IPlayerStyleProfile | null {
+): IPlayerStyleProfile | undefined {
     const playerTotalPicks = memberUsages.length;
 
-    if (playerTotalPicks === 0) { return null }
+    if (playerTotalPicks === 0) { return undefined }
 
     const uniqueChars = new Set(memberUsages.map((m) => m.characterKey)).size;
     const versatility = Math.min((uniqueChars / 30) * 100, 100);

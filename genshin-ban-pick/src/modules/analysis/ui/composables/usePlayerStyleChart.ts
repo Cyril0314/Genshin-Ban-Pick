@@ -1,3 +1,5 @@
+// src/modules/analysis/ui/composables/usePlayerStyleChart.ts
+
 import { computed, onMounted, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 
@@ -47,31 +49,29 @@ export function usePlayerStyleChart() {
         return [globalScope, ...playerScopes];
     });
 
-    const selectedScopeKey = ref<string | null>(null);
+    const selectedScopeKey = ref<string>();
 
-    const selectedScope = computed<Scope | null>({
+    const selectedScope = computed({
         get() {
-            if (!selectedScopeKey.value) return null;
-            return scopes.value.find((scope) => getScopeKey(scope) === selectedScopeKey.value) ?? null;
+            if (!selectedScopeKey.value) return undefined;
+            return scopes.value.find((scope) => getScopeKey(scope) === selectedScopeKey.value);
         },
         set(scope) {
-            selectedScopeKey.value = scope ? getScopeKey(scope) : null;
+            selectedScopeKey.value = scope ? getScopeKey(scope) : undefined;
         },
     });
 
-    const playerStyle = ref<IPlayerStyleProfile | null>(null);
-    const characterAttributeDistributions = ref<ICharacterAttributeDistributions | null>(null);
+    const playerStyle = ref<IPlayerStyleProfile>();
+    const characterAttributeDistributions = ref<ICharacterAttributeDistributions>();
 
     onMounted(async () => {
-        const overview = await analysisUseCase.fetchOverview();
-        console.log('overview', overview)
         players.value = await matchUseCase.fetchMatchTeamMembers();
 
         const self = players.value.find((player) => player.type === identity.value?.type && player.id === identity.value?.user.id);
         if (self) {
             selectedScope.value = { type: 'Player', identity: self };
             playerStyle.value = await analysisUseCase.fetchPlayerStyleProfile(selectedScope.value.identity);
-            characterAttributeDistributions.value = playerStyle.value?.characterAttributeDistributions ?? null;
+            characterAttributeDistributions.value = playerStyle.value?.characterAttributeDistributions;
         } else {
             selectedScope.value = { type: 'Global' };
             characterAttributeDistributions.value = await analysisUseCase.fetchGlobalCharacterAttributeDistributions();
@@ -82,7 +82,7 @@ export function usePlayerStyleChart() {
         if (!selectedScope.value) return;
         if (selectedScope.value.type === 'Player') {
             playerStyle.value = await analysisUseCase.fetchPlayerStyleProfile(selectedScope.value.identity);
-            characterAttributeDistributions.value = playerStyle.value?.characterAttributeDistributions ?? null;
+            characterAttributeDistributions.value = playerStyle.value?.characterAttributeDistributions;
         } else {
             characterAttributeDistributions.value = await analysisUseCase.fetchGlobalCharacterAttributeDistributions();
         }
@@ -109,7 +109,7 @@ export function usePlayerStyleChart() {
             const elementName = name as keyof typeof elementColors;
             return elementColors[elementName]?.main ?? '#999999';
         }
-        return null;
+        return undefined;
         // return chartColors[index % chartColors.length];
     }
 
@@ -127,7 +127,7 @@ export function usePlayerStyleChart() {
     }
 
     const option = computed(() => {
-        if (!characterAttributeDistributions.value || !selectedScope.value) return null;
+        if (!characterAttributeDistributions.value || !selectedScope.value) return undefined;
 
         const scopeType = selectedScope.value.type;
         const isGlobal = scopeType === 'Global';
@@ -143,7 +143,7 @@ export function usePlayerStyleChart() {
                   tooltip: {
                       ...tooltipStyle('single'),
                   },
-                  radar: null,
+                  radar: undefined,
                   series: [
                       // --- Pie 1: 元素 ---
                       {

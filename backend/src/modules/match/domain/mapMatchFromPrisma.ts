@@ -22,15 +22,15 @@ import type { MoveSource, MoveType } from '@shared/contracts/match/value-types';
 // type PrismaMatchResult = Prisma.MatchGetPayload<typeof matchQuery>;
 
 // Prisma include 查詢結果轉 Domain IMatch
-export function mapMatchFromPrisma(m: (Match & { teams?: MatchTeam[]; moves?: MatchMove[] }) | null): IMatch {
+export function mapMatchFromPrisma(m: (Match & { teams?: MatchTeam[]; moves?: MatchMove[] }) | undefined): IMatch {
     if (!m) throw new Error('Match not found');
     return {
         id: m.id,
         createdAt: m.createdAt,
         updatedAt: m.updatedAt,
         flowVersion: m.flowVersion,
-        teams: m.teams?.map(mapTeam) ?? null,
-        moves: m.moves?.map(mapMove) ?? null,
+        teams: m.teams?.map(mapTeam) ?? undefined,
+        moves: m.moves?.map(mapMove) ?? undefined,
     };
 }
 
@@ -39,9 +39,9 @@ function mapTeam(team: MatchTeam & { teamMembers?: MatchTeamMember[] }): IMatchT
     return {
         id: team.id,
         slot: team.slot,
-        name: team.name ?? null,
+        name: team.name ?? undefined,
         matchId: team.matchId,
-        teamMembers: team.teamMembers?.map(mapTeamMember) ?? null,
+        teamMembers: team.teamMembers?.map(mapTeamMember) ?? undefined,
     };
 }
 
@@ -52,11 +52,11 @@ function mapTeamMember(tm: MatchTeamMember & { tacticalUsages?: MatchTacticalUsa
         slot: tm.slot,
         name: tm.name,
         teamId: tm.teamId,
-        memberRef: tm.memberRef ?? null,
-        guestRef: tm.guestRef ?? null,
-        tacticalUsages: tm.tacticalUsages?.map(mapTacticalUsage) ?? null,
-        member: tm.member ?? null,
-        guest: tm.guest ?? null,
+        memberRef: tm.memberRef,
+        guestRef: tm.guestRef,
+        tacticalUsages: tm.tacticalUsages?.map(mapTacticalUsage),
+        member: tm.member,
+        guest: tm.guest,
     };
 }
 
@@ -80,10 +80,10 @@ function mapMove(move: MatchMove & { character?: Character; randomMoveContext?: 
         type: move.type as MoveType,
         source: move.source as MoveSource,
         matchId: move.matchId,
-        teamId: move.teamId ?? null,
+        teamId: move.teamId,
         characterKey: move.characterKey,
-        character: move.character === undefined ? null : mapCharacter(move.character),
-        randomMoveContext: move.randomMoveContext ?? null,
+        character: mapCharacter(move.character),
+        randomMoveContext: move.randomMoveContext,
     };
 }
 

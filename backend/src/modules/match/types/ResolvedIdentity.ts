@@ -4,18 +4,18 @@ export type ResolvedIdentity =
     | {
           kind: 'Manual';
           name: string;
-          memberRef: null;
-          guestRef: null;
+          memberRef: undefined;
+          guestRef: undefined;
       }
     | {
           kind: 'Member';
           name: string;
           memberRef: number;
-          guestRef: null;
+          guestRef: undefined;
       }
     | {
           kind: 'Guest';
           name: string;
-          memberRef: null;
+          memberRef: undefined;
           guestRef: number;
       };

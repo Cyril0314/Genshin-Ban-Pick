@@ -9,7 +9,7 @@ import { DragTypes } from '@/app/constants/customMIMETypes'
 const props = defineProps<{
   characterMap: Record<string, ICharacter>
   usedImageIds: string[]
-  filteredCharacterKeys: string[] | null
+  filteredCharacterKeys?: string[]
 }>()
 
 const availableCharacterKeys = computed(() =>

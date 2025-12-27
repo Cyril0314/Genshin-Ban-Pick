@@ -20,7 +20,7 @@ export default class GuestRepository implements IGuestRepository {
         const guest = await this.prisma.guest.findUnique({
             where: { id },
         });
-        if (!guest) return null;
+        if (!guest) return undefined;
         return this.map(guest);
     }
 

@@ -3,8 +3,11 @@
 import { Request, Response } from 'express';
 import AnalysisService from '../application/analysis.service';
 
+import { parsePlayerIdentityQuery } from './query/parsePlayerIdentityQuery';
+import { parseAnalysisScopeQuery } from './query/parseAnalysisScopeQuery';
+
 import type { SynergyMode } from '@shared/contracts/analysis/value-types';
-import type { MatchTeamMemberUniqueIdentityKey } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
+import { parseTimeWindowQuery } from './query/parseTimeWindowQuery';
 
 export default class AnalysisController {
     constructor(private analysisService: AnalysisService) {}
@@ -14,8 +17,15 @@ export default class AnalysisController {
         res.status(200).json(overview);
     };
 
+    fetchMatchTimeline = async (req: Request, res: Response) => {
+        const timeWindow = parseTimeWindowQuery(req.query);
+        const timeline = await this.analysisService.fetchMatchTimeline(timeWindow);
+        res.status(200).json(timeline);
+    };
+
     fetchCharacterUsageSummary = async (req: Request, res: Response) => {
-        const tacticalUsages = await this.analysisService.fetchCharacterUsageSummary();
+        const timeWindow = parseTimeWindowQuery(req.query);
+        const tacticalUsages = await this.analysisService.fetchCharacterUsageSummary(timeWindow);
         res.status(200).json(tacticalUsages);
     };
 
@@ -46,56 +56,14 @@ export default class AnalysisController {
     };
 
     fetchPlayerStyleProfile = async (req: Request, res: Response) => {
-        const identityKey = this.parseIdentityKey(req.query);
+        const identityKey = parsePlayerIdentityQuery(req.query);
         const style = await this.analysisService.fetchPlayerStyleProfile(identityKey);
         res.status(200).json(style);
     };
 
     fetchCharacterAttributeDistributions = async (req: Request, res: Response) => {
-        const scope = this.parseScope(req.query)
+        const scope = parseAnalysisScopeQuery(req.query)
         const distributions = await this.analysisService.fetchCharacterAttributeDistributions(scope);
         res.status(200).json(distributions);
     };
-
-    parseScope(query: any): { type: 'Player'; identityKey: MatchTeamMemberUniqueIdentityKey } | { type: 'Global' } | null {
-        const { scope, type, id, name } = query;
-        if (scope === 'global') {
-            return { type: 'Global' }
-        }
-
-        if (scope === 'player') {
-            const identityKey = this.parseIdentityKey({ type, id, name })
-            if (identityKey === null) {
-                return null;
-            }
-            return { type: 'Player', identityKey}
-        }
-
-        return null
-    }
-
-    parseIdentityKey(query: any): MatchTeamMemberUniqueIdentityKey | null {
-        const { type, id, name } = query;
-
-        if (type === 'name') {
-            return { type: 'Name', name };
-        }
-
-        if (type === 'member' || type === 'guest') {
-            const numericId = Number(id);
-
-            if (isNaN(numericId) || !Number.isInteger(numericId) || numericId <= 0) {
-                console.error(`Invalid ID format for type ${type}: ${id}`);
-                return null;
-            }
-
-            return {
-                type: type === 'member' ? 'Member' : 'Guest',
-                id: numericId,
-            };
-        }
-
-        console.error(`Unknown identity type: ${type}`);
-        return null;
-    }
 }

@@ -17,8 +17,10 @@ const { option } = useCharacterScatterChart();
 <template>
     <div class="layout__chart">
         <header class="chart__header">
-            <h2>角色定位象限 (Character Archetypes)</h2>
-            <p class="chart-desc">透過「泛用度」與「搶角優先級」兩個維度，將角色定位於九個生態象限。</p>
+            <div class="chart__title">
+                <h2>角色定位象限</h2>
+                <p class="chart__desc">透過「泛用度」與「搶角優先級」兩個維度，將角色定位於九個生態象限。</p>
+            </div>
         </header>
         <div class="chart">
             <VChart v-if="option" :option="option" autoresize />
@@ -43,16 +45,22 @@ const { option } = useCharacterScatterChart();
 
 .chart__header {
     display: flex;
-    flex-direction: column;
-    padding: var(--space-md);
-    color: var(--md-sys-color-on-surface);
-    font-size: var(--font-size-md);
+    flex-direction: row;
+    justify-content: space-between;
+    padding: var(--space-sm);
 }
 
-.chart-desc {
+.chart__title {
+    display: flex;
+    flex-direction: column;
+    color: var(--md-sys-color-on-surface);
+    font-size: var(--font-size-md);
+    gap: var(--space-sm);
+}
+
+.chart__desc {
     font-size: var(--font-size-sm);
     color: var(--md-sys-color-on-surface-variant);
-    margin-top: var(--space-xs);
 }
 
 .chart {

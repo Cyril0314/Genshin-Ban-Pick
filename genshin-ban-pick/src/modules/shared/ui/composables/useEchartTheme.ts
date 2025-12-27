@@ -11,6 +11,7 @@ import type {
     DataZoomComponentOption,
 } from 'echarts';
 import { useDesignTokens } from './useDesignTokens';
+import type { CartesianAxisOption } from 'echarts/types/src/coord/cartesian/AxisModel.js';
 
 type LegendPosition = 'top' | 'bottom' | 'left' | 'right';
 
@@ -51,8 +52,7 @@ export function useEchartTheme(selector = '.scale-context') {
         };
     }
 
-    // X 軸（value）
-    function valueAxisStyle(): XAXisComponentOption {
+    function valueAxisStyle(): CartesianAxisOption {
         return {
             type: 'value',
             nameGap: parseFloat(tokens.spaceMd.value),
@@ -76,7 +76,7 @@ export function useEchartTheme(selector = '.scale-context') {
         };
     }
 
-    function categoryAxisStyle(): YAXisComponentOption {
+    function categoryAxisStyle(): CartesianAxisOption {
         return {
             type: 'category',
             axisLabel: {
@@ -91,6 +91,17 @@ export function useEchartTheme(selector = '.scale-context') {
                     width: 1,
                 },
             },
+            axisTick: { show: false },
+        };
+    }
+
+    function timeAxisStyle(): CartesianAxisOption {
+        return {
+            type: 'time',
+            axisLabel: {
+                color: tokens.colorOnSurface.value,
+            },
+            splitLine: { show: false },
             axisTick: { show: false },
         };
     }
@@ -150,6 +161,7 @@ export function useEchartTheme(selector = '.scale-context') {
         gridStyle,
         valueAxisStyle,
         categoryAxisStyle,
+        timeAxisStyle,
         legendStyle,
         tooltipStyle,
         dataZoomStyle,

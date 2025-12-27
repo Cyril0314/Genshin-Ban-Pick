@@ -2,8 +2,9 @@
 
 import type { HttpClient } from '@/app/infrastructure/http/httpClient';
 import type { SynergyMode } from '@shared/contracts/analysis/value-types';
-import type { IPlayerStyleProfileQuery } from '@shared/contracts/analysis/dto/IPlayerStyleProfileQuery';
-import type { ICharacterAttributeDistributionsQuery } from '@shared/contracts/analysis/dto/ICharacterAttributeDistributionsQuery';
+import type { IPlayerIdentityQuery } from '@shared/contracts/analysis/dto/IPlayerIdentityQuery';
+import type { IAnalysisScopeWithPlayerIdentityQuery } from '@shared/contracts/analysis/dto/IAnalysisScopeWithPlayerIdentityQuery';
+import type { IAnalysisTimeWindowQuery } from '@shared/contracts/analysis/dto/IAnalysisTimeWindowQuery';
 
 export default class AnalysisService {
     constructor(private client: HttpClient) {}
@@ -12,15 +13,19 @@ export default class AnalysisService {
         return this.client.get(`/analyses/overview`);
     }
 
-    async getCharacterUsageSummary() {
-        return this.client.get(`/analyses/character-usages/summary`);
+    async getMatchTimeline(query?: IAnalysisTimeWindowQuery) {
+        return this.client.get(`/analyses/match-timeline`);
+    }
+
+    async getCharacterUsageSummary(query?: IAnalysisTimeWindowQuery) {
+        return this.client.get(`/analyses/character-usages/summary`, { params: query });
     }
 
     async getCharacterUsagePickPriority() {
         return this.client.get(`/analyses/character-usages/pick-priority`);
     }
 
-    async getCharacterAttributeDistributions(query: ICharacterAttributeDistributionsQuery) {
+    async getCharacterAttributeDistributions(query: IAnalysisScopeWithPlayerIdentityQuery) {
         return this.client.get(`/analyses/character-attribute/distributions`, { params: query });
     }
 
@@ -40,7 +45,7 @@ export default class AnalysisService {
         return this.client.get('/analyses/player-character-usages');
     }
 
-    async getPlayerStyleProfile(query: IPlayerStyleProfileQuery) {
+    async getPlayerStyleProfile(query: IPlayerIdentityQuery) {
         return this.client.get(`/analyses/player-style/profile`, { params: query });
     }
 }

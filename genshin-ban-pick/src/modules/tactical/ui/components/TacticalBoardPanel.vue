@@ -22,12 +22,12 @@ const { myTeamSlot } = useMyTeamInfo()
 const currentTeamSlot = ref<number>(myTeamSlot.value ?? teamInfoPair.value!.left.slot)
 
 onMounted(async () => {
-  if (myTeamSlot.value === null) return;
+  if (myTeamSlot.value === undefined) return;
   fetchCellImageMapState(myTeamSlot.value);
 });
 
 watch(myTeamSlot, (newSlot) => {
-  if (newSlot === null) return
+  if (newSlot === undefined) return
   fetchCellImageMapState(newSlot);
 });
 

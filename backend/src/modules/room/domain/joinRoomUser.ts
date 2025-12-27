@@ -17,7 +17,7 @@ export function joinRoomUser(roomUsers: IRoomUser[], identityKey: string, nickna
     if (index >= 0) {
         // 重連 → 替換舊值
         newRoomUsers = roomUsers.map((u, i) => (i === index ? { ...u, id: socketId, timestamp: Date.now() } : u));
-        return { joinedUser: null, roomUsers: newRoomUsers };
+        return { joinedUser: undefined, roomUsers: newRoomUsers };
     } else {
         newRoomUsers = [...roomUsers, joinedUser];
         return {

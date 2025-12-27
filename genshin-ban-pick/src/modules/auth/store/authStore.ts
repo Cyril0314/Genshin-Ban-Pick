@@ -10,16 +10,16 @@ import type { Identity } from '../types/Identity';
 
 export const useAuthStore = defineStore('auth', () => {
     const isInitialized = ref(false);
-    const identity = ref<Identity | null>(null);
-    const isLoggedIn = computed(() => identity.value !== null);
+    const identity = ref<Identity>();
+    const isLoggedIn = computed(() => identity.value !== undefined);
     const isAdmin = computed(() => identity.value?.type === 'Member' && identity.value.user.role === MemberRole.Admin);
     const isGuest = computed(() => identity.value?.type === 'Guest');
     const identityKey = computed(() => {
-        if (!identity.value) return null;
+        if (!identity.value) return undefined;
         return `${identity.value.type}:${identity.value.user.id}`;
     });
     const nickname = computed(() => {
-        if (!identity.value) return null;
+        if (!identity.value) return undefined;
         return identity.value.user.nickname;
     });
 
@@ -35,11 +35,11 @@ export const useAuthStore = defineStore('auth', () => {
         return tokenStorage.get();
     }
 
-    function setToken(token: string | null) {
+    function setToken(token: string | undefined) {
         tokenStorage.set(token);
     }
 
-    function setIdentity(newIdentity: Identity | null) {
+    function setIdentity(newIdentity: Identity | undefined) {
         console.debug(`[AUTH STORE] Set Identity`, newIdentity);
         identity.value = newIdentity;
     }

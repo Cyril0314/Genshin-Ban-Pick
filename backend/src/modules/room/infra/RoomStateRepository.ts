@@ -31,8 +31,8 @@ export default class RoomStateRepository implements IRoomStateRepository {
         return state;
     }
 
-    findRoomUsersById(roomId: string): IRoomUser[] | null {
-        return this.roomStateManager.getUsers(roomId) ?? null;
+    findRoomUsersById(roomId: string): IRoomUser[] | undefined {
+        return this.roomStateManager.getUsers(roomId) ?? undefined;
     }
 
     updateRoomUsersById(roomId: string, users: IRoomUser[]) {
@@ -41,7 +41,7 @@ export default class RoomStateRepository implements IRoomStateRepository {
     }
 
     findBoardImageMapById(roomId: string): BoardImageMap {
-        return this.roomStateManager.getBoardImageMap(roomId) ?? null;
+        return this.roomStateManager.getBoardImageMap(roomId) ?? undefined;
     }
 
     updateBoardImageMapById(roomId: string, boardImageMap: BoardImageMap): number {
@@ -49,8 +49,8 @@ export default class RoomStateRepository implements IRoomStateRepository {
         return Object.values(boardImageMap).length;
     }
 
-    findCharacterRandomContextMapById(roomId: string): CharacterRandomContextMap | null {
-        return this.roomStateManager.getCharacterRandomContextMap(roomId) ?? null;
+    findCharacterRandomContextMapById(roomId: string): CharacterRandomContextMap | undefined {
+        return this.roomStateManager.getCharacterRandomContextMap(roomId) ?? undefined;
     }
 
     updateCharacterRandomContextMapById(roomId: string, characterRandomContextMap: CharacterRandomContextMap): number {
@@ -58,8 +58,8 @@ export default class RoomStateRepository implements IRoomStateRepository {
         return Object.values(characterRandomContextMap).length;
     }
 
-    findChatMessagesById(roomId: string): IChatMessage[] | null {
-        return this.roomStateManager.getChatMessages(roomId) ?? null;
+    findChatMessagesById(roomId: string): IChatMessage[] | undefined {
+        return this.roomStateManager.getChatMessages(roomId) ?? undefined;
     }
 
     updateChatMessagesById(roomId: string, chatMessages: IChatMessage[]): number {
@@ -67,8 +67,8 @@ export default class RoomStateRepository implements IRoomStateRepository {
         return chatMessages.length;
     }
 
-    findTeamMembersMapById(roomId: string): TeamMembersMap | null {
-        return this.roomStateManager.getTeamMembersMap(roomId) ?? null;
+    findTeamMembersMapById(roomId: string): TeamMembersMap | undefined {
+        return this.roomStateManager.getTeamMembersMap(roomId) ?? undefined;
     }
 
     updateTeamMembersMapById(roomId: string, teamMembersMap: TeamMembersMap): number {
@@ -76,7 +76,7 @@ export default class RoomStateRepository implements IRoomStateRepository {
         return Object.values(teamMembersMap).length;
     }
 
-    findTeamTacticalCellImageMapById(roomId: string): TeamTacticalCellImageMap | null {
+    findTeamTacticalCellImageMapById(roomId: string): TeamTacticalCellImageMap | undefined {
         return this.roomStateManager.getTeamTacticalCellImageMap(roomId);
     }
 

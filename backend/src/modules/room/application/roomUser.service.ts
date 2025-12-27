@@ -22,7 +22,7 @@ export default class RoomUserService {
 
     leave(roomId: string, identityKey: string) {
         const roomState = this.roomStateRepository.findById(roomId);
-        if (!roomState) return { leavingUser: null, roomUsers: [] };
+        if (!roomState) return { leavingUser: undefined, roomUsers: [] };
 
         const { leavingUser, roomUsers } = leaveRoomUser(roomState.users, identityKey)
         this.roomStateRepository.updateRoomUsersById(roomId, roomUsers)

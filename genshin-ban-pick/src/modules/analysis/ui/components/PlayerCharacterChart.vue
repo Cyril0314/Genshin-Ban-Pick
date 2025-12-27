@@ -24,7 +24,7 @@ const { option } = usePlayerCharacterChart();
         <header class="chart__header">
             <div class="chart__title">
                 <h2>玩家偏好角色</h2>
-                <p class="chart-desc">本圖顯示玩家偏好使用角色，x軸則是角色使用頻率從高到低</p>
+                <p class="chart__desc">本圖顯示玩家偏好使用角色，x軸則是角色使用頻率從高到低</p>
             </div>
         </header>
         <div class="chart">
@@ -51,7 +51,7 @@ const { option } = usePlayerCharacterChart();
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    padding: var(--space-md);
+    padding: var(--space-sm);
 }
 
 .chart__title {
@@ -59,6 +59,12 @@ const { option } = usePlayerCharacterChart();
     flex-direction: column;
     color: var(--md-sys-color-on-surface);
     font-size: var(--font-size-md);
+    gap: var(--space-sm);
+}
+
+.chart__desc {
+    font-size: var(--font-size-sm);
+    color: var(--md-sys-color-on-surface-variant);
 }
 
 .chart {

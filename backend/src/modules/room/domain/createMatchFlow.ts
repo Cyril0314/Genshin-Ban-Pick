@@ -45,7 +45,7 @@ export function createMatchFlow(
             // const teamSlot = isFirstTeamStep ? teams[0].slot : teams[1].slot;
             return {
                 index: index++,
-                teamSlot: null,
+                teamSlot: undefined,
                 zoneId: zone.id,
             };
         }),

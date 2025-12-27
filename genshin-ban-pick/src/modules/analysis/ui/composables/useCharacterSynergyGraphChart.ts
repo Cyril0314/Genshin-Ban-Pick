@@ -15,7 +15,7 @@ export function useCharacterSynergyGraphChart() {
     const { gridStyle, tooltipStyle, dataZoomStyle } = useEchartTheme();
     const analysisUseCase = useAnalysisUseCase();
 
-    const graph = ref<{ nodes: string[]; links: ICharacterGraphLink[] } | null>(null);
+    const graph = ref<{ nodes: string[]; links: ICharacterGraphLink[] }>();
 
     onMounted(async () => {
         graph.value = await analysisUseCase.fetchCharacterSynergyGraph();
@@ -23,7 +23,7 @@ export function useCharacterSynergyGraphChart() {
     });
 
     const option = computed(() => {
-        if (!graph.value) return null;
+        if (!graph.value) return undefined;
         return {
             tooltip: {
                 ...tooltipStyle('single'),

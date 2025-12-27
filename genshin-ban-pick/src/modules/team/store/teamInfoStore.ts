@@ -12,7 +12,7 @@ export const useTeamInfoStore = defineStore('teamInfo', () => {
     const teamMembersMap = ref<TeamMembersMap>({});
     const teamInfoPair = computed(() => {
         const map = teamMembersMap.value;
-        if (teams.value.length < 2) return null;
+        if (teams.value.length < 2) return undefined;
         const [firstTeam, secondTeam] = teams.value;
         return {
             left: { ...firstTeam, members: map[firstTeam.slot] ?? {} },

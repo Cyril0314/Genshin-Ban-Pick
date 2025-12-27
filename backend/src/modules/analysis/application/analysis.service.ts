@@ -26,6 +26,8 @@ import type { ICharacterPickPriority } from '@shared/contracts/analysis/ICharact
 import type { ICharacterAttributeDistributions } from '@shared/contracts/analysis/character/ICharacterAttributeDistributions';
 import type { IMatchTacticalUsageWithCharacter } from '../types/IMatchTacticalUsageWithCharacter';
 import type { IAnalysisOverview } from '@shared/contracts/analysis/IAnalysisOverview';
+import type { IAnalysisTimeWindow } from '@shared/contracts/analysis/IAnalysisTimeWindow';
+import type { IMatchTimeMinimal } from '@shared/contracts/analysis/IMatchTimeMinimal';
 
 
 const logger = createLogger('ANALYSIS');
@@ -46,20 +48,34 @@ export default class AnalysisService {
         return {
             volume: {
                 matchCount: overview.totalMatches,
-                playerCount: overview.uniquePlayers,
-                characterCount: overview.uniqueCharacters,
+                matchCharacterCombinationCount: overview.uniqueCharacterCombinations,
+                matchTeamMemberCombinationCount: overview.uniqueTeamMemberCombinations,
+                players: {
+                    total: overview.uniquePlayers.member + overview.uniquePlayers.guest + overview.uniquePlayers.onlyName,
+                    member: overview.uniquePlayers.member,
+                    guest: overview.uniquePlayers.guest,
+                    onlyName: overview.uniquePlayers.onlyName,
+                },
+                characters: overview.uniqueCharacters,
+                moves: overview.moves
             },
             activity: {
                 earliestMatchAt: overview.dateRange.from.toISOString(),
-                latestMatchAt: overview.dateRange.to.toISOString()
+                latestMatchAt: overview.dateRange.to.toISOString(),
+                versionSpan: overview.versionSpan
             }
         }
     }
 
-    async fetchCharacterUsageSummary(): Promise<ICharacterUsage[]> {
-        const matches = await this.analysisRepository.findAllMatchMinimalTimestamps();
-        const matcheMoves = await this.analysisRepository.findAllMatchMoveCoreForWeightCalc();
-        const matchTacticalUsages = await this.analysisRepository.findAllMatchTacticalUsageForAnalysis();
+    async fetchMatchTimeline(timeWindow?: IAnalysisTimeWindow): Promise<IMatchTimeMinimal[]>  {
+        const matches = await this.analysisRepository.findAllMatchMinimalTimestamps(timeWindow);
+        return matches
+    }
+
+    async fetchCharacterUsageSummary(timeWindow?: IAnalysisTimeWindow): Promise<ICharacterUsage[]> {
+        const matches = await this.analysisRepository.findAllMatchMinimalTimestamps(timeWindow);
+        const matcheMoves = await this.analysisRepository.findAllMatchMoveCoreForWeightCalc(timeWindow);
+        const matchTacticalUsages = await this.analysisRepository.findAllMatchTacticalUsageForAnalysis(timeWindow);
         return computeCharacterUsage(matches, matcheMoves, matchTacticalUsages);
     }
 
@@ -184,10 +200,4 @@ export default class AnalysisService {
         }
         return computeCharacterAttributeDistributions(usages)
     }
-
-    // async fetchCharacterAttributeDistributions(): Promise<IGlobalStatistic> {
-    //     const matches = await this.matchRepository.findAllMatches()
-    //     console.log('macthes', JSON.stringify(matches, null, 2))
-    //     return {}
-    // }
 }

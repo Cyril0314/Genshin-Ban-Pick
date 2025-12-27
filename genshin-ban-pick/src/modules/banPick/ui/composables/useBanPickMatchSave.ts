@@ -9,13 +9,13 @@ import type { IMatch } from '@shared/contracts/match/IMatch';
 export function useBanPickMatchSave(roomId: string) {
     const matchUseCase = useMatchUseCase();
 
-    const result = ref<IMatch | null>(null)
+    const result = ref<IMatch>()
     const isLoading = ref(false);
-    const error = ref<string | null>(null);
+    const error = ref<string>();
 
     async function matchSave() {
         isLoading.value = true;
-        error.value = null;
+        error.value = undefined;
 
         try {
             result.value = await matchUseCase.saveMatch(roomId);

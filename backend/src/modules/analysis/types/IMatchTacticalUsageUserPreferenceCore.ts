@@ -4,7 +4,7 @@ export interface IMatchTacticalUsageTeamMemberIdentityRefs {
     teamId: number;
     characterKey: string;
     setupNumber: number;
-    teamMemberName: string | null;
-    memberNickname: string | null;
-    guestNickname: string | null;
+    teamMemberName?: string;
+    memberNickname?: string;
+    guestNickname?: string;
 }

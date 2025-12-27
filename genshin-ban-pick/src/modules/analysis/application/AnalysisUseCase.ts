@@ -1,8 +1,9 @@
 // src/modules/analysis/application/AnalysisUseCase.ts
 
-import type { SynergyMode } from '@shared/contracts/analysis/value-types';
 import type AnalysisRepository from '../infrastructure/AnalysisRepository';
+import type { SynergyMode } from '@shared/contracts/analysis/value-types';
 import type { MatchTeamMemberUniqueIdentityKey } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
+import type { IAnalysisTimeWindow } from '@shared/contracts/analysis/IAnalysisTimeWindow';
 
 export default class AnalysisUseCase {
     constructor(private analysisRepository: AnalysisRepository) {}
@@ -11,8 +12,12 @@ export default class AnalysisUseCase {
         return await this.analysisRepository.fetchOverview();
     }
 
-    async fetchCharacterUsageSummary() {
-        return await this.analysisRepository.fetchCharacterUsageSummary();
+    async fetchMatchTimeline(timeWindow?: IAnalysisTimeWindow) {
+        return await this.analysisRepository.fetchMatchTimeline(timeWindow);
+    }
+
+    async fetchCharacterUsageSummary(timeWindow?: IAnalysisTimeWindow) {
+        return await this.analysisRepository.fetchCharacterUsageSummary(timeWindow);
     }
 
     async fetchCharacterUsagePickPriority() {

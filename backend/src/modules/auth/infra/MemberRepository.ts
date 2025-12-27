@@ -22,20 +22,20 @@ export default class MemberRepository implements IMemberRepository {
             where: { account },
             select: { id: true },
         });
-        return result !== null;
+        return result !== undefined;
     }
 
     async findById(id: number) {
         const member = await this.prisma.member.findUnique({
             where: { id },
         });
-        if (!member) return null;
+        if (!member) return undefined;
         return this.map(member)
     }
 
     async findByAccount(account: string) {
         const member =  await this.prisma.member.findUnique({ where: { account } });
-        if (!member) return null;
+        if (!member) return undefined;
         return this.map(member)
     }
 

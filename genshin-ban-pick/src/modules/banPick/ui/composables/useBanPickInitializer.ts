@@ -18,7 +18,7 @@ import type { CharacterFilterKey } from '@shared/contracts/character/CharacterFi
 export function useBanPickInitializer(roomId: string) {
     // --- states ---
     const isLoading = ref(true);
-    const roomSetting = shallowRef<IRoomSetting | null>(null);
+    const roomSetting = shallowRef<IRoomSetting>();
 
     const filteredCharacterKeys = ref<string[]>([]);
     const characterFilter = ref<Record<CharacterFilterKey, string[]>>({

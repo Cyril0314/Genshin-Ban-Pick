@@ -42,7 +42,7 @@ export function useCharacterScatterChart() {
     });
 
     const option = computed(() => {
-        if (!characterUsages.value.length || !pickPriorities.value.length || !characterMap.value) return null;
+        if (!characterUsages.value.length || !pickPriorities.value.length || !characterMap.value) return undefined;
 
         // Merge Data
         const points: IScatterPoint[] = [];
