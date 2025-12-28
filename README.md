@@ -84,7 +84,7 @@ NODE_OPTIONS=--dns-result-order=ipv4first npm install
 
 pm2 ls 列出所有 pm2 的程序
 pm2 status 當前狀態
-pm2 start --name xxx.js 啟動服務
+pm2 start "npx tsx src/index.ts" --name genshin-ban-pick 啟動服務
 pm2 stop --name 暫停服務
 pm2 restart --name 重啟服務
 
