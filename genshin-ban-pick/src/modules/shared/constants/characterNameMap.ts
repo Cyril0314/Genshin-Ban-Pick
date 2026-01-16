@@ -108,4 +108,5 @@ export const characterNameMap: Record<string, string> = {
     "nefer": "奈芙爾",
     "durin": "杜林",
     "jahoda": "雅珂達",
+    "columbina": "哥倫比婭"
 };

@@ -138,7 +138,7 @@ const isHighlighted = computed(() => props.zone.id === currentStep.value?.zoneId
   transition: 
     filter 0.18s ease,
     transform 0.18s ease,;
-  filter: saturate(0.95) brightness(0.95);
+  /* filter: saturate(0.95) brightness(0.95); */
 }
 
 .drop-zone__background {

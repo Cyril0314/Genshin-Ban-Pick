@@ -247,6 +247,19 @@
         "wish": "Standard Wish"
     },
     {
+        "icon": "Columbina Icon",
+        "name": "Columbina",
+        "rarity": "5 Stars",
+        "element": "Hydro",
+        "weapon": "Catalyst",
+        "region": "Nod Krai",
+        "model_type": "Medium Female",
+        "release_at": "January 14, 2026",
+        "version": "Luna IV",
+        "role": "Sub DPS",
+        "wish": "Limited-Time Event Wish"
+    },
+    {
         "icon": "Cyno Icon",
         "name": "Cyno",
         "rarity": "5 Stars",
