@@ -34,9 +34,9 @@
 
 ### Connect EC2 and build 5433 db tunnel
 
-ssh -i "C:\Users\asdfg\ec2_keys\aws-discord-bot-farmer-licence-key.pem" -L 5433:localhost:5432 ec2-user@52.90.128.200
+ssh -i "C:\Users\asdfg\ec2_keys\aws-discord-bot-farmer-licence-key.pem" -L 5433:localhost:5432 ec2-user@54.224.88.154
 
-ssh -i "/Users/wangxiaoyu/Desktop/ec2_keys/aws-discord-bot-farmer-licence-key.pem" -L 5433:localhost:5432 ec2-user@52.90.128.200
+ssh -i "/Users/wangxiaoyu/Desktop/ec2_keys/aws-discord-bot-farmer-licence-key.pem" -L 5433:localhost:5432 ec2-user@54.224.88.154
 
 
 ### Connect EC2 PSQL in local powershell
@@ -84,7 +84,7 @@ NODE_OPTIONS=--dns-result-order=ipv4first npm install
 
 pm2 ls 列出所有 pm2 的程序
 pm2 status 當前狀態
-pm2 start --name xxx.js 啟動服務
+pm2 start "npx tsx src/index.ts" --name genshin-ban-pick 啟動服務
 pm2 stop --name 暫停服務
 pm2 restart --name 重啟服務
 

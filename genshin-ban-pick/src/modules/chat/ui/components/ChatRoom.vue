@@ -1,7 +1,7 @@
 <!-- src/modules/chat/ui/components/ChatRoom.vue -->
 
 <script setup lang="ts">
-import { ref, nextTick, watch } from 'vue';
+import { ref, nextTick, watch, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import { useAuthStore } from '@/modules/auth';
@@ -18,6 +18,10 @@ const { sendMessage } = useChatSync();
 const authStore = useAuthStore();
 const { nickname, identityKey } = storeToRefs(authStore);
 const now = useCurrentTime();
+
+onMounted(() => {
+  scrollToBottom();
+})
 
 watch(
     messages,
