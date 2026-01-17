@@ -22,7 +22,7 @@ export default class MemberRepository implements IMemberRepository {
             where: { account },
             select: { id: true },
         });
-        return result !== undefined;
+        return result !== null;
     }
 
     async findById(id: number) {
