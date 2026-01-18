@@ -43,6 +43,9 @@ ssh -i "/Users/wangxiaoyu/Desktop/ec2_keys/aws-discord-bot-farmer-licence-key.pe
 
 psql -h localhost -p 5433 -U postgres -d genshin_banpick
 
+- 改綁定會員
+UPDATE "MatchTeamMember" SET "memberRef" = 20 WHERE "name" = 'AhWeiGoo' AND "memberRef" IS NULL;
+
 ### PGAdmin 左側 Servers → 右鍵 → Register → Server…
 
 | Field | Value                        |
