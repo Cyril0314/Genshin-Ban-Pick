@@ -325,6 +325,7 @@
         "code": "Luna IV",
         "name": "A Traveler on a Winter's Night",
         "order": 46,
-        "start_at": "January 14, 2026"
+        "start_at": "January 14, 2026",
+        "end_at": "February 25, 2026"
     }
 ]

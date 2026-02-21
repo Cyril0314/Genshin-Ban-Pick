@@ -7,10 +7,10 @@ export function useViewportScale(options?: { width?: number; height?: number }) 
     const H = options?.height ?? 1000;
 
     function adjustScale() {
-        const wrapper = document.querySelector('.viewport-wrapper');
+        const wrapper = document.querySelector('.ban-pick-page__viewport-wrapper');
         if (!wrapper) return;
 
-        const content = wrapper.querySelector('.viewport-content') as HTMLElement;
+        const content = wrapper.querySelector('.ban-pick-page__viewport-content') as HTMLElement;
         if (!content) return;
 
         document.documentElement.style.setProperty('--layout-width', `${W}px`);

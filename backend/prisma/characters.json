@@ -533,6 +533,19 @@
         "wish": "Standard Wish"
     },
     {
+        "icon": "Illuga Icon",
+        "name": "Illuga",
+        "rarity": "4 Stars",
+        "element": "Geo",
+        "weapon": "Polearm",
+        "region": "Liyue",
+        "model_type": "Medium Male",
+        "release_at": "February 03, 2026",
+        "version": "Luna IV",
+        "role": "Support",
+        "wish": "Standard Wish"
+    },
+    {
         "icon": "Ineffa Icon",
         "name": "Ineffa",
         "rarity": "5 Stars",
@@ -1401,6 +1414,19 @@
         "release_at": "December 01, 2020",
         "version": "1.1",
         "role": "Support",
+        "wish": "Limited-Time Event Wish"
+    },
+    {
+        "icon": "Zibai Icon",
+        "name": "Zibai",
+        "rarity": "5 Stars",
+        "element": "Geo",
+        "weapon": "Sword",
+        "region": "Liyue",
+        "model_type": "Tall Female",
+        "release_at": "February 03, 2026",
+        "version": "Luna IV",
+        "role": "Main DPS",
         "wish": "Limited-Time Event Wish"
     }
 ]
