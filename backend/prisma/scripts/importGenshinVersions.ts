@@ -22,16 +22,25 @@ async function importGenshinVersions() {
         .sort((a: any, b: any) => a.order - b.order);
 
     for (const version of versions) {
-        await prisma.genshinVersion.upsert({
+        const existing = await prisma.genshinVersion.findUnique({
             where: { code: version.code },
-            update: {
-                order: version.order,
-                name: version.name,
-                startAt: version.startAt,
-                endAt: version.endAt,
-            },
-            create: version,
         });
+
+        if (existing) {
+            await prisma.genshinVersion.update({
+                where: { code: version.code },
+                data: {
+                    order: version.order,
+                    name: version.name,
+                    startAt: version.startAt,
+                    endAt: version.endAt,
+                },
+            });
+        } else {
+            await prisma.genshinVersion.create({
+                data: version,
+            });
+        }
     }
 
     console.log(`✅ Imported ${rawData.length} versions`);
