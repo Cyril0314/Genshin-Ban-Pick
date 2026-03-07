@@ -1196,6 +1196,19 @@
         "wish": "Limited-Time Event Wish"
     },
     {
+        "icon": "Varka Icon",
+        "name": "Varka",
+        "rarity": "5 Stars",
+        "element": "Anemo",
+        "weapon": "Claymore",
+        "region": "Mondstadt",
+        "model_type": "Tall Male",
+        "release_at": "February 25, 2026",
+        "version": "Luna V",
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
+    },
+    {
         "icon": "Venti Icon",
         "name": "Venti",
         "rarity": "5 Stars",

@@ -54,34 +54,36 @@ async function importCharacters() {
         }
 
         // 2️⃣ upsert character（規格同步）
-        await prisma.character.upsert({
+        const existing = await prisma.character.findUnique({
             where: { key },
-            update: {
-                name: raw.name,
-                rarity: normalizeRarity(raw.rarity),
-                element: raw.element as Element,
-                weapon: raw.weapon as Weapon,
-                region: normalizeRegion(raw.region),
-                modelType: normalizeModelType(raw.model_type),
-                role: normalizeRole(raw.role),
-                wish: normalizeWish(raw.wish),
-                releaseAt: parseUTC(raw.release_at),
-                genshinVersionId: version.id,
-            },
-            create: {
-                key,
-                name: raw.name,
-                rarity: normalizeRarity(raw.rarity),
-                element: raw.element as Element,
-                weapon: raw.weapon as Weapon,
-                region: normalizeRegion(raw.region),
-                modelType: normalizeModelType(raw.model_type),
-                role: normalizeRole(raw.role),
-                wish: normalizeWish(raw.wish),
-                releaseAt: parseUTC(raw.release_at),
-                genshinVersionId: version.id,
-            },
         });
+
+        const data = {
+            name: raw.name,
+            rarity: normalizeRarity(raw.rarity),
+            element: raw.element as Element,
+            weapon: raw.weapon as Weapon,
+            region: normalizeRegion(raw.region),
+            modelType: normalizeModelType(raw.model_type),
+            role: normalizeRole(raw.role),
+            wish: normalizeWish(raw.wish),
+            releaseAt: parseUTC(raw.release_at),
+            genshinVersionId: version.id,
+        };
+
+        if (existing) {
+            await prisma.character.update({
+                where: { key },
+                data,
+            });
+        } else {
+            await prisma.character.create({
+                data: {
+                    key,
+                    ...data,
+                },
+            });
+        }
     }
 
     console.log(`✅ Imported ${rawData.length} characters`);

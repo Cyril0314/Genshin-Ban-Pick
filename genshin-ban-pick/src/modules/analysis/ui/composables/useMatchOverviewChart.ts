@@ -46,6 +46,8 @@ export function useMatchOverviewChart() {
             analysisUseCase.fetchMatchTimeline(),
         ]);
 
+        periodsResult.sort((a, b) => a.startAt.getTime() - b.startAt.getTime());
+
         overview.value = overviewResult;
         periods.value = periodsResult;
         matchTimeline.value = matchTimelineResult;
