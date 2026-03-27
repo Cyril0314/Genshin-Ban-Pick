@@ -64,6 +64,11 @@ UPDATE "MatchTeamMember" SET "memberRef" = 20 WHERE "name" = 'AhWeiGoo' AND "mem
 ### 匯出正式資料（EC2 → 本機）
 pg_dump -h localhost -p 5433 -U postgres -d genshin_banpick -F c -f prod_dump.backup
 
+pg_dump: error: server version: 15.8; pg_dump version: 14.20 (Homebrew)
+pg_dump: error: aborting because of server version mismatch
+如果你已經安裝了多個版本的 PostgreSQL，不需要更改全域變數，直接呼叫 v15 的二進制檔案：
+/opt/homebrew/opt/postgresql@15/bin/pg_dump -h localhost -p 5433 -U postgres -d genshin_banpick -F c -f prod_dump.backup
+
 ### 清空本機資料庫
 psql -h localhost -p 5432 -U postgres -d postgres -c "DROP DATABASE genshin_banpick;"
 psql -h localhost -p 5432 -U wangxiaoyu -d postgres -c "DROP DATABASE genshin_banpick;"
