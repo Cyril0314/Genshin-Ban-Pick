@@ -58,7 +58,7 @@ async function main() {
     console.log(`teamMembersMap`, teamMembersMap);
 
     const characters = await prisma.character.findMany({
-        orderBy: { id: 'asc' }, // 可按需求排序
+        orderBy: [{ releaseAt: 'asc' }, { key: 'asc' }],
     });
     const bpCharacters = selectN(characters.map(mapCharacter), roomSetting.matchFlow.steps.length);
     let boardImageMap: Record<number, string> = {};

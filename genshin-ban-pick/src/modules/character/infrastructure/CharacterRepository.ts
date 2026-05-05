@@ -14,7 +14,6 @@ export default class CharacterRepository {
         characters.forEach((char: any) => {
 
             map[char.key] = {
-                  id: char.id,
                   key: char.key,
                   name: char.name,
                   rarity: char.rarity,

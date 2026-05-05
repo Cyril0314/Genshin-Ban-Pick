@@ -43,7 +43,6 @@ async function importCharacters() {
     for (const raw of rawData) {
         const key = normalizeKey(raw.name);
 
-        // 1️⃣ 找對應的 version（必須存在）
         const version = await prisma.genshinVersion.findUnique({
             where: { code: raw.version },
             select: { id: true },
@@ -52,11 +51,6 @@ async function importCharacters() {
         if (!version) {
             throw new Error(`❌ GenshinVersion not found for character "${raw.name}": ${raw.version}`);
         }
-
-        // 2️⃣ upsert character（規格同步）
-        const existing = await prisma.character.findUnique({
-            where: { key },
-        });
 
         const data = {
             name: raw.name,
@@ -71,19 +65,11 @@ async function importCharacters() {
             genshinVersionId: version.id,
         };
 
-        if (existing) {
-            await prisma.character.update({
-                where: { key },
-                data,
-            });
-        } else {
-            await prisma.character.create({
-                data: {
-                    key,
-                    ...data,
-                },
-            });
-        }
+        await prisma.character.upsert({
+            where: { key },
+            update: data,
+            create: { key, ...data },
+        });
     }
 
     console.log(`✅ Imported ${rawData.length} characters`);

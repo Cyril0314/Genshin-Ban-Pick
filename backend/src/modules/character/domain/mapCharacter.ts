@@ -5,7 +5,6 @@ import type { Rarity, Element, Weapon, Region, ModelType, CharacterRole, Wish } 
 
 export function mapCharacter(raw: any): ICharacter {
     return {
-        id: raw.id,
         key: raw.key,
         name: raw.name,
         rarity: raw.rarity as Rarity,
