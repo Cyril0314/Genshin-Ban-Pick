@@ -10,7 +10,7 @@ export interface IMatchTeamMember {
     memberRef?: number;
     guestRef?: number;
 
-    tacticalUsages: IMatchTacticalUsage[];
+    tacticalUsages?: IMatchTacticalUsage[];
 
     member?: IMatchMemberUser;
     guest?: IMatchMemberUser;

@@ -1,9 +1,10 @@
 // src/modules/character/domain/mapCharacter.ts
 
+import { Character } from "@prisma/client";
 import type { ICharacter } from "@shared/contracts/character/ICharacter";
 import type { Rarity, Element, Weapon, Region, ModelType, CharacterRole, Wish } from "@shared/contracts/character/value-types";
 
-export function mapCharacter(raw: any): ICharacter {
+export function mapCharacter(raw: Character): ICharacter {
     return {
         key: raw.key,
         name: raw.name,
@@ -12,7 +13,7 @@ export function mapCharacter(raw: any): ICharacter {
         weapon: raw.weapon as Weapon,
         region: raw.region as Region,
         modelType: raw.modelType as ModelType,
-        releaseAt: raw.releaseAt,
+        releaseAt: raw.releaseAt ?? undefined,
         role: raw.role as CharacterRole,
         wish: raw.wish as Wish,
     };

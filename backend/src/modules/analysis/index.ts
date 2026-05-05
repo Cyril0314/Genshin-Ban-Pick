@@ -1,6 +1,6 @@
 // src/modules/analysis/index.ts
 
-import { PrismaClient } from '@prisma/client/extension';
+import { PrismaClient } from '@prisma/client';
 
 import AnalysisController from './controller/analysis.controller';
 import AnalysisService from './application/analysis.service';

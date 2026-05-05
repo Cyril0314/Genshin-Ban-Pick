@@ -1,6 +1,6 @@
 // src/modules/match/index.ts
 
-import { PrismaClient } from '@prisma/client/extension';
+import { PrismaClient } from '@prisma/client';
 
 import MatchController from './controller/match.controller';
 import MatchService from './application/match.service';
