@@ -780,6 +780,19 @@
         "wish": "Standard Wish"
     },
     {
+        "icon": "Linnea Icon",
+        "name": "Linnea",
+        "rarity": "5 Stars",
+        "element": "Geo",
+        "weapon": "Bow",
+        "region": "Nod Krai",
+        "model_type": "Medium Female",
+        "release_at": "April 08, 2026",
+        "version": "Luna VI",
+        "role": "Sub DPS",
+        "wish": "Limited-Time Event Wish"
+    },
+    {
         "icon": "Lisa Icon",
         "name": "Lisa",
         "rarity": "4 Stars",

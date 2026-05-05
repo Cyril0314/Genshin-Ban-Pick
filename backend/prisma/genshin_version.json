@@ -332,6 +332,13 @@
         "code": "Luna V",
         "name": "Homeward, He Who Caught the Wind",
         "order": 47,
-        "start_at": "February 25, 2026"
+        "start_at": "February 25, 2026",
+        "end_at": "April 8, 2026"
+    },
+    {
+        "code": "Luna VI",
+        "name": "Augured Homecoming",
+        "order": 48,
+        "start_at": "April 8, 2026"
     }
 ]

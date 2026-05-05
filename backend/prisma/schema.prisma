@@ -203,9 +203,7 @@ enum Wish {
 }
 
 model Character {
-  id        Int      @id @default(autoincrement())
-
-  key         String         @unique
+  key         String         @id
   name        String
   rarity      Rarity
   element     Element

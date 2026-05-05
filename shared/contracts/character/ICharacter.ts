@@ -3,7 +3,6 @@
 import { CharacterRole, Element, ModelType, Rarity, Region, Weapon, Wish } from "./value-types"
 
 export interface ICharacter {
-  id: number
   key: string
   name: string
   rarity: Rarity

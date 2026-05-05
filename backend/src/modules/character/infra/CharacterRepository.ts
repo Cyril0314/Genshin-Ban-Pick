@@ -10,7 +10,7 @@ export default class CharacterRepository implements ICharacterRepository {
 
     async findAll() {
         const characters = await this.prisma.character.findMany({
-            orderBy: { id: 'asc' },
+            orderBy: [{ releaseAt: 'asc' }, { key: 'asc' }],
         });
         return characters.map(mapCharacter);
     }
