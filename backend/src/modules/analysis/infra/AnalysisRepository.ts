@@ -15,6 +15,7 @@ import type { MoveSource, MoveType } from '@shared/contracts/match/value-types';
 import type { CharacterFilterKey } from '@shared/contracts/character/CharacterFilterKey';
 import type { MatchTeamMemberUniqueIdentityKey } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
 import type { IAnalysisTimeWindow } from '@shared/contracts/analysis/IAnalysisTimeWindow';
+import { orUndefined } from '../../../utils/nullable';
 
 export default class AnalysisRepository implements IAnalysisRepository {
     constructor(private prisma: PrismaClient) {}
@@ -160,7 +161,6 @@ export default class AnalysisRepository implements IAnalysisRepository {
             },
             orderBy: { order: 'asc' },
             select: {
-                id: true,
                 order: true,
                 code: true,
                 name: true,
@@ -258,7 +258,7 @@ export default class AnalysisRepository implements IAnalysisRepository {
                 source: entity.source as MoveSource,
                 matchId: entity.matchId,
                 order: entity.order,
-                characterReleaseAt: entity.character.releaseAt,
+                characterReleaseAt: orUndefined(entity.character.releaseAt),
                 randomMoveContext: randomMoveContext,
             };
         });
@@ -318,7 +318,7 @@ export default class AnalysisRepository implements IAnalysisRepository {
         identityKey: MatchTeamMemberUniqueIdentityKey,
     ): Promise<IMatchTacticalUsageWithCharacter[]> {
         console.log('identityKey', identityKey);
-        let whereInput: Parameters<typeof this.prisma.matchTacticalUsage.findMany>[0]['where'];
+        let whereInput: Prisma.MatchTacticalUsageWhereInput;
         switch (identityKey.type) {
             case 'Member':
                 whereInput = {

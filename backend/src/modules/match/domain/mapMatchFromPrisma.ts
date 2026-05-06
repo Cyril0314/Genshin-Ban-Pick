@@ -1,5 +1,6 @@
 // backend/src/modules/match/domain/matchMapper.ts
 import { mapCharacter } from '../../character';
+import { orUndefined } from '../../../utils/nullable';
 
 import type {
     Character,
@@ -18,6 +19,7 @@ import type { IMatchTeamMember } from '@shared/contracts/match/IMatchTeamMember'
 import type { IMatchTacticalUsage } from '@shared/contracts/match/IMatchTacticalUsage';
 import type { IMatchMove } from '@shared/contracts/match/IMatchMove';
 import type { MoveSource, MoveType } from '@shared/contracts/match/value-types';
+
 
 // type PrismaMatchResult = Prisma.MatchGetPayload<typeof matchQuery>;
 
@@ -52,8 +54,8 @@ function mapTeamMember(tm: MatchTeamMember & { tacticalUsages?: MatchTacticalUsa
         slot: tm.slot,
         name: tm.name,
         teamId: tm.teamId,
-        memberRef: tm.memberRef,
-        guestRef: tm.guestRef,
+        memberRef: orUndefined(tm.memberRef),
+        guestRef: orUndefined(tm.guestRef),
         tacticalUsages: tm.tacticalUsages?.map(mapTacticalUsage),
         member: tm.member,
         guest: tm.guest,
@@ -68,7 +70,7 @@ function mapTacticalUsage(t: MatchTacticalUsage & { character?: Character }): IM
         setupNumber: t.setupNumber,
         teamMemberId: t.teamMemberId,
         characterKey: t.characterKey,
-        character: mapCharacter(t.character),
+        character: t.character ? mapCharacter(t.character) : undefined,
     };
 }
 
@@ -80,16 +82,9 @@ function mapMove(move: MatchMove & { character?: Character; randomMoveContext?: 
         type: move.type as MoveType,
         source: move.source as MoveSource,
         matchId: move.matchId,
-        teamId: move.teamId,
+        teamId: orUndefined(move.teamId),
         characterKey: move.characterKey,
-        character: mapCharacter(move.character),
+        character: move.character ? mapCharacter(move.character) : undefined,
         randomMoveContext: move.randomMoveContext,
     };
 }
-
-// function mapCharacter(character?: Character) {
-//     if (!character) {
-//         return null;
-//     }
-//     return mapCharacter(character);
-// }

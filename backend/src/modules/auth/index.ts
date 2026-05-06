@@ -1,6 +1,6 @@
 // src/modules/auth/index.ts
 
-import { PrismaClient } from '@prisma/client/extension';
+import { PrismaClient } from '@prisma/client';
 
 import AuthController from './controller/auth.controller';
 import AuthService from './application/auth.service';

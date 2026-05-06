@@ -1,6 +1,6 @@
 // src/modules/room/index.ts
 
-import { PrismaClient } from '@prisma/client/extension';
+import { PrismaClient } from '@prisma/client';
 
 import RoomController from './controller/room.controller';
 import RoomService from './application/room.service';
