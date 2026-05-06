@@ -213,20 +213,19 @@ model Character {
   role        CharacterRole?
   wish        Wish?
   releaseAt   DateTime?
-  genshinVersionId Int?
+  genshinVersionCode String?
 
   matchMoves          MatchMove[]
   matchTacticalUsages MatchTacticalUsage[]
-  genshinVersion      GenshinVersion? @relation(fields: [genshinVersionId], references: [id])
+  genshinVersion      GenshinVersion? @relation(fields: [genshinVersionCode], references: [code])
 
-  @@index([genshinVersionId])
+  @@index([genshinVersionCode])
 }
 
 model GenshinVersion {
-  id        Int      @id @default(autoincrement())
+  code    String     @id
 
   order   Int        @unique
-  code    String     @unique
   name    String
   startAt DateTime
   endAt   DateTime?

@@ -161,7 +161,6 @@ export default class AnalysisRepository implements IAnalysisRepository {
             },
             orderBy: { order: 'asc' },
             select: {
-                id: true,
                 order: true,
                 code: true,
                 name: true,

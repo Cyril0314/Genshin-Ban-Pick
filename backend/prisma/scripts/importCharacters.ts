@@ -41,16 +41,14 @@ function parseUTC(date: string) {
 
 async function importCharacters() {
     for (const raw of rawData) {
-        const key = normalizeKey(raw.name);
-
-        const version = await prisma.genshinVersion.findUnique({
+        const exists = await prisma.genshinVersion.findUnique({
             where: { code: raw.version },
-            select: { id: true },
+            select: { code: true },
         });
-
-        if (!version) {
+        if (!exists) {
             throw new Error(`❌ GenshinVersion not found for character "${raw.name}": ${raw.version}`);
         }
+        const key = normalizeKey(raw.name);
 
         const data = {
             name: raw.name,
@@ -62,7 +60,7 @@ async function importCharacters() {
             role: normalizeRole(raw.role),
             wish: normalizeWish(raw.wish),
             releaseAt: parseUTC(raw.release_at),
-            genshinVersionId: version.id,
+            genshinVersionCode: raw.version,
         };
 
         await prisma.character.upsert({
