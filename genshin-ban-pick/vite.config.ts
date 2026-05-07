@@ -25,5 +25,9 @@ export default defineConfig({
       '@shared': path.resolve(__dirname, '../shared'),
     },
   },
-  build: { target: 'esnext' }
+  build: {
+    target: 'esnext',
+    outDir: '../backend/public',
+    emptyOutDir: true,
+  },
 })
