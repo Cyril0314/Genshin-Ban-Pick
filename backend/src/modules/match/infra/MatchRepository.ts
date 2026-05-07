@@ -7,7 +7,7 @@ import MatchTeamCreator from '../application/creators/MatchTeamCreator';
 import MatchTeamMemberCreator from '../application/creators/MatchTeamMemberCreator';
 import MatchMoveCreator from '../application/creators/MatchMoveCreator';
 import MatchTacticalUsageCreator from '../application/creators/MatchTacticalUsageCreator';
-import { DbConnectionError, DbForeignKeyConstraintError, DbUniqueConstraintError, DryRunError } from '../../../errors/AppError';
+import { DataNotFoundError, DbConnectionError, DbForeignKeyConstraintError, DbUniqueConstraintError, DryRunError } from '../../../errors/AppError';
 import { createLogger } from '../../../utils/logger';
 import { mapMatchFromPrisma } from '../domain/mapMatchFromPrisma';
 
@@ -129,6 +129,7 @@ export default class MatchRepository implements IMatchRepository {
                 } satisfies Prisma.MatchFindUniqueArgs;
 
                 const allMatchData = await tx.match.findUnique(matchQuery);
+                if (!allMatchData) throw new DataNotFoundError();
                 const aggregate = mapMatchFromPrisma(allMatchData);
                 if (dryRun) throw new DryRunError(aggregate);
                 return aggregate;

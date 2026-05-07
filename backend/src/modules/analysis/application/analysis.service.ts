@@ -182,7 +182,7 @@ export default class AnalysisService {
         return matrix;
     }
 
-    async fetchPlayerStyleProfile(identityKey: MatchTeamMemberUniqueIdentityKey): Promise<IPlayerStyleProfile> {
+    async fetchPlayerStyleProfile(identityKey: MatchTeamMemberUniqueIdentityKey): Promise<IPlayerStyleProfile | undefined> {
         const memberUsages = await this.analysisRepository.findMatchTacticalUsageWithCharacterByIdentityKey(identityKey);
         const allUsages = await this.analysisRepository.findAllMatchTacticalUsageWithCharacter();
         return computePlayerStyleProfile(memberUsages, allUsages);

@@ -1,5 +1,7 @@
 // backend/src/modules/room/infra/RoomStateRepository.ts
 
+import { RoomNotFoundError } from '../../../errors/AppError';
+
 import type { BoardImageMap } from '@shared/contracts/board/BoardImageMap';
 import type { IRoomStateManager } from '../../socket/domain/IRoomStateManager';
 import type { IRoomStateRepository } from '../domain/IRoomStateRepository';
@@ -31,8 +33,10 @@ export default class RoomStateRepository implements IRoomStateRepository {
         return state;
     }
 
-    findRoomUsersById(roomId: string): IRoomUser[] | undefined {
-        return this.roomStateManager.getUsers(roomId) ?? undefined;
+    findRoomUsersById(roomId: string): IRoomUser[] {
+        const result = this.roomStateManager.getUsers(roomId);
+        if (result === undefined) throw new RoomNotFoundError();
+        return result;
     }
 
     updateRoomUsersById(roomId: string, users: IRoomUser[]) {
@@ -41,7 +45,9 @@ export default class RoomStateRepository implements IRoomStateRepository {
     }
 
     findBoardImageMapById(roomId: string): BoardImageMap {
-        return this.roomStateManager.getBoardImageMap(roomId) ?? undefined;
+        const result = this.roomStateManager.getBoardImageMap(roomId);
+        if (result === undefined) throw new RoomNotFoundError();
+        return result;
     }
 
     updateBoardImageMapById(roomId: string, boardImageMap: BoardImageMap): number {
@@ -49,8 +55,10 @@ export default class RoomStateRepository implements IRoomStateRepository {
         return Object.values(boardImageMap).length;
     }
 
-    findCharacterRandomContextMapById(roomId: string): CharacterRandomContextMap | undefined {
-        return this.roomStateManager.getCharacterRandomContextMap(roomId) ?? undefined;
+    findCharacterRandomContextMapById(roomId: string): CharacterRandomContextMap {
+        const result = this.roomStateManager.getCharacterRandomContextMap(roomId);
+        if (result === undefined) throw new RoomNotFoundError();
+        return result;
     }
 
     updateCharacterRandomContextMapById(roomId: string, characterRandomContextMap: CharacterRandomContextMap): number {
@@ -58,8 +66,10 @@ export default class RoomStateRepository implements IRoomStateRepository {
         return Object.values(characterRandomContextMap).length;
     }
 
-    findChatMessagesById(roomId: string): IChatMessage[] | undefined {
-        return this.roomStateManager.getChatMessages(roomId) ?? undefined;
+    findChatMessagesById(roomId: string): IChatMessage[] {
+        const result = this.roomStateManager.getChatMessages(roomId);
+        if (result === undefined) throw new RoomNotFoundError();
+        return result;
     }
 
     updateChatMessagesById(roomId: string, chatMessages: IChatMessage[]): number {
@@ -67,8 +77,10 @@ export default class RoomStateRepository implements IRoomStateRepository {
         return chatMessages.length;
     }
 
-    findTeamMembersMapById(roomId: string): TeamMembersMap | undefined {
-        return this.roomStateManager.getTeamMembersMap(roomId) ?? undefined;
+    findTeamMembersMapById(roomId: string): TeamMembersMap {
+        const result = this.roomStateManager.getTeamMembersMap(roomId);
+        if (result === undefined) throw new RoomNotFoundError();
+        return result;
     }
 
     updateTeamMembersMapById(roomId: string, teamMembersMap: TeamMembersMap): number {
@@ -76,8 +88,10 @@ export default class RoomStateRepository implements IRoomStateRepository {
         return Object.values(teamMembersMap).length;
     }
 
-    findTeamTacticalCellImageMapById(roomId: string): TeamTacticalCellImageMap | undefined {
-        return this.roomStateManager.getTeamTacticalCellImageMap(roomId);
+    findTeamTacticalCellImageMapById(roomId: string): TeamTacticalCellImageMap {
+        const result = this.roomStateManager.getTeamTacticalCellImageMap(roomId);
+        if (result === undefined) throw new RoomNotFoundError();
+        return result;
     }
 
     updateTeamTacticalCellImageMapById(roomId: string, teamTacticalCellImageMap: TeamTacticalCellImageMap): number {

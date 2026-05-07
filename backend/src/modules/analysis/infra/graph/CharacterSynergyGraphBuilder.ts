@@ -35,7 +35,7 @@ export default class CharacterSynergyGraphBuilder {
         const localMeans: Record<string, number> = {};
 
         for (const charA of chars) {
-            const weights = Object.values(similarityMatrix[charA] ?? {}).filter((w) => w > 0);
+            const weights = Object.values(similarityMatrix[charA] ?? {}).filter((w): w is number => w !== undefined && w > 0);
 
             // 計算局部平均 (Local Mean, μ)
             const sum = weights.reduce((acc, w) => acc + w, 0);
