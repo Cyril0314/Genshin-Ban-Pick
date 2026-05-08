@@ -8,6 +8,8 @@ import path from 'node:path'
 
 // https://vite.dev/config/
 export default defineConfig({
+  // 讀 root .env (單一來源)
+  envDir: path.resolve(__dirname, '..'),
   server: {
     proxy: {
       // '/api': 'http://localhost:3000' // ← 你的後端 port
