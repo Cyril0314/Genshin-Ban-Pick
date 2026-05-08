@@ -65,6 +65,12 @@ export class InvalidRoomSettingError extends AppError {
     }
 }
 
+export class RoomNotFoundError extends AppError {
+    constructor(cause?: Error) {
+        super('ROOM_NOT_FOUND', cause);
+    }
+}
+
 export class InvalidFieldsError extends AppError {
     constructor(cause?: Error) {
         super('INVALID_FIELDS', cause);
@@ -106,6 +112,7 @@ export const ErrorMeta = {
     MISSING_FIELDS: { status: 400, message: '請填寫欄位' },
     DATA_NOT_FOUND: { status: 404, message: '查無資料' },
     INVALID_ROOM_SETTING: { status: 500, message: '錯誤的房間設定' },
+    ROOM_NOT_FOUND: { status: 404, message: '房間不存在或已過期' },
     INVALID_FIELDS: { status: 400, message: '錯誤的欄位設定' },
     DRY_RUN: { status: 500, message: '試運行錯誤' },
     DB_UNIQUE_CONSTRAINT: { status: 409, message: '資料已存在' },

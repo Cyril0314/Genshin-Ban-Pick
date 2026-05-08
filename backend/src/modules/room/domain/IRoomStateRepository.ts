@@ -14,21 +14,21 @@ export interface IRoomStateRepository {
     create(roomId: string, state: IRoomState): IRoomState;
     upsert(roomId: string, state: IRoomState): IRoomState;
 
-    findRoomUsersById(roomId: string): IRoomUser[] | undefined;
+    findRoomUsersById(roomId: string): IRoomUser[];
     updateRoomUsersById(roomId: string, users: IRoomUser[]): number;
 
-    findBoardImageMapById(roomId: string): BoardImageMap| undefined ;
+    findBoardImageMapById(roomId: string): BoardImageMap;
     updateBoardImageMapById(roomId: string, boardImageMap: BoardImageMap): number;
 
-    findCharacterRandomContextMapById(roomId: string): CharacterRandomContextMap | undefined ;
+    findCharacterRandomContextMapById(roomId: string): CharacterRandomContextMap;
     updateCharacterRandomContextMapById(roomId: string, characterRandomContextMap: CharacterRandomContextMap): number;
 
-    findChatMessagesById(roomId: string): IChatMessage[] | undefined;
+    findChatMessagesById(roomId: string): IChatMessage[];
     updateChatMessagesById(roomId: string, chatMessages: IChatMessage[]): number;
 
-    findTeamMembersMapById(roomId: string): TeamMembersMap | undefined;
+    findTeamMembersMapById(roomId: string): TeamMembersMap;
     updateTeamMembersMapById(roomId: string, teamMembersMap: TeamMembersMap): number;
 
-    findTeamTacticalCellImageMapById(roomId: string): TeamTacticalCellImageMap | undefined;
+    findTeamTacticalCellImageMapById(roomId: string): TeamTacticalCellImageMap;
     updateTeamTacticalCellImageMapById(roomId: string, teamTacticalCellImageMap: TeamTacticalCellImageMap): number;
 }

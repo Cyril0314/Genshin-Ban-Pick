@@ -1,6 +1,5 @@
 // backend/src/modules/match/domain/matchMapper.ts
 import { mapCharacter } from '../../character';
-import { orUndefined } from '../../../utils/nullable';
 
 import type {
     Character,
@@ -24,8 +23,8 @@ import type { MoveSource, MoveType } from '@shared/contracts/match/value-types';
 // type PrismaMatchResult = Prisma.MatchGetPayload<typeof matchQuery>;
 
 // Prisma include 查詢結果轉 Domain IMatch
-export function mapMatchFromPrisma(m: (Match & { teams?: MatchTeam[]; moves?: MatchMove[] }) | undefined): IMatch {
-    if (!m) throw new Error('Match not found');
+// 入參需保證非 null/undefined — 由 caller (repository) 確認資料存在
+export function mapMatchFromPrisma(m: Match & { teams?: MatchTeam[]; moves?: MatchMove[] }): IMatch {
     return {
         id: m.id,
         createdAt: m.createdAt,
@@ -54,8 +53,8 @@ function mapTeamMember(tm: MatchTeamMember & { tacticalUsages?: MatchTacticalUsa
         slot: tm.slot,
         name: tm.name,
         teamId: tm.teamId,
-        memberRef: orUndefined(tm.memberRef),
-        guestRef: orUndefined(tm.guestRef),
+        memberRef: tm.memberRef ?? undefined,
+        guestRef: tm.guestRef ?? undefined,
         tacticalUsages: tm.tacticalUsages?.map(mapTacticalUsage),
         member: tm.member,
         guest: tm.guest,
@@ -82,7 +81,7 @@ function mapMove(move: MatchMove & { character?: Character; randomMoveContext?: 
         type: move.type as MoveType,
         source: move.source as MoveSource,
         matchId: move.matchId,
-        teamId: orUndefined(move.teamId),
+        teamId: move.teamId ?? undefined,
         characterKey: move.characterKey,
         character: move.character ? mapCharacter(move.character) : undefined,
         randomMoveContext: move.randomMoveContext,

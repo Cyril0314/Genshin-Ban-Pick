@@ -1,0 +1,13 @@
+# Local Claude Code IDE settings
+.claude/
+
+# macOS
+.DS_Store
+
+# Local environment / secrets
+.env
+.env.local
+.env.*.local
+
+# Local DB backups
+*.backup

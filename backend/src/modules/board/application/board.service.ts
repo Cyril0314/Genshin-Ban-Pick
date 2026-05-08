@@ -51,7 +51,7 @@ export default class BoardService {
         this.roomStateRepository.updateCharacterRandomContextMapById(roomId, characterRandomContextMap);
     }
 
-    getImageMap(roomId: string): BoardImageMap | undefined {
+    getImageMap(roomId: string): BoardImageMap {
         return this.roomStateRepository.findBoardImageMapById(roomId);
     }
 }

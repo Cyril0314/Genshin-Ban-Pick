@@ -32,50 +32,56 @@ export default class RoomStateManager implements IRoomStateManager {
     }
 
     getUsers(roomId: string) {
-        return this.get(roomId).users;
+        return this.get(roomId)?.users;
     }
 
     setUsers(roomId: string, users: IRoomUser[]) {
+        if (!this.roomStates[roomId]) return
         this.roomStates[roomId].users = users;
     }
 
     getChatMessages(roomId: string) {
-        return this.get(roomId).chatMessages;
+        return this.get(roomId)?.chatMessages;
     }
 
     setChatMessages(roomId: string, chatMessages: IChatMessage[]): void {
+        if (!this.roomStates[roomId]) return
         this.roomStates[roomId].chatMessages = chatMessages;
     }
 
     getBoardImageMap(roomId: string) {
-        return this.get(roomId).boardImageMap;
+        return this.get(roomId)?.boardImageMap;
     }
 
     setBoardImageMap(roomId: string, boardImageMap: BoardImageMap) {
+        if (!this.roomStates[roomId]) return
         this.roomStates[roomId].boardImageMap = boardImageMap;
     }
 
     getCharacterRandomContextMap(roomId: string) {
-        return this.get(roomId).characterRandomContextMap;
+        return this.get(roomId)?.characterRandomContextMap;
     }
 
     setCharacterRandomContextMap(roomId: string, characterRandomContextMap: CharacterRandomContextMap) {
+        if (!this.roomStates[roomId]) return
         this.roomStates[roomId].characterRandomContextMap = characterRandomContextMap;
     }
 
     getTeamMembersMap(roomId: string) {
-        return this.get(roomId).teamMembersMap;
+        return this.get(roomId)?.teamMembersMap;
     }
 
     setTeamMembersMap(roomId: string, teamMembersMap: TeamMembersMap): void {
+        if (!this.roomStates[roomId]) return
         this.roomStates[roomId].teamMembersMap = teamMembersMap;
     }
     
     getTeamTacticalCellImageMap(roomId: string) {
-        return this.get(roomId).teamTacticalCellImageMap;
+        return this.get(roomId)?.teamTacticalCellImageMap;
     }
 
     setTeamTacticalCellImageMap(roomId: string, teamTacticalCellImageMap: TeamTacticalCellImageMap): void {
+        if (!this.roomStates[roomId]) return
         this.roomStates[roomId].teamTacticalCellImageMap = teamTacticalCellImageMap;
     }
 }

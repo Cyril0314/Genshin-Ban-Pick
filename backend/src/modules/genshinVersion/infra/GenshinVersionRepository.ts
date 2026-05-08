@@ -9,8 +9,15 @@ export default class GenshinVersionRepository implements IGenshinVersionReposito
     constructor(private prisma: PrismaClient) {}
 
     async findAllGenshinVersionPeriods(): Promise<IGenshinVersionPeriod[]> {
-        return await this.prisma.genshinVersion.findMany({
+        const versions = await this.prisma.genshinVersion.findMany({
             select: { code: true, startAt: true, endAt: true },
+        });
+        return versions.map((version) => {
+            return {
+                code: version.code,
+                startAt: version.startAt ?? undefined,
+                endAt: version.endAt ?? undefined,
+            };
         });
     }
 }

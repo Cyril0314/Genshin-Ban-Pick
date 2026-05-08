@@ -9,7 +9,11 @@ import type { IMatchMoveWeightCalcCore } from '../../types/IMatchMoveWeightCalcC
 import type { IWeightContext } from '@shared/contracts/analysis/IWeightContext';
 import type { ICharacterUsage } from '@shared/contracts/analysis/ICharacterUsage';
 
-export function computeCharacterUsage(matches: IMatchTimeMinimal[], matchMoves: IMatchMoveWeightCalcCore[], matchTacticalUsages: IMatchTacticalUsageExpandedRefs[]): ICharacterUsage[] {
+export function computeCharacterUsage(
+    matches: IMatchTimeMinimal[],
+    matchMoves: IMatchMoveWeightCalcCore[],
+    matchTacticalUsages: IMatchTacticalUsageExpandedRefs[],
+): ICharacterUsage[] {
     const matchCount = matches.length;
 
     const usedSet = new Set(matchTacticalUsages.map((u) => `${u.matchId}:${u.characterKey}`));
@@ -20,8 +24,7 @@ export function computeCharacterUsage(matches: IMatchTimeMinimal[], matchMoves: 
         usageCountByMatch.set(key, (usageCountByMatch.get(key) ?? 0) + 1);
     }
 
-    const weights = new Map<string, number>();
-    const contextMap = new Map<string, IWeightContext>();
+    const aggregates = new Map<string, { totalWeight: number; context: IWeightContext }>();
     const releaseMap = new Map<string, Date | undefined>();
 
     for (const matchMove of matchMoves) {
@@ -41,15 +44,12 @@ export function computeCharacterUsage(matches: IMatchTimeMinimal[], matchMoves: 
 
         const w = calculateTacticalWeight(ctx);
 
-        weights.set(key, (weights.get(key) ?? 0) + w);
-
-        const prev = contextMap.get(key);
-
-        if (!prev) {
-            contextMap.set(key, JSON.parse(JSON.stringify(ctx)));
+        const existing = aggregates.get(key);
+        if (!existing) {
+            aggregates.set(key, { totalWeight: w, context: JSON.parse(JSON.stringify(ctx)) });
         } else {
-            mergeContext(prev, ctx);
-            contextMap.set(key, prev);
+            existing.totalWeight += w;
+            mergeContext(existing.context, ctx);
         }
     }
 
@@ -65,8 +65,8 @@ export function computeCharacterUsage(matches: IMatchTimeMinimal[], matchMoves: 
         effectiveMatchCount.set(key, idx === -1 ? matchCount : matchCount - idx);
     }
 
-    return Array.from(weights.entries())
-        .map(([key, totalWeight]) => {
+    return Array.from(aggregates.entries())
+        .map(([key, { totalWeight, context }]) => {
             const valid = effectiveMatchCount.get(key) ?? 1;
 
             const globalUsage = totalWeight / matchCount;
@@ -82,7 +82,7 @@ export function computeCharacterUsage(matches: IMatchTimeMinimal[], matchMoves: 
                 globalUsage,
                 effectiveUsage,
                 validMatchCount: valid,
-                context: contextMap.get(key),
+                context,
             };
         })
         .sort((a, b) => b.tacticalUsage - a.tacticalUsage);

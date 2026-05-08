@@ -15,7 +15,6 @@ import type { MoveSource, MoveType } from '@shared/contracts/match/value-types';
 import type { CharacterFilterKey } from '@shared/contracts/character/CharacterFilterKey';
 import type { MatchTeamMemberUniqueIdentityKey } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
 import type { IAnalysisTimeWindow } from '@shared/contracts/analysis/IAnalysisTimeWindow';
-import { orUndefined } from '../../../utils/nullable';
 
 export default class AnalysisRepository implements IAnalysisRepository {
     constructor(private prisma: PrismaClient) {}
@@ -258,7 +257,7 @@ export default class AnalysisRepository implements IAnalysisRepository {
                 source: entity.source as MoveSource,
                 matchId: entity.matchId,
                 order: entity.order,
-                characterReleaseAt: orUndefined(entity.character.releaseAt),
+                characterReleaseAt: entity.character.releaseAt ?? undefined,
                 randomMoveContext: randomMoveContext,
             };
         });
