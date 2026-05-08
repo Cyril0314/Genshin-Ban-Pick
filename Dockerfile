@@ -6,6 +6,9 @@
 FROM node:22-alpine AS builder
 WORKDIR /app
 
+# 強制 npm 用 IPv4 解析 — EC2 等沒有 IPv6 routing 的環境會 hang on DNS
+ENV NODE_OPTIONS=--dns-result-order=ipv4first
+
 # shared 是兩端都會 import 的型別合約，先放進去
 COPY shared ./shared
 
