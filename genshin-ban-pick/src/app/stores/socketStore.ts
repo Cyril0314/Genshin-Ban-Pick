@@ -16,7 +16,8 @@ export const useSocketStore = defineStore('socket', () => {
             console.warn(`[SOCKET] Has Connected`);
             return;
         }
-        const baseURL = import.meta.env.VITE_SOCKET_URL;
+        // 空字串 / 未設 → undefined → socket.io 連 page origin
+        const baseURL = import.meta.env.VITE_SOCKET_URL || undefined;
         socket.value = io(baseURL, { auth: { token } });
 
         socket.value.on('connect', () => {

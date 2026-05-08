@@ -6,7 +6,6 @@ import { fileURLToPath } from 'url';
 
 import { PrismaClient } from '@prisma/client';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import express from 'express';
 
 import { createLogger } from './utils/logger';
@@ -21,21 +20,25 @@ import type { Request, Response } from 'express';
 const logger = createLogger('INDEX');
 
 // ---------------------------------------------------------
-// 🧩 4. 環境變數設定
+// 🧩 4. 應用程式初始化
+//   env 來源:
+//   - dev/start: --env-file=../.env (Node 22+)
+//   - docker:    docker-compose.yml 的 environment 直接灌進 process.env
 // ---------------------------------------------------------
-logger.info('Configure Environment');
-dotenv.config();
-
-// ---------------------------------------------------------
-// 🧩 5. 應用程式初始化
 // ---------------------------------------------------------
 logger.info('Init App');
 const app = express();
 const server = http.createServer(app);
+
+const corsOrigins = (process.env.CORS_ORIGINS ?? 'http://localhost:5173')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean);
+
 app.use(
     cors({
-        origin: ['http://localhost:5173', 'http://54.224.88.154:3000'], // ✅ 允許來源
-        credentials: true, // ✅ 若要傳 cookie 或 token
+        origin: corsOrigins,
+        credentials: true,
     }),
 );
 
