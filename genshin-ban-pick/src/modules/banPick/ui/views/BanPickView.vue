@@ -40,25 +40,25 @@ watch(matchError, (err) => {
 </script>
 <template>
     <div class="ban-pick-page scale-context">
-        <div class="ban-pick-page__bg-image"></div>
-        <div class="ban-pick-page__bg-overlay"></div>
+        <div class="bg-image"></div>
+        <div class="bg-overlay"></div>
 
-        <div class="ban-pick-page__viewport-wrapper">
-            <div class="ban-pick-page__viewport-content">
-                <div class="ban-pick-page__layout">
-                    <div class="ban-pick-page__core">
-                        <div class="ban-pick-page__top-bar">
-                            <div class="ban-pick-page__top-section ban-pick-page__top-section--align-left">
+        <div class="viewport-wrapper">
+            <div class="viewport-content">
+                <div class="layout">
+                    <div class="core">
+                        <div class="top-bar">
+                            <div class="top-section top-section--align-left">
                                 <UserProfile />
-                                <div class="ban-pick-page__separator"></div>
+                                <div class="separator"></div>
                                 <RoomUserPool />
                             </div>
 
-                            <div class="ban-pick-page__step-indicator">
+                            <div class="indicator-slot">
                                 <StepIndicator />
                             </div>
 
-                            <div class="ban-pick-page__top-section ban-pick-page__top-section--align-right">
+                            <div class="top-section top-section--align-right">
                                 <Toolbar @image-map-reset="imageMapReset" @match-save="matchSave" />
                             </div>
                         </div>
@@ -79,7 +79,7 @@ watch(matchError, (err) => {
                             @member-restore="memberRestore"
                         />
 
-                        <div v-else class="ban-pick-page__loading">載入房間設定中...</div>
+                        <div v-else class="loading">載入房間設定中...</div>
                     </div>
                 </div>
             </div>
@@ -98,8 +98,8 @@ watch(matchError, (err) => {
     --size-team-info-height: calc(var(--size-drop-zone-height) + 2 * var(--size-drop-zone-space));
 }
 
-/* Background Elements */
-.ban-pick-page__bg-image {
+/* Background */
+.bg-image {
     position: absolute;
     background-color: var(--md-sys-color-background);
     background-size: cover;
@@ -108,15 +108,15 @@ watch(matchError, (err) => {
     z-index: 0;
 }
 
-.ban-pick-page__bg-overlay {
+.bg-overlay {
     position: absolute;
     width: 100%;
     height: 100vh;
     z-index: 1;
 }
 
-/* Viewport structure */
-.ban-pick-page__viewport-wrapper {
+/* Viewport */
+.viewport-wrapper {
     width: 100vw;
     height: 100vh;
     position: fixed;
@@ -127,14 +127,14 @@ watch(matchError, (err) => {
     z-index: 2;
 }
 
-.ban-pick-page__viewport-content {
+.viewport-content {
     width: var(--layout-width);
     height: var(--layout-height);
     transform-origin: center center;
 }
 
-/* Core Layout */
-.ban-pick-page__layout {
+/* Layout */
+.layout {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -143,7 +143,7 @@ watch(matchError, (err) => {
     background-color: var(--md-sys-color-surface-dim);
 }
 
-.ban-pick-page__core {
+.core {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -152,8 +152,8 @@ watch(matchError, (err) => {
     min-height: 0;
 }
 
-/* Top Bar & Grid System */
-.ban-pick-page__top-bar {
+/* Top bar */
+.top-bar {
     display: grid;
     grid-template-columns: 1fr var(--size-step-indicator) 1fr;
     background-color: var(--md-sys-color-surface-container-high);
@@ -163,35 +163,35 @@ watch(matchError, (err) => {
     gap: var(--space-lg);
 }
 
-.ban-pick-page__top-section {
+.top-section {
     display: flex;
     align-items: center;
     height: 100%;
 }
 
-/* Modifiers for Top Section */
-.ban-pick-page__top-section--align-left {
+/* top-section variants (permanent layout direction) */
+.top-section--align-left {
     justify-content: start;
     gap: var(--space-md);
 }
 
-.ban-pick-page__top-section--align-right {
+.top-section--align-right {
     justify-content: end;
 }
 
-.ban-pick-page__separator {
+.separator {
     width: 1px;
     height: 60%;
     background-color: var(--md-sys-color-outline-variant);
 }
 
-.ban-pick-page__step-indicator {
+.indicator-slot {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.ban-pick-page__loading {
+.loading {
     display: flex;
     justify-content: center;
     align-items: center;

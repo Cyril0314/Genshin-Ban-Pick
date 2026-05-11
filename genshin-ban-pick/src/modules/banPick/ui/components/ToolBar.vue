@@ -50,21 +50,21 @@ function handleSaveButtonClickEvent() {
 
 <template>
     <div class="toolbar">
-        <button class="toolbar__button toolbar__button--tactical" @click="handleTacticalButtonClickEvent">編隊</button>
+        <button class="button button--tactical" @click="handleTacticalButtonClickEvent">編隊</button>
         <TacticalBoardPanelDrawer v-model:open="isTacticalDrawerOpen" />
 
-        <div class="toolbar__button-wrapper">
-            <button class="toolbar__button toolbar__button--chat" @click="handleChatButtonClickEvent">聊天</button>
-            <div v-if="hasUnreadMessage" class="toolbar__notification-dot"></div>
+        <div class="button-wrapper">
+            <button class="button button--chat" @click="handleChatButtonClickEvent">聊天</button>
+            <div v-if="hasUnreadMessage" class="notification-dot"></div>
         </div>
         <ChatFloatWindow v-model:open="isChatOpen" />
 
-        <button class="toolbar__button toolbar__button--analysis" @click="handleAnalysisButtonClickEvent">報表</button>
+        <button class="button button--analysis" @click="handleAnalysisButtonClickEvent">報表</button>
         <AnalysisDrawer v-model:open="isAnalysisDrawerOpen" />
 
-        <button v-if="isAdmin" class="toolbar__button toolbar__button--reset" @click="handleResetButtonClickEvent">重置</button>
+        <button v-if="isAdmin" class="button button--reset" @click="handleResetButtonClickEvent">重置</button>
 
-        <button v-if="isAdmin" class="toolbar__button toolbar__button--save" @click="handleSaveButtonClickEvent">紀錄</button>
+        <button v-if="isAdmin" class="button button--save" @click="handleSaveButtonClickEvent">紀錄</button>
     </div>
 </template>
 
@@ -81,7 +81,7 @@ function handleSaveButtonClickEvent() {
     border-radius: var(--radius-md);
 }
 
-.toolbar__button {
+.button {
     width: var(--size-tool-button);
     background-color: var(--md-sys-color-surface-container-high);
     color: var(--md-sys-color-on-surface);
@@ -97,21 +97,21 @@ function handleSaveButtonClickEvent() {
     font-family: var(--font-family-sans);
 }
 
-.toolbar__button:hover {
+.button:hover {
     background-color: color-mix(in srgb, var(--md-sys-color-surface-container-high), white 6%);
     transform: scale(1.05);
 }
 
-.toolbar__button:active {
+.button:active {
     transform: scale(0.98);
 }
 
-.toolbar__button-wrapper {
+.button-wrapper {
     position: relative;
     display: inline-flex;
 }
 
-.toolbar__notification-dot {
+.notification-dot {
     --dot-size: calc(var(--base-size) * 0.75);
     position: absolute;
     top: calc(var(--dot-size) * -0.5);

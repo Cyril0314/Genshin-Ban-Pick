@@ -181,6 +181,23 @@ Token 定義在 `src/assets/styles/semantic-colors.css` 跟 `src/assets/base.css
 **3. 跨元件重用的 design system component**（按鈕、卡片這類）
 可以考慮加 BEM 命名（提高 explicit），或直接抽成 Vue component。
 
+**4. 全域 utility / 跨 view marker class**
+不是某個元件的內部 class，而是「掛在多個 view 根節點上做為 scope 標記」的全域工具
+class。命名規則跟 component-scoped 不一樣 — 不需要對齊檔名、不需要走 `__`/`is-`/`--`
+這套，**就是個簡單 kebab-case 描述功能名**。
+
+定位特徵：
+- 在 `src/assets/*.css` 全域定義（不在 `<style scoped>` 裡）
+- 同時被多個 `.vue` 套用
+- 可能被 JS 透過 `document.querySelector` 拿來定位 scope（例如讀 CSS variable）
+
+範例：`scale-context` — 標記「設計 token / 縮放基準的起點」，套在 BanPickView、
+RoomListView 等多個 view 的根節點上，由 `useDesignTokens` / `useScopedCssVar` /
+`useEchartTheme` 等 composable 用來找 scope。
+
+命名建議：簡單動機名稱（e.g. `dark-mode`, `print-only`, `scale-context`），不要套
+component-style 規則。
+
 ---
 
 ## 遷移策略
