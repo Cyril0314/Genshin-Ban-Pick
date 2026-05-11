@@ -91,6 +91,7 @@ When adding a cross-boundary type, put it under `shared/contracts/<domain>/` and
 - Prettier (root `.prettierrc.json`): 4-space indent, single quotes, semis, 150 print width. Frontend lint runs **oxlint then eslint**; both must pass.
 - Import order is enforced by `eslint-plugin-import` on both sides: builtin → external → internal → parent/sibling/index → object → type, with blank lines between groups, alphabetized.
 - Commits follow Conventional Commits (`feat:`, `fix:`, `chore:`, `doc:` are visible in recent history).
+- Frontend CSS naming rules (one-block-per-file, `is-*` for state vs `--` for variant, design tokens) live in `genshin-ban-pick/CSS_CONVENTIONS.md`. When editing or creating `.vue` files, follow that style (currently a touch-time migration — old files keep their BEM until naturally touched).
 
 ## Database / Ops Notes
 
