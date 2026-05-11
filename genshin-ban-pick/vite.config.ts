@@ -12,8 +12,12 @@ export default defineConfig({
   envDir: path.resolve(__dirname, '..'),
   server: {
     proxy: {
-      // '/api': 'http://localhost:3000' // ← 你的後端 port
-      '/api': 'http://127.0.0.1:3000' // ← 你的後端 port
+      '/api': 'http://127.0.0.1:3000',
+      // socket.io 走 /socket.io/*，要單獨 proxy 並開 ws: true 才能升級 WebSocket
+      '/socket.io': {
+        target: 'http://127.0.0.1:3000',
+        ws: true,
+      },
     }
   },
   plugins: [
