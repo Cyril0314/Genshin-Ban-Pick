@@ -20,6 +20,9 @@ services:
     restart: unless-stopped
 
   backend:
+    # image 名跟 docker compose 自動命名一致 (project-service)，方便 deploy-to-ec2.sh
+    # 在 EC2 上載入後直接被找到
+    image: genshin-ban-pick-backend:latest
     build:
       context: .
       dockerfile: Dockerfile
