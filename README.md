@@ -34,8 +34,16 @@
 
 ### Connect EC2 and build 5433 db tunnel
 
-ssh -i "C:\Users\asdfg\ec2_keys\aws-discord-bot-farmer-licence-key.pem" -L 5433:localhost:5432 ec2-user@98.86.73.53
+docker pg
+WINDOWS
+ssh -i "C:\Users\asdfg\ec2_keys\aws-discord-bot-farmer-licence-key.pem" -L 5435:localhost:5434 ec2-user@98.86.73.53 
+MAC
+ssh -i "/Users/wangxiaoyu/Desktop/ec2_keys/aws-discord-bot-farmer-licence-key.pem" -L 5435:localhost:5434 ec2-user@98.86.73.53
 
+原生 pg
+WINDOWS
+ssh -i "C:\Users\asdfg\ec2_keys\aws-discord-bot-farmer-licence-key.pem" -L 5433:localhost:5432 ec2-user@98.86.73.53 
+MAC
 ssh -i "/Users/wangxiaoyu/Desktop/ec2_keys/aws-discord-bot-farmer-licence-key.pem" -L 5433:localhost:5432 ec2-user@98.86.73.53
 
 
@@ -173,15 +181,37 @@ docker compose up -d --build   # 完整 stack 含 backend
 ./scripts/sync-host-db-to-docker.sh    # dump host PG → restore 進 docker volume
 ```
 
-### Port 配置
+### Port 配置（Mac 端）
 
-| Port  | 用途                                  |
-| ----- | ------------------------------------- |
-| 5432  | host 原生 PG14（其他專案）            |
-| 5433  | EC2 SSH tunnel (`ssh -L 5433:...`)    |
-| 5434  | docker postgres 對外                  |
-| 3000  | backend (frontend 也從這個 port 服)   |
-| 5173  | vite dev server (HMR 開發用)          |
+| Port  | 用途                                                           |
+| ----- | -------------------------------------------------------------- |
+| 5432  | host 原生 PG14（其他專案，如 discord bot）                     |
+| 5433  | SSH tunnel → EC2 **原生** PG (discord bot 的 DB)               |
+| 5434  | **local** docker postgres 對外                                 |
+| 5435  | SSH tunnel → EC2 **docker** PG (genshin docker stack)          |
+| 3000  | backend (frontend 也從這個 port 服)                            |
+| 5173  | vite dev server (HMR 開發用)                                   |
+
+兩個 EC2 tunnel 用不同 Mac port 區分，避免「同一條 5433 不確定通到哪個 PG」。
+
+### 連 EC2 PG 的 SSH config（推薦）
+
+```ssh-config
+# ~/.ssh/config
+Host genshin-ec2
+    HostName 98.86.73.53
+    User ec2-user
+    IdentityFile ~/Desktop/ec2_keys/aws-discord-bot-farmer-licence-key.pem
+    LocalForward 5433 localhost:5432   # EC2 原生 PG (discord bot)
+    LocalForward 5435 localhost:5434   # EC2 docker PG (genshin)
+```
+
+設好後 `ssh genshin-ec2` 一條指令同時建兩條 tunnel。Mac 端：
+
+```bash
+psql -h localhost -p 5433 -U postgres                          # → EC2 原生 PG
+psql -h localhost -p 5435 -U postgres -d genshin_banpick       # → EC2 docker PG
+```
 
 1. 基本原則
 ✔ 一致性優先
