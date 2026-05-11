@@ -10,7 +10,9 @@ export function setTokenProvider(fn: () => string | undefined) {
 }
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
+    // fallback 用相對路徑 → 跟 page 同 origin
+    // dev 走 vite proxy，prod 走 backend 自己服 /api
+    baseURL: import.meta.env.VITE_API_URL || '/api',
     withCredentials: true,
 });
 
