@@ -55,9 +55,9 @@ watch(currentTeam, () => {
 </script>
 
 <template>
-    <div class="step-indicator" :class="{ active }" :style="{ '--team-color-rgb': teamColorRGB, }"
+    <div class="step-indicator" :class="{ 'is-active': active }" :style="{ '--team-color-rgb': teamColorRGB, }"
         @animationend="active = false">
-        <span class="step-label">{{ displayText }}</span>
+        <span class="label">{{ displayText }}</span>
     </div>
 </template>
 
@@ -104,11 +104,11 @@ watch(currentTeam, () => {
     opacity: 0;
 }
 
-.step-indicator.active::after {
+.step-indicator.is-active::after {
     animation: indicatorPulse 0.9s ease-out;
 }
 
-.step-label {
+.label {
     width: 100%;
     text-align: center;
     line-height: 1.3;

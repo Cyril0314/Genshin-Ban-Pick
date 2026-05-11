@@ -35,7 +35,7 @@ const zoneMatrix = computed(() =>
 
 <template>
     <div class="ban-zone">
-        <div class="grid__row" v-for="(zones, rowIndex) in zoneMatrix" :key="rowIndex">
+        <div class="row" v-for="(zones, rowIndex) in zoneMatrix" :key="rowIndex">
             <template v-for="(zone, colIndex) in zones" :key="zone.id">
                 <DropZone
                     :zone="zone"
@@ -44,7 +44,7 @@ const zoneMatrix = computed(() =>
                     @image-drop="emitters.imageDrop"
                     @image-restore="emitters.imageRestore"
                 />
-                <div v-if="(colIndex + 1) % (zones.length / 2) === 0 && colIndex !== zones.length - 1" class="grid__spacer"></div>
+                <div v-if="(colIndex + 1) % (zones.length / 2) === 0 && colIndex !== zones.length - 1" class="spacer"></div>
             </template>
         </div>
     </div>
@@ -62,13 +62,13 @@ const zoneMatrix = computed(() =>
     background-color: var(--md-sys-color-surface-container-high);
 }
 
-.grid__row {
+.row {
     display: flex;
     flex-direction: row;
     gap: var(--size-drop-zone-space);
 }
 
-.grid__spacer {
+.spacer {
     width: var(--size-ban-row-spacer);
     height: 100%;
 }

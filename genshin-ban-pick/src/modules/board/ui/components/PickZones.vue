@@ -36,7 +36,7 @@ const zoneMatrix = computed(() =>
 
 <template>
     <div :class="['pick-zone', `pick-zone--${props.side}`]">
-        <div class="grid__column grid__column--side" v-for="(zones, columnIndex) in zoneMatrix" :key="columnIndex">
+        <div class="column" v-for="(zones, columnIndex) in zoneMatrix" :key="columnIndex">
             <template v-for="(zone, rowIndex) in zones" :key="rowIndex">
                 <DropZone :zone="zone" :boardImageMap="props.boardImageMap" :label="`Pick ${zone.order + 1}`"
                     @image-drop="emitters.imageDrop" @image-restore="emitters.imageRestore" />
@@ -67,7 +67,7 @@ const zoneMatrix = computed(() =>
     background-color: var(--md-sys-color-surface-container-high);
 }
 
-.grid__column {
+.column {
     display: flex;
     flex-direction: column;
     align-items: center;

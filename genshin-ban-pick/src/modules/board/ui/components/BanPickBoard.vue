@@ -68,10 +68,9 @@ const { utilityZones, banZones, leftPickZones, rightPickZones, maxNumberOfUtilit
 </script>
 
 <template>
-    <!-- <div class="ban-pick-board"> -->
-    <div class="layout__main"
+    <div class="ban-pick-board"
         :style="{ '--max-number-of-pick-per-column': maxNumberOfPickPerColumn, '--max-number-of-ban-per-row': maxNumberOfBanPerRow, '--max-number-of-utility-per-row': maxNumberOfUtilityPerRow }">
-        <div class="layout__side layout__side--left">
+        <div class="side side--left">
             <TeamInfo v-if="teamInfoPair" side="left" :teamInfo="teamInfoPair.left"
                 :numberOfSetupCharacter="roomSetting.numberOfSetupCharacter" @member-input="emitters.memberInput"
                 @member-drop="emitters.memberDrop" @member-restore="emitters.memberRestore" />
@@ -79,12 +78,12 @@ const { utilityZones, banZones, leftPickZones, rightPickZones, maxNumberOfUtilit
                 :boardImageMap="props.boardImageMap" @image-drop="emitters.imageDrop"
                 @image-restore="emitters.imageRestore" />
         </div>
-        <div class="layout__center">
-            <div class="layout__ban-zone">
+        <div class="center">
+            <div class="ban-area">
                 <BanZones :zones="banZones" :maxPerRow="maxNumberOfBanPerRow" :boardImageMap="props.boardImageMap"
                     @image-drop="emitters.imageDrop" @image-restore="emitters.imageRestore" />
             </div>
-            <div class="layout__common">
+            <div class="common">
                 <ImageOptions v-if="characterMap" :characterMap="characterMap" :usedImageIds="usedImageIds"
                     :filteredCharacterKeys="filteredCharacterKeys" />
 
@@ -92,13 +91,13 @@ const { utilityZones, banZones, leftPickZones, rightPickZones, maxNumberOfUtilit
                 <CharacterSelector :characterMap="props.characterMap" @filter-change="emitters.filterChange"
                     @random-pull="emitters.randomPull" />
             </div>
-            <div class="layout__utility-zone">
+            <div class="utility-area">
                 <UtilityZones :zones="utilityZones" :maxPerRow="maxNumberOfUtilityPerRow"
                     :boardImageMap="props.boardImageMap" @image-drop="emitters.imageDrop"
                     @image-restore="emitters.imageRestore" />
             </div>
         </div>
-        <div class="layout__side layout__side--right">
+        <div class="side side--right">
             <TeamInfo v-if="teamInfoPair" side="right" :teamInfo="teamInfoPair.right"
                 :numberOfSetupCharacter="roomSetting.numberOfSetupCharacter" @member-input="emitters.memberInput"
                 @member-drop="emitters.memberDrop" @member-restore="emitters.memberRestore" />
@@ -107,11 +106,10 @@ const { utilityZones, banZones, leftPickZones, rightPickZones, maxNumberOfUtilit
                 @image-restore="emitters.imageRestore" />
         </div>
     </div>
-    <!-- </div> -->
 </template>
 
 <style scoped>
-.layout__main {
+.ban-pick-board {
     --pick-per-column-count: var(--max-number-of-pick-per-column);
     --layout-main-height: calc(var(--space-lg) + var(--size-team-info-height) + var(--space-md) + var(--pick-per-column-count) * var(--size-drop-zone-height) + (var(--pick-per-column-count) + 1) * var(--size-drop-zone-space) + var(--space-lg));
     --ban-per-row-count: var(--max-number-of-ban-per-row);
@@ -127,7 +125,7 @@ const { utilityZones, banZones, leftPickZones, rightPickZones, maxNumberOfUtilit
     border-radius: var(--radius-xl);
 }
 
-.layout__side {
+.side {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -135,7 +133,7 @@ const { utilityZones, banZones, leftPickZones, rightPickZones, maxNumberOfUtilit
     width: min-content;
 }
 
-.layout__center {
+.center {
     display: flex;
     flex-direction: column;
     gap: var(--space-xl);
@@ -144,13 +142,13 @@ const { utilityZones, banZones, leftPickZones, rightPickZones, maxNumberOfUtilit
     width: var(--layout-center-width);
 }
 
-.layout__ban-zone {
+.ban-area {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.layout__common {
+.common {
     display: flex;
     flex: 1;
     flex-direction: column;
@@ -160,7 +158,7 @@ const { utilityZones, banZones, leftPickZones, rightPickZones, maxNumberOfUtilit
     width: 100%;
 }
 
-.layout__utility-zone {
+.utility-area {
     display: flex;
     align-items: start;
     justify-content: center;
