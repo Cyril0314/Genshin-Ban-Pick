@@ -44,17 +44,17 @@ function handleImageRestore({ teamSlot, cellId }: { teamSlot: number, cellId: nu
 </script>
 
 <template>
-  <div class="tactical__board-panel" :class="`tactical__board-panel--${currentTeamSlot}`">
-    <div class="tactical__board-tabs">
-      <button v-for="teamInfo in teamInfoPair" :key="teamInfo.slot" class="tactical__tab"
-        :class="{ 'tactical__tab--active': currentTeamSlot === teamInfo.slot }"
+  <div class="tactical-board-panel">
+    <div class="tabs">
+      <button v-for="teamInfo in teamInfoPair" :key="teamInfo.slot" class="tab"
+        :class="{ 'is-active': currentTeamSlot === teamInfo.slot }"
         :style="useTeamTheme(teamInfo.slot).themeVars.value" @click="currentTeamSlot = teamInfo.slot">
         {{ teamInfo.name }}
       </button>
     </div>
 
-    <div class="tactical__board-content">
-      <div class="tactical__board-section">
+    <div class="content">
+      <div class="section">
         <template v-if="teamInfoPair">
           <template v-if="currentTeamSlot === teamInfoPair.left.slot">
             <TacticalPool :teamSlot="teamInfoPair.left.slot" />
@@ -73,7 +73,7 @@ function handleImageRestore({ teamSlot, cellId }: { teamSlot: number, cellId: nu
 </template>
 
 <style scoped>
-.tactical__board-panel {
+.tactical-board-panel {
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -82,14 +82,14 @@ function handleImageRestore({ teamSlot, cellId }: { teamSlot: number, cellId: nu
   gap: var(--space-lg);
 }
 
-.tactical__board-tabs {
+.tabs {
   display: flex;
   width: 100%;
   justify-content: space-between;
   gap: var(--space-md);
 }
 
-.tactical__tab {
+.tab {
   flex: 1;
   padding: var(--space-md);
   color: var(--md-sys-color-on-surface);
@@ -103,28 +103,28 @@ function handleImageRestore({ teamSlot, cellId }: { teamSlot: number, cellId: nu
   transition: background-color 0.3s ease;
 }
 
-.tactical__tab:hover {
+.tab:hover {
   background-color: color-mix(in srgb,
       var(--md-sys-color-surface-container-highest),
       white 6%);
 }
 
-.tactical__tab--active {
+.tab.is-active {
   background-color: var(--team-color);
   color: var(--team-on-color);
 }
 
-.tactical__tab--active:hover {
+.tab.is-active:hover {
   background-color: var(--team-color-hover);
 }
 
-.tactical__board-content {
+.content {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
-.tactical__board-section {
+.section {
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);

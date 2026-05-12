@@ -20,19 +20,19 @@ const { isPercentage, activeType, option } = useCharacterUsagesCompositionChart(
 </script>
 
 <template>
-    <div class="layout__chart">
-        <header class="chart__header">
-            <div class="chart__title">
+    <div class="chart">
+        <header class="header">
+            <div class="title">
                 <h2>角色使用組成分析</h2>
-                <p class="chart__desc">每個橫條代表角色的行為組成。可切換為顯示比例或次數，觀察角色在 Ban / Pick / Utility 階段的出場特性。</p>
+                <p class="desc">每個橫條代表角色的行為組成。可切換為顯示比例或次數，觀察角色在 Ban / Pick / Utility 階段的出場特性。</p>
             </div>
-            <div class="chart__modes">
-                <span class="chart-mode__text">顯示模式：</span>
-                <button class="chart-mode__switch" :class="[{ 'chart-mode__switch--percentage': isPercentage },]"
+            <div class="modes">
+                <span class="mode-text">顯示模式：</span>
+                <button class="mode-switch" :class="{ 'is-percentage': isPercentage }"
                     @click="isPercentage = !isPercentage">
                     {{ isPercentage ? '比例 (%)' : '絕對值 (次數)' }}
                 </button>
-                <select v-model="activeType" class="chart-mode__select" :class="['chart-mode__select--' + (activeType),]">
+                <select v-model="activeType" class="mode-select" :class="['mode-select--' + (activeType),]">
                     <option value="All">All</option>
                     <option value="Pick">Pick</option>
                     <option value="Ban">Ban</option>
@@ -40,10 +40,10 @@ const { isPercentage, activeType, option } = useCharacterUsagesCompositionChart(
                 </select>
             </div>
         </header>
-        <div class="chart">
+        <div class="canvas">
             <VChart v-if="option" :option="option" />
         </div>
-        <footer class="chart__footer">
+        <footer class="footer">
             <small>
 
             </small>
@@ -52,7 +52,7 @@ const { isPercentage, activeType, option } = useCharacterUsagesCompositionChart(
 </template>
 
 <style scoped>
-.layout__chart {
+.chart {
     --size-chart-switch: calc(var(--base-size) * 6);
     --size-chart-select: calc(var(--base-size) * 3);
     display: flex;
@@ -60,14 +60,14 @@ const { isPercentage, activeType, option } = useCharacterUsagesCompositionChart(
     height: 100%;
 }
 
-.chart__header {
+.header {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     padding: var(--space-sm);
 }
 
-.chart__title {
+.title {
     display: flex;
     flex-direction: column;
     color: var(--md-sys-color-on-surface);
@@ -75,12 +75,12 @@ const { isPercentage, activeType, option } = useCharacterUsagesCompositionChart(
     gap: var(--space-sm);
 }
 
-.chart__desc {
+.desc {
     font-size: var(--font-size-sm);
     color: var(--md-sys-color-on-surface-variant);
 }
 
-.chart__modes {
+.modes {
     display: flex;
     flex-direction: row;
     align-items: top;
@@ -90,13 +90,13 @@ const { isPercentage, activeType, option } = useCharacterUsagesCompositionChart(
     font-size: var(--font-size-md);
 }
 
-.chart-mode__text {
+.mode-text {
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-medium);
     color: var(--md-sys-color-on-surface);
 }
 
-.chart-mode__switch {
+.mode-switch {
     font-size: var(--font-size-md);
     color: var(--md-sys-color-on-surface);
     background-color: var(--md-sys-color-surface-container-high);
@@ -108,15 +108,15 @@ const { isPercentage, activeType, option } = useCharacterUsagesCompositionChart(
     justify-content: center;
 }
 
-.chart-mode__switch:hover {
+.mode-switch:hover {
     transform: scale(1.05);
 }
 
-.chart-mode__switch--percentage {
-    
+.mode-switch.is-percentage {
+
 }
 
-.chart-mode__select {
+.mode-select {
     color: var(--md-sys-color-on-surface);
     background-color: var(--md-sys-color-surface-container-high);
     font-size: var(--font-size-md);
@@ -130,22 +130,22 @@ const { isPercentage, activeType, option } = useCharacterUsagesCompositionChart(
     border: none;
 }
 
-.chart-mode__select:focus {
+.mode-select:focus {
     outline: none;
     border: none;
 }
 
-.chart-mode__select:hover {
+.mode-select:hover {
     transform: scale(1.05);
 }
 
-.chart {
+.canvas {
     display: flex;
     width: 100%;
     height: 100%;
 }
 
-.chart__footer {
+.footer {
     display: flex;
     color: var(--md-sys-color-on-surface-variant);
     padding: var(--space-md);

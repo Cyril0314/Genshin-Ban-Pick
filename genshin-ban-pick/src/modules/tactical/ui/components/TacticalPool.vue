@@ -16,14 +16,14 @@ function handleDragStartEvent(event: DragEvent, id: string) {
 </script>
 
 <template>
-  <div class="tactical__pool" :class="`tactical__pool--${props.teamSlot}`">
-    <img v-for="id in displayPoolImageIdsMap[teamSlot]" :key="id" :src="getProfileImagePath(id)" draggable="true"
+  <div class="tactical-pool">
+    <img class="option" v-for="id in displayPoolImageIdsMap[teamSlot]" :key="id" :src="getProfileImagePath(id)" draggable="true"
       @dragstart="handleDragStartEvent($event, id)" />
   </div>
 </template>
 
 <style scoped>
-.tactical__pool {
+.tactical-pool {
   --size-image-tactical-pool: calc(var(--base-size) * 4);
   display: grid;
   grid-template-columns: repeat(auto-fit, var(--size-image-tactical-pool));
@@ -31,14 +31,13 @@ function handleDragStartEvent(event: DragEvent, id: string) {
   justify-content: start;
   background-color: var(--md-sys-color-surface-container);
   min-height: calc(var(--size-image-tactical-pool) * 3);
-  /* 維持最小高度 */
   border-radius: var(--radius-lg);
   overflow-y: scroll;
   scrollbar-width: none;
   outline: 2px solid var(--md-sys-color-outline);
 }
 
-.tactical__pool img {
+.option {
   width: 100%;
   aspect-ratio: 1 / 1;
   padding: var(--space-sm);
@@ -50,13 +49,13 @@ function handleDragStartEvent(event: DragEvent, id: string) {
   filter: saturate(0.8) brightness(0.9);
 }
 
-.tactical__pool img:hover {
+.option:hover {
   background-color: var(--md-sys-color-state-hover);
   transform: scale(1.05);
   filter: initial;
 }
 
-.tactical__pool img:focus {
+.option:focus {
   background-color: var(--md-sys-color-state-focus);
   filter: none;
 }

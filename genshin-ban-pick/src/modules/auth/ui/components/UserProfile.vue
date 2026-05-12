@@ -51,24 +51,24 @@ function handleLogout() {
 
 <template>
     <div class="user-profile" ref="containerRef">
-        <button class="user-profile__avatar-btn" @click="toggleMenu" :class="{ 'user-profile__avatar-btn--active': isOpen }">
+        <button class="avatar-button" @click="toggleMenu" :class="{ 'is-active': isOpen }">
             {{ userInitial }}
         </button>
 
         <transition name="user-profile-fade">
-            <div v-if="isOpen" class="user-profile__dropdown">
-                <div class="user-profile__header">
-                    <div class="user-profile__large-avatar">{{ userInitial }}</div>
-                    <div class="user-profile__info">
-                        <span class="user-profile__name">{{ nickname || '訪客' }}</span>
+            <div v-if="isOpen" class="dropdown">
+                <div class="header">
+                    <div class="large-avatar">{{ userInitial }}</div>
+                    <div class="info">
+                        <span class="name">{{ nickname || '訪客' }}</span>
                     </div>
                 </div>
 
-                <div class="user-profile__divider"></div>
+                <div class="divider"></div>
 
-                <div class="user-profile__actions">
-                    <button class="user-profile__item" @click="handleLogout">
-                        <span class="user-profile__icon">logout</span>
+                <div class="actions">
+                    <button class="item" @click="handleLogout">
+                        <span class="icon">logout</span>
                         <span>登出</span>
                     </button>
                 </div>
@@ -78,7 +78,6 @@ function handleLogout() {
 </template>
 
 <style scoped>
-/* Block */
 .user-profile {
     position: relative;
     height: 100%;
@@ -86,8 +85,7 @@ function handleLogout() {
     align-items: center;
 }
 
-/* Element: Avatar Button */
-.user-profile__avatar-btn {
+.avatar-button {
     height: 100%;
     aspect-ratio: 1;
     border-radius: 50%;
@@ -105,17 +103,15 @@ function handleLogout() {
         background-color 0.2s ease;
 }
 
-.user-profile__avatar-btn:hover {
+.avatar-button:hover {
     background-color: var(--primary-filled-hover);
 }
 
-/* Modifier: Active State */
-.user-profile__avatar-btn--active {
+.avatar-button.is-active {
     background-color: var(--primary-filled-pressed);
 }
 
-/* Element: Dropdown Menu */
-.user-profile__dropdown {
+.dropdown {
     position: absolute;
     top: calc(100% + var(--space-xs));
     left: 0;
@@ -130,8 +126,7 @@ function handleLogout() {
     overflow: hidden;
 }
 
-/* Header & Info Elements */
-.user-profile__header {
+.header {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -139,7 +134,7 @@ function handleLogout() {
     padding: var(--space-sm);
 }
 
-.user-profile__large-avatar {
+.large-avatar {
     width: 64px;
     height: 64px;
     border-radius: 50%;
@@ -152,32 +147,31 @@ function handleLogout() {
     font-weight: 500;
 }
 
-.user-profile__info {
+.info {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 4px;
 }
 
-.user-profile__name {
+.name {
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-medium);
     color: var(--md-sys-color-on-surface);
 }
 
-.user-profile__divider {
+.divider {
     height: 1px;
     background-color: var(--md-sys-color-outline-variant);
     margin: var(--space-md) 0;
 }
 
-/* Actions & Items */
-.user-profile__actions {
+.actions {
     display: flex;
     flex-direction: column;
 }
 
-.user-profile__item {
+.item {
     display: flex;
     align-items: center;
     gap: var(--space-md);
@@ -193,11 +187,11 @@ function handleLogout() {
     transition: background-color 0.2s;
 }
 
-.user-profile__item:hover {
+.item:hover {
     background-color: var(--md-sys-color-surface-container-highest);
 }
 
-.user-profile__icon {
+.icon {
     font-family: 'Material Symbols Outlined';
     font-size: 20px;
 }

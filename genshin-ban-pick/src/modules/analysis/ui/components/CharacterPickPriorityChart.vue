@@ -17,17 +17,17 @@ const { option } = useCharacterPickPriorityChart();
 </script>
 
 <template>
-    <div class="layout__chart">
-        <header class="chart__header">
-            <div class="chart__title">
+    <div class="chart">
+        <header class="header">
+            <div class="title">
                 <h2>搶角優先級分析</h2>
-                <p class="chart__desc">分析角色在BP過程中的被選擇順位。優先級越高代表玩家越急著根據場合搶下該角色。</p>
+                <p class="desc">分析角色在BP過程中的被選擇順位。優先級越高代表玩家越急著根據場合搶下該角色。</p>
             </div>
         </header>
-        <div class="chart">
+        <div class="canvas">
             <VChart v-if="option" :option="option" autoresize />
         </div>
-        <footer class="chart__footer">
+        <footer class="footer">
             <small>
                 ※ 計算方式：排除隨機(Random)與Utility/Ban場次，計算角色被Pick時的相對順位 (0=首選, 100=尾選)。<br />
                 ※ 柱狀圖長度代表「優先度分數 (1 - 相對順位)」，越長代表越常在第一時間被搶下。<br />
@@ -38,20 +38,20 @@ const { option } = useCharacterPickPriorityChart();
 </template>
 
 <style scoped>
-.layout__chart {
+.chart {
     display: flex;
     flex-direction: column;
     height: 100%;
 }
 
-.chart__header {
+.header {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     padding: var(--space-sm);
 }
 
-.chart__title {
+.title {
     display: flex;
     flex-direction: column;
     color: var(--md-sys-color-on-surface);
@@ -59,18 +59,18 @@ const { option } = useCharacterPickPriorityChart();
     gap: var(--space-sm);
 }
 
-.chart__desc {
+.desc {
     font-size: var(--font-size-sm);
     color: var(--md-sys-color-on-surface-variant);
 }
 
-.chart {
+.canvas {
     display: flex;
     width: 100%;
     height: 100%;
 }
 
-.chart__footer {
+.footer {
     display: flex;
     color: var(--md-sys-color-on-surface-variant);
     padding: var(--space-md);

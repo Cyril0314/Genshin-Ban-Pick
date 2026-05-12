@@ -30,25 +30,25 @@ const { option, overview } = useMatchOverviewChart();
 </script>
 
 <template>
-    <div class="layout__chart">
-        <header class="chart__header">
-            <div class="chart__title">
+    <div class="chart">
+        <header class="header">
+            <div class="title">
                 <h2>總覽</h2>
-                <p class="chart__desc">顯示全部遊玩場次的統計資料。</p>
+                <p class="desc">顯示全部遊玩場次的統計資料。</p>
             </div>
         </header>
         <div class="overview" v-if="overview">
-            <div class="stats__grid">
-                <div class="stat__card">
-                    <span class="stat__label">總遊玩局數</span>
-                    <span class="stat__value">{{ overview.volume.matchCount }} <small>次</small></span>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-label">總遊玩局數</span>
+                    <span class="stat-value">{{ overview.volume.matchCount }} <small>次</small></span>
                 </div>
 
-                <div class="stat__card">
-                    <span class="stat__label">總玩家數</span>
-                    <span class="stat__value">{{ overview.volume.players.total }} <small>人</small></span>
-                    <div class="stat__breakdowns">
-                        <div class="stat__breakdown">
+                <div class="stat-card">
+                    <span class="stat-label">總玩家數</span>
+                    <span class="stat-value">{{ overview.volume.players.total }} <small>人</small></span>
+                    <div class="stat-breakdowns">
+                        <div class="stat-breakdown">
                             <span title="會員">會員 {{ overview.volume.players.member }}</span>
                             <span title="訪客">訪客 {{ overview.volume.players.guest }}</span>
                             <span title="僅名稱">僅名稱 {{ overview.volume.players.onlyName }}</span>
@@ -56,15 +56,15 @@ const { option, overview } = useMatchOverviewChart();
                     </div>
                 </div>
 
-                <div class="stat__card">
-                    <span class="stat__label">出場角色數</span>
-                    <span class="stat__value">{{ overview.volume.characters.total }} <small>名</small></span>
-                    <div class="stat__breakdowns">
-                        <div class="stat__breakdown">
+                <div class="stat-card">
+                    <span class="stat-label">出場角色數</span>
+                    <span class="stat-value">{{ overview.volume.characters.total }} <small>名</small></span>
+                    <div class="stat-breakdowns">
+                        <div class="stat-breakdown">
                             <span title="5★">5★ {{ overview.volume.characters.byRarity.fiveStar }}</span>
                             <span title="4★">4★ {{ overview.volume.characters.byRarity.fourStar }}</span>
                         </div>
-                        <div class="stat__breakdown">
+                        <div class="stat-breakdown">
                             <span title="風">風 {{ overview.volume.characters.byElement.anemo }}</span>
                             <span title="岩">岩 {{ overview.volume.characters.byElement.geo }}</span>
                             <span title="雷">雷 {{ overview.volume.characters.byElement.electro }}</span>
@@ -77,44 +77,44 @@ const { option, overview } = useMatchOverviewChart();
                     </div>
                 </div>
 
-                <div class="stat__card">
-                    <span class="stat__label">總移動次數</span>
-                    <span class="stat__value">{{ overview.volume.moves.total }} <small>次</small></span>
-                    <div class="stat__breakdowns">
-                        <div class="stat__breakdown">
+                <div class="stat-card">
+                    <span class="stat-label">總移動次數</span>
+                    <span class="stat-value">{{ overview.volume.moves.total }} <small>次</small></span>
+                    <div class="stat-breakdowns">
+                        <div class="stat-breakdown">
                             <span title="Ban">Ban {{ overview.volume.moves.byType.ban }}</span>
                             <span title="Pick">Pick {{ overview.volume.moves.byType.pick }}</span>
                             <span title="Utility">Utility {{ overview.volume.moves.byType.utility }}</span>
                         </div>
-                        <div class="stat__breakdown">
+                        <div class="stat-breakdown">
                             <span title="手動">手動 {{ overview.volume.moves.bySource.manual }}</span>
                             <span title="隨機">隨機 {{ overview.volume.moves.bySource.random }}</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="stat__card">
-                    <span class="stat__label">橫跨版本數</span>
-                    <span class="stat__value">{{ overview.activity.versionSpan.total }} <small>個</small></span>
-                    <div class="stat__breakdown">
+                <div class="stat-card">
+                    <span class="stat-label">橫跨版本數</span>
+                    <span class="stat-value">{{ overview.activity.versionSpan.total }} <small>個</small></span>
+                    <div class="stat-breakdown">
                         <span title="First">{{ overview.activity.versionSpan.from.name }}</span>
                         <span title="Last">{{ overview.activity.versionSpan.to.name }}</span>
                     </div>
                 </div>
-                <div class="stat__card">
-                    <span class="stat__label">不重複玩家組合數</span>
-                    <span class="stat__value">{{ overview.volume.matchTeamMemberCombinationCount }} <small>組</small></span>
+                <div class="stat-card">
+                    <span class="stat-label">不重複玩家組合數</span>
+                    <span class="stat-value">{{ overview.volume.matchTeamMemberCombinationCount }} <small>組</small></span>
                 </div>
-                <div class="stat__card">
-                    <span class="stat__label">不重複角色組合數</span>
-                    <span class="stat__value">{{ overview.volume.matchCharacterCombinationCount }} <small>組</small></span>
+                <div class="stat-card">
+                    <span class="stat-label">不重複角色組合數</span>
+                    <span class="stat-value">{{ overview.volume.matchCharacterCombinationCount }} <small>組</small></span>
                 </div>
             </div>
         </div>
-        <div class="chart">
+        <div class="canvas">
             <VChart v-if="option" :option="option" />
         </div>
-        <footer class="chart__footer">
+        <footer class="footer">
             <template v-if="overview"
                 ><small
                     >資料區間: {{ new Date(overview.activity.earliestMatchAt).toLocaleDateString() }} -
@@ -126,21 +126,21 @@ const { option, overview } = useMatchOverviewChart();
 </template>
 
 <style scoped>
-.layout__chart {
+.chart {
     --size-stats-grid: calc(var(--base-size) * 15);
     display: flex;
     flex-direction: column;
     height: 100%;
 }
 
-.chart__header {
+.header {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     padding: var(--space-sm);
 }
 
-.chart__title {
+.title {
     display: flex;
     flex-direction: column;
     color: var(--md-sys-color-on-surface);
@@ -148,7 +148,7 @@ const { option, overview } = useMatchOverviewChart();
     gap: var(--space-sm);
 }
 
-.chart__desc {
+.desc {
     font-size: var(--font-size-sm);
     color: var(--md-sys-color-on-surface-variant);
 }
@@ -160,13 +160,13 @@ const { option, overview } = useMatchOverviewChart();
 }
 
 /* 網格佈局 */
-.stats__grid {
+.stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(var(--size-stats-grid), 1fr));
     gap: var(--space-md);
 }
 
-.stat__card {
+.stat-card {
     background: linear-gradient(135deg, var(--md-sys-color-surface-container-low), var(--md-sys-color-surface-container));
     padding: var(--space-md);
     border-radius: var(--radius-lg);
@@ -179,13 +179,13 @@ const { option, overview } = useMatchOverviewChart();
         box-shadow 0.2s ease;
 }
 
-.stat__card:hover {
+.stat-card:hover {
     transform: translateY(-2px);
     box-shadow: var(--elevation-2);
     border-color: var(--md-sys-color-outline);
 }
 
-.stat__label {
+.stat-label {
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-medium);
     color: var(--md-sys-color-on-surface);
@@ -193,24 +193,24 @@ const { option, overview } = useMatchOverviewChart();
     letter-spacing: 0.5px;
 }
 
-.stat__value {
+.stat-value {
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-bold);
     color: var(--md-sys-color-primary);
 }
 
-.stat__value small {
+.stat-value small {
     font-size: var(--font-size-sm);
     font-weight: normal;
     margin-left: 2px;
 }
 
-.stat__breakdowns {
+.stat-breakdowns {
     display: flex;
     flex-direction: column;
 }
 
-.stat__breakdown {
+.stat-breakdown {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-sm);
@@ -220,19 +220,19 @@ const { option, overview } = useMatchOverviewChart();
     color: var(--md-sys-color-on-surface-variant);
 }
 
-.stat__breakdown span {
+.stat-breakdown span {
     background-color: var(--md-sys-color-surface-container-high);
     padding: calc(var(--space-xs) / 2) var(--space-xs);
     border-radius: var(--radius-sm);
 }
 
-.chart {
+.canvas {
     display: flex;
     width: 100%;
     height: 100%;
 }
 
-.chart__footer {
+.footer {
     display: flex;
     color: var(--md-sys-color-on-surface-variant);
     padding: var(--space-md);

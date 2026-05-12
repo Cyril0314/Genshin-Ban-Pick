@@ -48,15 +48,15 @@ function handleClickEvent() {
 
 <template>
   
-  <div 
-  class="tactical__cell"
+  <div
+  class="tactical-cell"
   :style="{'--highlight-color-rgb': highlightColor }"
   @dragover.prevent="isOver = true"
-  @dragleave="isOver = false" 
-  @dragstart="handleDragStartEvent" 
-  @drop="handleDropEvent" 
+  @dragleave="isOver = false"
+  @dragstart="handleDragStartEvent"
+  @drop="handleDropEvent"
   @click="handleClickEvent">
-      <div class="image__container" :class="{ 'image__container--active': isOver }">
+      <div class="image-container" :class="{ 'is-active': isOver }">
       <template v-if="imageId">
         <img class="image" :src="getWishImagePath(imageId)" />
       </template>
@@ -65,7 +65,7 @@ function handleClickEvent() {
 </template>
 
 <style scoped>
-.tactical__cell {
+.tactical-cell {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -73,10 +73,9 @@ function handleClickEvent() {
     transform 0.2s ease,;
   overflow: hidden;
   padding: var(--space-md) var(--space-sm);
-  
 }
 
-.image__container {
+.image-container {
   background-color: var(--md-sys-color-surface-container);
   border-radius: var(--radius-md);
   width: var(--size-tactical-cell);
@@ -87,11 +86,11 @@ function handleClickEvent() {
   overflow: hidden;
 }
 
-.image__container--active {
+.image-container.is-active {
   outline: 2px solid rgba(var(--highlight-color-rgb));
 }
 
-.image__container:hover {
+.image-container:hover {
   transform: scale(1.05);
 }
 

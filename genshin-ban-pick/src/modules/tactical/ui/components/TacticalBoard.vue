@@ -65,24 +65,24 @@ function handleImageRestore({ cellId }: { cellId: number }) {
 </script>
 
 <template>
-    <div class="tactical__board" :style="{ '--number-of-team-setup': numberOfTeamSetup, '--number-of-setup-character': numberOfSetupCharacter, ...themeVars }">
-        <div class="tactical__member-names">
-            <div class="tactical__header"></div>
-            <div v-for="(memberName, index) in memberNames" :key="index" class="tactical__member-name">
+    <div class="tactical-board" :style="{ '--number-of-team-setup': numberOfTeamSetup, '--number-of-setup-character': numberOfSetupCharacter, ...themeVars }">
+        <div class="member-names">
+            <div class="corner-spacer"></div>
+            <div v-for="(memberName, index) in memberNames" :key="index" class="member-name">
                 <span class="text">{{ memberName }}</span>
             </div>
         </div>
-        <div class="tactical__setup">
-            <div class="tactical__setup-numbers">
-                <div v-for="(setupNumber, index) in setupNumbers" :key="index" class="tactical__setup-number">
+        <div class="setup">
+            <div class="setup-numbers">
+                <div v-for="(setupNumber, index) in setupNumbers" :key="index" class="setup-number">
                     <span class="text">{{ setupNumber }}</span>
                 </div>
             </div>
-            <div class="tactical__grid">
+            <div class="grid">
                 <template v-for="cell in cells">
-                    <TacticalCell 
-                    :cellId="cell.id" 
-                    :imageId="imageId(cell.id)" 
+                    <TacticalCell
+                    :cellId="cell.id"
+                    :imageId="imageId(cell.id)"
                     :teamSlot="props.teamSlot"
                     @image-drop="handleImageDrop"
                     @image-restore="handleImageRestore" />
@@ -93,7 +93,7 @@ function handleImageRestore({ cellId }: { cellId: number }) {
 </template>
 
 <style scoped>
-.tactical__board {
+.tactical-board {
     --size-setup-number: calc(var(--base-size) * 1.5);
     --size-tactical-cell: calc(var(--base-size) * 5.5);
     display: flex;
@@ -102,69 +102,63 @@ function handleImageRestore({ cellId }: { cellId: number }) {
     padding: var(--space-md);
     background-color: var(--md-sys-color-surface-container-low);
     border-radius: var(--radius-lg);
-    /* outline: 2px solid var(--team-color); */
 }
 
-.tactical__member-names {
+.member-names {
     display: flex;
     flex-direction: row;
 }
 
-.tactical__setup {
+.setup {
     display: flex;
     flex-direction: row;
 }
 
-.tactical__setup-numbers {
+.setup-numbers {
     display: flex;
     flex-direction: column;
 }
 
-.tactical__grid {
+.grid {
     display: grid;
     grid-template-columns: repeat(var(--number-of-setup-character), auto);
     grid-template-rows: repeat(var(--number-of-team-setup), auto);
     justify-content: center;
 }
 
-.tactical__member-name,
-.tactical__setup-number {
+.member-name,
+.setup-number {
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 10;
-    /* pointer-events: none; */
 }
 
-.tactical__header {
+.corner-spacer {
     flex-shrink: 0;
     height: calc(var(--base-size) * 3);
     width: var(--size-setup-number);
 }
 
-.tactical__member-name {
+.member-name {
     height: calc(var(--base-size) * 3);
     padding: 0 var(--space-sm);
 }
 
-.tactical__setup-number {
+.setup-number {
     height: 100%;
     width: var(--size-setup-number);
 }
 
-.tactical__member-name .text,
-.tactical__setup-number .text {
+.member-name .text,
+.setup-number .text {
     display: -webkit-box;
-    /* 需要配合使用 */
     -webkit-box-orient: vertical;
-    /* 需要配合使用 */
     -webkit-line-clamp: 2;
-    /* 限制为两行 */
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: normal;
-    overflow: hidden;
-    
+
     text-align: center;
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-medium);
@@ -173,7 +167,7 @@ function handleImageRestore({ cellId }: { cellId: number }) {
     z-index: 11;
 }
 
-.tactical__member-name .text {
+.member-name .text {
     width: var(--size-tactical-cell);
 }
 </style>

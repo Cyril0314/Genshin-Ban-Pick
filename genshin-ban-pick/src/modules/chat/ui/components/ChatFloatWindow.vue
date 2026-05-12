@@ -19,9 +19,9 @@ const { position, handleMouseDown } = useDraggableWindow({});
 
 <template>
     <transition name="chat-fade">
-        <div v-if="props.open" ref="windowRef" class="chat-floating-window" :style="{ left: `${position.x}px`, top: `${position.y}px` }">
+        <div v-if="props.open" ref="windowRef" class="chat-float-window" :style="{ left: `${position.x}px`, top: `${position.y}px` }">
             <n-card
-                class="chat-card"
+                class="card"
                 content-style="padding: 0; display: flex; flex-direction: column; height: 100%; overflow: hidden;"
                 :bordered="false"
                 size="small"
@@ -29,8 +29,8 @@ const { position, handleMouseDown } = useDraggableWindow({});
                 aria-modal="true"
             >
                 <template #header>
-                    <div class="chat-header-area" @mousedown="handleMouseDown">
-                        <span class="chat-header-title">聊天室</span>
+                    <div class="header" @mousedown="handleMouseDown">
+                        <span class="title">聊天室</span>
                     </div>
                 </template>
                 <template #header-extra>
@@ -54,7 +54,7 @@ const { position, handleMouseDown } = useDraggableWindow({});
 </template>
 
 <style scoped>
-.chat-floating-window {
+.chat-float-window {
     --window-height: calc(var(--base-size) * 25);
 
     position: fixed;
@@ -64,7 +64,7 @@ const { position, handleMouseDown } = useDraggableWindow({});
     overflow: hidden;
 }
 
-.chat-card {
+.card {
     height: 100%;
     background-color: var(--md-sys-color-surface-container-highest);
     border-radius: var(--radius-lg);
@@ -72,7 +72,7 @@ const { position, handleMouseDown } = useDraggableWindow({});
     flex-direction: column;
 }
 
-.chat-header-area {
+.header {
     cursor: move;
     width: 100%;
     height: 100%;
@@ -81,7 +81,7 @@ const { position, handleMouseDown } = useDraggableWindow({});
     user-select: none; /* Prevent text selection while dragging */
 }
 
-.chat-header-title {
+.title {
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-regular);
     font-family: var(--font-family-sans);

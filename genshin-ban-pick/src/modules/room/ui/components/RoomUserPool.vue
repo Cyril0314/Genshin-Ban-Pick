@@ -62,24 +62,24 @@ function getStyleForUser(roomUser: IRoomUser) {
 </script>
 
 <template>
-    <div class="container__users" ref="usersRef">
-        <transition-group name="user__fade-slide" tag="div" class="users__inner">
+    <div class="room-user-pool" ref="usersRef">
+        <transition-group name="fade-slide" tag="div" class="users">
             <div
-                class="container__user"
+                class="user"
                 v-for="roomUser in roomUsers"
                 :key="roomUser.identityKey"
                 :style="getStyleForUser(roomUser)"
                 draggable="true"
                 @dragstart="handleDragStartEvent(roomUser, $event)"
             >
-                <span class="user__label">{{ roomUser.nickname }}</span>
+                <span class="label">{{ roomUser.nickname }}</span>
             </div>
         </transition-group>
     </div>
 </template>
 
 <style scoped>
-.container__users {
+.room-user-pool {
     --size-room-user-height: calc(var(--base-size) * 1.5);
     --size-room-user-width: calc(var(--base-size) * 6);
 
@@ -95,7 +95,13 @@ function getStyleForUser(roomUser: IRoomUser) {
     scrollbar-width: none;
 }
 
-.container__user {
+/* transition-group 的容器 */
+.users {
+    display: flex;
+    gap: var(--space-md);
+}
+
+.user {
     display: inline-flex;
     background-color: var(--team-color-bg);
     color: var(--team-on-color-bg);
@@ -108,7 +114,7 @@ function getStyleForUser(roomUser: IRoomUser) {
     cursor: grab;
 }
 
-.user__label {
+.label {
     flex: 1;
     white-space: nowrap;
     overflow: visible;
@@ -121,26 +127,18 @@ function getStyleForUser(roomUser: IRoomUser) {
     text-align: center;
 }
 
-/* 過場容器避免造成 layout 問題 */
-.users__inner {
-    display: flex;
-    gap: var(--space-md);
-}
-
-/* 進場前狀態 */
-.user__fade-slide-enter-from {
+/* transition-group name="fade-slide" 對應的 vue transition classes */
+.fade-slide-enter-from {
     opacity: 0;
     transform: translatex(-16px);
 }
 
-/* 進場後狀態 */
-.user__fade-slide-enter-to {
+.fade-slide-enter-to {
     opacity: 1;
     transform: translatex(0);
 }
 
-/* 動畫過渡 */
-.user__fade-slide-enter-active {
+.fade-slide-enter-active {
     transition:
         opacity 0.25s ease-out,
         transform 0.25s ease-out;

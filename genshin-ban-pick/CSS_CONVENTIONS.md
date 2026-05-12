@@ -200,14 +200,20 @@ component-style 規則。
 
 ---
 
-## 遷移策略
+## 現況
 
-舊檔不主動重寫。**touch-time migration**：
-- 哪個 `.vue` 你下次有需求改，順手套這套規則改完
-- 不要為了改 CSS 命名單獨開 PR 大改一輪
+所有 `src/modules/**/*.vue` 都已遷移完成（2026-05 完成全面 sweep）。新元件按本文
+規則寫即可，舊元件不需要再回頭重整。
 
-已遷移的範例參考：
-- `src/modules/board/ui/components/DropZone.vue`
+範例參考（涵蓋常見場景）：
+
+| 元件 | 示範什麼 |
+| --- | --- |
+| `src/modules/board/ui/components/DropZone.vue` | 三規則完整應用：state (`is-active`/`is-highlighted`) vs variant (`drop-zone--ban/pick/utility`) |
+| `src/modules/board/ui/components/BanPickBoard.vue` | 多子層 root block 命名 + 子層簡名 |
+| `src/modules/team/ui/components/TeamInfo.vue` | 同檔多種命名空間（user / member / team 等）統整成一個 root |
+| `src/modules/analysis/ui/components/CharacterUsagesCompositionChart.vue` | state (`mode-switch.is-percentage`) 跟 variant 的搭配 |
+| `src/modules/auth/ui/views/LoginView.vue` | 表單元件 (`form` / `form-group` / `submit-button` / 等) |
 
 ---
 
