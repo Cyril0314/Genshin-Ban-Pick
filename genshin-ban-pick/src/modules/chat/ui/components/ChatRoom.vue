@@ -8,7 +8,11 @@ import { useAuthStore } from '@/modules/auth';
 import { useCurrentTime, formatRelativeTime } from '@/modules/shared/ui/composables/useRelativeTime';
 import { useChatSync } from '../../sync/useChatSync.ts';
 import { useChatStore } from '../../store/chatStore.ts';
+import { usePlayerHistory } from '@/modules/analysis/ui/composables/usePlayerHistory';
+import { parseIdentity } from '@shared/contracts/player/identitySerialization';
 import type { IChatMessage } from '@shared/contracts/chat/IChatMessage.ts';
+
+const playerHistory = usePlayerHistory();
 
 const newMessage = ref('');
 const messagesContainer = ref<HTMLElement | null>(null);
@@ -51,6 +55,12 @@ function isSelfMessage(msg: IChatMessage) {
     return msg.identityKey === identityKey.value
 }
 
+function openPlayerHistory(msg: IChatMessage) {
+    const identity = parseIdentity(msg.identityKey);
+    if (!identity) return;
+    playerHistory.open(identity);
+}
+
 </script>
 
 <template>
@@ -58,7 +68,7 @@ function isSelfMessage(msg: IChatMessage) {
         <div ref="messagesContainer" class="messages">
             <div v-for="(msg, index) in messages" :key="index" class="message-row"
                 :class="{ 'message-row--self': isSelfMessage(msg) }">
-                <span v-if="!isSelfMessage(msg)" class="author">{{ `${msg.nickname}:` }}</span>
+                <span v-if="!isSelfMessage(msg)" class="author" @click="openPlayerHistory(msg)">{{ `${msg.nickname}:` }}</span>
                 <div class="bubble"> {{ msg.message }} </div>
                 <span class="time">{{ formatRelativeTime(msg.timestamp ?? 0, now) }}</span>
             </div>
@@ -116,6 +126,11 @@ function isSelfMessage(msg: IChatMessage) {
     font-weight: var(--font-weight-medium);
     color: var(--md-sys-color-on-surface);
     flex-shrink: 0;
+    cursor: pointer;
+}
+
+.author:hover {
+    text-decoration: underline;
 }
 
 .bubble {

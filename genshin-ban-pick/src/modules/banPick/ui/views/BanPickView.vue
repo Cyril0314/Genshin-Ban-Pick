@@ -1,7 +1,7 @@
 <!-- src/app/ui/views/BanPickView.vue -->
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, watch } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 import Toolbar from '../components/ToolBar.vue';
@@ -9,9 +9,13 @@ import StepIndicator from '@/modules/board/ui/components/StepIndicator.vue';
 import RoomUserPool from '@/modules/room/ui/components/RoomUserPool.vue';
 import BanPickBoard from '@/modules/board/ui/components/BanPickBoard.vue';
 import UserProfile from '@/modules/auth/ui/components/UserProfile.vue';
+import PlayerHistoryModal from '@/modules/analysis/ui/components/PlayerHistoryModal.vue';
 
 import { useViewportScale } from '../composables/useViewportScale';
 import { useBanPickFacade } from '../composables/useBanPickFacade';
+import { providePlayerHistory } from '@/modules/analysis/ui/composables/usePlayerHistory';
+
+import type { PlayerIdentity } from '@shared/contracts/player/PlayerIdentity';
 
 const route = useRoute();
 const roomId = (route.query.room as string) || 'default-room';
@@ -36,6 +40,17 @@ watch(matchResult, (val) => {
 
 watch(matchError, (err) => {
     if (err) alert('儲存失敗：' + err);
+});
+
+// PlayerHistory modal：散落的觸發源透過 inject 拿到 open() 來開啟。
+// displayName 由 backend 解析，caller 只傳 identity。
+const isPlayerHistoryOpen = ref(false);
+const playerHistoryIdentity = ref<PlayerIdentity>();
+providePlayerHistory({
+    open(identity) {
+        playerHistoryIdentity.value = identity;
+        isPlayerHistoryOpen.value = true;
+    },
 });
 </script>
 <template>
@@ -84,6 +99,8 @@ watch(matchError, (err) => {
                 </div>
             </div>
         </div>
+
+        <PlayerHistoryModal v-model:open="isPlayerHistoryOpen" :identity="playerHistoryIdentity" />
     </div>
 </template>
 

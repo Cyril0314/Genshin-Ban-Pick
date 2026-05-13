@@ -1,9 +1,9 @@
-import type { MatchTeamMemberUniqueIdentityKey } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
+import type { PlayerIdentity } from '@shared/contracts/player/PlayerIdentity';
 import { parsePlayerIdentityQuery } from './parsePlayerIdentityQuery';
 
 export type AnalysisScope =
   | { type: 'Global' }
-  | { type: 'Player'; identityKey: MatchTeamMemberUniqueIdentityKey };
+  | { type: 'Player'; identityKey: PlayerIdentity };
 
 export function parseAnalysisScopeQuery(query: any): AnalysisScope | undefined {
   const { scope } = query;

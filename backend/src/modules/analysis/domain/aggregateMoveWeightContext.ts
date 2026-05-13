@@ -1,8 +1,8 @@
-// backend/src/modules/analysis/infra/tactical/aggregateMoveWeightContext.ts
+// backend/src/modules/analysis/domain/aggregateMoveWeightContext.ts
 
 import { MoveSource, MoveType } from "@shared/contracts/match/value-types";
 
-import type { IMoveContext } from '../../domain/IMoveContext';
+import type { IMoveContext } from './IMoveContext';
 import type { IWeightContext } from '@shared/contracts/analysis/IWeightContext';
 
 export function aggregateMoveWeightContext(move: IMoveContext): IWeightContext {

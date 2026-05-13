@@ -2,6 +2,8 @@
 
 import type MatchService from "./MatchService";
 
+import type { IPlayerProfile } from "@shared/contracts/player/IPlayerProfile";
+
 export default class MatchRepository {
     constructor(private matchService: MatchService) {}
 
@@ -18,6 +20,6 @@ export default class MatchRepository {
     async fetchMatchTeamMembers() {
         const response = await this.matchService.getMatchTeamMembers();
         const matchTeamMembers = response.data;
-        return matchTeamMembers;
+        return matchTeamMembers as IPlayerProfile[];
     }
 }

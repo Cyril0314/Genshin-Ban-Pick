@@ -26,6 +26,8 @@ export function createAuthModule(prisma: PrismaClient) {
         authService,
         memberService,
         guestService,
+        memberRepository,
+        guestRepository,
         jwtProvider,
     };
 }

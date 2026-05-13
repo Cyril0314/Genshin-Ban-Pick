@@ -30,10 +30,10 @@ const { option, scopes, selectedScopeKey, getScopeKey } = usePlayerStyleChart();
 
                         <!-- Player -->
                         <template v-else>
-                            <span v-if="scope.identity.type === 'Member'">✨</span>
-                            <span v-else-if="scope.identity.type === 'Guest'">❓</span>
+                            <span v-if="scope.profile.identity.type === 'Member'">✨</span>
+                            <span v-else-if="scope.profile.identity.type === 'Guest'">❓</span>
                             <span v-else>🪪</span>
-                            {{ scope.identity.name }}
+                            {{ scope.profile.displayName }}
                         </template>
                     </option>
                 </select>

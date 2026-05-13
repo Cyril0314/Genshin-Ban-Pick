@@ -1,7 +1,7 @@
-// backend/src/modules/analysis/infra/synergy/CharacterSynergyCalculator.ts
+// backend/src/modules/analysis/domain/CharacterSynergyCalculator.ts
 
 import type { SynergyMode } from '@shared/contracts/analysis/value-types';
-import type { IMatchTacticalUsageExpandedRefs } from '../../types/IMatchTacticalUsageExpandedRefs';
+import type { IMatchTacticalUsageExpandedRefs } from '../types/IMatchTacticalUsageExpandedRefs';
 import type { CharacterSynergyMatrix } from '@shared/contracts/analysis/CharacterSynergyMatrix';
 
 export default class CharacterSynergyCalculator {

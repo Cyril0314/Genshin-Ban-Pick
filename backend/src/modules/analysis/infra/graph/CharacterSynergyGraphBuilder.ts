@@ -2,7 +2,7 @@
 
 import { UndirectedGraph } from 'graphology';
 
-import SquareSimilarityMatrixBuilder from '../matrix/SquareSimilarityMatrixBuilder';
+import SquareSimilarityMatrixBuilder from '../../domain/SquareSimilarityMatrixBuilder';
 
 import type { CharacterSynergyMatrix } from '@shared/contracts/analysis/CharacterSynergyMatrix';
 
