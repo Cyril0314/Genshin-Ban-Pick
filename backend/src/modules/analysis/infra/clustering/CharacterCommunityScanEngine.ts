@@ -9,7 +9,7 @@ import betweenness from 'graphology-metrics/centrality/betweenness';
 import modularity from 'graphology-metrics/graph/modularity';
 import louvain from 'graphology-communities-louvain';
 
-import FeatureMatrixBuilder from '../matrix/FeatureMatrixBuilder';
+import FeatureMatrixBuilder from '../../domain/FeatureMatrixBuilder';
 import MatrixNormalizer from '../matrix/MatrixNormalizer';
 import DimensionProjector from '../projection/DimensionProjector';
 
@@ -17,10 +17,10 @@ import type { ICommunityScanResult } from '../../domain/ICommunityScanResult';
 import type { CharacterSynergyMatrix } from '@shared/contracts/analysis/CharacterSynergyMatrix';
 import type { IBridgeScoreResult } from '@shared/contracts/analysis/IBridgeScoreResult';
 import type { IArchetypePoint } from '@shared/contracts/analysis/IArchetypePoint';
-import CharacterFeatureMatrixBuilder from '../character/CharacterFeatureMatrixBuilder';
+import CharacterFeatureMatrixBuilder from '../../domain/CharacterFeatureMatrixBuilder';
 import { FeatureMatrix } from '@shared/contracts/analysis/FeatureMatrix';
-import { FEATURE_BLOCKS } from '../character/featureBlocks';
-import BlockScaler from '../character/BlockScaler';
+import { FEATURE_BLOCKS } from '../../domain/featureBlocks';
+import BlockScaler from '../../domain/BlockScaler';
 import UMAPProjector from '../projection/UMAPProjector';
 
 export default class CharacterCommunityScanEngine {

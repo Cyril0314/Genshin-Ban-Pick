@@ -14,7 +14,8 @@ import { mapMatchFromPrisma } from '../domain/mapMatchFromPrisma';
 import type { IMatchRepository } from '../domain/IMatchRepository';
 import type { IMatchSnapshot } from '../domain/IMatchSnapshot';
 import type { IMatch } from '@shared/contracts/match/IMatch';
-import type { MatchTeamMemberUniqueIdentity } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
+import type { IPlayerProfile } from '@shared/contracts/player/IPlayerProfile';
+import type { PlayerIdentity } from '@shared/contracts/player/PlayerIdentity';
 
 const logger = createLogger('MATCH:Repository');
 
@@ -160,7 +161,7 @@ export default class MatchRepository implements IMatchRepository {
         });
     }
 
-    async findAllMatchTeamMemberUniqueIdentities(): Promise<MatchTeamMemberUniqueIdentity[]> {
+    async findAllMatchTeamMemberUniqueIdentities(): Promise<IPlayerProfile[]> {
         const teamMembers = await this.prisma.matchTeamMember.findMany({
             select: {
                 id: true,
@@ -182,28 +183,26 @@ export default class MatchRepository implements IMatchRepository {
             },
         });
 
-        const identityMap = new Map<string, MatchTeamMemberUniqueIdentity>();
+        const profileMap = new Map<string, IPlayerProfile>();
 
         for (const teamMember of teamMembers) {
             if (teamMember.memberRef && teamMember.member) {
-                const key = `member:${teamMember.memberRef}`;
-                if (!identityMap.has(key)) {
-                    identityMap.set(key, {
-                        type: 'Member',
-                        id: teamMember.memberRef,
-                        name: teamMember.member.nickname,
+                const key = `Member:${teamMember.memberRef}`;
+                if (!profileMap.has(key)) {
+                    profileMap.set(key, {
+                        identity: { type: 'Member', id: teamMember.memberRef },
+                        displayName: teamMember.member.nickname,
                     });
                 }
                 continue;
             }
 
             if (teamMember.guestRef && teamMember.guest) {
-                const key = `guest:${teamMember.guestRef}`;
-                if (!identityMap.has(key)) {
-                    identityMap.set(key, {
-                        type: 'Guest',
-                        id: teamMember.guestRef,
-                        name: teamMember.guest.nickname,
+                const key = `Guest:${teamMember.guestRef}`;
+                if (!profileMap.has(key)) {
+                    profileMap.set(key, {
+                        identity: { type: 'Guest', id: teamMember.guestRef },
+                        displayName: teamMember.guest.nickname,
                     });
                 }
                 continue;
@@ -211,27 +210,27 @@ export default class MatchRepository implements IMatchRepository {
 
             // name-only
             if (teamMember.name) {
-                const key = `name:${teamMember.name}`;
-                if (!identityMap.has(key)) {
-                    identityMap.set(key, {
-                        type: 'Name',
-                        name: teamMember.name,
+                const key = `Name:${teamMember.name}`;
+                if (!profileMap.has(key)) {
+                    profileMap.set(key, {
+                        identity: { type: 'Name', name: teamMember.name },
+                        displayName: teamMember.name,
                     });
                 }
             }
         }
 
-        const identityOrder: Record<MatchTeamMemberUniqueIdentity['type'], number> = {
+        const identityOrder: Record<PlayerIdentity['type'], number> = {
             Member: 0,
             Guest: 1,
             Name: 2,
         };
 
-        return Array.from(identityMap.values()).sort((a, b) => {
-            const typeDiff = identityOrder[a.type] - identityOrder[b.type];
+        return Array.from(profileMap.values()).sort((a, b) => {
+            const typeDiff = identityOrder[a.identity.type] - identityOrder[b.identity.type];
             if (typeDiff !== 0) return typeDiff;
 
-            return a.name.localeCompare(b.name, 'zh-Hant');
+            return a.displayName.localeCompare(b.displayName, 'zh-Hant');
         });
     }
 }

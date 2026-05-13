@@ -48,4 +48,8 @@ export default class AnalysisService {
     async getPlayerStyleProfile(query: IPlayerIdentityQuery) {
         return this.client.get(`/analyses/player-style/profile`, { params: query });
     }
+
+    async getPlayerRecord(query: IPlayerIdentityQuery) {
+        return this.client.get(`/analyses/player-records`, { params: query });
+    }
 }

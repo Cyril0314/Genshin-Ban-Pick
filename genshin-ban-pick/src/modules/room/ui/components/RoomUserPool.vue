@@ -8,8 +8,12 @@ import { DragTypes } from '@/app/constants/customMIMETypes.ts';
 import { useTeamInfoStore } from '@/modules/team';
 import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme.ts';
 import { useRoomUserStore } from '../../store/roomUserStore';
+import { usePlayerHistory } from '@/modules/analysis/ui/composables/usePlayerHistory';
+import { parseIdentity } from '@shared/contracts/player/identitySerialization';
 
 import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
+
+const playerHistory = usePlayerHistory();
 
 const roomUserStore = useRoomUserStore();
 const { roomUsers } = storeToRefs(roomUserStore);
@@ -48,6 +52,12 @@ function handleDragStartEvent(roomUser: IRoomUser, event: DragEvent) {
     event?.dataTransfer?.setData(DragTypes.ROOM_USER, roomUser.identityKey);
 }
 
+function openPlayerHistory(roomUser: IRoomUser) {
+    const identity = parseIdentity(roomUser.identityKey);
+    if (!identity) return;
+    playerHistory.open(identity);
+}
+
 function getStyleForUser(roomUser: IRoomUser) {
     const teamSlot = userToTeamSlotMap.value[roomUser.identityKey];
     if (teamSlot === undefined) {
@@ -71,6 +81,7 @@ function getStyleForUser(roomUser: IRoomUser) {
                 :style="getStyleForUser(roomUser)"
                 draggable="true"
                 @dragstart="handleDragStartEvent(roomUser, $event)"
+                @click="openPlayerHistory(roomUser)"
             >
                 <span class="label">{{ roomUser.nickname }}</span>
             </div>

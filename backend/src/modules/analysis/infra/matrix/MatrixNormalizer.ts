@@ -1,4 +1,4 @@
-// backend/src/modules/analysis/infra/synergy/MatrixNormalizer.ts
+// backend/src/modules/analysis/infra/matrix/MatrixNormalizer.ts
 
 import { Matrix } from 'ml-matrix';
 

@@ -6,11 +6,11 @@ import AnalysisController from './controller/analysis.controller';
 import AnalysisService from './application/analysis.service';
 import AnalysisRepository from './infra/AnalysisRepository';
 import createAnalysesRouter from './http/analyses.routes';
-import SquareSimilarityMatrixBuilder from './infra/matrix/SquareSimilarityMatrixBuilder';
-import CharacterSynergyCalculator from './infra/synergy/CharacterSynergyCalculator';
+import SquareSimilarityMatrixBuilder from './domain/SquareSimilarityMatrixBuilder';
+import CharacterSynergyCalculator from './domain/CharacterSynergyCalculator';
 import CharacterSynergyGraphBuilder from './infra/graph/CharacterSynergyGraphBuilder';
-import FeatureMatrixBuilder from './infra/matrix/FeatureMatrixBuilder';
-import CharacterFeatureMatrixBuilder from './infra/character/CharacterFeatureMatrixBuilder';
+import FeatureMatrixBuilder from './domain/FeatureMatrixBuilder';
+import CharacterFeatureMatrixBuilder from './domain/CharacterFeatureMatrixBuilder';
 import MatrixNormalizer from './infra/matrix/MatrixNormalizer';
 import DimensionProjector from './infra/projection/DimensionProjector';
 import UMAPProjector from './infra/projection/UMAPProjector';
@@ -18,8 +18,16 @@ import CharacterCommunityScanEngine from './infra/clustering/CharacterCommunityS
 
 import type { ICharacterRepository } from '../character/domain/ICharacterRepository';
 import type { IMatchRepository } from '../match/domain/IMatchRepository';
+import type { IMemberRepository } from '../auth/domain/IMemberRepository';
+import type { IGuestRepository } from '../auth/domain/IGuestRepository';
 
-export function createAnalysisModule(prisma: PrismaClient, characterRepository: ICharacterRepository, matchRepository: IMatchRepository) {
+export function createAnalysisModule(
+    prisma: PrismaClient,
+    characterRepository: ICharacterRepository,
+    matchRepository: IMatchRepository,
+    memberRepository: IMemberRepository,
+    guestRepository: IGuestRepository,
+) {
     const analysisRepository = new AnalysisRepository(prisma)
 
     const matrixNormalizer = new MatrixNormalizer();
@@ -40,6 +48,8 @@ export function createAnalysisModule(prisma: PrismaClient, characterRepository: 
         characterCommunityScanEngine,
         characterRepository,
         matchRepository,
+        memberRepository,
+        guestRepository,
     );
 
     const controller = new AnalysisController(service);

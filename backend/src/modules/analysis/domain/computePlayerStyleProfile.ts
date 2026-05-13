@@ -1,9 +1,9 @@
-// backend/src/modules/analysis/infra/statistics/computePlayerStyleProfile.ts
+// backend/src/modules/analysis/domain/computePlayerStyleProfile.ts
 
 import type { IPlayerStyleProfile } from '@shared/contracts/analysis/IPlayerStyleProfile';
-import type { IMatchTacticalUsageWithCharacter } from '../../types/IMatchTacticalUsageWithCharacter';
+import type { IMatchTacticalUsageWithCharacter } from '../types/IMatchTacticalUsageWithCharacter';
 import type { ICharacter } from '@shared/contracts/character/ICharacter';
-import { computeCharacterAttributeDistributions } from '../character/computeCharacterAttributeDistributions';
+import { computeCharacterAttributeDistributions } from './computeCharacterAttributeDistributions';
 
 export function computePlayerStyleProfile(
     memberUsages: IMatchTacticalUsageWithCharacter[],

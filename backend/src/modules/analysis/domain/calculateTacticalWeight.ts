@@ -1,8 +1,8 @@
-// backend/src/modules/analysis/infra/tactical/calculateTacticalWeight.ts
+// backend/src/modules/analysis/domain/calculateTacticalWeight.ts
 
-import { DEFAULT_TACTICAL_COEFFICIENTS } from '../../domain/ITacticalCoefficients';
+import { DEFAULT_TACTICAL_COEFFICIENTS } from './ITacticalCoefficients';
 
-import type { ITacticalCoefficients } from '../../domain/ITacticalCoefficients';
+import type { ITacticalCoefficients } from './ITacticalCoefficients';
 import type { IWeightContext } from '@shared/contracts/analysis/IWeightContext';
 import type { IBanContext } from '@shared/contracts/analysis/IBanContext';
 import type { IPickContext } from '@shared/contracts/analysis/IPickContext';

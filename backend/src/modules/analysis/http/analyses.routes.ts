@@ -29,6 +29,7 @@ export default function createAnalysesRouter(analysisController: AnalysisControl
 
     router.get('/player-character-usages', asyncHandler(analysisController.fetchPlayerCharacterUsage));
     router.get('/player-style/profile', asyncHandler(analysisController.fetchPlayerStyleProfile));
+    router.get('/player-records', asyncHandler(analysisController.fetchPlayerRecord));
 
     router.get('/character-attribute/distributions', asyncHandler(analysisController.fetchCharacterAttributeDistributions))
 

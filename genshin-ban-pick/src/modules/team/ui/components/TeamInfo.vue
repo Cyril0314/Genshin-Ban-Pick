@@ -4,7 +4,23 @@ import { computed, ref } from 'vue';
 
 import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
 import { DragTypes } from '@/app/constants/customMIMETypes';
+import { usePlayerHistory } from '@/modules/analysis/ui/composables/usePlayerHistory';
+import { parseIdentity } from '@shared/contracts/player/identitySerialization';
 import type { TeamMember } from '@shared/contracts/team/TeamMember';
+
+const playerHistory = usePlayerHistory();
+
+function openPlayerHistory(memberSlot: number) {
+    const m = props.teamInfo.members[memberSlot];
+    if (!m) return;
+    if (m.type === 'Online') {
+        const identity = parseIdentity(m.user.identityKey);
+        if (!identity) return;
+        playerHistory.open(identity);
+    } else {
+        playerHistory.open({ type: 'Name', name: m.name });
+    }
+}
 
 const props = defineProps<{
     side: 'left' | 'right';
@@ -83,7 +99,7 @@ function handleDropEvent( memberSlot: number, event: DragEvent) {
                 <div class="member"
                     v-for="(_, memberSlot) in totalSlots"
                     @dragover.prevent @drop="(e) => handleDropEvent(memberSlot, e)">
-                    <span class="name">{{ getTeamMemberName(memberSlot) }}</span>
+                    <span class="name" @click="openPlayerHistory(memberSlot)">{{ getTeamMemberName(memberSlot) }}</span>
                     <button class="remove" @click="handleRemoveMemberButtonClick(memberSlot)">✕</button>
                 </div>
                 <input class="input" type="text"
@@ -192,6 +208,11 @@ function handleDropEvent( memberSlot: number, event: DragEvent) {
     white-space: nowrap;
     text-overflow: ellipsis;
     min-width: 0;
+    cursor: pointer;
+}
+
+.name:hover {
+    text-decoration: underline;
 }
 
 .remove {

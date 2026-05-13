@@ -1,6 +1,6 @@
 import type { ICharacterAttributeDistributions } from "@shared/contracts/analysis/character/ICharacterAttributeDistributions";
 import type { ICharacter } from "@shared/contracts/character/ICharacter";
-import type { IMatchTacticalUsageWithCharacter } from "../../types/IMatchTacticalUsageWithCharacter";
+import type { IMatchTacticalUsageWithCharacter } from "../types/IMatchTacticalUsageWithCharacter";
 
 export function computeCharacterAttributeDistributions(usages: IMatchTacticalUsageWithCharacter[]): ICharacterAttributeDistributions {
     const roleDistribution = countBy(usages, 'role');

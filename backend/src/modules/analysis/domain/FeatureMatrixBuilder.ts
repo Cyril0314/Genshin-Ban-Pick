@@ -1,4 +1,4 @@
-// backend/src/modules/analysis/infra/projection/FeatureMatrixBuilder.ts
+// backend/src/modules/analysis/domain/FeatureMatrixBuilder.ts
 
 import type { CharacterSynergyMatrix } from '@shared/contracts/analysis/CharacterSynergyMatrix';
 import type { FeatureMatrix } from '@shared/contracts/analysis/FeatureMatrix';

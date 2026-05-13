@@ -2,7 +2,7 @@
 import { MoveType, MoveSource } from '@shared/contracts/match/value-types';
 
 import type { ICharacterPickPriority } from '@shared/contracts/analysis/ICharacterPickPriority';
-import type { IMatchMoveWeightCalcCore } from '../../types/IMatchMoveWeightCalcCore';
+import type { IMatchMoveWeightCalcCore } from '../types/IMatchMoveWeightCalcCore';
 
 export function computeCharacterPickPriority(matchMoves: IMatchMoveWeightCalcCore[]): ICharacterPickPriority[] {
     const movesByMatch = new Map<number, IMatchMoveWeightCalcCore[]>();
