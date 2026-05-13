@@ -5,10 +5,17 @@ import { CanvasRenderer } from 'echarts/renderers';
 import { RadarChart, PieChart } from 'echarts/charts';
 import { GridComponent, TooltipComponent, LegendComponent } from 'echarts/components';
 import { usePlayerStyleChart } from '../composables/usePlayerStyleChart';
+import { usePlayerHistory } from '../composables/usePlayerHistory';
 
 use([CanvasRenderer, RadarChart, PieChart, GridComponent, TooltipComponent, LegendComponent]);
 
-const { option, scopes, selectedScopeKey, getScopeKey } = usePlayerStyleChart();
+const { option, scopes, selectedScope, selectedScopeKey, getScopeKey } = usePlayerStyleChart();
+const playerHistory = usePlayerHistory();
+
+function openSelectedPlayerHistory() {
+    if (selectedScope.value?.type !== 'Player') return;
+    playerHistory.open(selectedScope.value.profile.identity);
+}
 </script>
 
 <template>
@@ -17,6 +24,15 @@ const { option, scopes, selectedScopeKey, getScopeKey } = usePlayerStyleChart();
             <div class="title">
                 <h2>玩家風格雷達圖</h2>
                 <p class="desc">根據玩家在對局中的角色選擇，分析其多樣性、主流取向與偏好結構。</p>
+                <button
+                    v-if="selectedScope?.type === 'Player'"
+                    type="button"
+                    class="player-chip"
+                    @click="openSelectedPlayerHistory"
+                >
+                    <span class="player-chip-name">{{ selectedScope.profile.displayName }}</span>
+                    <span class="player-chip-hint">查看紀錄</span>
+                </button>
             </div>
             <div class="settings">
                 <span class="player-text">玩家：</span>
@@ -117,6 +133,37 @@ const { option, scopes, selectedScopeKey, getScopeKey } = usePlayerStyleChart();
 
 .player-select:hover {
     transform: scale(1.05);
+}
+
+.player-chip {
+    display: inline-flex;
+    align-self: flex-start;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-xs) var(--space-md);
+    background-color: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.player-chip:hover {
+    background-color: var(--primary-filled-hover);
+    transform: scale(1.03);
+}
+
+.player-chip-name {
+    font-weight: var(--font-weight-bold);
+}
+
+.player-chip-hint {
+    font-size: var(--font-size-sm);
+    opacity: 0.75;
+    margin-left: var(--space-xs);
 }
 
 .canvas {

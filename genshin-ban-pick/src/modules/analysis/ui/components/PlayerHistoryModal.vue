@@ -32,13 +32,16 @@ function close() {
         preset="card"
         :bordered="false"
         :closable="false"
-        size="medium"
+        size="large"
         :mask-closable="true"
         :style="{
-            width: '40vw',
-            maxWidth: '90vw',
+            width: '60vw',
+            maxHeight: '85vh',
+            display: 'flex',
+            flexDirection: 'column',
             backgroundColor: 'var(--md-sys-color-surface-container-high)',
         }"
+        content-style="overflow-y: auto; min-height: 0;"
         @update:show="emit('update:open', $event)"
         @close="close"
     >
@@ -62,7 +65,7 @@ function close() {
             <div v-else-if="!record || record.totalSetups === 0" class="state-message">尚無紀錄</div>
             <template v-else>
                 <div class="summary">
-                    <span class="label">總出場 setup</span>
+                    <span class="label">總出場</span>
                     <span class="value">{{ record.totalSetups }}</span>
                 </div>
 
@@ -77,10 +80,10 @@ function close() {
                                 <span class="rate">{{ (f.rate * 100).toFixed(0) }}%</span>
                             </div>
                             <ul v-if="f.topSynergies.length > 0" class="synergy-list">
-                                <li v-for="s in f.topSynergies" :key="s.characterKey" class="synergy-row">
+                                <li v-for="s in f.topSynergies" :key="s.characterKey" class="synergy-chip">
                                     <img class="synergy-avatar" :src="getProfileImagePath(s.characterKey)" :alt="getCharacterDisplayName(s.characterKey)" />
                                     <span class="synergy-name">{{ getCharacterDisplayName(s.characterKey) }}</span>
-                                    <span class="synergy-count">{{ s.count }} 次</span>
+                                    <span class="synergy-count">×{{ s.count }}</span>
                                 </li>
                             </ul>
                             <div v-else class="synergy-empty">尚無全域共現資料</div>
@@ -94,14 +97,14 @@ function close() {
 
 <style scoped>
 .title {
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-xl);
     font-weight: var(--font-weight-bold);
     font-family: var(--font-family-sans);
     color: var(--md-sys-color-on-surface);
 }
 
 .close-button {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
     padding: var(--space-xs);
@@ -119,7 +122,7 @@ function close() {
 }
 
 .player-history {
-    --size-avatar: calc(var(--base-size) * 3);
+    --size-avatar: calc(var(--base-size) * 4);
     --size-synergy-avatar: calc(var(--base-size) * 2);
 
     display: flex;
@@ -140,24 +143,20 @@ function close() {
 
 .summary {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--space-md) var(--space-lg);
-    background-color: var(--md-sys-color-primary-container);
-    color: var(--md-sys-color-on-primary-container);
-    border-radius: var(--radius-md);
+    align-items: baseline;
+    gap: var(--space-sm);
+    color: var(--md-sys-color-on-surface);
 }
 
 .summary .label {
-    font-size: var(--font-size-sm);
-    color: inherit;
-    opacity: 0.85;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
 }
 
 .summary .value {
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-xl);
+    color: var(--md-sys-color-primary);
     font-weight: var(--font-weight-bold);
-    color: inherit;
 }
 
 .section {
@@ -172,7 +171,6 @@ function close() {
     color: var(--md-sys-color-on-surface);
     padding-bottom: var(--space-xs);
     border-bottom: 1px solid var(--md-sys-color-outline-variant);
-    margin: 0;
 }
 
 .frequency-list {
@@ -180,7 +178,6 @@ function close() {
     flex-direction: column;
     gap: var(--space-sm);
     padding: 0;
-    margin: 0;
     list-style: none;
 }
 
@@ -192,7 +189,7 @@ function close() {
     background-color: var(--md-sys-color-surface-container-low);
     border-radius: var(--radius-sm);
     color: var(--md-sys-color-on-surface);
-    font-size: var(--font-size-md);
+    font-size: var(--font-size-lg);
 }
 
 .head {
@@ -221,30 +218,30 @@ function close() {
 
 .synergy-list {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     gap: var(--space-xs);
     padding: var(--space-xs) 0 0 calc(var(--size-avatar) + var(--space-sm));
-    margin: 0;
     list-style: none;
 }
 
-.synergy-row {
-    display: flex;
+.synergy-chip {
+    display: inline-flex;
     align-items: center;
-    gap: var(--space-sm);
-    color: var(--md-sys-color-on-surface-variant);
-    font-size: var(--font-size-sm);
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+    background-color: var(--md-sys-color-surface-container);
+    border-radius: var(--radius-sm);
+    color: var(--md-sys-color-on-surface);
+    font-size: var(--font-size-md);
 }
 
 .synergy-name {
-    flex: 1;
-    font-weight: var(--font-weight-regular);
-    color: var(--md-sys-color-on-surface);
+    font-weight: var(--font-weight-medium);
 }
 
 .synergy-count {
-    min-width: calc(var(--base-size) * 2.5);
-    text-align: right;
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: var(--font-size-sm);
 }
 
 .synergy-empty {
