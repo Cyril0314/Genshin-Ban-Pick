@@ -81,21 +81,6 @@ const { position, handleMouseDown } = useDraggableWindow({});
     user-select: none; /* Prevent text selection while dragging */
 }
 
-.title {
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-regular);
-    font-family: var(--font-family-sans);
-    color: var(--md-sys-color-on-surface);
-}
-
-.close-button {
-    color: var(--md-sys-color-on-surface-variant);
-}
-
-.close-button:hover {
-    color: color-mix(in srgb, var(--md-sys-color-on-surface-variant) 40%, white 60%);
-}
-
 /* Transition effects */
 .chat-fade-enter-active,
 .chat-fade-leave-active {

@@ -54,6 +54,7 @@ async function handleSubmit() {
 
 <style scoped>
 .room-setting-view {
+    --base-size: 1.6vw;
     --size-card-lg: calc(var(--base-size) * 16);
     display: flex;
     justify-content: center;

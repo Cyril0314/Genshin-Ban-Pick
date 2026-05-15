@@ -69,6 +69,7 @@ function enterRoom(roomId: string) {
 
 <style scoped>
 .room-list-view {
+    --base-size: 1.6vw;
     width: 100%;
     min-height: 100vh;
     padding: var(--space-xl);

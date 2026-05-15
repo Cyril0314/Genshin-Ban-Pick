@@ -3,6 +3,7 @@ import { onMounted } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
 
 import { useAppInitializer } from './app/bootstrap/useAppInitializer';
+import { naiveThemeOverrides } from './app/theme/naiveThemeOverrides';
 
 const { isInitializing } = useAppInitializer();
 
@@ -24,9 +25,11 @@ onMounted(() => {
     </div>
   </header> -->
 
-  <div id="app">
-    <RouterView />
-  </div>
+  <n-config-provider :theme-overrides="naiveThemeOverrides">
+    <div id="app">
+      <RouterView />
+    </div>
+  </n-config-provider>
 </template>
 
 <style scoped>
