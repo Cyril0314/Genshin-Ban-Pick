@@ -43,6 +43,16 @@ if ! ssh -i "$EC2_KEY" -o ConnectTimeout=5 -o BatchMode=yes "$EC2_HOST" 'echo ok
     exit 1
 fi
 
+# 確認 EC2 / 至少有 MIN_FREE_MB 可用 — 之前發生過 docker load 撞 ENOSPC
+MIN_FREE_MB="${MIN_FREE_MB:-1500}"
+EC2_AVAIL_KB=$(ssh -i "$EC2_KEY" "$EC2_HOST" "df -k /" 2>/dev/null | awk 'NR==2 {print $4}')
+if [[ -z "$EC2_AVAIL_KB" || "$EC2_AVAIL_KB" -lt $((MIN_FREE_MB * 1024)) ]]; then
+    AVAIL_MB=$(( ${EC2_AVAIL_KB:-0} / 1024 ))
+    echo "❌ EC2 / only has ${AVAIL_MB}MB free; need ≥ ${MIN_FREE_MB}MB"
+    echo "   Try: ssh -i \"$EC2_KEY\" $EC2_HOST 'docker image prune -f && df -h /'"
+    exit 1
+fi
+
 # --- Build (cd 到 repo root，Dockerfile 在那) ---
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
@@ -72,6 +82,8 @@ ssh -i "$EC2_KEY" "$EC2_HOST" bash <<EOF
     gunzip -c ~/$TAR_NAME | docker load
     echo '   [recreate backend]'
     docker compose up -d --no-build backend
+    echo '   [prune dangling images]'
+    docker image prune -f
     echo '   [cleanup tar on ec2]'
     rm ~/$TAR_NAME
     echo '   [status]'
