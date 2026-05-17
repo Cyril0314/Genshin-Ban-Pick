@@ -17,17 +17,17 @@ const { option } = useCharacterSynergyGraphChart();
 </script>
 
 <template>
-    <div class="layout__chart">
-        <header class="chart__header">
-            <div class="chart__title">
+    <div class="chart">
+        <header class="header">
+            <div class="title">
                 <h2>角色圖</h2>
                 <p class="chart-desc">。</p>
             </div>
         </header>
-        <div class="chart">
+        <div class="canvas">
             <VChart v-if="option" :option="option" />
         </div>
-        <footer class="chart__footer">
+        <footer class="footer">
             <small>
 
             </small>
@@ -36,7 +36,7 @@ const { option } = useCharacterSynergyGraphChart();
 </template>
 
 <style scoped>
-.layout__chart {
+.chart {
     --size-chart-switch: calc(var(--base-size) * 6);
     --size-chart-select: calc(var(--base-size) * 3);
     display: flex;
@@ -44,27 +44,27 @@ const { option } = useCharacterSynergyGraphChart();
     height: 100%;
 }
 
-.chart__header {
+.header {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     padding: var(--space-sm);
 }
 
-.chart__title {
+.title {
     display: flex;
     flex-direction: column;
     color: var(--md-sys-color-on-surface);
     font-size: var(--font-size-md);
 }
 
-.chart {
+.canvas {
     display: flex;
     width: 100%;
     height: 100%;
 }
 
-.chart__footer {
+.footer {
     display: flex;
     color: var(--md-sys-color-on-surface-variant);
     padding: var(--space-md);

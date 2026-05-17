@@ -36,27 +36,27 @@ const currentTabIndex = ref<number>(0);
 </script>
 
 <template>
-    <div class="layout__analysis">
-        <div class="tab__bar">
-            <button v-for="(t, i) in tabs" :key="i" class="tab" :class="{ 'tab--active': currentTabIndex === i }" @click="currentTabIndex = i">
+    <div class="analysis">
+        <div class="tab-bar">
+            <button v-for="(t, i) in tabs" :key="i" class="tab" :class="{ 'is-active': currentTabIndex === i }" @click="currentTabIndex = i">
                 {{ t.name }}
             </button>
         </div>
-        <div class="chart__section">
+        <div class="chart-section">
             <component :is="tabs[currentTabIndex].component" />
         </div>
     </div>
 </template>
 
 <style scoped>
-.layout__analysis {
+.analysis {
     display: flex;
     flex-direction: row;
     width: 100%;
     height: 90vh;
 }
 
-.tab__bar {
+.tab-bar {
     --size-tab: calc(var(--base-size) * 6);
     display: flex;
     flex-direction: column;
@@ -87,11 +87,11 @@ const currentTabIndex = ref<number>(0);
     transform: scale(1.05);
 }
 
-.tab--active {
+.tab.is-active {
     background-color: color-mix(in srgb, var(--md-sys-color-surface-container-highest), white 18%);
 }
 
-.chart__section {
+.chart-section {
     width: 100%;
     height: 100%;
     background-color: var(--md-sys-color-surface-dim);

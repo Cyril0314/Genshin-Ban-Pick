@@ -1,11 +1,11 @@
-// backend/src/modules/analysis/infra/tactical/computeCharacterTacticalUsage.ts
+// backend/src/modules/analysis/domain/computeCharacterUsage.ts
 
 import { aggregateMoveWeightContext } from './aggregateMoveWeightContext';
 import { calculateTacticalWeight } from './calculateTacticalWeight';
 
 import type { IMatchTimeMinimal } from '@shared/contracts/analysis/IMatchTimeMinimal';
-import type { IMatchTacticalUsageExpandedRefs } from '../../types/IMatchTacticalUsageExpandedRefs';
-import type { IMatchMoveWeightCalcCore } from '../../types/IMatchMoveWeightCalcCore';
+import type { IMatchTacticalUsageExpandedRefs } from '../types/IMatchTacticalUsageExpandedRefs';
+import type { IMatchMoveWeightCalcCore } from '../types/IMatchMoveWeightCalcCore';
 import type { IWeightContext } from '@shared/contracts/analysis/IWeightContext';
 import type { ICharacterUsage } from '@shared/contracts/analysis/ICharacterUsage';
 

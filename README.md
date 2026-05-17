@@ -34,8 +34,16 @@
 
 ### Connect EC2 and build 5433 db tunnel
 
-ssh -i "C:\Users\asdfg\ec2_keys\aws-discord-bot-farmer-licence-key.pem" -L 5433:localhost:5432 ec2-user@98.86.73.53
+docker pg
+WINDOWS
+ssh -i "C:\Users\asdfg\ec2_keys\aws-discord-bot-farmer-licence-key.pem" -L 5435:localhost:5434 ec2-user@98.86.73.53 
+MAC
+ssh -i "/Users/wangxiaoyu/Desktop/ec2_keys/aws-discord-bot-farmer-licence-key.pem" -L 5435:localhost:5434 ec2-user@98.86.73.53
 
+原生 pg
+WINDOWS
+ssh -i "C:\Users\asdfg\ec2_keys\aws-discord-bot-farmer-licence-key.pem" -L 5433:localhost:5432 ec2-user@98.86.73.53 
+MAC
 ssh -i "/Users/wangxiaoyu/Desktop/ec2_keys/aws-discord-bot-farmer-licence-key.pem" -L 5433:localhost:5432 ec2-user@98.86.73.53
 
 
@@ -95,6 +103,115 @@ pm2 status 當前狀態
 pm2 start "npx tsx src/index.ts" --name genshin-ban-pick 啟動服務
 pm2 stop --name 暫停服務
 pm2 restart --name 重啟服務
+
+## Docker (EC2 prod)
+
+服務跑在 docker compose stack 裡（postgres + backend），由 `docker-compose.yml` 定義。
+本機 build image 後用 `scripts/deploy-to-ec2.sh` 推到 EC2 (t3.micro 撐不起 docker build)。
+
+### 部署 (Mac → EC2)
+
+```bash
+# 預設 EC2_HOST = ec2-user@<EIP>，可覆蓋
+EC2_HOST=ec2-user@98.86.73.53 ./scripts/deploy-to-ec2.sh
+```
+
+流程：buildx (linux/amd64) → save+gzip → scp → EC2 docker load → recreate backend container。
+不會動到 postgres container 跟 volume，DB 資料安全。
+
+### EC2 上日常操作
+
+```bash
+ssh ec2-user@98.86.73.53
+cd ~/Genshin-Ban-Pick/Genshin-Ban-Pick
+
+docker compose ps              # 看 container 狀態
+docker compose logs -f backend # 即時 log
+docker compose stop            # 暫停（保留資料、image，不耗 RAM/CPU）
+docker compose start           # 從 stop 狀態恢復，秒起
+docker compose down            # 拆 container + network（volume 保留）
+docker compose up -d           # 從 down 狀態起
+```
+
+⚠️ **絕對不要 `docker compose down -v`** — `-v` 會砍 volume，DB 資料蒸發。
+
+### 進 container 看內部
+
+```bash
+docker exec -it genshin-banpick-backend sh                     # 進 backend
+docker exec -it genshin-banpick-db psql -U postgres -d genshin_banpick   # 進 PG
+
+# 從 host 連 docker PG（也可以從 Mac 透過 SSH tunnel 5434）
+psql -h localhost -p 5434 -U postgres -d genshin_banpick
+```
+
+### Mac 端 alias（選用）
+
+```bash
+# ~/.zshrc
+alias genshin-stop='ssh ec2-user@98.86.73.53 "cd ~/Genshin-Ban-Pick/Genshin-Ban-Pick && docker compose stop"'
+alias genshin-start='ssh ec2-user@98.86.73.53 "cd ~/Genshin-Ban-Pick/Genshin-Ban-Pick && docker compose start"'
+alias genshin-deploy='EC2_HOST=ec2-user@98.86.73.53 ~/Desktop/side/Genshin-Ban-Pick/scripts/deploy-to-ec2.sh'
+```
+
+### Local 開發 (Hybrid)
+
+平常開發用本機 docker postgres + npm run dev (host)，HMR 完整：
+
+```bash
+# Terminal 1: docker 只起 postgres (port 5434)
+docker compose up -d postgres
+
+# Terminal 2: backend dev server
+cd backend && npm run dev
+
+# Terminal 3: frontend dev server (vite, port 5173)
+cd genshin-ban-pick && npm run dev
+```
+
+要驗證 prod-like build：
+```bash
+docker compose up -d --build   # 完整 stack 含 backend
+# 開 http://localhost:3000
+```
+
+### 從 host PG 同步資料到 docker PG
+
+```bash
+./scripts/sync-host-db-to-docker.sh    # dump host PG → restore 進 docker volume
+```
+
+### Port 配置（Mac 端）
+
+| Port  | 用途                                                           |
+| ----- | -------------------------------------------------------------- |
+| 5432  | host 原生 PG14（其他專案，如 discord bot）                     |
+| 5433  | SSH tunnel → EC2 **原生** PG (discord bot 的 DB)               |
+| 5434  | **local** docker postgres 對外                                 |
+| 5435  | SSH tunnel → EC2 **docker** PG (genshin docker stack)          |
+| 3000  | backend (frontend 也從這個 port 服)                            |
+| 5173  | vite dev server (HMR 開發用)                                   |
+
+兩個 EC2 tunnel 用不同 Mac port 區分，避免「同一條 5433 不確定通到哪個 PG」。
+
+### 連 EC2 PG 的 SSH config（推薦）
+
+```ssh-config
+# ~/.ssh/config
+Host genshin-ec2
+    HostName 98.86.73.53
+    User ec2-user
+    IdentityFile ~/Desktop/ec2_keys/aws-discord-bot-farmer-licence-key.pem
+    LocalForward 5433 localhost:5432   # EC2 原生 PG (discord bot)
+    LocalForward 5435 localhost:5434   # EC2 docker PG (genshin)
+```
+
+設好後 `ssh genshin-ec2` 一條指令同時建兩條 tunnel。Mac 端：
+
+```bash
+psql -h localhost -p 5433 -U postgres                          # → EC2 原生 PG
+psql -h localhost -p 5435 -U postgres -d genshin_banpick       # → EC2 docker PG
+```
 
 1. 基本原則
 ✔ 一致性優先

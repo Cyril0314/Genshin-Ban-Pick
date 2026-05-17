@@ -1,4 +1,4 @@
-// backend/src/modules/analysis/infra/matrix/SquareSimilarityMatrixBuilder.ts
+// backend/src/modules/analysis/domain/SquareSimilarityMatrixBuilder.ts
 
 import type { KeyIndexedMatrix } from '@shared/contracts/analysis/KeyIndexedMatrix';
 

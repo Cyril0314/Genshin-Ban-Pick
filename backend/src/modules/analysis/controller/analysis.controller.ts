@@ -63,6 +63,13 @@ export default class AnalysisController {
         res.status(200).json(style);
     };
 
+    fetchPlayerRecord = async (req: Request, res: Response) => {
+        const identityKey = parsePlayerIdentityQuery(req.query);
+        if (!identityKey) throw new InvalidFieldsError();
+        const record = await this.analysisService.fetchPlayerRecord(identityKey);
+        res.status(200).json(record);
+    };
+
     fetchCharacterAttributeDistributions = async (req: Request, res: Response) => {
         const scope = parseAnalysisScopeQuery(req.query)
         if (!scope) throw new InvalidFieldsError();

@@ -18,8 +18,8 @@ function enterRoom(roomId: string) {
 </script>
 
 <template>
-    <div class="room-list__view scale-context">
-        <div class="room-list__container">
+    <div class="room-list-view scale-context">
+        <div class="container">
             <h2 class="title">房間列表</h2>
 
             <!-- 載入狀態 -->
@@ -68,7 +68,8 @@ function enterRoom(roomId: string) {
 </template>
 
 <style scoped>
-.room-list__view {
+.room-list-view {
+    --base-size: 1.6vw;
     width: 100%;
     min-height: 100vh;
     padding: var(--space-xl);
@@ -78,7 +79,7 @@ function enterRoom(roomId: string) {
     background-color: var(--md-sys-color-background);
 }
 
-.room-list__container {
+.container {
     width: 1200px;
     display: flex;
     flex-direction: column;

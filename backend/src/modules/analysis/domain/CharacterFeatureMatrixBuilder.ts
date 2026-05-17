@@ -1,4 +1,4 @@
-// backend/src/modules/analysis/infra/projection/CharacterFeatureMatrixBuilder.ts
+// backend/src/modules/analysis/domain/CharacterFeatureMatrixBuilder.ts
 
 import { CharacterRole, Element, Region, Weapon } from '@shared/contracts/character/value-types';
 import type { FeatureMatrix } from '@shared/contracts/analysis/FeatureMatrix';

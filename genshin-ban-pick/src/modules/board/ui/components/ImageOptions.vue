@@ -31,14 +31,14 @@ function handleDragStartEvent(id: string, event: DragEvent) {
 </script>
 
 <template>
-  <div class="container__images">
-    <img v-for="id in availableCharacterKeys" :class="{ dimmed: !isFiltered(id) }" :key="id" :id="id"
+  <div class="image-options">
+    <img v-for="id in availableCharacterKeys" class="option" :class="{ 'is-dimmed': !isFiltered(id) }" :key="id" :id="id"
       :src="getProfileImagePath(id)" draggable="true" @dragstart="handleDragStartEvent(id, $event)" />
   </div>
 </template>
 
 <style scoped>
-.container__images {
+.image-options {
   --size-image: calc(var(--base-size) * 4.0);
   --min-row: 2;
   --max-row: 5;
@@ -58,31 +58,31 @@ function handleDragStartEvent(id: string, event: DragEvent) {
   scrollbar-width: none;
 }
 
-.container__images img {
+.option {
   width: 100%;
   aspect-ratio: 1 / 1;
   padding: var(--space-sm);
   cursor: grab;
   border-radius: var(--radius-sm);
-  transition: 
+  transition:
     filter 0.18s ease,
     transform 0.18s ease,;
   /* filter: saturate(0.8) brightness(0.9); */
 }
 
-.container__images img.dimmed {
+.option.is-dimmed {
   opacity: 0.3;
   filter: grayscale(100%) brightness(0.6);
   /* background-color: var(--md-sys-color-neutral-disabled); */
 }
 
-.container__images img:not(.dimmed):hover {
+.option:not(.is-dimmed):hover {
   background-color: var(--md-sys-color-state-hover);
   transform: scale(1.05);
   filter: initial;
 }
 
-.container__images img:not(.dimmed):focus {
+.option:not(.is-dimmed):focus {
   background-color: var(--md-sys-color-state-focus);
   filter: none;
 }

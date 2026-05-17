@@ -16,36 +16,36 @@ async function handleSubmit() {
 </script>
 
 <template>
-    <div class="room-setting__view scale-context">
-        <div class="room-setting__card">
-            <div class="room-setting__header">
+    <div class="room-setting-view scale-context">
+        <div class="card">
+            <div class="header">
                 <h2>創建房間</h2>
             </div>
-            <form class="room-setting__form" @submit.prevent="handleSubmit">
-                <div class="form__group">
+            <form class="form" @submit.prevent="handleSubmit">
+                <div class="form-group">
                     <label for="rooId">房間代號</label>
                     <input id="rooId" v-model="form.roomId" type="text" placeholder="請輸入房間代號" required />
                 </div>
 
-                <div class="form__group">
+                <div class="form-group">
                     <label for="numberOfUtility">自由位數量</label>
                     <input id="numberOfUtility" v-model="form.numberOfUtility" type="number" placeholder="請輸入自由位數量"
                         required />
                 </div>
 
-                <div class="form__group">
+                <div class="form-group">
                     <label for="numberOfBan">Ban位數量</label>
                     <input id="numberOfBan" v-model="form.numberOfBan" type="number" placeholder="請輸入Ban位數量" required />
                 </div>
 
-                <div class="form__group">
+                <div class="form-group">
                     <label for="numberOfPick">Pick位數量</label>
                     <input id="numberOfPick" v-model="form.numberOfPick" type="number" placeholder="請輸入Pick位數量"
                         required />
                 </div>
 
-                <div class="layout__actions">
-                    <button type="submit" class="btn__submit">創建</button>
+                <div class="actions">
+                    <button type="submit" class="submit-button">創建</button>
                 </div>
             </form>
         </div>
@@ -53,7 +53,8 @@ async function handleSubmit() {
 </template>
 
 <style scoped>
-.room-setting__view {
+.room-setting-view {
+    --base-size: 1.6vw;
     --size-card-lg: calc(var(--base-size) * 16);
     display: flex;
     justify-content: center;
@@ -63,7 +64,7 @@ async function handleSubmit() {
     background-size: cover;
 }
 
-.room-setting__card {
+.card {
     display: flex;
     flex-direction: column;
     width: var(--size-card-lg);
@@ -74,7 +75,7 @@ async function handleSubmit() {
     border-radius: var(--radius-lg);
 }
 
-.room-setting__header h2 {
+.header h2 {
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-medium);
     text-align: center;
@@ -82,27 +83,25 @@ async function handleSubmit() {
     color: var(--md-sys-color-on-surface);
 }
 
-/* 表單整體間距 */
-.room-setting__form {
+.form {
     display: flex;
     flex-direction: column;
     gap: var(--space-lg);
 }
 
-/* 每個欄位群組 */
-.form__group {
+.form-group {
     display: flex;
     flex-direction: column;
     gap: var(--space-sm);
 }
 
-.form__group label {
+.form-group label {
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
     color: var(--md-sys-color-on-surface);
 }
 
-.form__group input {
+.form-group input {
     padding: var(--space-sm);
     border-radius: var(--radius-md);
     border: none;
@@ -112,21 +111,21 @@ async function handleSubmit() {
     outline: 1px solid var(--md-sys-color-on-surface-variant);
 }
 
-.form__group input::placeholder {
+.form-group input::placeholder {
     color: var(--md-sys-color-on-surface-variant);
 }
 
-.form__group input:focus {
+.form-group input:focus {
     outline: 1px solid color-mix(in srgb, var(--md-sys-color-on-surface-variant) 20%, white 80%);
 }
 
-.layout__actions {
+.actions {
     display: flex;
     flex-direction: column;
     gap: var(--space-md);
 }
 
-.btn__submit {
+.submit-button {
     background-color: var(--md-sys-color-primary);
     color: var(--md-sys-color-on-primary);
     padding: var(--space-sm);
@@ -140,28 +139,8 @@ async function handleSubmit() {
         transform 0.2s ease;
 }
 
-.btn__submit:hover {
+.submit-button:hover {
     background-color: var(--primary-filled-hover);
-    transform: scale(1.02);
-}
-
-.redirect__link {
-    background-color: var(--md-sys-color-secondary);
-    color: var(--md-sys-color-on-secondary);
-    padding: var(--space-sm);
-    text-decoration: none;
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-bold);
-    cursor: pointer;
-    text-align: center;
-    transition:
-        background-color 0.2s ease,
-        transform 0.2s ease;
-}
-
-.redirect__link:hover {
-    background-color: var(--secondary-filled-hover);
     transform: scale(1.02);
 }
 </style>

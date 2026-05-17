@@ -91,6 +91,7 @@ When adding a cross-boundary type, put it under `shared/contracts/<domain>/` and
 - Prettier (root `.prettierrc.json`): 4-space indent, single quotes, semis, 150 print width. Frontend lint runs **oxlint then eslint**; both must pass.
 - Import order is enforced by `eslint-plugin-import` on both sides: builtin → external → internal → parent/sibling/index → object → type, with blank lines between groups, alphabetized.
 - Commits follow Conventional Commits (`feat:`, `fix:`, `chore:`, `doc:` are visible in recent history).
+- Frontend CSS naming rules (one-block-per-file, `is-*` for state vs `--` for variant, design tokens) live in `genshin-ban-pick/CSS_CONVENTIONS.md`. When editing or creating `.vue` files, follow that style (currently a touch-time migration — old files keep their BEM until naturally touched).
 
 ## Database / Ops Notes
 
@@ -103,3 +104,20 @@ When adding a cross-boundary type, put it under `shared/contracts/<domain>/` and
 ## Scope vocabulary
 
 The README defines a `Scope` taxonomy used in repository/service signatures (`Minimal`, `Core`, `Light`, `Expanded`, `Summary`, `Detailed`, `Full`). When adding a query method, pick the matching scope rather than inventing a new one — it determines which fields and relations are joined.
+
+## Before adding new code
+
+Default to extending existing code. Before introducing a new type / repo method / composable / store / file, grep the relevant module + `shared/contracts/` for something already doing similar work — most "new" features here are extensions of an existing pattern. If a repo method exists with the same query, extend its projection rather than adding a parallel method. When the role of what you're writing matches an existing component / composable / store, follow that file's structure rather than inventing a new shape.
+
+Self-check after writing: "if I delete this addition and use the existing thing, can I still achieve the goal?" If yes, delete.
+
+## Working style: challenge architecture decisions
+
+When I propose an approach, architecture choice, type shape, module boundary, naming, or non-trivial refactor — treat it as a **draft to be reviewed**, not an instruction to execute. Before agreeing or implementing:
+
+- Actively look for hidden trade-offs, edge cases, over-engineering, and simpler alternatives.
+- If you see a problem or a better path, **state it before doing**, with reasoning ("this might break X because Y" / "consider Z because W").
+- Don't just go along to be agreeable. Silence = endorsement, and I don't want endorsement by default.
+- If after hearing the pushback I confirm my choice, **proceed without further argument** — one round, not nagging.
+
+Scope: this applies to **design decisions**. It does NOT apply to mechanical tasks (rename, fix typo, run command, format adjustment).

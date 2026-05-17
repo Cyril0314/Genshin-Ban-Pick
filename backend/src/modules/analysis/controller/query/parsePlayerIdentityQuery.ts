@@ -1,6 +1,6 @@
-import type { MatchTeamMemberUniqueIdentityKey } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
+import type { PlayerIdentity } from '@shared/contracts/player/PlayerIdentity';
 
-export function parsePlayerIdentityQuery(query: any): MatchTeamMemberUniqueIdentityKey | undefined {
+export function parsePlayerIdentityQuery(query: any): PlayerIdentity | undefined {
     const { type, id, name } = query;
 
     if (type === 'name') {

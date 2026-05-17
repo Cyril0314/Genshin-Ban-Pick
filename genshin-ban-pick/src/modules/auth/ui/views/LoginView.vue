@@ -36,28 +36,28 @@ async function handleLoginGuestButtonClick() {
 </script>
 
 <template>
-    <div class="login__view scale-context">
-        <div class="side__bar">
-            <div class="login__card">
-                <div class="login__header">
+    <div class="login-view scale-context">
+        <div class="sidebar">
+            <div class="card">
+                <div class="header">
                     <h2>使用者登入</h2>
                 </div>
-                <form class="login__form" @submit.prevent="handleLoginMemberSubmit">
-                    <div class="form__group">
+                <form class="form" @submit.prevent="handleLoginMemberSubmit">
+                    <div class="form-group">
                         <label for="account">帳號</label>
                         <input id="account" v-model="accountInput" type="text" placeholder="請輸入帳號" required />
                     </div>
 
-                    <div class="form__group">
+                    <div class="form-group">
                         <label for="password">密碼</label>
                         <input id="password" v-model="passwordInput" type="password" placeholder="請輸入密碼" required />
                     </div>
-                    <div class="layout__actions">
-                        <button type="submit" class="btn__submit">登入</button>
+                    <div class="actions">
+                        <button type="submit" class="submit-button">登入</button>
 
-                        <RouterLink to="/register" class="redirect__link">註冊</RouterLink>
+                        <RouterLink to="/register" class="register-link">註冊</RouterLink>
 
-                        <button class="btn__guest" @click="handleLoginGuestButtonClick">以訪客身份繼續</button>
+                        <button class="guest-button" @click="handleLoginGuestButtonClick">以訪客身份繼續</button>
                     </div>
                 </form>
             </div>
@@ -66,7 +66,7 @@ async function handleLoginGuestButtonClick() {
 </template>
 
 <style scoped>
-.login__view {
+.login-view {
     --base-size: 1.6vw;
     --size-card-lg: calc(var(--base-size) * 16);
     display: flex;
@@ -78,7 +78,7 @@ async function handleLoginGuestButtonClick() {
     background-size: cover;
 }
 
-.side__bar {
+.sidebar {
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -87,7 +87,7 @@ async function handleLoginGuestButtonClick() {
     backdrop-filter: blur(12px) saturate(160%);
 }
 
-.login__card {
+.card {
     display: flex;
     flex-direction: column;
     width: var(--size-card-lg);
@@ -95,7 +95,7 @@ async function handleLoginGuestButtonClick() {
     gap: var(--space-lg);
 }
 
-.login__header h2 {
+.header h2 {
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-medium);
     text-align: center;
@@ -103,27 +103,25 @@ async function handleLoginGuestButtonClick() {
     color: var(--md-sys-color-on-surface);
 }
 
-/* 表單整體間距 */
-.login__form {
+.form {
     display: flex;
     flex-direction: column;
     gap: var(--space-lg);
 }
 
-/* 每個欄位群組 */
-.form__group {
+.form-group {
     display: flex;
     flex-direction: column;
     gap: var(--space-sm);
 }
 
-.form__group label {
+.form-group label {
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
     color: var(--md-sys-color-on-surface);
 }
 
-.form__group input {
+.form-group input {
     padding: var(--space-sm);
     border-radius: var(--radius-md);
     border: none;
@@ -133,21 +131,21 @@ async function handleLoginGuestButtonClick() {
     outline: 1px solid var(--md-sys-color-on-surface-variant);
 }
 
-.form__group input::placeholder {
+.form-group input::placeholder {
     color: var(--md-sys-color-on-surface-variant);
 }
 
-.form__group input:focus {
+.form-group input:focus {
     outline: 1px solid color-mix(in srgb, var(--md-sys-color-on-surface-variant) 20%, white 80%);
 }
 
-.layout__actions {
+.actions {
     display: flex;
     flex-direction: column;
     gap: var(--space-md);
 }
 
-.btn__submit {
+.submit-button {
     background-color: var(--md-sys-color-primary);
     color: var(--md-sys-color-on-primary);
     padding: var(--space-sm);
@@ -161,12 +159,12 @@ async function handleLoginGuestButtonClick() {
         transform 0.2s ease;
 }
 
-.btn__submit:hover {
+.submit-button:hover {
     background-color: var(--primary-filled-hover);
     transform: scale(1.02);
 }
 
-.redirect__link {
+.register-link {
     background-color: var(--md-sys-color-secondary);
     color: var(--md-sys-color-on-secondary);
     padding: var(--space-sm);
@@ -182,17 +180,16 @@ async function handleLoginGuestButtonClick() {
         transform 0.2s ease;
 }
 
-.redirect__link:hover {
+.register-link:hover {
     background-color: var(--secondary-filled-hover);
     transform: scale(1.02);
 }
 
-.btn__guest {
+.guest-button {
     background-color: transparent;
     border: none;
     color: var(--md-sys-color-on-surface-variant);
     border-radius: var(--radius-md);
-    border: none;
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-regular);
     cursor: pointer;
@@ -201,7 +198,7 @@ async function handleLoginGuestButtonClick() {
         transform 0.2s ease;
 }
 
-.btn__guest:hover {
+.guest-button:hover {
     color: color-mix(in srgb, var(--md-sys-color-on-surface-variant) 40%, white 60%);
     transform: scale(1.02);
 }

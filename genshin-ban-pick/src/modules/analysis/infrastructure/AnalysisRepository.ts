@@ -2,13 +2,12 @@
 
 import type { SynergyMode } from '@shared/contracts/analysis/value-types';
 import type AnalysisService from './AnalysisService';
-import type { MatchTeamMemberUniqueIdentityKey } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
+import type { PlayerIdentity } from '@shared/contracts/player/PlayerIdentity';
 import type { IPlayerIdentityQuery } from '@shared/contracts/analysis/dto/IPlayerIdentityQuery';
 import type { IAnalysisScopeWithPlayerIdentityQuery } from '@shared/contracts/analysis/dto/IAnalysisScopeWithPlayerIdentityQuery';
 import type { IAnalysisTimeWindowQuery } from '@shared/contracts/analysis/dto/IAnalysisTimeWindowQuery';
 import type { IAnalysisTimeWindow } from '@shared/contracts/analysis/IAnalysisTimeWindow';
 import type { IMatchTimeMinimal } from '@shared/contracts/analysis/IMatchTimeMinimal';
-import { create } from 'naive-ui';
 
 export default class AnalysisRepository {
     constructor(private analysisService: AnalysisService) {}
@@ -52,7 +51,7 @@ export default class AnalysisRepository {
         return response.data;
     }
 
-    async fetchCharacterAttributeDistributions(scope: { type: 'Player'; identityKey: MatchTeamMemberUniqueIdentityKey } | { type: 'Global' }) {
+    async fetchCharacterAttributeDistributions(scope: { type: 'Player'; identityKey: PlayerIdentity } | { type: 'Global' }) {
         let query: IAnalysisScopeWithPlayerIdentityQuery;
         switch (scope.type) {
             case 'Global':
@@ -110,29 +109,26 @@ export default class AnalysisRepository {
         return response.data;
     }
 
-    async fetchPlayerStyleProfile(identityKey: MatchTeamMemberUniqueIdentityKey) {
-        let query: IPlayerIdentityQuery;
-        switch (identityKey.type) {
-            case 'Guest':
-                query = {
-                    type: 'guest',
-                    id: identityKey.id,
-                };
-                break;
-            case 'Member':
-                query = {
-                    type: 'member',
-                    id: identityKey.id,
-                };
-                break;
-            case 'Name':
-                query = {
-                    type: 'name',
-                    name: identityKey.name,
-                };
-                break;
-        }
+    async fetchPlayerStyleProfile(identityKey: PlayerIdentity) {
+        const query = toPlayerIdentityQuery(identityKey);
         const response = await this.analysisService.getPlayerStyleProfile(query);
         return response.data;
+    }
+
+    async fetchPlayerRecord(identityKey: PlayerIdentity) {
+        const query = toPlayerIdentityQuery(identityKey);
+        const response = await this.analysisService.getPlayerRecord(query);
+        return response.data;
+    }
+}
+
+function toPlayerIdentityQuery(identityKey: PlayerIdentity): IPlayerIdentityQuery {
+    switch (identityKey.type) {
+        case 'Guest':
+            return { type: 'guest', id: identityKey.id };
+        case 'Member':
+            return { type: 'member', id: identityKey.id };
+        case 'Name':
+            return { type: 'name', name: identityKey.name };
     }
 }

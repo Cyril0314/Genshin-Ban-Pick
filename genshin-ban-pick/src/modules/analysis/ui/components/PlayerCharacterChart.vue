@@ -20,18 +20,18 @@ const { option } = usePlayerCharacterChart();
 </script>
 
 <template>
-    <div class="layout__chart">
-        <header class="chart__header">
-            <div class="chart__title">
+    <div class="chart">
+        <header class="header">
+            <div class="title">
                 <h2>玩家偏好角色</h2>
-                <p class="chart__desc">本圖顯示玩家偏好使用角色，x軸則是角色使用頻率從高到低</p>
+                <p class="desc">本圖顯示玩家偏好使用角色，x軸則是角色使用頻率從高到低</p>
             </div>
         </header>
-        <div class="chart">
+        <div class="canvas">
             <VChart v-if="option" :option="option" />
         </div>
 
-        <footer class="chart__footer">
+        <footer class="footer">
             <small>
 
             </small>
@@ -40,21 +40,21 @@ const { option } = usePlayerCharacterChart();
 </template>
 
 <style scoped>
-.layout__chart {
+.chart {
     --size-chart-select: calc(var(--base-size) * 3);
     display: flex;
     flex-direction: column;
     height: 100%;
 }
 
-.chart__header {
+.header {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     padding: var(--space-sm);
 }
 
-.chart__title {
+.title {
     display: flex;
     flex-direction: column;
     color: var(--md-sys-color-on-surface);
@@ -62,18 +62,18 @@ const { option } = usePlayerCharacterChart();
     gap: var(--space-sm);
 }
 
-.chart__desc {
+.desc {
     font-size: var(--font-size-sm);
     color: var(--md-sys-color-on-surface-variant);
 }
 
-.chart {
+.canvas {
     display: flex;
     width: 100%;
     height: 100%;
 }
 
-.chart__footer {
+.footer {
     display: flex;
     color: var(--md-sys-color-on-surface-variant);
     padding: var(--space-md);

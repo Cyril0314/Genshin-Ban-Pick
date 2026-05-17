@@ -1,6 +1,5 @@
 // src/modules/match/application/matchUseCase.ts
 
-import type { MatchTeamMemberUniqueIdentity } from "@shared/contracts/match/MatchTeamMemberUniqueIdentity";
 import type MatchRepository from "../infrastructure/MatchRepository";
 
 export default class MatchUseCase {

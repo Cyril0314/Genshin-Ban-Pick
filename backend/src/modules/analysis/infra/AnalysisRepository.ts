@@ -13,7 +13,7 @@ import type { IMatchTacticalUsageTeamMemberIdentityRefs } from '../types/IMatchT
 import type { IMatchTacticalUsageWithCharacter } from '../types/IMatchTacticalUsageWithCharacter';
 import type { MoveSource, MoveType } from '@shared/contracts/match/value-types';
 import type { CharacterFilterKey } from '@shared/contracts/character/CharacterFilterKey';
-import type { MatchTeamMemberUniqueIdentityKey } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
+import type { PlayerIdentity } from '@shared/contracts/player/PlayerIdentity';
 import type { IAnalysisTimeWindow } from '@shared/contracts/analysis/IAnalysisTimeWindow';
 
 export default class AnalysisRepository implements IAnalysisRepository {
@@ -314,9 +314,8 @@ export default class AnalysisRepository implements IAnalysisRepository {
     }
 
     async findMatchTacticalUsageWithCharacterByIdentityKey(
-        identityKey: MatchTeamMemberUniqueIdentityKey,
+        identityKey: PlayerIdentity,
     ): Promise<IMatchTacticalUsageWithCharacter[]> {
-        console.log('identityKey', identityKey);
         let whereInput: Prisma.MatchTacticalUsageWhereInput;
         switch (identityKey.type) {
             case 'Member':

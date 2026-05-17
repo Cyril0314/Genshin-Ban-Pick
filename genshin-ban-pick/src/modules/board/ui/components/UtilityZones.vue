@@ -35,7 +35,7 @@ const zoneMatrix = computed(() =>
 
 <template>
     <div class="utility-zone">
-        <div class="grid__row" v-for="(zones, rowIndex) in zoneMatrix" :key="rowIndex">
+        <div class="row" v-for="(zones, rowIndex) in zoneMatrix" :key="rowIndex">
             <template v-for="(zone, columnIndex) in zones" :key="columnIndex">
                 <DropZone
                     :zone="zone"
@@ -61,7 +61,7 @@ const zoneMatrix = computed(() =>
     background-color: var(--md-sys-color-surface-container-high);
 }
 
-.grid__row {
+.row {
     display: flex;
     flex-direction: row;
     align-items: center;

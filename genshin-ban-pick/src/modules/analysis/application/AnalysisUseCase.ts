@@ -2,7 +2,7 @@
 
 import type AnalysisRepository from '../infrastructure/AnalysisRepository';
 import type { SynergyMode } from '@shared/contracts/analysis/value-types';
-import type { MatchTeamMemberUniqueIdentityKey } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
+import type { PlayerIdentity } from '@shared/contracts/player/PlayerIdentity';
 import type { IAnalysisTimeWindow } from '@shared/contracts/analysis/IAnalysisTimeWindow';
 
 export default class AnalysisUseCase {
@@ -40,8 +40,12 @@ export default class AnalysisUseCase {
         return await this.analysisRepository.fetchPlayerCharacterUsage();
     }
 
-    async fetchPlayerStyleProfile(identityKey: MatchTeamMemberUniqueIdentityKey) {
+    async fetchPlayerStyleProfile(identityKey: PlayerIdentity) {
         return await this.analysisRepository.fetchPlayerStyleProfile(identityKey);
+    }
+
+    async fetchPlayerRecord(identityKey: PlayerIdentity) {
+        return await this.analysisRepository.fetchPlayerRecord(identityKey);
     }
 
     async fetchGlobalCharacterAttributeDistributions() {

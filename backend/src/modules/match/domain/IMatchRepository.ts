@@ -2,7 +2,7 @@
 
 import type { IMatch } from '@shared/contracts/match/IMatch';
 import type { IMatchSnapshot } from './IMatchSnapshot';
-import type { MatchTeamMemberUniqueIdentity } from '@shared/contracts/match/MatchTeamMemberUniqueIdentity';
+import type { IPlayerProfile } from '@shared/contracts/player/IPlayerProfile';
 
 export interface IMatchRepository {
     findAllMatches(): Promise<IMatch[]>;
@@ -11,5 +11,5 @@ export interface IMatchRepository {
 
     delete(matchId: number): Promise<void>;
 
-    findAllMatchTeamMemberUniqueIdentities(): Promise<MatchTeamMemberUniqueIdentity[]>;
+    findAllMatchTeamMemberUniqueIdentities(): Promise<IPlayerProfile[]>;
 }

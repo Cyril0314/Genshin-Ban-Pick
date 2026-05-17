@@ -4,7 +4,23 @@ import { computed, ref } from 'vue';
 
 import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
 import { DragTypes } from '@/app/constants/customMIMETypes';
+import { usePlayerHistory } from '@/modules/analysis/ui/composables/usePlayerHistory';
+import { parseIdentity } from '@shared/contracts/player/identitySerialization';
 import type { TeamMember } from '@shared/contracts/team/TeamMember';
+
+const playerHistory = usePlayerHistory();
+
+function openPlayerHistory(memberSlot: number) {
+    const m = props.teamInfo.members[memberSlot];
+    if (!m) return;
+    if (m.type === 'Online') {
+        const identity = parseIdentity(m.user.identityKey);
+        if (!identity) return;
+        playerHistory.open(identity);
+    } else {
+        playerHistory.open({ type: 'Name', name: m.name });
+    }
+}
 
 const props = defineProps<{
     side: 'left' | 'right';
@@ -73,20 +89,20 @@ function handleDropEvent( memberSlot: number, event: DragEvent) {
 </script>
 
 <template>
-    <div class="team__info" :style="themeVars" :class="`team__info--${side}`">
-        <span class="team__name" :class="`team__name--${side}`">
+    <div class="team-info" :style="themeVars" :class="`team-info--${side}`">
+        <span class="title">
             {{ teamInfo.name }}
         </span>
-        <div class="layout__team-members" :class="`layout__team-members--${side}`">
+        <div class="members-area">
 
-            <div class="layout__team-member-names">
-                <div class="team-member"
+            <div class="member-list">
+                <div class="member"
                     v-for="(_, memberSlot) in totalSlots"
                     @dragover.prevent @drop="(e) => handleDropEvent(memberSlot, e)">
-                    <span class="team-member__name">{{ getTeamMemberName(memberSlot) }}</span>
-                    <button class="team-member__remove" @click="handleRemoveMemberButtonClick(memberSlot)">✕</button>
+                    <span class="name" @click="openPlayerHistory(memberSlot)">{{ getTeamMemberName(memberSlot) }}</span>
+                    <button class="remove" @click="handleRemoveMemberButtonClick(memberSlot)">✕</button>
                 </div>
-                <input class="team__member-input" type="text" :class="`team__member-input--${side}`"
+                <input class="input" type="text"
                     :placeholder="`輸入成員名稱`" v-model="inputValue" @keydown.enter.prevent="handleInput"
                     @drop.prevent="() => { }" />
             </div>
@@ -95,7 +111,7 @@ function handleDropEvent( memberSlot: number, event: DragEvent) {
 </template>
 
 <style scoped>
-.team__info {
+.team-info {
     --size-team-member-height: calc(var(--base-size) * 1.85);
 
     display: flex;
@@ -107,24 +123,16 @@ function handleDropEvent( memberSlot: number, event: DragEvent) {
     overflow: hidden;
 }
 
-.team__info--right {
+.team-info--right {
     flex-direction: row-reverse;
 }
 
-.team__name--left {
-    --text-align: center;
-}
-
-.team__name--right {
-    --text-align: center;
-}
-
-.team__name {
+.title {
     display: flex;
     flex: 1;
     align-items: center;
     padding: var(--space-xs) var(--space-sm);
-    text-align: var(--text-align);
+    text-align: center;
     font-weight: var(--font-weight-heavy);
     font-size: var(--font-size-md);
     font-family: var(--font-family-tech-title);
@@ -135,7 +143,7 @@ function handleDropEvent( memberSlot: number, event: DragEvent) {
     white-space: pre-line;
 }
 
-.layout__team-members {
+.members-area {
     display: flex;
     flex-direction: column;
     flex: 4;
@@ -144,9 +152,20 @@ function handleDropEvent( memberSlot: number, event: DragEvent) {
     resize: none;
 }
 
-.team__member-input {
+.member-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+    padding: var(--space-sm);
     width: 100%;
-    /* flex: 1; */
+    height: calc(var(--size-team-member-height) * 2 + var(--space-sm) * 2 + var(--space-md));
+    overflow-y: scroll;
+    scrollbar-width: none;
+    align-content: start;
+}
+
+.input {
+    width: 100%;
     background-color: var(--md-sys-color-surface-container-high);
     color: var(--md-sys-color-on-surface);
     padding: var(--space-xs);
@@ -160,28 +179,15 @@ function handleDropEvent( memberSlot: number, event: DragEvent) {
     text-align: center;
 }
 
-.team__member-input::placeholder {
+.input::placeholder {
     color: var(--md-sys-color-on-surface-variant);
 }
 
-.team__member-input:focus {
+.input:focus {
     outline: none;
-    /* outline: 2px solid rgba(var(--team-color-rgb) / 0.5); */
 }
 
-.layout__team-member-names {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-md);
-    padding: var(--space-sm);
-    width: 100%;
-    height: calc(var(--size-team-member-height) * 2 + var(--space-sm) * 2 + var(--space-md));
-    overflow-y: scroll;
-    scrollbar-width: none;
-    align-content: start;
-}
-
-.team-member {
+.member {
     display: flex;
     height: var(--size-team-member-height);
     gap: var(--space-xs);
@@ -190,12 +196,11 @@ function handleDropEvent( memberSlot: number, event: DragEvent) {
     align-items: center;
     justify-content: space-between;
     color: var(--md-sys-color-on-surface);
-    /* background-color: var(--team-surface-high-tinted); */
     background-color: var(--md-sys-color-surface-container-highest);
     overflow: hidden;
 }
 
-.team-member__name {
+.name {
     flex: 1;
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-medium);
@@ -203,9 +208,14 @@ function handleDropEvent( memberSlot: number, event: DragEvent) {
     white-space: nowrap;
     text-overflow: ellipsis;
     min-width: 0;
+    cursor: pointer;
 }
 
-.team-member__remove {
+.name:hover {
+    text-decoration: underline;
+}
+
+.remove {
     opacity: 0;
     cursor: pointer;
     border: none;
@@ -216,13 +226,13 @@ function handleDropEvent( memberSlot: number, event: DragEvent) {
     margin-left: var(--space-xs);
 }
 
-.team-member:hover {
+.member:hover {
     background-color: color-mix(in srgb,
             var(--md-sys-color-surface-container-highest),
             white 6%);
 }
 
-.team-member:hover .team-member__remove {
+.member:hover .remove {
     opacity: 1;
 }
 </style>
