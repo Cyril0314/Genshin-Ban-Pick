@@ -18,7 +18,7 @@ set -euo pipefail
 # 對齊 docker compose 自動生成的 image name (project-service:latest)
 # 這樣 EC2 上的 docker-compose.yml 不需要寫 `image:` 也能找到
 IMAGE_NAME="${IMAGE_NAME:-genshin-ban-pick-backend:latest}"
-EC2_HOST="${EC2_HOST:?❌ EC2_HOST not set; e.g. EC2_HOST=ec2-user@98.86.73.53s $0}"
+EC2_HOST="${EC2_HOST:?❌ EC2_HOST not set; e.g. EC2_HOST=ec2-user@98.86.73.53 $0}"
 EC2_KEY="${EC2_KEY:-$HOME/Desktop/ec2_keys/aws-discord-bot-farmer-licence-key.pem}"
 EC2_PROJECT_DIR="${EC2_PROJECT_DIR:-~/Genshin-Ban-Pick/Genshin-Ban-Pick}"
 PLATFORM="${PLATFORM:-linux/amd64}"
