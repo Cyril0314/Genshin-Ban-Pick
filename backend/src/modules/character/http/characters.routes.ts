@@ -2,11 +2,8 @@
 
 import express from 'express';
 
-import { createLogger } from '../../../utils/logger';
 import { asyncHandler } from '../../../utils/asyncHandler';
 import CharacterController from '../controller/character.controller';
-
-const logger = createLogger('CHARACTER');
 
 export default function createCharactersRouter(characterController: CharacterController) {
     const router = express.Router();

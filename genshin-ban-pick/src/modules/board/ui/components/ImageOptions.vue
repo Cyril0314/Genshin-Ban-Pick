@@ -1,10 +1,13 @@
 <!-- src/modules/board/ui/components/ImageOptions.vue -->
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed } from 'vue';
 
+import { createLogger } from '@/app/utils/logger';
 import { getProfileImagePath } from '@/modules/shared/infrastructure/imageRegistry'
 import type { ICharacter } from '@shared/contracts/character/ICharacter';
-import { DragTypes } from '@/app/constants/customMIMETypes'
+import { DragTypes } from '@/app/constants/customMIMETypes';
+
+const logger = createLogger('board.ui.imageOptions');
 
 const props = defineProps<{
   characterMap: Record<string, ICharacter>
@@ -24,7 +27,7 @@ const filteredSet = computed(() => new Set(props.filteredCharacterKeys ?? []))
 const isFiltered = (id: string) => filteredSet.value.has(id)
 
 function handleDragStartEvent(id: string, event: DragEvent) {
-  console.debug(`[IMAGE OPTIONS] Handle drag start event`, id)
+  logger.debug('drag start', id)
   event?.dataTransfer?.setData(DragTypes.CHARACTER_IMAGE, id)
 }
 

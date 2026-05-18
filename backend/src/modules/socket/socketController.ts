@@ -16,7 +16,7 @@ import { TacticalService } from '../tactical';
 
 import type { IRoomStateManager } from './domain/IRoomStateManager';
 
-const logger = createLogger('SOCKET CONTROLLER');
+const logger = createLogger('socket.controller');
 
 export function setupSocketIO(io: Server, roomStateManager: IRoomStateManager) {
     const roomStateRepository = new RoomStateRepository(roomStateManager);

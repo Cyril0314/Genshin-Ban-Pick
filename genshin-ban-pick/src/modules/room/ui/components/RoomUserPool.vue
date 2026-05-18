@@ -4,6 +4,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 
+import { createLogger } from '@/app/utils/logger';
 import { DragTypes } from '@/app/constants/customMIMETypes.ts';
 import { useTeamInfoStore } from '@/modules/team';
 import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme.ts';
@@ -13,6 +14,7 @@ import { parseIdentity } from '@shared/contracts/player/identitySerialization';
 
 import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 
+const logger = createLogger('room.ui.userPool');
 const playerHistory = usePlayerHistory();
 
 const roomUserStore = useRoomUserStore();
@@ -48,7 +50,7 @@ onMounted(() => {
 });
 
 function handleDragStartEvent(roomUser: IRoomUser, event: DragEvent) {
-    console.debug(`[ROOM USER POOL] Handle drag start event`, roomUser.identityKey);
+    logger.debug('drag start', roomUser.identityKey);
     event?.dataTransfer?.setData(DragTypes.ROOM_USER, roomUser.identityKey);
 }
 

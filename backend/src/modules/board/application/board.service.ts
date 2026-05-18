@@ -9,7 +9,7 @@ import type { ICharacterRandomContext } from '@shared/contracts/character/IChara
 import type { IRoomStateRepository } from '../../room';
 import type { BoardImageMap } from '@shared/contracts/board/BoardImageMap';
 
-const logger = createLogger('BOARD');
+const logger = createLogger('board.service');
 
 export default class BoardService {
     constructor(private roomStateRepository: IRoomStateRepository) {}

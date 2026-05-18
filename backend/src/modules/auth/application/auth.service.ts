@@ -9,7 +9,7 @@ import type { IJwtProvider } from '../domain/IJwtProvider';
 import type { IGuestData } from '../types/IGuestData';
 import type { IMemberData } from '../types/IMemberData';
 
-const logger = createLogger('AUTH');
+const logger = createLogger('auth.service');
 export default class AuthService {
     constructor(
         private memberService: MemberService,
@@ -20,7 +20,7 @@ export default class AuthService {
     async registerMember(account: string, password: string, nickname: string) {
         const member = await this.memberService.register(account, password, nickname);
         const token = this.createToken('Member', member.id, 7);
-        logger.debug('Register member', member);
+        logger.info(`register member ok account=${account} id=${member.id}`);
         return {
             ...member,
             token,
@@ -30,7 +30,7 @@ export default class AuthService {
     async loginMember(account: string, password: string) {
         const member = await this.memberService.login(account, password);
         const token = this.createToken('Member', member.id, 7);
-        logger.debug('Login member', member);
+        logger.info(`login member ok account=${account} id=${member.id}`);
         return {
             ...member,
             token,
@@ -40,7 +40,7 @@ export default class AuthService {
     async loginGuest(nickname: string) {
         const guest = await this.guestService.login(nickname);
         const token = this.createToken('Guest', guest.id, 180);
-        logger.debug('Login guest', guest);
+        logger.info(`login guest ok nickname=${nickname} id=${guest.id}`);
         return {
             ...guest,
             token,

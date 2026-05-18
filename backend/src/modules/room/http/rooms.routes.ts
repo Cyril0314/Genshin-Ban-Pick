@@ -2,11 +2,8 @@
 
 import express from 'express';
 
-import { createLogger } from '../../../utils/logger';
 import { asyncHandler } from '../../../utils/asyncHandler';
 import RoomController from '../controller/room.controller';
-
-const logger = createLogger('ROOM:ROUTES');
 
 export default function createRoomsRouter(roomController: RoomController) {
     const router = express.Router();

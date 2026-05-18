@@ -2,12 +2,14 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 
+import { createLogger } from '@/app/utils/logger';
 import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
 import { DragTypes } from '@/app/constants/customMIMETypes';
 import { usePlayerHistory } from '@/modules/analysis/ui/composables/usePlayerHistory';
 import { parseIdentity } from '@shared/contracts/player/identitySerialization';
 import type { TeamMember } from '@shared/contracts/team/TeamMember';
 
+const logger = createLogger('team.ui.info');
 const playerHistory = usePlayerHistory();
 
 function openPlayerHistory(memberSlot: number) {
@@ -57,7 +59,7 @@ function getTeamMemberName(memberSlot: number): string | undefined {
 }
 
 function handleInput(e: Event) {
-    console.debug(`[TEAM INFO] Handle input`);
+    logger.debug('input');
  
     const name = inputValue.value.trim();
     if (!name) return;
@@ -72,14 +74,14 @@ function handleInput(e: Event) {
 }
 
 function handleRemoveMemberButtonClick(memberSlot: number) {
-    console.debug('[TEAM INFO] Remove member button click', memberSlot);
+    logger.debug('remove member click', memberSlot);
     const member = getTeamMember(memberSlot)
     if (!member) return;
     emit('member-restore', { teamSlot: props.teamInfo.slot, memberSlot });
 }
 
 function handleDropEvent( memberSlot: number, event: DragEvent) {
-    console.debug(`[TEAM INFO] Handle drop event`);
+    logger.debug('drop', memberSlot);
     event.preventDefault();
     // isOver.value = false
     const identityKey = event.dataTransfer?.getData(DragTypes.ROOM_USER);

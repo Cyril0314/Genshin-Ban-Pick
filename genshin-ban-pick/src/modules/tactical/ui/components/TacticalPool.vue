@@ -1,16 +1,18 @@
 <!-- src/modules/tactical/ui/components/TacticalPool.vue -->
 
 <script setup lang="ts">
+import { createLogger } from '@/app/utils/logger';
 import { DragTypes } from '@/app/constants/customMIMETypes';
 import { getProfileImagePath } from '@/modules/shared/infrastructure/imageRegistry'
 import { useTacticalPool } from '../composables/useTacticalPool';
 
 const props = defineProps<{ teamSlot: number }>()
 
+const logger = createLogger('tactical.ui.pool');
 const { displayPoolImageIdsMap } = useTacticalPool()
 
 function handleDragStartEvent(event: DragEvent, id: string) {
-  console.debug(`[TATICAL POOL] Handle drag start event`, id);
+  logger.debug('drag start', id);
   event?.dataTransfer?.setData(DragTypes.CHARACTER_IMAGE, id)
 }
 </script>

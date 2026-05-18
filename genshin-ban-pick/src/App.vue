@@ -2,13 +2,15 @@
 import { onMounted } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
 
+import { createLogger } from './app/utils/logger';
 import { useAppInitializer } from './app/bootstrap/useAppInitializer';
 import { naiveThemeOverrides } from './app/theme/naiveThemeOverrides';
 
+const logger = createLogger('app.ui');
 const { isInitializing } = useAppInitializer();
 
 onMounted(() => {
-  console.info('[APP] On mounted')
+  logger.info('mounted')
 })
 
 </script>

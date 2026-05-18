@@ -4,6 +4,7 @@
 import { ref, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 
+import { createLogger } from '@/app/utils/logger';
 import { DragTypes } from '@/app/constants/customMIMETypes';
 import { getWishImagePath } from '@/modules/shared/infrastructure/imageRegistry';
 import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
@@ -29,6 +30,8 @@ const imageId = computed(() => props.boardImageMap[props.zone.id] ?? '');
 const boardStore = useBoardStore();
 const { currentStep } = storeToRefs(boardStore);
 
+const logger = createLogger('board.ui.dropZone');
+
 const teamTheme = computed(() => {
     const slot = currentStep.value?.teamSlot ?? undefined;
     return slot === undefined ? undefined : useTeamTheme(slot);
@@ -40,14 +43,14 @@ const highlightColor = computed(() => {
 });
 
 function handleDragStartEvent(event: DragEvent) {
-    console.debug(`[DROP ZONE] Handle drag start event`);
+    logger.debug('drag start');
     if (imageId.value && event.dataTransfer) {
         event?.dataTransfer?.setData(DragTypes.CHARACTER_IMAGE, imageId.value);
     }
 }
 
 function handleDropEvent(event: DragEvent) {
-    console.debug(`[DROP ZONE] Handle drop event`);
+    logger.debug('drop');
     event.preventDefault();
     isOver.value = false;
     const imgId = event.dataTransfer?.getData(DragTypes.CHARACTER_IMAGE);
@@ -57,7 +60,7 @@ function handleDropEvent(event: DragEvent) {
 }
 
 function handleClickEvent(event: MouseEvent) {
-    console.debug(`[DROP ZONE] Handle click event`, props.zone);
+    logger.debug('click', props.zone);
     if (imageId.value) {
         emit('image-restore', { zoneId: props.zone.id });
     }

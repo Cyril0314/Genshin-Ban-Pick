@@ -4,10 +4,13 @@ import { computed, onMounted, ref, watch } from 'vue';
 
 import { useDesignTokens } from '@/modules/shared/ui/composables/useDesignTokens';
 import { useEchartTheme } from '@/modules/shared/ui/composables/useEchartTheme';
+import { createLogger } from '@/app/utils/logger';
 import { useAnalysisUseCase } from './useAnalysisUseCase';
 import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
 
 import type { ICharacterGraphLink } from '@shared/contracts/analysis/character/ICharacterGraphLink';
+
+const logger = createLogger('analysis.ui.synergyGraphChart');
 
 export function useCharacterSynergyGraphChart() {
     const { getByKey: getCharacterDisplayName } = useCharacterDisplayName();
@@ -18,8 +21,9 @@ export function useCharacterSynergyGraphChart() {
     const graph = ref<{ nodes: string[]; links: ICharacterGraphLink[] }>();
 
     onMounted(async () => {
+        logger.debug('fetching synergy graph');
         graph.value = await analysisUseCase.fetchCharacterSynergyGraph();
-        console.log('graph links', graph.value?.links)
+        logger.debug('data loaded', { nodes: graph.value?.nodes.length, links: graph.value?.links.length });
     });
 
     const option = computed(() => {

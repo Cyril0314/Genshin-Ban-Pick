@@ -12,8 +12,12 @@ import { useTacticalUseCase } from '@/modules/tactical';
 import { useChatSync } from '@/modules/chat';
 import { registerAllSyncModules } from '@/app/bootstrap/registerAllSyncModules';
 
+import { createLogger } from '@/app/utils/logger';
+
 import type { IRoomSetting } from '@shared/contracts/room/IRoomSetting.ts';
 import type { CharacterFilterKey } from '@shared/contracts/character/CharacterFilterKey';
+
+const logger = createLogger('banPick.ui.init');
 
 export function useBanPickInitializer(roomId: string) {
     // --- states ---
@@ -69,13 +73,13 @@ export function useBanPickInitializer(roomId: string) {
 
             // 5. 加入 socket 房間
             joinRoom(roomId).then(() => {
-                console.debug('[BAN PICK INITEALIZER] Joined room', roomId);
+                logger.debug('joined room', roomId);
                 fetchBoardImageMapState();
                 fetchChatState();
                 fetchMembersMapState();
             });
         } catch (error) {
-            console.error('[BAN PICK INITEALIZER] Fetched character and room setting failed:', error);
+            logger.error('init failed:', error);
         } finally {
             isLoading.value = false;
         }

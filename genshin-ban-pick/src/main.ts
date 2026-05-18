@@ -10,6 +10,7 @@ import naive from 'naive-ui';
 
 import App from './App.vue';
 import router from './router';
+import { createLogger } from './app/utils/logger';
 import { registerHttpClient } from './app/bootstrap/registerHttpClient';
 import api from './app/infrastructure/http/httpClient';
 import { registerAuthDependencies, useAuthStore } from './modules/auth';
@@ -23,10 +24,12 @@ import { registerTeamDependencies, useTeamInfoStore } from './modules/team';
 import { registerTacticalDependencies, useTacticalBoardStore } from './modules/tactical';
 import { registerAnalysisDependencies } from './modules/analysis';
 
+const logger = createLogger('app.main');
+
 const app = createApp(App);
 const pinia = createPinia();
 const httpClient = api;
-console.info('[MAIN] Create App');
+logger.info('create app');
 
 app.use(pinia);
 app.use(router);

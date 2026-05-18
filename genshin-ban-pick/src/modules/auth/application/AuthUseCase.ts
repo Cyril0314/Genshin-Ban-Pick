@@ -1,8 +1,11 @@
 // src/modules/auth/application/authUseCase.ts
 
+import { createLogger } from '@/app/utils/logger';
 import { useAuthStore } from '../store/authStore';
 
 import type AuthRepository from '../infrastructure/AuthRepository';
+
+const logger = createLogger('auth.application');
 
 export default class AuthUseCase {
     constructor(private authStore: ReturnType<typeof useAuthStore>, private authRepository: AuthRepository) {}
@@ -11,6 +14,7 @@ export default class AuthUseCase {
         const { identity, token } = await this.authRepository.registerMember({ account, password, nickname });
         this.authStore.setIdentity(identity);
         this.authStore.setToken(token);
+        logger.info('register member ok', account);
         return { identity, token };
     }
 
@@ -18,6 +22,7 @@ export default class AuthUseCase {
         const { identity, token } = await this.authRepository.loginMember({ account, password });
         this.authStore.setIdentity(identity);
         this.authStore.setToken(token);
+        logger.info('login member ok', account);
         return { identity, token };
     }
 
@@ -25,11 +30,13 @@ export default class AuthUseCase {
         const { identity, token } = await this.authRepository.loginGuest();
         this.authStore.setIdentity(identity);
         this.authStore.setToken(token);
+        logger.info('login guest ok');
         return { identity, token };
     }
 
     async autoLogin() {
         if (this.authStore.isInitialized) {
+            logger.debug('already initialized, skip');
             const token = this.authStore.getToken();
             const identity = this.authStore.identity;
             return { identity, token };
@@ -37,6 +44,7 @@ export default class AuthUseCase {
 
         const token = this.authStore.getToken();
         if (!token) {
+            logger.debug('no token, skip auto login');
             this.authStore.setInitialized(true);
             return { identity: undefined, token: undefined };
         }
@@ -44,8 +52,10 @@ export default class AuthUseCase {
         try {
             const identity = await this.authRepository.autoLogin(token);
             this.authStore.setIdentity(identity);
+            logger.info('auto login ok');
             return { identity, token };
         } catch (error) {
+            logger.warn('auto login failed, token cleared', error);
             this.authStore.setToken(undefined);
             this.authStore.setIdentity(undefined);
             return { identity: undefined, token: undefined };
@@ -55,6 +65,7 @@ export default class AuthUseCase {
     }
 
     logout() {
+        logger.info('logout');
         this.authStore.setIdentity(undefined);
         this.authStore.setToken(undefined);
     }

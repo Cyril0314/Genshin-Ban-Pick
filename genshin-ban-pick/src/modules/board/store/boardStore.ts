@@ -3,6 +3,10 @@
 import { defineStore } from 'pinia';
 import { ref, computed, watch, shallowRef } from 'vue';
 
+import { createLogger } from '@/app/utils/logger';
+
+const logger = createLogger('board.store');
+
 import type { IZone } from '@shared/contracts/board/IZone';
 import type { IMatchStep } from '@shared/contracts/match/IMatchStep';
 import type { BoardImageMap } from '@shared/contracts/board/BoardImageMap';
@@ -26,19 +30,19 @@ export const useBoardStore = defineStore('boardImage', () => {
     watch(
         usedImageIds,
         (usedImageIds) => {
-            console.debug('[BOARD IMAGE STORE] Watch used image ids', usedImageIds);
+            logger.debug('watch used image ids', usedImageIds);
         },
         { immediate: true },
     );
 
     function initZoneMetaTableAndSteps(newZoneMetaTable: Record<number, IZone>, newMatchSteps: IMatchStep[]) {
-        console.debug('[BOARD IMAGE STORE] Init zone meta table', newZoneMetaTable);
+        logger.debug('init zone meta table', newZoneMetaTable);
         zoneMetaTable.value = newZoneMetaTable;
         matchSteps.value = newMatchSteps;
     }
 
     function setBoardImageMap(newBoardImageMap: BoardImageMap) {
-        console.debug('[BOARD IMAGE STORE] Set board image map', newBoardImageMap);
+        logger.debug('set board image map', newBoardImageMap);
         boardImageMap.value = { ...newBoardImageMap };
     }
 

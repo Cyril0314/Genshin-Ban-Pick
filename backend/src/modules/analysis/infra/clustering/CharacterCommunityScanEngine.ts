@@ -45,8 +45,6 @@ export default class CharacterCommunityScanEngine {
         // const blockScaler = new BlockScaler(FEATURE_BLOCKS);
         // const scaledFM = blockScaler.applyScaling(featureMatrix);
 
-        // this.debugMatrix(featureMatrix)
-
         const { rowKeys, colKeys, data } = this.matrixNormalizer.normalize(synergySignatureFeatureMatrix);
         const clusterIds = this.clusterCharacters(data, k);
 
@@ -72,7 +70,6 @@ export default class CharacterCommunityScanEngine {
 
     async findBestClusterCount(graph: UndirectedGraph, resolutions: number[] = [0.6, 0.8, 1.0, 1.2, 1.5]): Promise<number> {
         const scan = this.runLouvainOnGraph(graph, resolutions);
-        console.log(`scan`, scan);
         const best = scan.reduce((a, b) => (a.modularity > b.modularity ? a : b));
         return best.clusters;
     }
@@ -289,30 +286,6 @@ export default class CharacterCommunityScanEngine {
         });
 
         return { rowKeys, colKeys, data };
-    }
-
-    debugMatrix(raw: FeatureMatrix<any, any, number>) {
-        const { rowKeys, colKeys, data } = raw;
-
-        console.log('------ MATRIX DEBUG START ------');
-        console.log('rowKeys.length =', rowKeys.length);
-        console.log('data.length =', data.length);
-        console.log('colKeys.length =', colKeys.length);
-
-        // 檢查 row 數量一致性
-        if (rowKeys.length !== data.length) {
-            console.error('❌ rowKeys.length != data.length');
-        }
-
-        // 檢查每列長度
-        const expectedCols = colKeys.length;
-        data.forEach((row, i) => {
-            if (row.length !== expectedCols) {
-                console.error(`❌ Row ${i} length mismatch: got ${row.length}, expected ${expectedCols}, rowKey=${rowKeys[i]}`);
-            }
-        });
-
-        console.log('------ MATRIX DEBUG END ------');
     }
 }
 

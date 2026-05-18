@@ -8,11 +8,14 @@ import type { CallbackDataParams } from 'echarts/types/dist/shared';
 import { useCharacterStore } from '@/modules/character';
 import { useDesignTokens } from '@/modules/shared/ui/composables/useDesignTokens';
 import { useEchartTheme } from '@/modules/shared/ui/composables/useEchartTheme';
+import { createLogger } from '@/app/utils/logger';
 import { useAnalysisUseCase } from './useAnalysisUseCase';
 import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
 import { elementColors } from '@/modules/shared/ui/constants/elementColors';
 
 import type { ICharacterUsage } from '@shared/contracts/analysis/ICharacterUsage';
+
+const logger = createLogger('analysis.ui.usagesChart');
 
 export function useCharacterUsagesChart() {
     const { getByKey: getCharacterDisplayName } = useCharacterDisplayName();
@@ -25,7 +28,9 @@ export function useCharacterUsagesChart() {
     const usages = ref<ICharacterUsage[]>();
 
     onMounted(async () => {
+        logger.debug('fetching usage summary');
         usages.value = await analysisUseCase.fetchCharacterUsageSummary();
+        logger.debug('data loaded', usages.value?.length);
     });
 
     const option = computed(() => {

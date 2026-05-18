@@ -5,7 +5,6 @@ import { removeImage } from './removeImage';
 import { findZoneIdByImageId } from './findZoneIdByImageId';
 import { addRandomContext } from './addRandomContext';
 import { removeRandomContext } from './removeRandomContext';
-import { createLogger } from '../../../utils/logger';
 
 import type { BoardImageMap } from '@shared/contracts/board/BoardImageMap';
 import type { ICharacterRandomContext } from '@shared/contracts/character/ICharacterRandomContext';

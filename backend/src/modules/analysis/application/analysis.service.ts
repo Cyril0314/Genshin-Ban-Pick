@@ -35,7 +35,7 @@ import type { IAnalysisTimeWindow } from '@shared/contracts/analysis/IAnalysisTi
 import type { IMatchTimeMinimal } from '@shared/contracts/analysis/IMatchTimeMinimal';
 
 
-const logger = createLogger('ANALYSIS');
+const logger = createLogger('analysis.service');
 
 export default class AnalysisService {
     constructor(

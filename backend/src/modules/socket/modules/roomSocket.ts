@@ -9,11 +9,11 @@ import { RoomEvent } from '@shared/contracts/room/value-types';
 
 import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 
-const logger = createLogger('ROOM SOCKET');
+const logger = createLogger('socket.room');
 
 export function registerRoomSocket(io: Server, socket: Socket, roomUserService: RoomUserService) {
     socket.on(RoomEvent.UserJoinRequest, (roomId: string) => {
-        logger.info(`Received ${RoomEvent.UserJoinRequest} ${socket.id} roomId: ${roomId}`);
+        logger.debug(`Received ${RoomEvent.UserJoinRequest} ${socket.id} roomId: ${roomId}`);
         socket.join(roomId);
         (socket as any).roomId = roomId;
 
@@ -24,7 +24,7 @@ export function registerRoomSocket(io: Server, socket: Socket, roomUserService: 
 
         if (joinedUser) {
             socket.to(roomId).emit(RoomEvent.UserJoinBroadcast, joinedUser);
-            logger.info(`Sent ${RoomEvent.UserJoinBroadcast} joinedUser:`, joinedUser);
+            logger.debug(`Sent ${RoomEvent.UserJoinBroadcast} joinedUser:`, joinedUser);
         }
 
         socket.emit(RoomEvent.UserJoinResponse, joinedUser);
@@ -33,14 +33,14 @@ export function registerRoomSocket(io: Server, socket: Socket, roomUserService: 
     });
 
     socket.on(RoomEvent.UserLeaveRequest, (roomId: string) => {
-        logger.info(`Received ${RoomEvent.UserLeaveRequest} ${socket.id} roomId: ${roomId}`);
+        logger.debug(`Received ${RoomEvent.UserLeaveRequest} ${socket.id} roomId: ${roomId}`);
         handleRoomUserLeave(roomId, roomUserService);
     });
 
     socket.on('disconnect', (reason) => {
         const roomId = (socket as any).roomId;
         if (!roomId) return;
-        logger.info(`Received disconnect ${socket.id} roomId: ${roomId}`, reason);
+        logger.debug(`Received disconnect ${socket.id} roomId: ${roomId}`, reason);
         handleRoomUserLeave(roomId, roomUserService);
     });
 
@@ -54,7 +54,7 @@ export function registerRoomSocket(io: Server, socket: Socket, roomUserService: 
 
         if (leavingUser) {
             socket.to(roomId).emit(RoomEvent.UserLeaveBroadcast, leavingUser);
-            logger.info(`Sent ${RoomEvent.UserLeaveBroadcast} leavingUser:`, leavingUser);
+            logger.debug(`Sent ${RoomEvent.UserLeaveBroadcast} leavingUser:`, leavingUser);
         }
 
         syncRoomUsersStateAll(roomId, roomUsers);
@@ -62,6 +62,6 @@ export function registerRoomSocket(io: Server, socket: Socket, roomUserService: 
 
     function syncRoomUsersStateAll(roomId: string, roomUsers: IRoomUser[]) {
         io.to(roomId).emit(RoomEvent.UsersStateSyncAll, roomUsers);
-        logger.info(`Sent ${RoomEvent.UsersStateSyncAll} roomUsers: ${JSON.stringify(roomUsers, null, 2)}`);
+        logger.debug(`Sent ${RoomEvent.UsersStateSyncAll} roomUsers:`, roomUsers);
     }
 }

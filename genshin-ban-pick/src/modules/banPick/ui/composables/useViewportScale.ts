@@ -1,6 +1,10 @@
 // src/app/ui/composables/useViewportScale.vue
 
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted } from 'vue';
+
+import { createLogger } from '@/app/utils/logger';
+
+const logger = createLogger('banPick.ui.viewport');
 
 export function useViewportScale(options?: { width?: number; height?: number }) {
     const W = options?.width ?? 1650;
@@ -21,13 +25,13 @@ export function useViewportScale(options?: { width?: number; height?: number }) 
     }
 
     onMounted(() => {
-        console.debug('[VIEWPORT SCALE] On mounted');
+        logger.debug('mounted');
         adjustScale();
         window.addEventListener('resize', adjustScale);
     });
 
     onUnmounted(() => {
-        console.debug('[VIEWPORT SCALE] On unmounted');
+        logger.debug('unmounted');
         window.removeEventListener('resize', adjustScale);
     });
 

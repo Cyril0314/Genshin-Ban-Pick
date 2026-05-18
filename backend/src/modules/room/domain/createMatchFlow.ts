@@ -8,7 +8,7 @@ import type { ITeam } from '@shared/contracts/team/ITeam';
 import type { IZone } from '@shared/contracts/board/IZone';
 import type { IMatchStep } from '@shared/contracts/match/IMatchStep';
 
-const logger = createLogger('BAN PICK STEPS');
+const logger = createLogger('room.domain.matchFlow');
 
 export function createMatchFlow(
     flowVersion: number,

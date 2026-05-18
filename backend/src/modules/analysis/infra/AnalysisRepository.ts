@@ -135,7 +135,6 @@ export default class AnalysisRepository implements IAnalysisRepository {
         }
 
         const uniqueCharacterCombinations = characterCombinationGroupCount.size;
-        console.log(`characterCombinationGroupCount`, characterCombinationGroupCount)
         // const repeatedCombinations = Array.from(characterCombinationGroupCount.entries())
         //     .map(([key, count]) => ({
         //         characters: key.split('|'),
@@ -151,7 +150,6 @@ export default class AnalysisRepository implements IAnalysisRepository {
             }
         }
         const uniqueTeamMemberCombinations = teamMemberCombinationGroupCount.size;
-        console.log(`teamMemberCombinationGroupCount`, teamMemberCombinationGroupCount)
 
         const versions = await this.prisma.genshinVersion.findMany({
             where: {

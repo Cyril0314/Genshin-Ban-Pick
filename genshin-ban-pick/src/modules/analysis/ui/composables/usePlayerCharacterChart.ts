@@ -4,10 +4,14 @@ import { computed, onMounted, ref } from 'vue';
 
 import { useEchartTheme } from '@/modules/shared/ui/composables/useEchartTheme';
 import { useDesignTokens } from '@/modules/shared/ui/composables/useDesignTokens';
+import { createLogger } from '@/app/utils/logger';
 import { useAnalysisUseCase } from './useAnalysisUseCase';
 import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
+
 import type { CallbackDataParams } from 'echarts/types/dist/shared';
 import type { KeyIndexedMatrix } from '@shared/contracts/analysis/KeyIndexedMatrix';
+
+const logger = createLogger('analysis.ui.playerCharacterChart');
 
 export function usePlayerCharacterChart() {
     const { getByKey: getCharacterDisplayName } = useCharacterDisplayName();
@@ -114,8 +118,6 @@ export function usePlayerCharacterChart() {
             }
         }
 
-        console.log(`preference`, preference)
-
         const topCharacters = Object.entries(characterCountMap)
             .sort((a, b) => b[1] - a[1])
             // .slice(0, topN)
@@ -125,14 +127,8 @@ export function usePlayerCharacterChart() {
             .sort((a, b) => b[1] - a[1])
             .map(([k]) => k);
 
-        console.log(`topCharacters`, topCharacters);
-        console.log(`topPlayers`, topPlayers);
-
         const characterIndices = Object.fromEntries(topCharacters.map((c, i) => [c, i]));
         const playerIndices = Object.fromEntries(topPlayers.map((p, i) => [p, i]));
-
-        console.log(`characterIndices`, characterIndices);
-        console.log(`playerIndices`, playerIndices);
 
         const matrix = Array(topPlayers.length)
             .fill(null)
@@ -141,14 +137,14 @@ export function usePlayerCharacterChart() {
         for (const player of topPlayers) {
             const playerIndex = playerIndices[player];
             if (playerIndex === undefined) {
-                console.error('playerIndex undefined:', player, playerIndices);
+                logger.error('playerIndex undefined:', player, playerIndices);
                 continue;
             }
             for (const characterKey of topCharacters) {
                 const characterIndex = characterIndices[characterKey];
 
                 if (characterIndex === undefined) {
-                    console.error('characterIndex undefined:', characterKey, characterIndices);
+                    logger.error('characterIndex undefined:', characterKey, characterIndices);
                     continue;
                 }
 

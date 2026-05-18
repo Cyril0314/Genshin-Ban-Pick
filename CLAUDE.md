@@ -93,6 +93,16 @@ When adding a cross-boundary type, put it under `shared/contracts/<domain>/` and
 - Commits follow Conventional Commits (`feat:`, `fix:`, `chore:`, `doc:` are visible in recent history).
 - Frontend CSS naming rules (one-block-per-file, `is-*` for state vs `--` for variant, design tokens) live in `genshin-ban-pick/CSS_CONVENTIONS.md`. When editing or creating `.vue` files, follow that style (currently a touch-time migration — old files keep their BEM until naturally touched).
 
+### Logger scope (backend)
+
+`createLogger(scope)` in `backend/src/utils/logger.ts` takes a `scope` string that prints as `[LEVEL][scope]`. Use the form **`module.layer[.detail]`** — lowercase, dot-separated, no spaces.
+
+- `module` is the feature folder under `modules/` (`room`, `auth`, `match`, `analysis`, `socket`, …) or a top-level area (`app`, `http`).
+- `layer` matches the Clean Architecture folder: `routes`, `service`, `domain`, `infra`, plus `socket.*` for individual socket handlers and `socket.controller` for the dispatcher.
+- `detail` is only added when one layer has multiple files in the same module (`room.service.user`, `socket.infra.roomStateManager`). Single-file layers stay at two parts (`auth.service`, `analysis.routes`).
+
+One logger per file. Scope is "where I am," not "what I do" — keep task wording in the log message. Examples in use today: `app.bootstrap`, `http.errorHandler`, `room.routes`, `room.service.user`, `room.domain.matchFlow`, `match.infra.repository`, `socket.board`, `socket.controller`.
+
 ## Database / Ops Notes
 
 - Schema lives in `backend/prisma/schema.prisma`. Migrations are in `backend/prisma/migrations/` — when destructive (column drops, etc.), the README requires splitting the change across two deploys.

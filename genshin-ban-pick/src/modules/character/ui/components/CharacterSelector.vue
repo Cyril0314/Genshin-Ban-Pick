@@ -4,6 +4,7 @@
 import { reactive, watch } from 'vue';
 // @ts-ignore
 import vSelect from 'vue-select';
+import { createLogger } from '@/app/utils/logger';
 import 'vue-select/dist/vue-select.css';
 import { useSelectorOptions, CommonOption } from '../composables/useSelectorOptions';
 import { useFilteredCharacters } from '../composables/useFilteredCharacters';
@@ -32,6 +33,7 @@ const characterFilter = reactive<Record<CharacterFilterKey, string[]>>({
     role: [],
     wish: [],
 });
+const logger = createLogger('character.ui.selector');
 const filteredCharacterKeys = useFilteredCharacters(props.characterMap, characterFilter);
 
 watch(filteredCharacterKeys, (ids) => emit('filter-change', {filteredCharacterKeys: ids, characterFilter}));
@@ -48,20 +50,20 @@ function normalizeAllSelection(filter: Record<CharacterFilterKey, string[]>, opt
 
         if (hasAll) {
             if (selected.length - 1 < itemsWithoutAll.length) {
-                console.debug(`[CHARACTER SELECTOR] ${key} selector selected all`);
+                logger.debug(`${key} selected all`);
                 filter[key] = itemsWithoutAll;
             } else {
-                console.debug(`[CHARACTER SELECTOR] ${key} selector unselected all`);
+                logger.debug(`${key} unselected all`);
                 filter[key] = [];
             }
         } else {
-            console.debug(`[CHARACTER SELECTOR] ${key} selector selected`, selected);
+            logger.debug(`${key} selected`, selected);
         }
     }
 }
 
 function handleRandomButtonClick(zoneType: ZoneType) {
-    console.debug(`[CHARACTER SELECTOR] Handle random button click`, zoneType);
+    logger.debug('random button click', zoneType);
     emit('random-pull', { zoneType: zoneType });
 }
 </script>

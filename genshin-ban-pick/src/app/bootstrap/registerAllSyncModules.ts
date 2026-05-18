@@ -5,8 +5,10 @@ import { useChatSync } from '@/modules/chat';
 import { useRoomUserSync } from '@/modules/room';
 import { useTacticalBoardSync } from '@/modules/tactical';
 import { useTeamInfoSync } from '@/modules/team';
+import { createLogger } from '@/app/utils/logger';
 import type { Socket } from 'socket.io-client';
 
+const logger = createLogger('app.bootstrap.syncModules');
 const SOCKET_BOUND_FLAG = Symbol('socket-sync-bound');
 
 export function registerAllSyncModules(socket: Socket) {
@@ -25,5 +27,5 @@ export function registerAllSyncModules(socket: Socket) {
     registerTacticalBoardSync();
     registerChatSync();
 
-    console.debug('[SOCKET SYNC] ✅ All sync modules registered');
+    logger.debug('all sync modules registered');
 }

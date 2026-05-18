@@ -1,9 +1,10 @@
 <!-- src/modules/tactical/ui/components/TacticalBoardPanel.vue -->
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 
+import { createLogger } from '@/app/utils/logger';
 import TacticalBoard from './TacticalBoard.vue'
 import TacticalPool from './TacticalPool.vue'
 import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
@@ -19,6 +20,7 @@ const { fetchCellImageMapState, tacticalCellImagePlace, tacticalCellImageRemove 
 
 const { myTeamSlot } = useMyTeamInfo()
 
+const logger = createLogger('tactical.ui.boardPanel');
 const currentTeamSlot = ref<number>(myTeamSlot.value ?? teamInfoPair.value!.left.slot)
 
 onMounted(async () => {
@@ -32,12 +34,12 @@ watch(myTeamSlot, (newSlot) => {
 });
 
 function handleImageDrop({ teamSlot, cellId, imgId }: { teamSlot: number, cellId: number; imgId: string }) {
-  console.debug(`[TATICAL BOARD PANEL] Handle image drop`, { teamSlot, cellId, imgId });
+  logger.debug('image drop', { teamSlot, cellId, imgId });
   tacticalCellImagePlace({ teamSlot, cellId, imgId });
 }
 
 function handleImageRestore({ teamSlot, cellId }: { teamSlot: number, cellId: number }) {
-  console.debug(`[TATICAL BOARD PANEL] Handle image restore`, { teamSlot, cellId });
+  logger.debug('image restore', { teamSlot, cellId });
   tacticalCellImageRemove({ teamSlot, cellId });
 }
 

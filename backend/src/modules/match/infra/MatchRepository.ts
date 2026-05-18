@@ -17,7 +17,7 @@ import type { IMatch } from '@shared/contracts/match/IMatch';
 import type { IPlayerProfile } from '@shared/contracts/player/IPlayerProfile';
 import type { PlayerIdentity } from '@shared/contracts/player/PlayerIdentity';
 
-const logger = createLogger('MATCH:Repository');
+const logger = createLogger('match.infra.repository');
 
 export default class MatchRepository implements IMatchRepository {
     constructor(private prisma: PrismaClient) {}

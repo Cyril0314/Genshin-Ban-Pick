@@ -2,8 +2,11 @@
 
 import bcrypt from 'bcryptjs';
 
+import { createLogger } from '../../../utils/logger';
 import { UserExistsError, UserNotFoundError, InvalidPasswordError } from '../../../errors/AppError';
 import type { IMemberRepository } from '../domain/IMemberRepository';
+
+const logger = createLogger('auth.service.member');
 
 export default class MemberService {
     constructor(private memberRepository: IMemberRepository) {}
@@ -11,7 +14,10 @@ export default class MemberService {
     async register(account: string, password: string, nickname: string) {
         // 檢查帳號是否存在
         const existing = await this.memberRepository.existsByAccount(account)
-        if (existing) throw new UserExistsError();
+        if (existing) {
+            logger.warn(`register member failed: account exists account=${account}`);
+            throw new UserExistsError();
+        }
 
         // 密碼加密
         const passwordHash = await bcrypt.hash(password, 10);
@@ -26,12 +32,16 @@ export default class MemberService {
 
     async login(account: string, password: string) {
         const member = await this.memberRepository.findByAccount(account)
-        if (!member) throw new UserNotFoundError();
+        if (!member) {
+            logger.warn(`login member failed: account not found account=${account}`);
+            throw new UserNotFoundError();
+        }
 
         const isValid = await bcrypt.compare(password, member.passwordHash);
         if (isValid) {
             return member;
         } else {
+            logger.warn(`login member failed: invalid password account=${account}`);
             throw new InvalidPasswordError();
         }
     }

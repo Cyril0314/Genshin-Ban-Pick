@@ -4,6 +4,7 @@
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
+import { createLogger } from '@/app/utils/logger';
 import Toolbar from '../components/ToolBar.vue';
 import StepIndicator from '@/modules/board/ui/components/StepIndicator.vue';
 import RoomUserPool from '@/modules/room/ui/components/RoomUserPool.vue';
@@ -18,6 +19,7 @@ import { providePlayerHistory } from '@/modules/analysis/ui/composables/usePlaye
 import type { PlayerIdentity } from '@shared/contracts/player/PlayerIdentity';
 
 const route = useRoute();
+const logger = createLogger('banPick.ui.view');
 const roomId = (route.query.room as string) || 'default-room';
 
 useViewportScale();
@@ -35,11 +37,17 @@ const {
 } = useBanPickFacade(roomId);
 
 watch(matchResult, (val) => {
-    if (val) alert('儲存成功！');
+    if (val) {
+        logger.info('match saved', val.id);
+        alert('儲存成功！');
+    }
 });
 
 watch(matchError, (err) => {
-    if (err) alert('儲存失敗：' + err);
+    if (err) {
+        logger.error('match save error', err);
+        alert('儲存失敗：' + err);
+    }
 });
 
 // PlayerHistory modal：散落的觸發源透過 inject 拿到 open() 來開啟。

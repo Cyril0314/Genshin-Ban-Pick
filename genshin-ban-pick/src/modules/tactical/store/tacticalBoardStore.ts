@@ -3,6 +3,10 @@
 import { computed, reactive, ref, shallowRef, watch } from "vue";
 import { defineStore } from "pinia";
 
+import { createLogger } from '@/app/utils/logger';
+
+const logger = createLogger('tactical.store');
+
 import type { ITeam } from '@shared/contracts/team/ITeam';
 import type { TacticalCellImageMap } from '@shared/contracts/tactical/TacticalCellImageMap';
 
@@ -12,12 +16,12 @@ export const useTacticalBoardStore = defineStore('tacticalBoard', () => {
     const numberOfSetupCharacter = shallowRef(0)
 
     watch(teamTacticalCellImageMap, (teamTacticalBoardPanelMap) => {
-        console.debug('[TATICAL BOARD STORE] Watch team tactical board panel map', teamTacticalBoardPanelMap)
+        logger.debug('watch team tactical cell image map', teamTacticalBoardPanelMap)
     }, { immediate: true })
 
 
     function initTeamTacticalCellImageMap(teams: ITeam[], newNumberOfTeamSetup: number, newNumberOfSetupCharacter: number) {
-        console.debug('[TATICAL BOARD STORE] Init team tactical board panel map', teams)
+        logger.debug('init team tactical cell image map', teams)
         for (const team of teams) {
             teamTacticalCellImageMap.value[team.slot] = {};
         }
@@ -26,7 +30,7 @@ export const useTacticalBoardStore = defineStore('tacticalBoard', () => {
     }
 
     function setTacticalCellImageMap(teamSlot: number, newTacticalCellImageMap: TacticalCellImageMap) {
-        console.debug('[TATICAL BOARD STORE] Set tactical cell image map', teamSlot, newTacticalCellImageMap)
+        logger.debug('set tactical cell image map', teamSlot, newTacticalCellImageMap)
         teamTacticalCellImageMap.value[teamSlot] = newTacticalCellImageMap
     }
 

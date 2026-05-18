@@ -6,6 +6,7 @@ import { storeToRefs } from 'pinia';
 import { useEchartTheme } from '@/modules/shared/ui/composables/useEchartTheme';
 import { useDesignTokens } from '@/modules/shared/ui/composables/useDesignTokens';
 import { useAuthStore } from '@/modules/auth';
+import { createLogger } from '@/app/utils/logger';
 import { useAnalysisUseCase } from './useAnalysisUseCase';
 import { useMatchUseCase } from '@/modules/match';
 import {
@@ -24,6 +25,8 @@ import type { CharacterFilterKey } from '@shared/contracts/character/CharacterFi
 import type { IPlayerProfile } from '@shared/contracts/player/IPlayerProfile';
 import type { EnumOrderValue } from '@/modules/shared/ui/composables/useCharacterSorter';
 import type { ICharacterAttributeDistributions } from '@shared/contracts/analysis/character/ICharacterAttributeDistributions';
+
+const logger = createLogger('analysis.ui.playerStyleChart');
 
 type Scope = { type: 'Player'; profile: IPlayerProfile } | { type: 'Global' };
 
@@ -66,6 +69,7 @@ export function usePlayerStyleChart() {
 
     onMounted(async () => {
         players.value = await matchUseCase.fetchMatchTeamMembers();
+        logger.debug('players loaded', players.value.length);
 
         const authIdentity = identity.value;
         const self = !authIdentity
@@ -75,18 +79,19 @@ export function usePlayerStyleChart() {
                 return player.identity.type === authIdentity.type
                     && player.identity.id === authIdentity.user.id;
             });
+
         if (self) {
+            logger.debug('self found, selecting player scope');
             selectedScope.value = { type: 'Player', profile: self };
-            playerStyle.value = await analysisUseCase.fetchPlayerStyleProfile(selectedScope.value.profile.identity);
-            characterAttributeDistributions.value = playerStyle.value?.characterAttributeDistributions;
         } else {
+            logger.debug('self not found, selecting global scope');
             selectedScope.value = { type: 'Global' };
-            characterAttributeDistributions.value = await analysisUseCase.fetchGlobalCharacterAttributeDistributions();
         }
     });
 
     watch(selectedScope, async () => {
         if (!selectedScope.value) return;
+        logger.debug('scope changed to', selectedScope.value.type);
         if (selectedScope.value.type === 'Player') {
             playerStyle.value = await analysisUseCase.fetchPlayerStyleProfile(selectedScope.value.profile.identity);
             characterAttributeDistributions.value = playerStyle.value?.characterAttributeDistributions;

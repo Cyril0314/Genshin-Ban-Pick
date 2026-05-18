@@ -11,7 +11,7 @@ import type { IChatMessage } from '@shared/contracts/chat/IChatMessage';
 import type { TeamTacticalCellImageMap } from '@shared/contracts/tactical/TeamTacticalCellImageMap';
 import type { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';
 
-const logger = createLogger('ROOM STATE MANAGER');
+const logger = createLogger('socket.infra.roomStateManager');
 
 export default class RoomStateManager implements IRoomStateManager {
     roomStates: Record<string, IRoomState> = {};

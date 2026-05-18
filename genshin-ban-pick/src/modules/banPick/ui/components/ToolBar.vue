@@ -4,6 +4,7 @@
 import { ref } from 'vue';
 import { storeToRefs } from 'pinia';
 
+import { createLogger } from '@/app/utils/logger';
 import ChatFloatWindow from '@/modules/chat/ui/components/ChatFloatWindow.vue';
 import TacticalBoardPanelDrawer from '@/modules/tactical/ui/components/TacticalBoardPanelDrawer.vue';
 import AnalysisDrawer from '@/modules/analysis/ui/components/AnalysisDrawer.vue';
@@ -19,31 +20,32 @@ const authStore = useAuthStore();
 const { isAdmin } = storeToRefs(authStore);
 const { isChatOpen, hasUnreadMessage } = useChatWindow()
 
+const logger = createLogger('banPick.ui.toolbar');
 const isTacticalDrawerOpen = ref(false);
 const isAnalysisDrawerOpen = ref(false);
 
 function handleTacticalButtonClickEvent() {
-    console.debug('[TOOL BAR] Handle tactical button click event');
+    logger.debug('tactical button click');
     isTacticalDrawerOpen.value = !isTacticalDrawerOpen.value;
 }
 
 function handleChatButtonClickEvent() {
-    console.debug('[TOOL BAR] Handle chat button click event');
+    logger.debug('chat button click');
     isChatOpen.value = !isChatOpen.value;
 }
 
 function handleAnalysisButtonClickEvent() {
-    console.debug('[TOOL BAR] Handle analysis button click event');
+    logger.debug('analysis button click');
     isAnalysisDrawerOpen.value = !isAnalysisDrawerOpen.value;
 }
 
 function handleResetButtonClickEvent() {
-    console.debug('[TOOL BAR] Handle reset button click event');
+    logger.debug('reset button click');
     emit('image-map-reset');
 }
 
 function handleSaveButtonClickEvent() {
-    console.debug('[TOOL BAR] Handle save button click event');
+    logger.debug('save button click');
     emit('match-save');
 }
 </script>

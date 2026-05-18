@@ -6,7 +6,7 @@ import { leaveRoomUser } from '../domain/leaveRoomUser';
 
 import type { IRoomStateRepository } from '../domain/IRoomStateRepository';
 
-const logger = createLogger('ROOM_USER');
+const logger = createLogger('room.service.user');
 
 export default class RoomUserService {
     constructor(private roomStateRepository: IRoomStateRepository) {}

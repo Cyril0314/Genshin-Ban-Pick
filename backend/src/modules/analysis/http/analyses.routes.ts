@@ -2,11 +2,8 @@
 
 import express from 'express';
 
-import { createLogger } from '../../../utils/logger';
 import { asyncHandler } from '../../../utils/asyncHandler';
 import AnalysisController from '../controller/analysis.controller';
-
-const logger = createLogger('ANALYSIS');
 
 // /{domain}/{capability}/{scope-or-subject}/{representation}
 // domain: analyses

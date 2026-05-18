@@ -11,7 +11,6 @@ export function useBanPickFilters(filteredCharacterKeys: Ref<string[]>, characte
         filteredCharacterKeys: string[];
         characterFilter: Record<CharacterFilterKey, string[]>;
     }) {
-        console.debug(`[BAN PICK FILITERS] Handle filiter changed:`, { filteredCharacterKeys: newKeys, characterFilter: newFilter });
         filteredCharacterKeys.value = newKeys;
         characterFilter.value = newFilter;
     }

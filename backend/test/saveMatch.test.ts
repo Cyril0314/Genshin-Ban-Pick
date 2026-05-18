@@ -55,7 +55,7 @@ async function main() {
     const memberPools: TeamMember[] = [...dbUsers, ...manualUsers];
     let teamMembersMap: TeamMembersMap = takeTeamMembers(memberPools, roomSetting.numberOfSetupCharacter);
 
-    console.log(`teamMembersMap`, teamMembersMap);
+    console.debug(`teamMembersMap`, teamMembersMap);
 
     const characters = await prisma.character.findMany({
         orderBy: [{ releaseAt: 'asc' }, { key: 'asc' }],

@@ -1,7 +1,8 @@
 <!-- src/modules/tactical/ui/components/TacticalCell.vue -->
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref } from 'vue';
 
+import { createLogger } from '@/app/utils/logger';
 import { DragTypes } from '@/app/constants/customMIMETypes'
 import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
 import { getWishImagePath } from '@/modules/shared/infrastructure/imageRegistry'
@@ -19,20 +20,21 @@ const emit = defineEmits<{
 
 const isOver = ref(false)
 
+const logger = createLogger('tactical.ui.cell');
 const highlightColor = computed(() => {
   return useTeamTheme(props.teamSlot).themeVars.value['--team-color-rgb']
 })
 
 
 function handleDragStartEvent(event: DragEvent) {
-  console.debug(`[TATICAL CELL] Handle drag start event`);
+  logger.debug('drag start');
   if (props.imageId && event.dataTransfer) {
     event?.dataTransfer?.setData(DragTypes.CHARACTER_IMAGE, props.imageId)
   }
 }
 
 function handleDropEvent(event: DragEvent) {
-  console.debug(`[TATICAL CELL] Handle drop event`);
+  logger.debug('drop');
   event.preventDefault()
   isOver.value = false
   const imgId = event.dataTransfer?.getData(DragTypes.CHARACTER_IMAGE)
@@ -41,7 +43,7 @@ function handleDropEvent(event: DragEvent) {
 }
 
 function handleClickEvent() {
-  console.debug(`[TATICAL CELL] Handle click event`, props.cellId);
+  logger.debug('click', props.cellId);
   if (props.imageId) emit('image-restore', { cellId: props.cellId })
 }
 </script>

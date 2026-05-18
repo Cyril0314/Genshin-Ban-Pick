@@ -2,7 +2,6 @@
 
 import express from 'express';
 
-import { createLogger } from '../../../utils/logger';
 import { asyncHandler } from '../../../utils/asyncHandler';
 import GenshinVersionController from '../controller/genshinVersion.controller';
 

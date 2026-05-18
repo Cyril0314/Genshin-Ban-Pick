@@ -9,6 +9,7 @@ import cors from 'cors';
 import express from 'express';
 
 import { createLogger } from './utils/logger';
+import { accessLog } from './middlewares/accessLog';
 import { errorHandler } from './middlewares/errorHandler';
 import { registerAppRouters } from './app/appRouter';
 import { createSocketApp } from './modules/socket/index';
@@ -17,7 +18,7 @@ import AuthValidator from './modules/socket/infra/AuthValidator';
 
 import type { Request, Response } from 'express';
 
-const logger = createLogger('INDEX');
+const logger = createLogger('app.bootstrap');
 
 // ---------------------------------------------------------
 // 🧩 4. 應用程式初始化
@@ -60,6 +61,7 @@ const __dirname = path.dirname(__filename);
 // Express 提供前端的靜態檔案 (非常重要!)
 app.use(express.static(path.resolve(__dirname, '../public')));
 app.use(express.json());
+app.use(accessLog);
 // app.disable('etag');
 // ---------------------------------------------------------
 // 🧩 6. 資料服務實例化
@@ -92,10 +94,9 @@ app.get('*', (req: Request, res: Response) => {
 });
 
 (async () => {
-    logger.debug('[Prisma] DATABASE_URL =', process.env.DATABASE_URL);
-
     const info = await prisma.$queryRawUnsafe<{ current_database: string; current_schema: string }[]>(`SELECT current_database(), current_schema()`);
-    logger.debug('[Prisma] connected to:', info);
+    const dbHost = process.env.DATABASE_URL ? new URL(process.env.DATABASE_URL).host : 'unknown';
+    logger.info(`db connected host=${dbHost} database=${info[0].current_database} schema=${info[0].current_schema}`);
 })();
 
 process.on('uncaughtException', (err) => {
@@ -110,5 +111,7 @@ process.on('unhandledRejection', (reason) => {
 // 🧩 10. Server 啟動
 // ---------------------------------------------------------
 server.listen(3000, '0.0.0.0', () => {
-    logger.info('Server is running on http://localhost:3000');
+    logger.info(
+        `ready port=3000 cors=[${corsOrigins.join(',')}] level=${process.env.LOG_LEVEL ?? 'debug'} node_env=${process.env.NODE_ENV ?? 'development'}`,
+    );
 });

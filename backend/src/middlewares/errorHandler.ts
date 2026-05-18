@@ -5,7 +5,7 @@ import { createLogger } from '../utils/logger';
 
 import type {  ErrorRequestHandler } from 'express';
 
-const logger = createLogger('APP ERROR');
+const logger = createLogger('http.errorHandler');
 
 export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     if (err instanceof AppError) {

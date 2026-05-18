@@ -2,6 +2,8 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
+
+import { createLogger } from '@/app/utils/logger';
 import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
 import TacticalCell from './TacticalCell.vue';
 import { useTacticalBoardStore } from '../../store/tacticalBoardStore';
@@ -51,15 +53,16 @@ const themeVars = computed(() => {
   return useTeamTheme(props.teamSlot).themeVars.value
 })
 
+const logger = createLogger('tactical.ui.board');
 const imageId = (cellId: number) => tacticalCellImageMap.value[cellId];
 
 function handleImageDrop({ cellId, imgId }: { cellId: number; imgId: string }) {
-    console.debug(`[TATICAL BOARD] Handle image drop`, imgId, cellId);
+    logger.debug('image drop', imgId, cellId);
     emit('image-drop', { teamSlot: props.teamSlot, cellId, imgId });
 }
 
 function handleImageRestore({ cellId }: { cellId: number }) {
-    console.debug(`[TATICAL BOARD] Handle image restore`, cellId);
+    logger.debug('image restore', cellId);
     emit('image-restore', { teamSlot: props.teamSlot, cellId });
 }
 </script>

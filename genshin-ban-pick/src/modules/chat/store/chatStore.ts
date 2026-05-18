@@ -3,6 +3,10 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
+import { createLogger } from '@/app/utils/logger';
+
+const logger = createLogger('chat.store');
+
 import type { IChatMessage } from '@shared/contracts/chat/IChatMessage';
 
 export const useChatStore = defineStore('chat', () => {
@@ -11,7 +15,7 @@ export const useChatStore = defineStore('chat', () => {
     const hasUnreadMessage = ref(false);
 
     function setMessages(newMessages: IChatMessage[]) {
-        console.debug(`[CHAT STORE] Set new messages`, newMessages);
+        logger.debug('set messages', newMessages);
         messages.value = newMessages;
     }
 
