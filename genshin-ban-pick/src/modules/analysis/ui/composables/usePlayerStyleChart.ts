@@ -22,31 +22,31 @@ import { elementColors } from '@/modules/shared/ui/constants/elementColors';
 
 import type { IPlayerStyleProfile } from '@shared/contracts/analysis/IPlayerStyleProfile';
 import type { CharacterFilterKey } from '@shared/contracts/character/CharacterFilterKey';
-import type { IPlayerProfile } from '@shared/contracts/player/IPlayerProfile';
+import type { TeamMember } from '@shared/contracts/team/TeamMember';
 import type { EnumOrderValue } from '@/modules/shared/ui/composables/useCharacterSorter';
 import type { ICharacterAttributeDistributions } from '@shared/contracts/analysis/character/ICharacterAttributeDistributions';
 
 const logger = createLogger('analysis.ui.playerStyleChart');
 
-type Scope = { type: 'Player'; profile: IPlayerProfile } | { type: 'Global' };
+type Scope = { type: 'Player'; player: TeamMember } | { type: 'Global' };
 
 export function usePlayerStyleChart() {
     const { tooltipStyle } = useEchartTheme();
     const designTokens = useDesignTokens();
     const authStore = useAuthStore();
-    const { identity } = storeToRefs(authStore);
+    const { authUser } = storeToRefs(authStore);
 
     const analysisUseCase = useAnalysisUseCase();
     const matchUseCase = useMatchUseCase();
 
-    const players = ref<IPlayerProfile[]>([]);
+    const players = ref<TeamMember[]>([]);
 
     const scopes = computed<Scope[]>(() => {
         const globalScope: Scope = { type: 'Global' };
 
         const playerScopes: Scope[] = players.value.map((p) => ({
             type: 'Player',
-            profile: p,
+            player: p,
         }));
 
         return [globalScope, ...playerScopes];
@@ -71,18 +71,17 @@ export function usePlayerStyleChart() {
         players.value = await matchUseCase.fetchMatchTeamMembers();
         logger.debug('players loaded', players.value.length);
 
-        const authIdentity = identity.value;
-        const self = !authIdentity
+        const currentUser = authUser.value;
+        const self = !currentUser
             ? undefined
             : players.value.find((player) => {
-                if (player.identity.type === 'Name') return false;
-                return player.identity.type === authIdentity.type
-                    && player.identity.id === authIdentity.user.id;
+                if (player.type === 'Name') return false;
+                return player.type === currentUser.type && player.id === currentUser.id;
             });
 
         if (self) {
             logger.debug('self found, selecting player scope');
-            selectedScope.value = { type: 'Player', profile: self };
+            selectedScope.value = { type: 'Player', player: self };
         } else {
             logger.debug('self not found, selecting global scope');
             selectedScope.value = { type: 'Global' };
@@ -93,7 +92,7 @@ export function usePlayerStyleChart() {
         if (!selectedScope.value) return;
         logger.debug('scope changed to', selectedScope.value.type);
         if (selectedScope.value.type === 'Player') {
-            playerStyle.value = await analysisUseCase.fetchPlayerStyleProfile(selectedScope.value.profile.identity);
+            playerStyle.value = await analysisUseCase.fetchPlayerStyleProfile(selectedScope.value.player);
             characterAttributeDistributions.value = playerStyle.value?.characterAttributeDistributions;
         } else {
             characterAttributeDistributions.value = await analysisUseCase.fetchGlobalCharacterAttributeDistributions();
@@ -105,13 +104,13 @@ export function usePlayerStyleChart() {
             case 'Global':
                 return 'global';
             case 'Player':
-                switch (scope.profile.identity.type) {
+                switch (scope.player.type) {
                     case 'Member':
-                        return `member:${scope.profile.identity.id}`;
+                        return `member:${scope.player.id}`;
                     case 'Guest':
-                        return `guest:${scope.profile.identity.id}`;
+                        return `guest:${scope.player.id}`;
                     case 'Name':
-                        return `name:${scope.profile.identity.name}`;
+                        return `name:${scope.player.name}`;
                 }
         }
     }

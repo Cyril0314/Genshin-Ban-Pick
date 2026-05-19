@@ -22,5 +22,5 @@ export interface IAnalysisRepository {
 
     findAllMatchTacticalUsageWithCharacter(): Promise<IMatchTacticalUsageWithCharacter[]>;
 
-    findMatchTacticalUsageWithCharacterByIdentityKey(identityKey: PlayerIdentity): Promise<IMatchTacticalUsageWithCharacter[]>;
+    findMatchTacticalUsageWithCharacterByPlayerIdentity(playerIdentity: PlayerIdentity): Promise<IMatchTacticalUsageWithCharacter[]>;
 }

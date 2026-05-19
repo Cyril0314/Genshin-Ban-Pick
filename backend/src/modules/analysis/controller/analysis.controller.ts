@@ -57,16 +57,16 @@ export default class AnalysisController {
     };
 
     fetchPlayerStyleProfile = async (req: Request, res: Response) => {
-        const identityKey = parsePlayerIdentityQuery(req.query);
-        if (!identityKey) throw new InvalidFieldsError();
-        const style = await this.analysisService.fetchPlayerStyleProfile(identityKey);
+        const playerIdentity = parsePlayerIdentityQuery(req.query);
+        if (!playerIdentity) throw new InvalidFieldsError();
+        const style = await this.analysisService.fetchPlayerStyleProfile(playerIdentity);
         res.status(200).json(style);
     };
 
     fetchPlayerRecord = async (req: Request, res: Response) => {
-        const identityKey = parsePlayerIdentityQuery(req.query);
-        if (!identityKey) throw new InvalidFieldsError();
-        const record = await this.analysisService.fetchPlayerRecord(identityKey);
+        const playerIdentity = parsePlayerIdentityQuery(req.query);
+        if (!playerIdentity) throw new InvalidFieldsError();
+        const record = await this.analysisService.fetchPlayerRecord(playerIdentity);
         res.status(200).json(record);
     };
 

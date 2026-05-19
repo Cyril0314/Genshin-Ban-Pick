@@ -30,6 +30,6 @@ export default class MatchService {
     }
 
     async fetchMatchTeamMembers() {
-        return this.matchRepository.findAllMatchTeamMemberUniqueIdentities()
+        return this.matchRepository.findAllMatchTeamMembers()
     }
 }

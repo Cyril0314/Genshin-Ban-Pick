@@ -311,29 +311,29 @@ export default class AnalysisRepository implements IAnalysisRepository {
         }));
     }
 
-    async findMatchTacticalUsageWithCharacterByIdentityKey(
-        identityKey: PlayerIdentity,
+    async findMatchTacticalUsageWithCharacterByPlayerIdentity(
+        playerIdentity: PlayerIdentity,
     ): Promise<IMatchTacticalUsageWithCharacter[]> {
         let whereInput: Prisma.MatchTacticalUsageWhereInput;
-        switch (identityKey.type) {
+        switch (playerIdentity.type) {
             case 'Member':
                 whereInput = {
                     teamMember: {
-                        memberRef: identityKey.id,
+                        memberRef: playerIdentity.id,
                     },
                 };
                 break;
             case 'Guest':
                 whereInput = {
                     teamMember: {
-                        guestRef: identityKey.id,
+                        guestRef: playerIdentity.id,
                     },
                 };
                 break;
             case 'Name':
                 whereInput = {
                     teamMember: {
-                        name: identityKey.name,
+                        name: playerIdentity.name,
                     },
                 };
                 break;

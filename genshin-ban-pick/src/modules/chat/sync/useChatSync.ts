@@ -27,8 +27,8 @@ export function useChatSync() {
 
     function sendMessage(messageText: string) {
         logger.debug('sent message request', messageText);
-        if (!authStore.identityKey || !authStore.nickname) return;
-        const message = chatUseCase.handleSendMessage(authStore.identityKey, authStore.nickname, messageText);
+        if (!authStore.identity || !authStore.nickname) return;
+        const message = chatUseCase.handleSendMessage(authStore.identity, authStore.nickname, messageText);
         socket.emit(`${ChatEvent.MessageSendRequest}`, { message });
     }
 

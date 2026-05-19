@@ -7,6 +7,7 @@ import { createLogger } from '../../../utils/logger';
 import { RoomUserService } from '../../room';
 import { RoomEvent } from '@shared/contracts/room/value-types';
 
+import type { Identity } from '@shared/contracts/auth/Identity';
 import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 
 const logger = createLogger('socket.room');
@@ -18,9 +19,9 @@ export function registerRoomSocket(io: Server, socket: Socket, roomUserService: 
         (socket as any).roomId = roomId;
 
         const nickname = socket.data.identity.nickname as string;
-        const identityKey = socket.data.identity.identityKey as string;
+        const identity = socket.data.identity as Identity;
 
-        const { joinedUser, roomUsers } = roomUserService.join(roomId, { identityKey, nickname, socketId: socket.id });
+        const { joinedUser, roomUsers } = roomUserService.join(roomId, { identity, nickname, socketId: socket.id });
 
         if (joinedUser) {
             socket.to(roomId).emit(RoomEvent.UserJoinBroadcast, joinedUser);
@@ -46,9 +47,9 @@ export function registerRoomSocket(io: Server, socket: Socket, roomUserService: 
 
     function handleRoomUserLeave(roomId: string, roomUserService: RoomUserService) {
         socket.leave(roomId);
-        const identityKey = socket.data.identity.identityKey as string;
+        const identity = socket.data.identity as Identity;
 
-        const { leavingUser, roomUsers } = roomUserService.leave(roomId, identityKey);
+        const { leavingUser, roomUsers } = roomUserService.leave(roomId, identity);
 
         delete (socket as any).roomId;
 

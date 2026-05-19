@@ -1,3 +1,4 @@
-import type { IRoomUser } from "../room/IRoomUser";
-
-export type TeamMember = { type: 'Online'; user: IRoomUser } | { type: 'Manual'; name: string };
+export type TeamMember =
+    | { type: 'Member'; id: number; nickname: string }
+    | { type: 'Guest'; id: number; nickname: string }
+    | { type: 'Name'; name: string };

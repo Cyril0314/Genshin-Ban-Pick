@@ -30,7 +30,7 @@ const memberNames = computed(() => {
     return Array.from({ length: numberOfSetupCharacter.value }, (_, i) => {
         const teamMember = props.teamMembers[i];
         if (!teamMember) return '';
-        return teamMember.type === 'Manual' ? teamMember.name : teamMember.user.nickname;
+        return teamMember.type === 'Name' ? teamMember.name : teamMember.nickname;
     });
 });
 

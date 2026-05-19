@@ -6,7 +6,6 @@ import tinycolor from 'tinycolor2';
 
 import { useEchartTheme } from '@/modules/shared/ui/composables/useEchartTheme';
 import { useDesignTokens } from '@/modules/shared/ui/composables/useDesignTokens';
-import { useAuthStore } from '@/modules/auth';
 import { createLogger } from '@/app/utils/logger';
 import { useAnalysisUseCase } from './useAnalysisUseCase';
 import { useMatchUseCase } from '@/modules/match';
@@ -26,9 +25,6 @@ const logger = createLogger('analysis.ui.matchOverview');
 export function useMatchOverviewChart() {
     const { tooltipStyle, gridStyle, dataZoomStyle, timeAxisStyle } = useEchartTheme();
     const designTokens = useDesignTokens();
-    const authStore = useAuthStore();
-    const { identity } = storeToRefs(authStore);
-
     const genshinVersionUseCase = useGenshinVersionUseCase();
     const analysisUseCase = useAnalysisUseCase();
     const matchUseCase = useMatchUseCase();

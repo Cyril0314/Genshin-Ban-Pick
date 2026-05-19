@@ -1,6 +1,8 @@
+import type { Identity } from '../auth/Identity';
+
 export interface IRoomUser {
-    id: string;
-    identityKey: string;
+    socketId: string;
+    identity: Identity;
     nickname: string;
     timestamp: number;
 }

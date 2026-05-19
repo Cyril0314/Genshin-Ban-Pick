@@ -50,8 +50,6 @@ watch(matchError, (err) => {
     }
 });
 
-// PlayerHistory modal：散落的觸發源透過 inject 拿到 open() 來開啟。
-// displayName 由 backend 解析，caller 只傳 identity。
 const isPlayerHistoryOpen = ref(false);
 const playerHistoryIdentity = ref<PlayerIdentity>();
 providePlayerHistory({

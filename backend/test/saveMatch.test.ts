@@ -29,27 +29,19 @@ async function main() {
 
     const dbUsers: TeamMember[] = [
         ...members.map((m) => ({
-            type: 'Online' as const,
-            user: {
-                id: '111',
-                identityKey: `Member:${m.id}`,
-                nickname: m.nickname,
-                timestamp: Date.now(),
-            },
+            type: 'Member' as const,
+            id: m.id,
+            nickname: m.nickname,
         })),
         ...guests.map((g) => ({
-            type: 'Online' as const,
-            user: {
-                id: '111',
-                identityKey: `Guest:${g.id}`,
-                nickname: g.nickname,
-                timestamp: Date.now(),
-            },
+            type: 'Guest' as const,
+            id: g.id,
+            nickname: g.nickname,
         })),
     ];
 
     const manualUsers: TeamMember[] = ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve', 'Frank', 'Grace', 'Heidi'].map((name) => ({
-        type: 'Manual' as const,
+        type: 'Name' as const,
         name,
     }));
     const memberPools: TeamMember[] = [...dbUsers, ...manualUsers];

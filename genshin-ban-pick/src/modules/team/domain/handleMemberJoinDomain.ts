@@ -3,6 +3,8 @@
 import { addTeamMemberDomain } from './addTeamMemberDomain';
 import { removeTeamMemberDomain } from './removeTeamMemberDomain';
 
+import { isSameIdentity } from '@shared/contracts/auth/Identity';
+
 import type { TeamMember } from '@shared/contracts/team/TeamMember';
 import type { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';
 
@@ -11,7 +13,7 @@ export function handleMemberJoinDomain(teamMembersMap: TeamMembersMap, teamSlot:
 
     for (const [teamSlot, teamMembers] of Object.entries(nextTeamMembersMap)) {
         for (const [memberSlot, _teamMember] of Object.entries(teamMembers)) {
-            if (_teamMember.type === 'Online' && teamMember.type === 'Online' && _teamMember.user.identityKey === teamMember.user.identityKey) {
+            if (_teamMember.type !== 'Name' && teamMember.type !== 'Name' && isSameIdentity(_teamMember, teamMember)) {
                 let nextTeamMemberMap = removeTeamMemberDomain(nextTeamMembersMap[Number(teamSlot)], Number(memberSlot));
                 nextTeamMembersMap = {
                     ...nextTeamMembersMap,

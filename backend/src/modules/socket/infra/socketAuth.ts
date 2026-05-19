@@ -21,7 +21,6 @@ export function createSocketAuth(authValidator: IAuthValidator) {
                     type: result.type,
                     id: result.id,
                     nickname: result.nickname,
-                    identityKey: `${result.type}:${result.id}`,
                 };
 
                 return next();

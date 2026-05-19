@@ -7,29 +7,31 @@ import { createLogger } from '@/app/utils/logger';
 import { MemberRole } from '@shared/contracts/auth/value_types';
 import { tokenStorage } from '../infrastructure/tokenStorage';
 
-const logger = createLogger('auth.store');
+import type { AuthUser } from '../types/AuthUser';
+import type { Identity } from '@shared/contracts/auth/Identity';
 
-import type { Identity } from '../types/Identity';
+const logger = createLogger('auth.store');
 
 export const useAuthStore = defineStore('auth', () => {
     const isInitialized = ref(false);
-    const identity = ref<Identity>();
-    const isLoggedIn = computed(() => identity.value !== undefined);
-    const isAdmin = computed(() => identity.value?.type === 'Member' && identity.value.user.role === MemberRole.Admin);
-    const isGuest = computed(() => identity.value?.type === 'Guest');
-    const identityKey = computed(() => {
-        if (!identity.value) return undefined;
-        return `${identity.value.type}:${identity.value.user.id}`;
+    const authUser = ref<AuthUser>();
+    const isLoggedIn = computed(() => authUser.value !== undefined);
+    const isAdmin = computed(() => authUser.value?.type === 'Member' && authUser.value.role === MemberRole.Admin);
+    const isGuest = computed(() => authUser.value?.type === 'Guest');
+    // lean { type, id } for cross-module comparisons (e.g. isSameIdentity); use authUser for display fields
+    const identity = computed<Identity | undefined>(() => {
+        if (!authUser.value) return undefined;
+        return authUser.value;
     });
     const nickname = computed(() => {
-        if (!identity.value) return undefined;
-        return identity.value.user.nickname;
+        if (!authUser.value) return undefined;
+        return authUser.value.nickname;
     });
 
     watch(
-        identity,
-        (identity) => {
-            logger.debug('watch identity', identity);
+        authUser,
+        (authUser) => {
+            logger.debug('watch authUser', authUser);
         },
         { immediate: true },
     );
@@ -42,9 +44,9 @@ export const useAuthStore = defineStore('auth', () => {
         tokenStorage.set(token);
     }
 
-    function setIdentity(newIdentity: Identity | undefined) {
-        logger.debug('set identity', newIdentity);
-        identity.value = newIdentity;
+    function setAuthUser(newAuthUser: AuthUser | undefined) {
+        logger.debug('set authUser', newAuthUser);
+        authUser.value = newAuthUser;
     }
 
     function setInitialized(value: boolean) {
@@ -52,13 +54,13 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     return {
+        authUser,
         identity,
-        identityKey,
         nickname,
         isLoggedIn,
         isAdmin,
         isInitialized,
-        setIdentity,
+        setAuthUser,
         setInitialized,
         getToken,
         setToken,

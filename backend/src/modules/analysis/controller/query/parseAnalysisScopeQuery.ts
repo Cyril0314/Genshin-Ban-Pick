@@ -3,7 +3,7 @@ import { parsePlayerIdentityQuery } from './parsePlayerIdentityQuery';
 
 export type AnalysisScope =
   | { type: 'Global' }
-  | { type: 'Player'; identityKey: PlayerIdentity };
+  | { type: 'Player'; playerIdentity: PlayerIdentity };
 
 export function parseAnalysisScopeQuery(query: any): AnalysisScope | undefined {
   const { scope } = query;
@@ -13,10 +13,10 @@ export function parseAnalysisScopeQuery(query: any): AnalysisScope | undefined {
   }
 
   if (scope === 'player') {
-    const identityKey = parsePlayerIdentityQuery(query);
-    if (!identityKey) return undefined;
+    const playerIdentity = parsePlayerIdentityQuery(query);
+    if (!playerIdentity) return undefined;
 
-    return { type: 'Player', identityKey };
+    return { type: 'Player', playerIdentity };
   }
 
   return undefined;

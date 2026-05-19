@@ -1,6 +1,7 @@
 import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
 
+import { isSameIdentity } from '@shared/contracts/auth/Identity';
 import { useTeamInfoStore } from '@/modules/team';
 import { useAuthStore } from '@/modules/auth';
 
@@ -9,17 +10,17 @@ export function useMyTeamInfo() {
     const authStore = useAuthStore();
 
     const { teamMembersMap } = storeToRefs(teamInfoStore);
-    const { identityKey } = storeToRefs(authStore);
+    const { identity } = storeToRefs(authStore);
 
     const myTeamSlot = computed(() => {
-        const myIdentityKey = identityKey.value;
+        const myIdentity = identity.value;
         const map = teamMembersMap.value;
-        if (!myIdentityKey) return undefined;
+        if (!myIdentity) return undefined;
 
         for (const [teamSlot, members] of Object.entries(map)) {
             const memberList = Object.values(members);
-            const found = memberList.find((m) => m.type === 'Online' && m.user.identityKey === myIdentityKey);
-            
+            const found = memberList.find((m) => m.type !== 'Name' && isSameIdentity(m, myIdentity));
+
             if (found) {
                 return Number(teamSlot);
             }

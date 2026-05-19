@@ -8,7 +8,7 @@ import { computeCharacterUsage } from '../domain/computeCharacterUsage';
 import { computeCharacterPickPriority } from '../domain/computeCharacterPickPriority';
 import { computePlayerStyleProfile } from '../domain/computePlayerStyleProfile';
 import { computePlayerRecord } from '../domain/computePlayerRecord';
-import { playerDisplayName, type PlayerNameLookup } from '../domain/playerDisplayName';
+import { playerDisplayName } from '../domain/playerDisplayName';
 import { computeCharacterAttributeDistributions } from '../domain/computeCharacterAttributeDistributions';
 import { createLogger } from '../../../utils/logger';
 
@@ -33,6 +33,7 @@ import type { IMatchTacticalUsageWithCharacter } from '../types/IMatchTacticalUs
 import type { IAnalysisOverview } from '@shared/contracts/analysis/IAnalysisOverview';
 import type { IAnalysisTimeWindow } from '@shared/contracts/analysis/IAnalysisTimeWindow';
 import type { IMatchTimeMinimal } from '@shared/contracts/analysis/IMatchTimeMinimal';
+import type { PlayerNameLookup } from '../domain/playerDisplayName';
 
 
 const logger = createLogger('analysis.service');
@@ -189,45 +190,45 @@ export default class AnalysisService {
         return matrix;
     }
 
-    async fetchPlayerStyleProfile(identityKey: PlayerIdentity): Promise<IPlayerStyleProfile | undefined> {
-        const memberUsages = await this.analysisRepository.findMatchTacticalUsageWithCharacterByIdentityKey(identityKey);
+    async fetchPlayerStyleProfile(playerIdentity: PlayerIdentity): Promise<IPlayerStyleProfile | undefined> {
+        const memberUsages = await this.analysisRepository.findMatchTacticalUsageWithCharacterByPlayerIdentity(playerIdentity);
         const allUsages = await this.analysisRepository.findAllMatchTacticalUsageWithCharacter();
         return computePlayerStyleProfile(memberUsages, allUsages);
     }
 
-    async fetchPlayerRecord(identityKey: PlayerIdentity): Promise<IPlayerRecord> {
+    async fetchPlayerRecord(playerIdentity: PlayerIdentity): Promise<IPlayerRecord> {
         const [playerRows, usages, nameLookup] = await Promise.all([
-            this.analysisRepository.findMatchTacticalUsageWithCharacterByIdentityKey(identityKey),
+            this.analysisRepository.findMatchTacticalUsageWithCharacterByPlayerIdentity(playerIdentity),
             this.analysisRepository.findAllMatchTacticalUsageForAnalysis(),
-            this.lookupIdentityNicknames(identityKey),
+            this.lookupIdentityNicknames(playerIdentity),
         ]);
         const groups = this.characterSynergyCalculator.buildCooccurrenceGroups(usages, 'setup');
         const synergyMatrix = this.characterSynergyCalculator.buildSynergyMatrix(groups);
-        const displayName = playerDisplayName(identityKey, nameLookup);
+        const displayName = playerDisplayName(playerIdentity, nameLookup);
 
-        return computePlayerRecord(playerRows, synergyMatrix, identityKey, displayName);
+        return computePlayerRecord(playerRows, synergyMatrix, playerIdentity, displayName);
     }
 
-    private async lookupIdentityNicknames(identity: PlayerIdentity): Promise<PlayerNameLookup> {
-        if (identity.type === 'Member') {
-            const member = await this.memberRepository.findById(identity.id);
+    private async lookupIdentityNicknames(playerIdentity: PlayerIdentity): Promise<PlayerNameLookup> {
+        if (playerIdentity.type === 'Member') {
+            const member = await this.memberRepository.findById(playerIdentity.id);
             return { memberNickname: member?.nickname };
         }
-        if (identity.type === 'Guest') {
-            const guest = await this.guestRepository.findById(identity.id);
+        if (playerIdentity.type === 'Guest') {
+            const guest = await this.guestRepository.findById(playerIdentity.id);
             return { guestNickname: guest?.nickname };
         }
         return {};
     }
 
-    async fetchCharacterAttributeDistributions(scope: { type: 'Player'; identityKey: PlayerIdentity } | { type: 'Global' }): Promise<ICharacterAttributeDistributions> {
+    async fetchCharacterAttributeDistributions(scope: { type: 'Player'; playerIdentity: PlayerIdentity } | { type: 'Global' }): Promise<ICharacterAttributeDistributions> {
         let usages: IMatchTacticalUsageWithCharacter[]
         switch (scope.type) {
             case 'Global':
                 usages = await this.analysisRepository.findAllMatchTacticalUsageWithCharacter();
                 break
             case 'Player':
-                usages = await this.analysisRepository.findMatchTacticalUsageWithCharacterByIdentityKey(scope.identityKey);
+                usages = await this.analysisRepository.findMatchTacticalUsageWithCharacterByPlayerIdentity(scope.playerIdentity);
                 break
         }
         return computeCharacterAttributeDistributions(usages)

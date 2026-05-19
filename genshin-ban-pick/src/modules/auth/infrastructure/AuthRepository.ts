@@ -2,39 +2,40 @@
 
 import type AuthService from './AuthService';
 
-import type { Identity } from '../types/Identity';
+import type { AuthUser } from '../types/AuthUser';
 
 export default class AuthRepository {
     constructor(private authService: AuthService) {}
 
     async autoLogin(token: string) {
         const response = await this.authService.getSession();
-        const identity: Identity = {
-            type: response.data.type,
-            user: { ...response.data },
-        };
-        return identity;
+        const { type, id, nickname } = response.data;
+        const authUser: AuthUser =
+            type === 'Member'
+                ? { type, id, nickname, account: response.data.account, role: response.data.role }
+                : { type: 'Guest', id, nickname };
+        return authUser;
     }
 
     async loginGuest() {
         const nickname = `guest_${Math.random().toString(36).slice(2, 8)}`;
         const response = await this.authService.postLoginGuest({ nickname });
-        const identity: Identity = { type: 'Guest', user: { ...response.data } };
-        const token = response.data.token;
-        return { identity, token };
+        const { id, token } = response.data;
+        const authUser: AuthUser = { type: 'Guest', id, nickname: response.data.nickname };
+        return { authUser, token };
     }
 
     async loginMember(payload: { account: string; password: string }) {
         const response = await this.authService.postLoginMember(payload);
-        const identity: Identity = { type: 'Member', user: { ...response.data } };
-        const token = response.data.token;
-        return { identity, token };
+        const { id, nickname, account, role, token } = response.data;
+        const authUser: AuthUser = { type: 'Member', id, nickname, account, role };
+        return { authUser, token };
     }
-    
+
     async registerMember(payload: { account: string; password: string; nickname: string }) {
         const response = await this.authService.postRegisterMember(payload);
-        const identity: Identity = { type: 'Member', user: { ...response.data } };
-        const token = response.data.token;
-        return { identity, token };
+        const { id, nickname, account, role, token } = response.data;
+        const authUser: AuthUser = { type: 'Member', id, nickname, account, role };
+        return { authUser, token };
     }
 }

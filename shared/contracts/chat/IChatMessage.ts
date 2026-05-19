@@ -1,7 +1,9 @@
 
+import type { Identity } from '../auth/Identity';
+
 export interface IChatMessage {
-    identityKey: string
-    nickname: string
-    message: string
-    timestamp?: number
+    identity: Identity;
+    nickname: string;
+    message: string;
+    timestamp?: number;
 }

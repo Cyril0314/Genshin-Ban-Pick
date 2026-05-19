@@ -6,20 +6,17 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useAuthStore } from '../../store/authStore';
 import { useAuthUseCase } from '../composables/useAuthUseCase';
 import { usePlayerHistory } from '@/modules/analysis/ui/composables/usePlayerHistory';
-import { parseIdentity } from '@shared/contracts/player/identitySerialization';
 
 const router = useRouter();
 const authStore = useAuthStore();
-const { nickname, identityKey } = storeToRefs(authStore);
+const { nickname, identity } = storeToRefs(authStore);
 const authUseCase = useAuthUseCase();
 const playerHistory = usePlayerHistory();
 
 function handleViewHistory() {
     closeMenu();
-    if (!identityKey.value) return;
-    const identity = parseIdentity(identityKey.value);
-    if (!identity) return;
-    playerHistory.open(identity);
+    if (!identity.value) return;
+    playerHistory.open(identity.value);
 }
 
 const isOpen = ref(false);

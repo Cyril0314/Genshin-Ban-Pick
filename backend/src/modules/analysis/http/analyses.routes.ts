@@ -5,12 +5,6 @@ import express from 'express';
 import { asyncHandler } from '../../../utils/asyncHandler';
 import AnalysisController from '../controller/analysis.controller';
 
-// /{domain}/{capability}/{scope-or-subject}/{representation}
-// domain: analyses
-// capability: player-style/character-usage/character-synergy/character-cluster/match-summary
-// scope: player/global/character/team/match
-// representation: summary/profile/distribution/matrix/graph/radar
-
 export default function createAnalysesRouter(analysisController: AnalysisController) {
     const router = express.Router();
     router.get('/overview', asyncHandler(analysisController.fetchOverview))

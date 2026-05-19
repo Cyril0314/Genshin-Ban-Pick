@@ -1,13 +1,14 @@
 // src/modules/chat/domain/buildChatMessageDomain.ts
 
+import type { Identity } from '@shared/contracts/auth/Identity';
 import type { IChatMessage } from '@shared/contracts/chat/IChatMessage';
 
-export function buildChatMessageDomain(identityKey: string, nickname: string, messageText: string, date = Date.now()) {
+export function buildChatMessageDomain(identity: Identity, nickname: string, messageText: string, date = Date.now()) {
     const message: IChatMessage = {
-        identityKey: identityKey,
-        nickname: nickname,
+        identity,
+        nickname,
         message: messageText,
         timestamp: date,
     };
-    return message
+    return message;
 }

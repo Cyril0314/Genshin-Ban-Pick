@@ -4,7 +4,7 @@ import type { ResolvedIdentity } from "../types/ResolvedIdentity";
 import type { TeamMember } from '@shared/contracts/team/TeamMember';
 
 export function resolveIdentity(teamMember: TeamMember): ResolvedIdentity | undefined {
-    if (teamMember.type === 'Manual') {
+    if (teamMember.type === 'Name') {
         return {
             kind: 'Manual',
             name: teamMember.name,
@@ -13,26 +13,21 @@ export function resolveIdentity(teamMember: TeamMember): ResolvedIdentity | unde
         };
     }
 
-    // Online user → parse identityKey = "Member:12" or "Guest:5"
-    const { identityKey, nickname } = teamMember.user;
-    const [type, idStr] = identityKey.split(':');
-    const id = Number(idStr);
-
-    if (type === 'Member') {
+    if (teamMember.type === 'Member') {
         return {
             kind: 'Member',
-            name: nickname,
-            memberRef: id,
+            name: teamMember.nickname,
+            memberRef: teamMember.id,
             guestRef: undefined,
         };
     }
 
-    if (type === 'Guest') {
+    if (teamMember.type === 'Guest') {
         return {
             kind: 'Guest',
-            name: nickname,
+            name: teamMember.nickname,
             memberRef: undefined,
-            guestRef: id,
+            guestRef: teamMember.id,
         };
     }
 

@@ -40,12 +40,12 @@ export default class AnalysisUseCase {
         return await this.analysisRepository.fetchPlayerCharacterUsage();
     }
 
-    async fetchPlayerStyleProfile(identityKey: PlayerIdentity) {
-        return await this.analysisRepository.fetchPlayerStyleProfile(identityKey);
+    async fetchPlayerStyleProfile(playerIdentity: PlayerIdentity) {
+        return await this.analysisRepository.fetchPlayerStyleProfile(playerIdentity);
     }
 
-    async fetchPlayerRecord(identityKey: PlayerIdentity) {
-        return await this.analysisRepository.fetchPlayerRecord(identityKey);
+    async fetchPlayerRecord(playerIdentity: PlayerIdentity) {
+        return await this.analysisRepository.fetchPlayerRecord(playerIdentity);
     }
 
     async fetchGlobalCharacterAttributeDistributions() {

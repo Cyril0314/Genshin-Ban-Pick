@@ -14,8 +14,7 @@ import { mapMatchFromPrisma } from '../domain/mapMatchFromPrisma';
 import type { IMatchRepository } from '../domain/IMatchRepository';
 import type { IMatchSnapshot } from '../domain/IMatchSnapshot';
 import type { IMatch } from '@shared/contracts/match/IMatch';
-import type { IPlayerProfile } from '@shared/contracts/player/IPlayerProfile';
-import type { PlayerIdentity } from '@shared/contracts/player/PlayerIdentity';
+import type { TeamMember } from '@shared/contracts/team/TeamMember';
 
 const logger = createLogger('match.infra.repository');
 
@@ -161,7 +160,7 @@ export default class MatchRepository implements IMatchRepository {
         });
     }
 
-    async findAllMatchTeamMemberUniqueIdentities(): Promise<IPlayerProfile[]> {
+    async findAllMatchTeamMembers(): Promise<TeamMember[]> {
         const teamMembers = await this.prisma.matchTeamMember.findMany({
             select: {
                 id: true,
@@ -183,15 +182,16 @@ export default class MatchRepository implements IMatchRepository {
             },
         });
 
-        const profileMap = new Map<string, IPlayerProfile>();
+        const teamMemberMap = new Map<string, TeamMember>();
 
         for (const teamMember of teamMembers) {
             if (teamMember.memberRef && teamMember.member) {
                 const key = `Member:${teamMember.memberRef}`;
-                if (!profileMap.has(key)) {
-                    profileMap.set(key, {
-                        identity: { type: 'Member', id: teamMember.memberRef },
-                        displayName: teamMember.member.nickname,
+                if (!teamMemberMap.has(key)) {
+                    teamMemberMap.set(key, {
+                        type: 'Member',
+                        id: teamMember.memberRef,
+                        nickname: teamMember.member.nickname,
                     });
                 }
                 continue;
@@ -199,10 +199,11 @@ export default class MatchRepository implements IMatchRepository {
 
             if (teamMember.guestRef && teamMember.guest) {
                 const key = `Guest:${teamMember.guestRef}`;
-                if (!profileMap.has(key)) {
-                    profileMap.set(key, {
-                        identity: { type: 'Guest', id: teamMember.guestRef },
-                        displayName: teamMember.guest.nickname,
+                if (!teamMemberMap.has(key)) {
+                    teamMemberMap.set(key, {
+                        type: 'Guest',
+                        id: teamMember.guestRef,
+                        nickname: teamMember.guest.nickname,
                     });
                 }
                 continue;
@@ -211,26 +212,28 @@ export default class MatchRepository implements IMatchRepository {
             // name-only
             if (teamMember.name) {
                 const key = `Name:${teamMember.name}`;
-                if (!profileMap.has(key)) {
-                    profileMap.set(key, {
-                        identity: { type: 'Name', name: teamMember.name },
-                        displayName: teamMember.name,
+                if (!teamMemberMap.has(key)) {
+                    teamMemberMap.set(key, {
+                        type: 'Name',
+                        name: teamMember.name,
                     });
                 }
             }
         }
 
-        const identityOrder: Record<PlayerIdentity['type'], number> = {
+        const identityOrder: Record<TeamMember['type'], number> = {
             Member: 0,
             Guest: 1,
             Name: 2,
         };
 
-        return Array.from(profileMap.values()).sort((a, b) => {
-            const typeDiff = identityOrder[a.identity.type] - identityOrder[b.identity.type];
+        const getDisplayName = (m: TeamMember) => m.type === 'Name' ? m.name : m.nickname;
+
+        return Array.from(teamMemberMap.values()).sort((a, b) => {
+            const typeDiff = identityOrder[a.type] - identityOrder[b.type];
             if (typeDiff !== 0) return typeDiff;
 
-            return a.displayName.localeCompare(b.displayName, 'zh-Hant');
+            return getDisplayName(a).localeCompare(getDisplayName(b), 'zh-Hant');
         });
     }
 }

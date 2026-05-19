@@ -9,7 +9,7 @@ import { useCurrentTime, formatRelativeTime } from '@/modules/shared/ui/composab
 import { useChatSync } from '../../sync/useChatSync.ts';
 import { useChatStore } from '../../store/chatStore.ts';
 import { usePlayerHistory } from '@/modules/analysis/ui/composables/usePlayerHistory';
-import { parseIdentity } from '@shared/contracts/player/identitySerialization';
+import { isSameIdentity } from '@shared/contracts/auth/Identity';
 import type { IChatMessage } from '@shared/contracts/chat/IChatMessage.ts';
 
 const playerHistory = usePlayerHistory();
@@ -20,7 +20,7 @@ const chatStore = useChatStore();
 const { messages } = storeToRefs(chatStore)
 const { sendMessage } = useChatSync();
 const authStore = useAuthStore();
-const { nickname, identityKey } = storeToRefs(authStore);
+const { nickname, identity } = storeToRefs(authStore);
 const now = useCurrentTime();
 
 onMounted(() => {
@@ -52,13 +52,11 @@ function scrollToBottom() {
 }
 
 function isSelfMessage(msg: IChatMessage) {
-    return msg.identityKey === identityKey.value
+    return !!identity.value && isSameIdentity(msg.identity, identity.value);
 }
 
 function openPlayerHistory(msg: IChatMessage) {
-    const identity = parseIdentity(msg.identityKey);
-    if (!identity) return;
-    playerHistory.open(identity);
+    playerHistory.open(msg.identity);
 }
 
 </script>

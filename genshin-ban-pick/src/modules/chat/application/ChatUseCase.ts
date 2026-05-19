@@ -4,14 +4,15 @@ import { addMessageDomain } from "../domain/addMessageDomain";
 import { sendMessageDomain } from "../domain/sendMessageDomain";
 import { useChatStore } from "../store/chatStore";
 
+import type { Identity } from '@shared/contracts/auth/Identity';
 import type { IChatMessage } from '@shared/contracts/chat/IChatMessage';
 
 export default class ChatUseCase {
     constructor(private chatStore: ReturnType<typeof useChatStore>) {}
 
-    handleSendMessage(identityKey: string, nickname: string, message: string) {
+    handleSendMessage(identity: Identity, nickname: string, message: string) {
         const prevMessages = this.chatStore.messages
-        const { messages, newMessage } = sendMessageDomain(prevMessages, identityKey, nickname, message)
+        const { messages, newMessage } = sendMessageDomain(prevMessages, identity, nickname, message)
         this.chatStore.setMessages(messages)
         return newMessage
     }
