@@ -6,8 +6,8 @@ import { createLogger } from '@/app/utils/logger';
 import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
 import { DragTypes } from '@/app/constants/customMIMETypes';
 import { usePlayerHistory } from '@/modules/analysis/ui/composables/usePlayerHistory';
-import { parseIdentity } from '@shared/contracts/player/identitySerialization';
-import type { Identity } from '@shared/contracts/auth/Identity';
+import { parsePlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
+import type { Identity } from '@shared/contracts/identity/Identity';
 import type { TeamMember } from '@shared/contracts/team/TeamMember';
 
 const logger = createLogger('team.ui.info');
@@ -81,7 +81,7 @@ function handleDropEvent( memberSlot: number, event: DragEvent) {
     // isOver.value = false
     const identityStr = event.dataTransfer?.getData(DragTypes.ROOM_USER);
     if (!identityStr) return;
-    const parsed = parseIdentity(identityStr);
+    const parsed = parsePlayerIdentity(identityStr);
     if (!parsed || parsed.type === 'Name') return;
     emit('member-drop', { identity: parsed, teamSlot: props.teamInfo.slot, memberSlot });
 }

@@ -1,7 +1,7 @@
 import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
 
-import { isSameIdentity } from '@shared/contracts/auth/Identity';
+import { isSameIdentity } from '@shared/contracts/identity/Identity';
 import { useTeamInfoStore } from '@/modules/team';
 import { useAuthStore } from '@/modules/auth';
 

@@ -6,7 +6,7 @@ import type {
     IPlayerRecord,
 } from '@shared/contracts/analysis/IPlayerRecord';
 import type { CharacterSynergyMatrix } from '@shared/contracts/analysis/CharacterSynergyMatrix';
-import type { PlayerIdentity } from '@shared/contracts/player/PlayerIdentity';
+import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 import type { IMatchTacticalUsageWithCharacter } from '../types/IMatchTacticalUsageWithCharacter';
 
 const TOP_CHARACTERS_COUNT = 10;

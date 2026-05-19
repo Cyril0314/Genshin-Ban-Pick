@@ -3,7 +3,7 @@
 import { removeTeamMember } from './removeTeamMember';
 import { addTeamMember } from './addTeamMember';
 
-import { isSameIdentity } from '@shared/contracts/auth/Identity';
+import { isSameIdentity } from '@shared/contracts/identity/Identity';
 
 import type { TeamMember } from '@shared/contracts/team/TeamMember';
 import type { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';

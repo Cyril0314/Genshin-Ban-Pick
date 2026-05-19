@@ -1,5 +1,5 @@
 
-import type { Identity } from '../auth/Identity';
+import type { Identity } from '../identity/Identity';
 
 export interface IChatMessage {
     identity: Identity;

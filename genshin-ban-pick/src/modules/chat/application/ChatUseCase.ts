@@ -4,7 +4,7 @@ import { addMessageDomain } from "../domain/addMessageDomain";
 import { sendMessageDomain } from "../domain/sendMessageDomain";
 import { useChatStore } from "../store/chatStore";
 
-import type { Identity } from '@shared/contracts/auth/Identity';
+import type { Identity } from '@shared/contracts/identity/Identity';
 import type { IChatMessage } from '@shared/contracts/chat/IChatMessage';
 
 export default class ChatUseCase {

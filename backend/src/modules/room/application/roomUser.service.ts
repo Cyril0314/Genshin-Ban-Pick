@@ -4,7 +4,7 @@ import { createLogger } from '../../../utils/logger';
 import { joinRoomUser } from '../domain/joinRoomUser';
 import { leaveRoomUser } from '../domain/leaveRoomUser';
 
-import type { Identity } from '@shared/contracts/auth/Identity';
+import type { Identity } from '@shared/contracts/identity/Identity';
 
 import type { IRoomStateRepository } from '../domain/IRoomStateRepository';
 

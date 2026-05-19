@@ -1,4 +1,4 @@
-import type { PlayerIdentity } from '@shared/contracts/player/PlayerIdentity';
+import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 
 export function parsePlayerIdentityQuery(query: any): PlayerIdentity | undefined {
     const { type, id, name } = query;

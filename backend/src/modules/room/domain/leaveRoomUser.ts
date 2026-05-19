@@ -1,8 +1,8 @@
 // backend/src/modules/room/domain/leaveRoomUser.ts
 
-import { isSameIdentity } from '@shared/contracts/auth/Identity';
+import { isSameIdentity } from '@shared/contracts/identity/Identity';
 
-import type { Identity } from '@shared/contracts/auth/Identity';
+import type { Identity } from '@shared/contracts/identity/Identity';
 import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 
 export function leaveRoomUser(roomUsers: IRoomUser[], identity: Identity) {

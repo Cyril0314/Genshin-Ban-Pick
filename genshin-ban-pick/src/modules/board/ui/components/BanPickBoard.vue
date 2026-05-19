@@ -3,7 +3,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 
-import type { Identity } from '@shared/contracts/auth/Identity';
+import type { Identity } from '@shared/contracts/identity/Identity';
 
 import CharacterSelector from '@/modules/character/ui/components/CharacterSelector.vue';
 import TeamInfo from '@/modules/team/ui/components/TeamInfo.vue';

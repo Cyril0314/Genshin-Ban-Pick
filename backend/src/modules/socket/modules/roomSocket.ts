@@ -7,7 +7,7 @@ import { createLogger } from '../../../utils/logger';
 import { RoomUserService } from '../../room';
 import { RoomEvent } from '@shared/contracts/room/value-types';
 
-import type { Identity } from '@shared/contracts/auth/Identity';
+import type { Identity } from '@shared/contracts/identity/Identity';
 import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 
 const logger = createLogger('socket.room');

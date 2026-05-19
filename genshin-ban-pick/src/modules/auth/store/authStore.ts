@@ -8,7 +8,7 @@ import { MemberRole } from '@shared/contracts/auth/value_types';
 import { tokenStorage } from '../infrastructure/tokenStorage';
 
 import type { AuthUser } from '../types/AuthUser';
-import type { Identity } from '@shared/contracts/auth/Identity';
+import type { Identity } from '@shared/contracts/identity/Identity';
 
 const logger = createLogger('auth.store');
 

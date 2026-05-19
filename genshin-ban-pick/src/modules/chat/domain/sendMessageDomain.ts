@@ -3,7 +3,7 @@
 import { addMessageDomain } from "./addMessageDomain";
 import { buildChatMessageDomain } from "./buildChatMessageDomain";
 
-import type { Identity } from "@shared/contracts/auth/Identity";
+import type { Identity } from "@shared/contracts/identity/Identity";
 import type { IChatMessage } from "@shared/contracts/chat/IChatMessage";
 
 export function sendMessageDomain(messages: IChatMessage[], identity: Identity, nickname: string, message: string, date = Date.now()) {

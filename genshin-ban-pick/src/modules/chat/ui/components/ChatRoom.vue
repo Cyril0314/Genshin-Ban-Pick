@@ -9,7 +9,7 @@ import { useCurrentTime, formatRelativeTime } from '@/modules/shared/ui/composab
 import { useChatSync } from '../../sync/useChatSync.ts';
 import { useChatStore } from '../../store/chatStore.ts';
 import { usePlayerHistory } from '@/modules/analysis/ui/composables/usePlayerHistory';
-import { isSameIdentity } from '@shared/contracts/auth/Identity';
+import { isSameIdentity } from '@shared/contracts/identity/Identity';
 import type { IChatMessage } from '@shared/contracts/chat/IChatMessage.ts';
 
 const playerHistory = usePlayerHistory();

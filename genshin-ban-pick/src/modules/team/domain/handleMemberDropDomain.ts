@@ -1,9 +1,9 @@
 // src/modules/team/domain/handleMemberDropDomain.ts
 
-import { isSameIdentity } from '@shared/contracts/auth/Identity';
+import { isSameIdentity } from '@shared/contracts/identity/Identity';
 import { createOnlineMemberDomain } from "./createOnlineMemberDomain";
 
-import type { Identity } from '@shared/contracts/auth/Identity';
+import type { Identity } from '@shared/contracts/identity/Identity';
 import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 import type { TeamMember } from "@shared/contracts/team/TeamMember";
 import type { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';

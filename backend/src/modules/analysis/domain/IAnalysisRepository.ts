@@ -5,7 +5,7 @@ import type { IMatchMoveWeightCalcCore } from '../types/IMatchMoveWeightCalcCore
 import type { IMatchTacticalUsageExpandedRefs } from '../types/IMatchTacticalUsageExpandedRefs';
 import type { IMatchTacticalUsageTeamMemberIdentityRefs } from '../types/IMatchTacticalUsageUserPreferenceCore';
 import type { IMatchTacticalUsageWithCharacter } from '../types/IMatchTacticalUsageWithCharacter'
-import type { PlayerIdentity } from '@shared/contracts/player/PlayerIdentity';
+import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 import type { IAnalysisTimeWindow } from '@shared/contracts/analysis/IAnalysisTimeWindow';
 import type { IMatchTimeMinimal } from '@shared/contracts/analysis/IMatchTimeMinimal';
 

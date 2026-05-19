@@ -26,7 +26,7 @@ import type { IPlayerRecord } from '@shared/contracts/analysis/IPlayerRecord';
 import type { SynergyMode } from '@shared/contracts/analysis/value-types';
 import type { ICharacterGraphLink } from '@shared/contracts/analysis/character/ICharacterGraphLink';
 import type { KeyIndexedMatrix } from '@shared/contracts/analysis/KeyIndexedMatrix';
-import type { PlayerIdentity } from '@shared/contracts/player/PlayerIdentity';
+import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 import type { ICharacterPickPriority } from '@shared/contracts/analysis/ICharacterPickPriority';
 import type { ICharacterAttributeDistributions } from '@shared/contracts/analysis/character/ICharacterAttributeDistributions';
 import type { IMatchTacticalUsageWithCharacter } from '../types/IMatchTacticalUsageWithCharacter';

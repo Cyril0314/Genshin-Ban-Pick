@@ -3,7 +3,7 @@
 // 把 PlayerIdentity 對應到顯示名稱的規則。
 // 純函式：lookup 結果由 service orchestrate（auth 模組查 Member / Guest），這裡只負責「拿到值之後怎麼決定 displayName」。
 
-import type { PlayerIdentity } from '@shared/contracts/player/PlayerIdentity';
+import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 
 export interface PlayerNameLookup {
     memberNickname?: string;

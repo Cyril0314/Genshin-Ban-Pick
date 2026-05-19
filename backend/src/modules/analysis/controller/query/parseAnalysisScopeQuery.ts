@@ -1,4 +1,4 @@
-import type { PlayerIdentity } from '@shared/contracts/player/PlayerIdentity';
+import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 import { parsePlayerIdentityQuery } from './parsePlayerIdentityQuery';
 
 export type AnalysisScope =

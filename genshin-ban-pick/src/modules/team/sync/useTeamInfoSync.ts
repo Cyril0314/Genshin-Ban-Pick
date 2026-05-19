@@ -6,7 +6,7 @@ import { createLogger } from '@/app/utils/logger';
 import { TeamEvent } from '@shared/contracts/team/value-types';
 import { useTeamUseCase } from '../ui/composables/useTeamUseCase';
 
-import type { Identity } from '@shared/contracts/auth/Identity';
+import type { Identity } from '@shared/contracts/identity/Identity';
 import type { TeamMember } from '@shared/contracts/team/TeamMember';
 import type { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';
 

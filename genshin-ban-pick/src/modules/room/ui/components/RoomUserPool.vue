@@ -10,7 +10,7 @@ import { useTeamInfoStore } from '@/modules/team';
 import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme.ts';
 import { useRoomUserStore } from '../../store/roomUserStore';
 import { usePlayerHistory } from '@/modules/analysis/ui/composables/usePlayerHistory';
-import { stringifyIdentity } from '@shared/contracts/player/identitySerialization';
+import { stringifyPlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 
 import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 
@@ -29,7 +29,7 @@ const userToTeamSlotMap = computed(() => {
     for (const [teamSlot, members] of Object.entries(teamMembersMap.value)) {
         Object.values(members).forEach(m => {
             if (m.type !== 'Name')
-                map[stringifyIdentity(m)] = Number(teamSlot)
+                map[stringifyPlayerIdentity(m)] = Number(teamSlot)
         });
     }
     return map;
@@ -51,7 +51,7 @@ onMounted(() => {
 
 function handleDragStartEvent(roomUser: IRoomUser, event: DragEvent) {
     logger.debug('drag start', roomUser.identity);
-    event?.dataTransfer?.setData(DragTypes.ROOM_USER, stringifyIdentity(roomUser.identity));
+    event?.dataTransfer?.setData(DragTypes.ROOM_USER, stringifyPlayerIdentity(roomUser.identity));
 }
 
 function openPlayerHistory(roomUser: IRoomUser) {
@@ -59,7 +59,7 @@ function openPlayerHistory(roomUser: IRoomUser) {
 }
 
 function getStyleForUser(roomUser: IRoomUser) {
-    const teamSlot = userToTeamSlotMap.value[stringifyIdentity(roomUser.identity)];
+    const teamSlot = userToTeamSlotMap.value[stringifyPlayerIdentity(roomUser.identity)];
     if (teamSlot === undefined) {
         return {
             '--team-color-bg': `var(--md-sys-color-surface-container-high)`,
@@ -77,7 +77,7 @@ function getStyleForUser(roomUser: IRoomUser) {
             <div
                 class="user"
                 v-for="roomUser in roomUsers"
-                :key="stringifyIdentity(roomUser.identity)"
+                :key="stringifyPlayerIdentity(roomUser.identity)"
                 :style="getStyleForUser(roomUser)"
                 draggable="true"
                 @dragstart="handleDragStartEvent(roomUser, $event)"

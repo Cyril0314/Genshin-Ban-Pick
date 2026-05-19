@@ -1,4 +1,4 @@
-import type { Identity } from '../auth/Identity';
+import type { Identity } from '../identity/Identity';
 
 export interface IRoomUser {
     socketId: string;
