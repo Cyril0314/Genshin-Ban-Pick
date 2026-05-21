@@ -7,6 +7,6 @@ export default class AuthValidator {
 
     async verifySession(token: string) {
         const payload = await this.authService.fetchSession(token);
-        return { type: payload.type, id: payload.user.id, nickname: payload.user.nickname };
+        return { type: payload.type, id: payload.id, nickname: payload.nickname };
     }
 }

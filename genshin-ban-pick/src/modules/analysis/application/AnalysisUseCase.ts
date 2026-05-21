@@ -2,7 +2,7 @@
 
 import type AnalysisRepository from '../infrastructure/AnalysisRepository';
 import type { SynergyMode } from '@shared/contracts/analysis/value-types';
-import type { PlayerIdentity } from '@shared/contracts/player/PlayerIdentity';
+import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 import type { IAnalysisTimeWindow } from '@shared/contracts/analysis/IAnalysisTimeWindow';
 
 export default class AnalysisUseCase {

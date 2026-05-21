@@ -16,7 +16,7 @@ import { useViewportScale } from '../composables/useViewportScale';
 import { useBanPickFacade } from '../composables/useBanPickFacade';
 import { providePlayerHistory } from '@/modules/analysis/ui/composables/usePlayerHistory';
 
-import type { PlayerIdentity } from '@shared/contracts/player/PlayerIdentity';
+import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 
 const route = useRoute();
 const logger = createLogger('banPick.ui.view');

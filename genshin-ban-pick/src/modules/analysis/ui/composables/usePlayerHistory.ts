@@ -5,7 +5,7 @@
 
 import { inject, provide, type InjectionKey } from 'vue';
 
-import type { PlayerIdentity } from '@shared/contracts/player/PlayerIdentity';
+import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 
 export interface PlayerHistoryContext {
     open: (identity: PlayerIdentity) => void;

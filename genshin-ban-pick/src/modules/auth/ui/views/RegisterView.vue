@@ -6,11 +6,13 @@ import { useRouter } from 'vue-router';
 
 import { createLogger } from '@/app/utils/logger';
 import { useSocketStore } from '@/app/stores/socketStore';
+import { useAuthStore } from '../../store/authStore';
 import { useAuthUseCase } from '../composables/useAuthUseCase';
 
 const logger = createLogger('auth.ui.register');
 const router = useRouter();
 const authUseCase = useAuthUseCase();
+const authStore = useAuthStore();
 const socketStore = useSocketStore();
 
 const accountInput = ref('');
@@ -26,8 +28,10 @@ async function handleRegisterMemberSubmit() {
     }
     logger.debug('register submit', accountInput.value);
     try {
-        const { token } = await authUseCase.registerMember(accountInput.value, passwordInput.value, nicknameInput.value);
+        await authUseCase.registerMember(accountInput.value, passwordInput.value, nicknameInput.value);
         logger.debug('register ok, connecting socket');
+        const token = authStore.getToken();
+        if (!token) { logger.error('register ok but token missing'); return; }
         socketStore.connect(token);
         router.push(`/room-list`);
     } catch (error: any) {

@@ -10,7 +10,7 @@ import { useCharacterStore } from '@/modules/character';
 import { getProfileImagePath } from '@/modules/shared/infrastructure/imageRegistry';
 import { elementColors } from '@/modules/shared/ui/constants/elementColors';
 
-import type { PlayerIdentity } from '@shared/contracts/player/PlayerIdentity';
+import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 import type { Element } from '@shared/contracts/character/value-types';
 
 const props = defineProps<{

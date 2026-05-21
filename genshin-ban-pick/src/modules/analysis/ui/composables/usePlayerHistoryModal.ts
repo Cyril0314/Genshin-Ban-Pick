@@ -9,7 +9,7 @@ import { ref, watch, type Ref } from 'vue';
 import { createLogger } from '@/app/utils/logger';
 import { useAnalysisUseCase } from './useAnalysisUseCase';
 
-import type { PlayerIdentity } from '@shared/contracts/player/PlayerIdentity';
+import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 import type { IPlayerRecord } from '@shared/contracts/analysis/IPlayerRecord';
 
 const logger = createLogger('analysis.ui.playerHistory');

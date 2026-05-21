@@ -13,13 +13,7 @@ export default class AuthController {
             throw new MissingFieldsError();
         }
         const payload = await this.authService.registerMember(account, password, nickname);
-        const dto = {
-            id: payload.id,
-            account: payload.account,
-            nickname: payload.nickname,
-            role: payload.role,
-        };
-        res.status(201).json(dto);
+        res.status(201).json(payload);
     };
 
     loginMember = async (req: Request, res: Response) => {
@@ -28,14 +22,7 @@ export default class AuthController {
             throw new MissingFieldsError();
         }
         const payload = await this.authService.loginMember(account, password);
-        const dto = {
-            id: payload.id,
-            account: payload.account,
-            nickname: payload.nickname,
-            role: payload.role,
-            token: payload.token,
-        };
-        res.status(200).json(dto);
+        res.status(200).json(payload);
     };
 
     loginGuest = async (req: Request, res: Response) => {
@@ -44,12 +31,7 @@ export default class AuthController {
             throw new MissingFieldsError();
         }
         const payload = await this.authService.loginGuest(nickname);
-        const dto = {
-            id: payload.id,
-            nickname: payload.nickname,
-            token: payload.token,
-        };
-        res.status(200).json(dto);
+        res.status(200).json(payload);
     };
 
     fetchSession = async (req: Request, res: Response) => {
@@ -59,22 +41,6 @@ export default class AuthController {
         }
         const token = authHeader.split(' ')[1];
         const payload = await this.authService.fetchSession(token);
-
-        const dto =
-            payload.type === 'Member'
-                ? {
-                      type: 'Member',
-                      id: payload.user.id,
-                      nickname: payload.user.nickname,
-                      account: payload.user.account,
-                      role: payload.user.role,
-                  }
-                : {
-                      type: 'Guest',
-                      id: payload.user.id,
-                      nickname: payload.user.nickname,
-                  };
-
-        res.status(200).json(dto);
+        res.status(200).json(payload);
     };
 }

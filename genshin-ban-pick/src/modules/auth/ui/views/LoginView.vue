@@ -6,11 +6,13 @@ import { useRouter } from 'vue-router';
 
 import { createLogger } from '@/app/utils/logger';
 import { useSocketStore } from '@/app/stores/socketStore';
+import { useAuthStore } from '../../store/authStore';
 import { useAuthUseCase } from '../composables/useAuthUseCase';
 
 const logger = createLogger('auth.ui.login');
 const router = useRouter();
 const authUseCase = useAuthUseCase();
+const authStore = useAuthStore();
 const socketStore = useSocketStore();
 
 const accountInput = ref('');
@@ -19,7 +21,9 @@ const passwordInput = ref('');
 async function handleLoginMemberSubmit() {
     logger.debug('member login submit');
     try {
-        const { token } = await authUseCase.loginMember(accountInput.value, passwordInput.value);
+        await authUseCase.loginMember(accountInput.value, passwordInput.value);
+        const token = authStore.getToken();
+        if (!token) { logger.error('login ok but token missing'); return; }
         socketStore.connect(token);
         router.push(`/room-list`);
     } catch (error: any) {
@@ -31,7 +35,9 @@ async function handleLoginMemberSubmit() {
 async function handleLoginGuestButtonClick() {
     logger.debug('guest login');
     try {
-        const { token } = await authUseCase.loginGuest();
+        await authUseCase.loginGuest();
+        const token = authStore.getToken();
+        if (!token) { logger.error('login ok but token missing'); return; }
         socketStore.connect(token);
         router.push(`/room-list`);
     } catch (error: any) {
