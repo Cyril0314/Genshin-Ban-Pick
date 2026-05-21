@@ -33,15 +33,9 @@ export default class AuthUseCase {
     }
 
     async autoLogin(): Promise<void> {
-        if (this.authStore.isInitialized) {
-            logger.debug('already initialized, skip');
-            return;
-        }
-
         const token = this.authStore.getToken();
         if (!token) {
             logger.debug('no token, skip auto login');
-            this.authStore.setInitialized(true);
             return;
         }
 
@@ -53,8 +47,6 @@ export default class AuthUseCase {
             logger.warn('auto login failed, token cleared', error);
             this.authStore.setToken(undefined);
             this.authStore.setAuthUser(undefined);
-        } finally {
-            this.authStore.setInitialized(true);
         }
     }
 

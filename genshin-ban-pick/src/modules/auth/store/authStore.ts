@@ -13,7 +13,6 @@ import type { Identity } from '@shared/contracts/identity/Identity';
 const logger = createLogger('auth.store');
 
 export const useAuthStore = defineStore('auth', () => {
-    const isInitialized = ref(false);
     const authUser = ref<AuthUser>();
     const isLoggedIn = computed(() => authUser.value !== undefined);
     const isAdmin = computed(() => authUser.value?.type === 'Member' && authUser.value.role === MemberRole.Admin);
@@ -49,19 +48,13 @@ export const useAuthStore = defineStore('auth', () => {
         authUser.value = newAuthUser;
     }
 
-    function setInitialized(value: boolean) {
-        isInitialized.value = value;
-    }
-
     return {
         authUser,
         identity,
         nickname,
         isLoggedIn,
         isAdmin,
-        isInitialized,
         setAuthUser,
-        setInitialized,
         getToken,
         setToken,
     };

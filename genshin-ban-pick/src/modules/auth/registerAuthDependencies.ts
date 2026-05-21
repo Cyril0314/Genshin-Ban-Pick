@@ -9,10 +9,11 @@ import type { useAuthStore } from './store/authStore';
 import type { HttpClient } from '../../app/infrastructure/http/httpClient';
 import type { App } from 'vue';
 
-export function registerAuthDependencies(app: App, httpClient: HttpClient, authStore: ReturnType<typeof useAuthStore>,) {
-    const authService = new AuthService(httpClient)
-    const authRepository = new AuthRepository(authService)
-    const authUseCase = new AuthUseCase(authStore, authRepository)
+export function registerAuthDependencies(app: App, httpClient: HttpClient, authStore: ReturnType<typeof useAuthStore>): { authUseCase: AuthUseCase } {
+    const authService = new AuthService(httpClient);
+    const authRepository = new AuthRepository(authService);
+    const authUseCase = new AuthUseCase(authStore, authRepository);
 
     app.provide(DIKeys.AuthUseCase, authUseCase);
+    return { authUseCase };
 }

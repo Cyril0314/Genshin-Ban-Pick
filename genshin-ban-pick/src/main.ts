@@ -14,6 +14,7 @@ import { createLogger } from './app/utils/logger';
 import { registerHttpClient } from './app/bootstrap/registerHttpClient';
 import api from './app/infrastructure/http/httpClient';
 import { registerAuthDependencies, useAuthStore } from './modules/auth';
+import { useSocketStore } from './app/stores/socketStore';
 import { registerGenshinVersionDependencies } from './modules/genshinVersion';
 import { registerCharacterDependencies, useCharacterStore } from './modules/character';
 import { registerBoardDependencies, useBoardStore } from './modules/board';
@@ -32,7 +33,6 @@ const httpClient = api;
 logger.info('create app');
 
 app.use(pinia);
-app.use(router);
 app.use(naive);
 
 const authStore = useAuthStore(pinia);
@@ -44,7 +44,8 @@ const tacticalBoardStore = useTacticalBoardStore(pinia);
 const chatStore = useChatStore(pinia);
 
 registerHttpClient(authStore);
-registerAuthDependencies(app, httpClient, authStore);
+
+const { authUseCase } = registerAuthDependencies(app, httpClient, authStore);
 registerGenshinVersionDependencies(app, httpClient)
 registerCharacterDependencies(app, httpClient, characterStore);
 registerMatchDependencies(app, httpClient)
@@ -54,5 +55,12 @@ registerBoardDependencies(app, boardStore);
 registerTeamDependencies(app, teamInfoStore);
 registerTacticalDependencies(app, tacticalBoardStore)
 registerChatDependencies(app, chatStore);
+
+await authUseCase.autoLogin();
+const token = authStore.getToken();
+if (token) useSocketStore(pinia).connect(token);
+
+// router must install after autoLogin — beforeEach guard evaluates immediately on install
+app.use(router);
 
 app.mount('#app');

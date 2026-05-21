@@ -3,6 +3,7 @@
 import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { useSocketStore } from '@/app/stores/socketStore';
 import { useAuthStore } from '../../store/authStore';
 import { useAuthUseCase } from '../composables/useAuthUseCase';
 import { usePlayerHistory } from '@/modules/analysis/ui/composables/usePlayerHistory';
@@ -11,6 +12,7 @@ const router = useRouter();
 const authStore = useAuthStore();
 const { nickname, identity } = storeToRefs(authStore);
 const authUseCase = useAuthUseCase();
+const socketStore = useSocketStore();
 const playerHistory = usePlayerHistory();
 
 function handleViewHistory() {
@@ -52,6 +54,7 @@ function handleLogout() {
     // eslint-disable-next-line no-restricted-globals
     if (!confirm('確定要登出嗎？')) return;
 
+    socketStore.disconnect();
     authUseCase.logout();
     router.push('/login');
 }
