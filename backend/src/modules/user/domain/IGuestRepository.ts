@@ -1,4 +1,4 @@
-import type { IGuestData } from "./IGuestData";
+import type { IGuestData } from "../types/IGuestData";
 
 export interface IGuestRepository {
     create(nickname: string): Promise<IGuestData>;

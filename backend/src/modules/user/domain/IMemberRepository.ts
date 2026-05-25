@@ -1,4 +1,4 @@
-import type { IMemberData } from "./IMemberData";
+import type { IMemberData } from "../types/IMemberData";
 
 export interface IMemberRepository {
     create(account: string, passwordHash: string, nickname: string): Promise<IMemberData>;

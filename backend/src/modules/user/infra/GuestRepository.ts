@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 
 import type { Guest } from '@prisma/client';
 import type { IGuestRepository } from '../domain/IGuestRepository';
-import type { IGuestData } from '../domain/IGuestData';
+import type { IGuestData } from '../types/IGuestData';
 
 export default class GuestRepository implements IGuestRepository {
     constructor(private prisma: PrismaClient) {}

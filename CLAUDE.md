@@ -52,10 +52,17 @@ Both backend and frontend organize features under `src/modules/<feature>/` with 
 
 | Layer              | Backend path                  | Frontend path                                   | Responsibility                                                   |
 | ------------------ | ----------------------------- | ----------------------------------------------- | ---------------------------------------------------------------- |
-| Domain             | `modules/*/domain`            | `modules/*/domain`                              | Pure types, business rules, interface declarations (`I*`)        |
+| Domain             | `modules/*/domain`            | `modules/*/domain`                              | Business rules (pure fns) + behavioral interface contracts (`I*Repository`, `I*Provider`) |
 | Application        | `modules/*/application`       | `modules/*/application`                         | Services / UseCases — orchestrate domain + infra + store         |
 | Interface adapters | `modules/*/controller`, `http`| `modules/*/ui` (`.vue`), `store` (Pinia), `sync`| HTTP/Socket handlers on backend; components/stores on frontend   |
 | Infrastructure     | `modules/*/infra`             | `modules/*/infrastructure`, `app/infrastructure`| Prisma repos, socket clients, axios client                       |
+
+**`domain/` vs `types/`** — both hold `I*`-prefixed declarations, split by nature, not by name:
+
+- `domain/` — declarations that describe **behavior**: repository/provider interfaces (methods), and pure domain functions/business rules.
+- `types/` — plain **data shapes** with no behavior: entity rows returned by repositories, DTOs, query results (e.g. `IMemberData`, `IGuestData`, `IMatchStatisticsOverview`).
+
+Rule of thumb: if it has methods or encodes a rule it belongs in `domain/`; if it is just fields it belongs in `types/`. (Cross-boundary data shapes go in `shared/contracts/` instead — `types/` is for module-internal shapes.)
 
 ### Module composition (DI)
 

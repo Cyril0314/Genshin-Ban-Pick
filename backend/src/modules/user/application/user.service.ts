@@ -3,8 +3,8 @@ import { UserExistsError, UserNotFoundError } from '../../../errors/AppError';
 
 import type { IMemberRepository } from '../domain/IMemberRepository';
 import type { IGuestRepository } from '../domain/IGuestRepository';
-import type { IMemberData } from '../domain/IMemberData';
-import type { IGuestData } from '../domain/IGuestData';
+import type { IMemberData } from '../types/IMemberData';
+import type { IGuestData } from '../types/IGuestData';
 import type { User } from '@shared/contracts/user/User';
 import type { Identity } from '@shared/contracts/identity/Identity';
 

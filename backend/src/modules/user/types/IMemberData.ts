@@ -1,3 +1,5 @@
+// src/modules/user/types/IMemberData.ts
+
 import { MemberRole } from '@shared/contracts/auth/value_types'
 
 export interface IMemberData {
