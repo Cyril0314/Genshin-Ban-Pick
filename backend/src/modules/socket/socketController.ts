@@ -15,12 +15,13 @@ import { TeamService } from '../team';
 import { TacticalService } from '../tactical';
 
 import type { IRoomStateManager } from './domain/IRoomStateManager';
+import type UserService from '../user/application/user.service';
 
 const logger = createLogger('socket.controller');
 
-export function setupSocketIO(io: Server, roomStateManager: IRoomStateManager) {
+export function setupSocketIO(io: Server, roomStateManager: IRoomStateManager, userService: UserService) {
     const roomStateRepository = new RoomStateRepository(roomStateManager);
-    const roomUserService = new RoomUserService(roomStateRepository);
+    const roomUserService = new RoomUserService(roomStateRepository, userService);
     const boardService = new BoardService(roomStateRepository);
     const chatService = new ChatService(roomStateRepository);
     const teamService = new TeamService(roomStateRepository);

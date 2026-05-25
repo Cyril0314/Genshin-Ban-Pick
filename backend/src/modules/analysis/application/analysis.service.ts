@@ -8,14 +8,12 @@ import { computeCharacterUsage } from '../domain/computeCharacterUsage';
 import { computeCharacterPickPriority } from '../domain/computeCharacterPickPriority';
 import { computePlayerStyleProfile } from '../domain/computePlayerStyleProfile';
 import { computePlayerRecord } from '../domain/computePlayerRecord';
-import { playerDisplayName } from '../domain/playerDisplayName';
 import { computeCharacterAttributeDistributions } from '../domain/computeCharacterAttributeDistributions';
 import { createLogger } from '../../../utils/logger';
 
 import type { ICharacterRepository } from '../../character/domain/ICharacterRepository';
 import type { IMatchRepository } from '../../match/domain/IMatchRepository';
-import type { IMemberRepository } from '../../auth/domain/IMemberRepository';
-import type { IGuestRepository } from '../../auth/domain/IGuestRepository';
+import type UserService from '../../user/application/user.service';
 import type { IAnalysisRepository } from '../domain/IAnalysisRepository';
 import type { ICharacterCluster } from '@shared/contracts/analysis/ICharacterCluster';
 import type { IArchetypePoint } from '@shared/contracts/analysis/IArchetypePoint';
@@ -33,7 +31,6 @@ import type { IMatchTacticalUsageWithCharacter } from '../types/IMatchTacticalUs
 import type { IAnalysisOverview } from '@shared/contracts/analysis/IAnalysisOverview';
 import type { IAnalysisTimeWindow } from '@shared/contracts/analysis/IAnalysisTimeWindow';
 import type { IMatchTimeMinimal } from '@shared/contracts/analysis/IMatchTimeMinimal';
-import type { PlayerNameLookup } from '../domain/playerDisplayName';
 
 
 const logger = createLogger('analysis.service');
@@ -47,8 +44,7 @@ export default class AnalysisService {
         private characterCommunityScanEngine: CharacterCommunityScanEngine,
         private characterRepository: ICharacterRepository,
         private matchRepository: IMatchRepository,
-        private memberRepository: IMemberRepository,
-        private guestRepository: IGuestRepository,
+        private userService: UserService,
     ) {}
 
     async fetchOverview(): Promise<IAnalysisOverview> {
@@ -97,41 +93,6 @@ export default class AnalysisService {
         const groups = this.characterSynergyCalculator.buildCooccurrenceGroups(matchTacticalUsages, mode);
         const synergy = this.characterSynergyCalculator.buildSynergyMatrix(groups);
         return synergy;
-    }
-
-    async fetchCharacterSynergyGraph() {
-        // const characters = await this.characterRepository.findAll();
-        // const characterMap = Object.fromEntries(characters.map((character) => [character.key, character]));
-
-        // // Re-implement logic to get pickCounts + synergy matrix together to ensure consistency
-        // const matchTacticalUsages = await this.analysisRepository.findAllMatchTacticalUsageForAnalysis();
-        // const groups = this.characterSynergyCalculator.buildCooccurrenceGroups(matchTacticalUsages, 'setup');
-        // const synergyMatrix = this.characterSynergyCalculator.buildSynergyMatrix(groups);
-
-        // // Calculate pick counts from groups
-        // const pickCounts: Record<string, number> = {};
-        // for (const members of Object.values(groups)) {
-        //     const unique = new Set(members);
-        //     for (const char of unique) {
-        //         pickCounts[char] = (pickCounts[char] || 0) + 1;
-        //     }
-        // }
-
-        // const graph = await this.characterSynergyGraphBuilder.build(synergyMatrix, characterMap, pickCounts);
-        // const nodes: string[] = graph.nodes();
-
-        // const links: ICharacterGraphLink[] = graph.edges().map((edgeKey) => {
-        //     const attrs = graph.getEdgeAttributes(edgeKey);
-        //     const source = graph.source(edgeKey);
-        //     const target = graph.target(edgeKey);
-        //     return {
-        //         source,
-        //         target,
-        //         weight: attrs.weight,
-        //     };
-        // });
-        // console.log(nodes, links);
-        // return { nodes, links };
     }
 
     async fetchCharacterCluster(): Promise<ICharacterCluster> {
@@ -197,28 +158,21 @@ export default class AnalysisService {
     }
 
     async fetchPlayerRecord(playerIdentity: PlayerIdentity): Promise<IPlayerRecord> {
-        const [playerRows, usages, nameLookup] = await Promise.all([
+        const [playerRows, usages, displayName] = await Promise.all([
             this.analysisRepository.findMatchTacticalUsageWithCharacterByPlayerIdentity(playerIdentity),
             this.analysisRepository.findAllMatchTacticalUsageForAnalysis(),
-            this.lookupIdentityNicknames(playerIdentity),
+            this.resolveDisplayName(playerIdentity),
         ]);
         const groups = this.characterSynergyCalculator.buildCooccurrenceGroups(usages, 'setup');
         const synergyMatrix = this.characterSynergyCalculator.buildSynergyMatrix(groups);
-        const displayName = playerDisplayName(playerIdentity, nameLookup);
 
         return computePlayerRecord(playerRows, synergyMatrix, playerIdentity, displayName);
     }
 
-    private async lookupIdentityNicknames(playerIdentity: PlayerIdentity): Promise<PlayerNameLookup> {
-        if (playerIdentity.type === 'Member') {
-            const member = await this.memberRepository.findById(playerIdentity.id);
-            return { memberNickname: member?.nickname };
-        }
-        if (playerIdentity.type === 'Guest') {
-            const guest = await this.guestRepository.findById(playerIdentity.id);
-            return { guestNickname: guest?.nickname };
-        }
-        return {};
+    private async resolveDisplayName(playerIdentity: PlayerIdentity): Promise<string> {
+        if (playerIdentity.type === 'Name') return playerIdentity.name;
+        const user = await this.userService.fetchUser({ type: playerIdentity.type, id: playerIdentity.id });
+        return user.nickname;
     }
 
     async fetchCharacterAttributeDistributions(scope: { type: 'Player'; playerIdentity: PlayerIdentity } | { type: 'Global' }): Promise<ICharacterAttributeDistributions> {

@@ -8,10 +8,12 @@ import { createLogger } from '@/app/utils/logger';
 import { useSocketStore } from '@/app/stores/socketStore';
 import { useAuthStore } from '../../store/authStore';
 import { useAuthUseCase } from '../composables/useAuthUseCase';
+import { useUserUseCase } from '@/modules/user/ui/composables/useUserUseCase';
 
 const logger = createLogger('auth.ui.register');
 const router = useRouter();
 const authUseCase = useAuthUseCase();
+const userUseCase = useUserUseCase();
 const authStore = useAuthStore();
 const socketStore = useSocketStore();
 
@@ -33,6 +35,7 @@ async function handleRegisterMemberSubmit() {
         const token = authStore.getToken();
         if (!token) { logger.error('register ok but token missing'); return; }
         socketStore.connect(token);
+        await userUseCase.fetchProfile();
         router.push(`/room-list`);
     } catch (error: any) {
         logger.error('register failed', error);

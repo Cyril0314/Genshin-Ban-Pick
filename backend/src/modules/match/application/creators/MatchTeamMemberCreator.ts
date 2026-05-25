@@ -1,9 +1,8 @@
 // backend/src/modules/match/application/creators/MatchTeamMemberCreator.ts
 
 import { Prisma } from '@prisma/client';
-import { resolveIdentity } from '../../domain/resolveIdentity';
-import { DataNotFoundError } from '../../../../errors/AppError';
 
+import type { TeamMember } from '@shared/contracts/team/TeamMember';
 import type { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';
 
 export default class MatchTeamMemberCreator {
@@ -14,21 +13,22 @@ export default class MatchTeamMemberCreator {
             const matchTeamId = matchTeamIdMap[teamSlot];
             for (const [memberSlotString, member] of Object.entries(teamMembers)) {
                 const memberSlot = Number(memberSlotString);
-                const resolved = resolveIdentity(member);
-                if (!resolved) throw new DataNotFoundError();
                 const matchTeamMember = await tx.matchTeamMember.create({
                     data: {
                         slot: memberSlot,
-                        name: resolved.name,
+                        name: resolveName(member),
                         teamId: matchTeamId,
-                        memberRef: resolved.memberRef,
-                        guestRef: resolved.guestRef,
+                        memberRef: member.type === 'Member' ? member.id : null,
+                        guestRef: member.type === 'Guest' ? member.id : null,
                     },
                 });
-
-                matchTeamMembers.push(matchTeamMember)
+                matchTeamMembers.push(matchTeamMember);
             }
         }
-        return matchTeamMembers
+        return matchTeamMembers;
     }
+}
+
+function resolveName(member: TeamMember): string {
+    return member.type === 'Name' ? member.name : member.nickname;
 }

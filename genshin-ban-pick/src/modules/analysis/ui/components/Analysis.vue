@@ -12,7 +12,6 @@ import CharacterScatterChart from './CharacterScatterChart.vue';
 
 import PlayerCharacterChart from './PlayerCharacterChart.vue';
 import PlayerStyleRadarChart from './PlayerStyleRadarChart.vue';
-import CharacterSynergyGraphChart from './CharacterSynergyGraphChart.vue';
 import MatchOverviewChart from './MatchOverviewChart.vue';
 
 const props = defineProps<{}>();
@@ -27,7 +26,6 @@ const tabs = [
     { name: '角色定位象限', component: CharacterScatterChart },
     { name: '角色使用構成', component: CharacterUsagesCompositionChart },
     { name: '角色共現熱圖', component: CharacterSynergyChart },
-    // { name: '角色圖', component: CharacterSynergyGraphChart },
     { name: '角色群聚圖', component: CharacterClusterChart },
     { name: '玩家偏好角色', component: PlayerCharacterChart },
 ];

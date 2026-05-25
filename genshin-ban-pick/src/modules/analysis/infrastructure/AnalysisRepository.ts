@@ -72,11 +72,6 @@ export default class AnalysisRepository {
         return response.data;
     }
 
-    async fetchCharacterSynergyGraph() {
-        const response = await this.analysisService.getCharacterSynergyGraph();
-        return response.data;
-    }
-
     async fetchCharacterCluster() {
         const response = await this.analysisService.getCharacterCluster();
         return response.data;

@@ -1,5 +1,3 @@
-// shared/contracts/identity/identity.ts
-
 export type Identity =
     | { type: 'Member'; id: number }
     | { type: 'Guest'; id: number };

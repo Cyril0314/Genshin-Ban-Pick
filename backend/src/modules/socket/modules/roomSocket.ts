@@ -13,15 +13,13 @@ import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 const logger = createLogger('socket.room');
 
 export function registerRoomSocket(io: Server, socket: Socket, roomUserService: RoomUserService) {
-    socket.on(RoomEvent.UserJoinRequest, (roomId: string) => {
+    socket.on(RoomEvent.UserJoinRequest, async (roomId: string) => {
         logger.debug(`Received ${RoomEvent.UserJoinRequest} ${socket.id} roomId: ${roomId}`);
         socket.join(roomId);
         (socket as any).roomId = roomId;
 
-        const nickname = socket.data.identity.nickname as string;
         const identity = socket.data.identity as Identity;
-
-        const { joinedUser, roomUsers } = roomUserService.join(roomId, { identity, nickname, socketId: socket.id });
+        const { joinedUser, roomUsers } = await roomUserService.join(roomId, identity, socket.id);
 
         if (joinedUser) {
             socket.to(roomId).emit(RoomEvent.UserJoinBroadcast, joinedUser);

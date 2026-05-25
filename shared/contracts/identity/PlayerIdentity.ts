@@ -1,5 +1,3 @@
-// shared/contracts/identity/PlayerIdentity.ts
-
 import type { Identity } from "./Identity";
 
 export type PlayerIdentity =

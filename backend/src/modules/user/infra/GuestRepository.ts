@@ -1,22 +1,20 @@
-// src/modules/auth/infra/GuestRepository.ts
-
 import { PrismaClient } from '@prisma/client';
 
 import type { Guest } from '@prisma/client';
 import type { IGuestRepository } from '../domain/IGuestRepository';
-import type { IGuestData } from '../types/IGuestData';
+import type { IGuestData } from '../domain/IGuestData';
 
 export default class GuestRepository implements IGuestRepository {
     constructor(private prisma: PrismaClient) {}
 
-    async create(nickname: string) {
+    async create(nickname: string): Promise<IGuestData> {
         const guest = await this.prisma.guest.create({
             data: { nickname },
         });
         return this.map(guest);
     }
 
-    async findById(id: number) {
+    async findById(id: number): Promise<IGuestData | undefined> {
         const guest = await this.prisma.guest.findUnique({
             where: { id },
         });

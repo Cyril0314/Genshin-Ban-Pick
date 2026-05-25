@@ -5,7 +5,7 @@ import { storeToRefs } from 'pinia';
 
 import { useEchartTheme } from '@/modules/shared/ui/composables/useEchartTheme';
 import { useDesignTokens } from '@/modules/shared/ui/composables/useDesignTokens';
-import { useAuthStore } from '@/modules/auth';
+import { useUserStore } from '@/modules/user';
 import { createLogger } from '@/app/utils/logger';
 import { useAnalysisUseCase } from './useAnalysisUseCase';
 import { useMatchUseCase } from '@/modules/match';
@@ -19,12 +19,14 @@ import {
 } from '@/modules/shared/ui/composables/useCharacterTranslators';
 import { sortByEnumOrder } from '@/modules/shared/ui/composables/useCharacterSorter';
 import { elementColors } from '@/modules/shared/ui/constants/elementColors';
+import { isSameIdentity } from '@shared/contracts/identity/Identity';
 
 import type { IPlayerStyleProfile } from '@shared/contracts/analysis/IPlayerStyleProfile';
 import type { CharacterFilterKey } from '@shared/contracts/character/CharacterFilterKey';
 import type { TeamMember } from '@shared/contracts/team/TeamMember';
 import type { EnumOrderValue } from '@/modules/shared/ui/composables/useCharacterSorter';
 import type { ICharacterAttributeDistributions } from '@shared/contracts/analysis/character/ICharacterAttributeDistributions';
+
 
 const logger = createLogger('analysis.ui.playerStyleChart');
 
@@ -33,8 +35,8 @@ type Scope = { type: 'Player'; player: TeamMember } | { type: 'Global' };
 export function usePlayerStyleChart() {
     const { tooltipStyle } = useEchartTheme();
     const designTokens = useDesignTokens();
-    const authStore = useAuthStore();
-    const { authUser } = storeToRefs(authStore);
+    const userStore = useUserStore();
+    const { user } = storeToRefs(userStore);
 
     const analysisUseCase = useAnalysisUseCase();
     const matchUseCase = useMatchUseCase();
@@ -71,12 +73,12 @@ export function usePlayerStyleChart() {
         players.value = await matchUseCase.fetchMatchTeamMembers();
         logger.debug('players loaded', players.value.length);
 
-        const currentUser = authUser.value;
+        const currentUser = user.value;
         const self = !currentUser
             ? undefined
             : players.value.find((player) => {
                 if (player.type === 'Name') return false;
-                return player.type === currentUser.type && player.id === currentUser.id;
+                return isSameIdentity(player, currentUser);
             });
 
         if (self) {

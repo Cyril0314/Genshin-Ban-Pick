@@ -8,20 +8,28 @@ import { createCharacterModule } from '../modules/character';
 import { createMatchModule } from '../modules/match';
 import { createAnalysisModule } from '../modules/analysis';
 import { createAuthModule } from '../modules/auth';
+import { createUserModule } from '../modules/user';
 import { createGenshinVersionModule } from '../modules/genshinVersion';
+import { createRequireAuth } from '../middlewares/requireAuth';
 
 import type { Express } from 'express';
 import type { IRoomStateManager } from '../modules/socket/domain/IRoomStateManager';
+import type { IJwtProvider } from '../modules/auth/domain/IJwtProvider';
 
-export function registerAppRouters(app: Express, prisma: PrismaClient, roomStateManager: IRoomStateManager) {
-    const authModule = createAuthModule(prisma);
+export function registerAppRouters(app: Express, prisma: PrismaClient, roomStateManager: IRoomStateManager, jwtProvider: IJwtProvider) {
+    const requireAuth = createRequireAuth(jwtProvider);
+
+    const userModule = createUserModule(prisma, requireAuth);
+    app.use('/api/users', userModule.router);
+
+    const authModule = createAuthModule(userModule.userService, jwtProvider);
     app.use('/api/auth', authModule.router);
-
+    
     const roomModule = createRoomModule(prisma, roomStateManager);
     app.use('/api/rooms', roomModule.router);
 
     const genshinVersionModule = createGenshinVersionModule(prisma);
-    app.use('/api/genshin-versions', genshinVersionModule.router)
+    app.use('/api/genshin-versions', genshinVersionModule.router);
 
     const characterModule = createCharacterModule(prisma);
     app.use('/api/characters', characterModule.router);
@@ -33,13 +41,12 @@ export function registerAppRouters(app: Express, prisma: PrismaClient, roomState
         prisma,
         characterModule.repository,
         matchModule.repository,
-        authModule.memberRepository,
-        authModule.guestRepository,
+        userModule.userService,
     );
     app.use('/api/analyses', analysisModule.router);
 
     return {
-        authModule,
+        userModule,
         roomModule,
         genshinVersionModule,
         characterModule,

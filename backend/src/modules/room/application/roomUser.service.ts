@@ -5,21 +5,25 @@ import { joinRoomUser } from '../domain/joinRoomUser';
 import { leaveRoomUser } from '../domain/leaveRoomUser';
 
 import type { Identity } from '@shared/contracts/identity/Identity';
-
 import type { IRoomStateRepository } from '../domain/IRoomStateRepository';
+import type UserService from '../../user/application/user.service';
 
 const logger = createLogger('room.service.user');
 
 export default class RoomUserService {
-    constructor(private roomStateRepository: IRoomStateRepository) {}
+    constructor(
+        private roomStateRepository: IRoomStateRepository,
+        private userService: UserService,
+    ) {}
 
-    join(roomId: string, { identity, nickname, socketId }: { identity: Identity; nickname: string; socketId: string }) {
+    async join(roomId: string, identity: Identity, socketId: string) {
+        const user = await this.userService.fetchUser(identity);
         const prevRoomUsers = this.roomStateRepository.findRoomUsersById(roomId);
-        const { joinedUser, roomUsers } = joinRoomUser(prevRoomUsers, identity, nickname, socketId)
+        const { joinedUser, roomUsers } = joinRoomUser(prevRoomUsers, identity, user.nickname, socketId);
 
-        this.roomStateRepository.updateRoomUsersById(roomId, roomUsers)
+        this.roomStateRepository.updateRoomUsersById(roomId, roomUsers);
 
-        return { joinedUser, roomUsers }
+        return { joinedUser, roomUsers };
     }
 
     leave(roomId: string, identity: Identity) {

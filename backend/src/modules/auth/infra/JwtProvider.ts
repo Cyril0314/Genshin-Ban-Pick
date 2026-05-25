@@ -4,19 +4,19 @@ import jwt from 'jsonwebtoken';
 
 import { ExpiredTokenError, InvalidTokenError } from '../../../errors/AppError';
 
-import type { IAuthPayload } from '../domain/IAuthPayload';
+import type { Principal } from '@shared/contracts/auth/Principal';
 import type { IJwtProvider } from '../domain/IJwtProvider';
 
 export default class JwtProvider implements IJwtProvider {
-    sign(authPayload: IAuthPayload, expiresInDays: number) {
-        return jwt.sign(authPayload, process.env.JWT_SECRET as string, {
+    sign(user: Principal, expiresInDays: number) {
+        return jwt.sign(user, process.env.JWT_SECRET as string, {
             expiresIn: `${expiresInDays}d`,
         });
     }
 
-    verify(token: string): IAuthPayload {
+    verify(token: string): Principal {
         try {
-            return jwt.verify(token, process.env.JWT_SECRET as string) as IAuthPayload;
+            return jwt.verify(token, process.env.JWT_SECRET as string) as Principal;
         } catch (err) {
             if (err instanceof jwt.TokenExpiredError) {
                 throw new ExpiredTokenError();

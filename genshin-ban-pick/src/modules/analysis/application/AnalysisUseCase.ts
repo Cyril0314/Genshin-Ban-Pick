@@ -27,11 +27,7 @@ export default class AnalysisUseCase {
     async fetchCharacteSynergyMatrix(payload: { mode: SynergyMode }) {
         return await this.analysisRepository.fetchCharacteSynergyMatrix(payload);
     }
-
-    async fetchCharacterSynergyGraph() {
-        return await this.analysisRepository.fetchCharacterSynergyGraph();
-    }
-
+    
     async fetchCharacterCluster() {
         return await this.analysisRepository.fetchCharacterCluster();
     }

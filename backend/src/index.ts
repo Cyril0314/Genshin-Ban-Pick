@@ -9,12 +9,12 @@ import cors from 'cors';
 import express from 'express';
 
 import { createLogger } from './utils/logger';
-import { accessLog } from './middlewares/accessLog';
-import { errorHandler } from './middlewares/errorHandler';
+import { createAccessLog } from './middlewares/accessLog';
+import { createErrorHandler } from './middlewares/errorHandler';
 import { registerAppRouters } from './app/appRouter';
 import { createSocketApp } from './modules/socket/index';
 import RoomStateManager from './modules/socket/infra/RoomStateManager';
-import AuthValidator from './modules/socket/infra/AuthValidator';
+import JwtProvider from './modules/auth/infra/JwtProvider';
 
 import type { Request, Response } from 'express';
 
@@ -61,32 +61,32 @@ const __dirname = path.dirname(__filename);
 // Express 提供前端的靜態檔案 (非常重要!)
 app.use(express.static(path.resolve(__dirname, '../public')));
 app.use(express.json());
-app.use(accessLog);
+app.use(createAccessLog());
 // app.disable('etag');
 // ---------------------------------------------------------
 // 🧩 6. 資料服務實例化
 // ---------------------------------------------------------
 logger.info('Init Services');
-const prisma = new PrismaClient(); // DB
-const roomStateManager = new RoomStateManager(); // Disk
+const prisma = new PrismaClient();
+const roomStateManager = new RoomStateManager();
+const jwtProvider = new JwtProvider();
 
 // ---------------------------------------------------------
 // 🧩 7. Routes 註冊
 // ---------------------------------------------------------
 logger.info('Register Api Routes');
-const modules = registerAppRouters(app, prisma, roomStateManager);
+const modules = registerAppRouters(app, prisma, roomStateManager, jwtProvider);
 
 // ---------------------------------------------------------
 // 🧩 8. Socket 初始化
 // ---------------------------------------------------------
 logger.info('Init Socket');
-const authValidator = new AuthValidator(modules.authModule.authService)
-createSocketApp(server, roomStateManager, authValidator);
+createSocketApp(server, roomStateManager, jwtProvider, modules.userModule.userService);
 
 // ---------------------------------------------------------
 // 🧩 9. Error Handler (一定要最後)
 // ---------------------------------------------------------
-app.use(errorHandler);
+app.use(createErrorHandler());
 
 // 讓所有未知的 request 都回傳 index.html (支援 Vue Router history mode)
 app.get('*', (req: Request, res: Response) => {

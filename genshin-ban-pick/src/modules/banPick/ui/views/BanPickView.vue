@@ -9,7 +9,7 @@ import Toolbar from '../components/ToolBar.vue';
 import StepIndicator from '@/modules/board/ui/components/StepIndicator.vue';
 import RoomUserPool from '@/modules/room/ui/components/RoomUserPool.vue';
 import BanPickBoard from '@/modules/board/ui/components/BanPickBoard.vue';
-import UserProfile from '@/modules/auth/ui/components/UserProfile.vue';
+import UserProfile from '@/modules/user/ui/components/UserProfile.vue';
 import PlayerHistoryModal from '@/modules/analysis/ui/components/PlayerHistoryModal.vue';
 
 import { useViewportScale } from '../composables/useViewportScale';

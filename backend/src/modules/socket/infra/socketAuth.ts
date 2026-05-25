@@ -1,28 +1,16 @@
-// backend/src/modules/socket/infra/socketAuth.ts
-
 import { Server, Socket } from 'socket.io';
-import { MissingFieldsError, UserNotFoundError } from '../../../errors/AppError';
 
-import type { IAuthValidator } from '../domain/IAuthValidator';
+import { MissingFieldsError } from '../../../errors/AppError';
 
-export function createSocketAuth(authValidator: IAuthValidator) {
+import type { IJwtProvider } from '../../auth/domain/IJwtProvider';
+
+export function createSocketAuth(jwtProvider: IJwtProvider) {
     return function attachAuthMiddleware(io: Server) {
         io.use(async (socket: Socket, next) => {
             const { token } = socket.handshake.auth as { token: string };
-            if (!token) {
-                return next(new MissingFieldsError());
-            }
+            if (!token) return next(new MissingFieldsError());
             try {
-                let result = await authValidator.verifySession(token)
-                if (!result) {
-                    return next(new UserNotFoundError());
-                }
-                socket.data.identity = {
-                    type: result.type,
-                    id: result.id,
-                    nickname: result.nickname,
-                };
-
+                socket.data.identity = jwtProvider.verify(token);
                 return next();
             } catch (err: any) {
                 return next(err);

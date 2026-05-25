@@ -41,11 +41,6 @@ export default class AnalysisController {
         res.status(200).json(synergy);
     };
 
-    fetchCharacterSynergyGraph = async (req: Request, res: Response) => {
-        const graph = await this.analysisService.fetchCharacterSynergyGraph();
-        res.status(200).json(graph);
-    };
-
     fetchCharacterCluster = async (req: Request, res: Response) => {
         const characterClusters = await this.analysisService.fetchCharacterCluster();
         res.status(200).json(characterClusters);

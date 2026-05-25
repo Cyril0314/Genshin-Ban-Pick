@@ -1,5 +1,3 @@
-// shared/contracts/analysis/IPlayerRecord.ts
-
 import type { PlayerIdentity } from '../identity/PlayerIdentity';
 
 export interface ICharacterSynergy {

@@ -1,17 +1,22 @@
-<!-- src/modules/auth/ui/components/UserProfile.vue -->
+<!-- src/modules/user/ui/components/UserProfile.vue -->
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useSocketStore } from '@/app/stores/socketStore';
-import { useAuthStore } from '../../store/authStore';
-import { useAuthUseCase } from '../composables/useAuthUseCase';
+import { useAuthStore } from '@/modules/auth/store/authStore';
+import { useAuthUseCase } from '@/modules/auth/ui/composables/useAuthUseCase';
+import { useUserStore } from '../../store/userStore';
+import { useUserUseCase } from '../composables/useUserUseCase';
 import { usePlayerHistory } from '@/modules/analysis/ui/composables/usePlayerHistory';
 
 const router = useRouter();
 const authStore = useAuthStore();
-const { nickname, identity } = storeToRefs(authStore);
+const { identity } = storeToRefs(authStore);
+const userStore = useUserStore();
+const { nickname } = storeToRefs(userStore);
 const authUseCase = useAuthUseCase();
+const userUseCase = useUserUseCase();
 const socketStore = useSocketStore();
 const playerHistory = usePlayerHistory();
 
@@ -55,6 +60,7 @@ function handleLogout() {
     if (!confirm('確定要登出嗎？')) return;
 
     socketStore.disconnect();
+    userUseCase.clearProfile();
     authUseCase.logout();
     router.push('/login');
 }

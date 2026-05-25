@@ -14,6 +14,7 @@ import { createLogger } from './app/utils/logger';
 import { registerHttpClient } from './app/bootstrap/registerHttpClient';
 import api from './app/infrastructure/http/httpClient';
 import { registerAuthDependencies, useAuthStore } from './modules/auth';
+import { registerUserDependencies, useUserStore } from './modules/user';
 import { useSocketStore } from './app/stores/socketStore';
 import { registerGenshinVersionDependencies } from './modules/genshinVersion';
 import { registerCharacterDependencies, useCharacterStore } from './modules/character';
@@ -36,6 +37,7 @@ app.use(pinia);
 app.use(naive);
 
 const authStore = useAuthStore(pinia);
+const userStore = useUserStore(pinia);
 const characterStore = useCharacterStore(pinia);
 const roomUserStore = useRoomUserStore(pinia);
 const boardStore = useBoardStore(pinia);
@@ -46,6 +48,7 @@ const chatStore = useChatStore(pinia);
 registerHttpClient(authStore);
 
 const { authUseCase } = registerAuthDependencies(app, httpClient, authStore);
+const { userUseCase } = registerUserDependencies(app, httpClient, userStore);
 registerGenshinVersionDependencies(app, httpClient)
 registerCharacterDependencies(app, httpClient, characterStore);
 registerMatchDependencies(app, httpClient)
@@ -58,7 +61,10 @@ registerChatDependencies(app, chatStore);
 
 await authUseCase.autoLogin();
 const token = authStore.getToken();
-if (token) useSocketStore(pinia).connect(token);
+if (token) {
+    useSocketStore(pinia).connect(token);
+    await userUseCase.fetchProfile();
+}
 
 // router must install after autoLogin — beforeEach guard evaluates immediately on install
 app.use(router);

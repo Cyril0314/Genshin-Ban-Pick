@@ -1,4 +1,6 @@
+import type { PlayerIdentity } from '../identity/PlayerIdentity';
+
 export type TeamMember =
-    | { type: 'Member'; id: number; nickname: string }
-    | { type: 'Guest'; id: number; nickname: string }
-    | { type: 'Name'; name: string };
+    | (Extract<PlayerIdentity, { type: 'Member' }> & { nickname: string })
+    | (Extract<PlayerIdentity, { type: 'Guest' }> & { nickname: string })
+    | Extract<PlayerIdentity, { type: 'Name' }>;

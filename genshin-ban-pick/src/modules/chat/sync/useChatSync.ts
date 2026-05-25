@@ -2,6 +2,7 @@
 
 import { useSocketStore } from '@/app/stores/socketStore';
 import { useAuthStore } from '@/modules/auth';
+import { useUserStore } from '@/modules/user';
 import { createLogger } from '@/app/utils/logger';
 import { ChatEvent } from '@shared/contracts/chat/value-types';
 import { useChatUseCase } from '../ui/composables/useChatUseCase';
@@ -14,6 +15,7 @@ export function useChatSync() {
     const socket = useSocketStore().getSocket();
     const chatUseCase = useChatUseCase();
     const authStore = useAuthStore();
+    const userStore = useUserStore();
 
     function registerChatSync() {
         socket.on(`${ChatEvent.MessagesStateSyncSelf}`, handleChatMessagesStateSync);
@@ -27,8 +29,8 @@ export function useChatSync() {
 
     function sendMessage(messageText: string) {
         logger.debug('sent message request', messageText);
-        if (!authStore.identity || !authStore.nickname) return;
-        const message = chatUseCase.handleSendMessage(authStore.identity, authStore.nickname, messageText);
+        if (!authStore.identity || !userStore.nickname) return;
+        const message = chatUseCase.handleSendMessage(authStore.identity, userStore.nickname, messageText);
         socket.emit(`${ChatEvent.MessageSendRequest}`, { message });
     }
 

@@ -15,7 +15,6 @@ export default function createAnalysesRouter(analysisController: AnalysisControl
     router.get('/character-usages/pick-priority', asyncHandler(analysisController.fetchCharacterUsagePickPriority));
 
     router.get('/character-synergy/matrix', asyncHandler(analysisController.fetchCharacterSynergyMatrix));
-    router.get('/character-synergy/graph', asyncHandler(analysisController.fetchCharacterSynergyGraph));
     router.get('/character-cluster', asyncHandler(analysisController.fetchCharacterCluster));
 
     router.get('/player-character-usages', asyncHandler(analysisController.fetchPlayerCharacterUsage));

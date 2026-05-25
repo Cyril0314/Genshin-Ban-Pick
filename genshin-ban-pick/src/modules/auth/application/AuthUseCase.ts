@@ -11,23 +11,23 @@ export default class AuthUseCase {
     constructor(private authStore: ReturnType<typeof useAuthStore>, private authRepository: AuthRepository) {}
 
     async registerMember(account: string, password: string, nickname: string): Promise<void> {
-        const { token, ...authUser } = await this.authRepository.registerMember({ account, password, nickname });
-        this.authStore.setAuthUser(authUser);
+        const { token, ...principal } = await this.authRepository.registerMember({ account, password, nickname });
+        this.authStore.setPrincipal(principal);
         this.authStore.setToken(token);
         logger.info('register member ok', account);
     }
 
     async loginMember(account: string, password: string): Promise<void> {
-        const { token, ...authUser } = await this.authRepository.loginMember({ account, password });
-        this.authStore.setAuthUser(authUser);
+        const { token, ...principal } = await this.authRepository.loginMember({ account, password });
+        this.authStore.setPrincipal(principal);
         this.authStore.setToken(token);
         logger.info('login member ok', account);
     }
 
     async loginGuest(): Promise<void> {
         const nickname = `guest_${Math.random().toString(36).slice(2, 8)}`;
-        const { token, ...authUser } = await this.authRepository.loginGuest({ nickname });
-        this.authStore.setAuthUser(authUser);
+        const { token, ...principal } = await this.authRepository.loginGuest({ nickname });
+        this.authStore.setPrincipal(principal);
         this.authStore.setToken(token);
         logger.info('login guest ok');
     }
@@ -40,19 +40,19 @@ export default class AuthUseCase {
         }
 
         try {
-            const authUser = await this.authRepository.autoLogin(token);
-            this.authStore.setAuthUser(authUser);
+            const principal = await this.authRepository.autoLogin(token);
+            this.authStore.setPrincipal(principal);
             logger.info('auto login ok');
         } catch (error) {
             logger.warn('auto login failed, token cleared', error);
             this.authStore.setToken(undefined);
-            this.authStore.setAuthUser(undefined);
+            this.authStore.setPrincipal(undefined);
         }
     }
 
     logout() {
         logger.info('logout');
-        this.authStore.setAuthUser(undefined);
+        this.authStore.setPrincipal(undefined);
         this.authStore.setToken(undefined);
     }
 }

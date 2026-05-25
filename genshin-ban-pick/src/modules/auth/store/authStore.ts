@@ -7,30 +7,24 @@ import { createLogger } from '@/app/utils/logger';
 import { MemberRole } from '@shared/contracts/auth/value_types';
 import { tokenStorage } from '../infrastructure/tokenStorage';
 
-import type { AuthUser } from '@shared/contracts/auth/AuthUser';
+import type { Principal } from '@shared/contracts/auth/Principal';
 import type { Identity } from '@shared/contracts/identity/Identity';
 
 const logger = createLogger('auth.store');
 
 export const useAuthStore = defineStore('auth', () => {
-    const authUser = ref<AuthUser>();
-    const isLoggedIn = computed(() => authUser.value !== undefined);
-    const isAdmin = computed(() => authUser.value?.type === 'Member' && authUser.value.role === MemberRole.Admin);
-    const isGuest = computed(() => authUser.value?.type === 'Guest');
-    // lean { type, id } for cross-module comparisons (e.g. isSameIdentity); use authUser for display fields
+    const principal = ref<Principal>();
+    const isLoggedIn = computed(() => principal.value !== undefined);
+    const isAdmin = computed(() => principal.value?.type === 'Member' && principal.value.role === MemberRole.Admin);
     const identity = computed<Identity | undefined>(() => {
-        if (!authUser.value) return undefined;
-        return authUser.value;
-    });
-    const nickname = computed(() => {
-        if (!authUser.value) return undefined;
-        return authUser.value.nickname;
+        if (!principal.value) return undefined;
+        return principal.value;
     });
 
     watch(
-        authUser,
-        (authUser) => {
-            logger.debug('watch authUser', authUser);
+        principal,
+        (principal) => {
+            logger.debug('watch principal', principal);
         },
         { immediate: true },
     );
@@ -43,18 +37,17 @@ export const useAuthStore = defineStore('auth', () => {
         tokenStorage.set(token);
     }
 
-    function setAuthUser(newAuthUser: AuthUser | undefined) {
-        logger.debug('set authUser', newAuthUser);
-        authUser.value = newAuthUser;
+    function setPrincipal(newPrincipal: Principal | undefined) {
+        logger.debug('set principal', newPrincipal);
+        principal.value = newPrincipal;
     }
 
     return {
-        authUser,
+        principal,
         identity,
-        nickname,
         isLoggedIn,
         isAdmin,
-        setAuthUser,
+        setPrincipal,
         getToken,
         setToken,
     };

@@ -1,4 +1,3 @@
-
 export enum ChatEvent {
     MessageSendRequest = 'chat.message.send.request',
     MessageSendBroadcast = 'chat.message.send.broadcast',

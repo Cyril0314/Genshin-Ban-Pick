@@ -1,4 +1,3 @@
-
 export interface ICharacterAttributeDistributions {
     roleDistribution: Record<string, number>, 
     elementDistribution: Record<string, number>,

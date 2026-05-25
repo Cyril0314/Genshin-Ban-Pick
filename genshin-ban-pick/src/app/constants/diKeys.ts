@@ -2,6 +2,7 @@
 
 export const DIKeys = {
     AuthUseCase: Symbol('auth-use-case'),
+    UserUseCase: Symbol('user-use-case'),
     RoomUseCase: Symbol('room-use-case'),
     MatchUseCase: Symbol('match-use-case'),
     GenshinVersionUseCase: Symbol('genshin-version-use-case'),

@@ -2,39 +2,36 @@
 
 import type AuthService from './AuthService';
 
-import type { AuthUser } from '@shared/contracts/auth/AuthUser';
+import type { Principal } from '@shared/contracts/auth/Principal';
 
 export default class AuthRepository {
     constructor(private authService: AuthService) {}
 
-    async autoLogin(token: string): Promise<AuthUser> {
+    async autoLogin(token: string): Promise<Principal> {
         const response = await this.authService.getSession();
-        const { type, id, nickname } = response.data;
-        const authUser: AuthUser =
+        const { type, id } = response.data;
+        const principal: Principal =
             type === 'Member'
-                ? { type, id, nickname, account: response.data.account, role: response.data.role }
-                : { type: 'Guest', id, nickname };
-        return authUser;
+                ? { type, id, role: response.data.role }
+                : { type: 'Guest', id };
+        return principal;
     }
 
-    async loginGuest(payload: { nickname: string }): Promise<Extract<AuthUser, { type: 'Guest' }> & { token: string }> {
+    async loginGuest(payload: { nickname: string }): Promise<Extract<Principal, { type: 'Guest' }> & { token: string }> {
         const response = await this.authService.postLoginGuest(payload);
-        const { id, nickname, token } = response.data;
-        const authUser: AuthUser = { type: 'Guest', id, nickname };
-        return { ...authUser, token };
+        const { id, token } = response.data;
+        return { type: 'Guest', id, token };
     }
 
-    async loginMember(payload: { account: string; password: string }): Promise<Extract<AuthUser, { type: 'Member' }> & { token: string }> {
+    async loginMember(payload: { account: string; password: string }): Promise<Extract<Principal, { type: 'Member' }> & { token: string }> {
         const response = await this.authService.postLoginMember(payload);
-        const { id, nickname, account, role, token } = response.data;
-        const authUser: AuthUser = { type: 'Member', id, nickname, account, role };
-        return { ...authUser, token };
+        const { id, role, token } = response.data;
+        return { type: 'Member', id, role, token };
     }
 
-    async registerMember(payload: { account: string; password: string; nickname: string }): Promise<Extract<AuthUser, { type: 'Member' }> & { token: string }> {
+    async registerMember(payload: { account: string; password: string; nickname: string }): Promise<Extract<Principal, { type: 'Member' }> & { token: string }> {
         const response = await this.authService.postRegisterMember(payload);
-        const { id, nickname, account, role, token } = response.data;
-        const authUser: AuthUser = { type: 'Member', id, nickname, account, role };
-        return { ...authUser, token };
+        const { id, role, token } = response.data;
+        return { type: 'Member', id, role, token };
     }
 }

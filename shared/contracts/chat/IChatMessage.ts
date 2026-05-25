@@ -1,4 +1,3 @@
-
 import type { Identity } from '../identity/Identity';
 
 export interface IChatMessage {

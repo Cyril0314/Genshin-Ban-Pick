@@ -1,6 +1,4 @@
-// src/modules/auth/domain/IMemberRepository.ts
-
-import type { IMemberData } from "../types/IMemberData";
+import type { IMemberData } from "./IMemberData";
 
 export interface IMemberRepository {
     create(account: string, passwordHash: string, nickname: string): Promise<IMemberData>;

@@ -1,6 +1,4 @@
-// src/modules/auth/domain/IGuestRepository.ts
-
-import type { IGuestData } from "../types/IGuestData";
+import type { IGuestData } from "./IGuestData";
 
 export interface IGuestRepository {
     create(nickname: string): Promise<IGuestData>;

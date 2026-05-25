@@ -5,6 +5,7 @@ import { ref, nextTick, watch, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import { useAuthStore } from '@/modules/auth';
+import { useUserStore } from '@/modules/user';
 import { useCurrentTime, formatRelativeTime } from '@/modules/shared/ui/composables/useRelativeTime';
 import { useChatSync } from '../../sync/useChatSync.ts';
 import { useChatStore } from '../../store/chatStore.ts';
@@ -20,7 +21,9 @@ const chatStore = useChatStore();
 const { messages } = storeToRefs(chatStore)
 const { sendMessage } = useChatSync();
 const authStore = useAuthStore();
-const { nickname, identity } = storeToRefs(authStore);
+const { identity } = storeToRefs(authStore);
+const userStore = useUserStore();
+const { nickname } = storeToRefs(userStore);
 const now = useCurrentTime();
 
 onMounted(() => {
