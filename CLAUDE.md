@@ -77,11 +77,27 @@ Pick the right form when adding a new store; mixing them tends to produce stale-
 
 Socket.IO is the live channel; REST (Express routers) is for static/historical data and auth. Backend socket handlers receive `RoomUserService`, `BoardService`, `ChatService`, `TeamService`, `TacticalService` (all sharing a single `RoomStateRepository` over an in-memory `RoomStateManager`). Frontend mirrors this: each feature has a `sync/` folder (e.g. `modules/board/sync/useBoardSync.ts`) that bridges socket events ↔ Pinia store.
 
-Auth on sockets goes through `createSocketAuth(authValidator)` middleware before `setupSocketIO` registers handlers — `authValidator` reuses the HTTP `AuthService`.
+Auth on sockets goes through `createSocketAuth(jwtProvider)` middleware before `setupSocketIO` registers handlers — it calls `jwtProvider.verify(token)` directly and stores the result in `socket.data.identity` (no DB call).
 
 ### Shared contracts
 
 When adding a cross-boundary type, put it under `shared/contracts/<domain>/` and import as `@shared/contracts/...`. Both sides resolve this alias; do not duplicate types per side.
+
+### Identity model
+
+Four types represent users in different contexts. Pick the right one — using the wrong type is a common source of bugs.
+
+| Type | Where it lives | What it carries | When to use |
+| --- | --- | --- | --- |
+| `Identity` | `shared/contracts/identity/Identity.ts` | `{ type, id }` | DB lookup parameter; socket presence |
+| `Principal` | `shared/contracts/auth/Principal.ts` | `Identity` + `role` (Member only) | JWT payload; `req.user`; authorization checks |
+| `User` | `shared/contracts/user/User.ts` | `Identity` + `nickname` (+ `account` for Member) | Display name in UI; fetched from DB via `UserService.fetchUser` |
+| `PlayerIdentity` | `shared/contracts/identity/PlayerIdentity.ts` | `Identity` ∪ `{ type: 'Name'; name }` | Analysis queries; includes name-only historical players |
+| `TeamMember` | `shared/contracts/team/TeamMember.ts` | `PlayerIdentity` + eager `nickname` | Match records; team slot payloads |
+
+**Frontend store split:** `authStore.principal` holds the `Principal` (from JWT, no DB). `userStore.user` holds the `User` (fetched after login). Components read `nickname` from `userStore`, never from `authStore`.
+
+Full hierarchy and decision table: [`docs/identity-model.md`](docs/identity-model.md)
 
 ## Conventions (enforced by README + tooling)
 
