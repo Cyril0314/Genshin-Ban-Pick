@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem *)",
+      "PowerShell(Test-Path *)",
+      "Bash(docker compose up *)",
+      "PowerShell(wsl -l -v)",
+      "PowerShell(wsl -d Ubuntu -- bash -c \"ls -la /mnt/c/Users/asdfg/Desktop/ec2_keys/aws-discord-bot-farmer-licence-key.pem 2>&1; echo '---'; which docker; docker --version 2>&1; echo '---'; docker buildx version 2>&1\")",
+      "PowerShell(wsl -d Ubuntu -- bash -c \"stat -c '%a %n' /mnt/c/Users/asdfg/OneDrive/Desktop/ec2_keys/aws-discord-bot-farmer-licence-key.pem; echo '---'; ssh -i /mnt/c/Users/asdfg/OneDrive/Desktop/ec2_keys/aws-discord-bot-farmer-licence-key.pem -o ConnectTimeout=5 -o BatchMode=yes -o StrictHostKeyChecking=accept-new ec2-user@98.86.73.53 'echo ok' 2>&1\")",
+      "PowerShell(wsl -d Ubuntu -- bash -c \"mkdir -p ~/.ssh && chmod 700 ~/.ssh && cp /mnt/c/Users/asdfg/OneDrive/Desktop/ec2_keys/aws-discord-bot-farmer-licence-key.pem ~/.ssh/aws-discord-bot-farmer-licence-key.pem && chmod 600 ~/.ssh/aws-discord-bot-farmer-licence-key.pem && ls -la ~/.ssh/aws-discord-bot-farmer-licence-key.pem && echo '---' && ssh -i ~/.ssh/aws-discord-bot-farmer-licence-key.pem -o ConnectTimeout=5 -o BatchMode=yes ec2-user@98.86.73.53 'echo ok && uname -a'\")",
+      "PowerShell(wsl -d Ubuntu -- bash -c \"ssh -i ~/.ssh/aws-discord-bot-farmer-licence-key.pem ec2-user@98.86.73.53 'cd ~/Genshin-Ban-Pick/Genshin-Ban-Pick && pwd && ls -la docker-compose.yml .env 2>&1 && echo --- && docker compose ps 2>&1'\")",
+      "PowerShell(wsl -d Ubuntu -- bash -c \"ssh -i ~/.ssh/aws-discord-bot-farmer-licence-key.pem ec2-user@98.86.73.53 'echo === pm2 list ===; pm2 list 2>&1 || echo no-pm2; echo; echo === listening on 3000 ===; sudo ss -tlnp 2>/dev/null | grep :3000 || ss -tlnp 2>/dev/null | grep :3000 || echo none; echo; echo === docker ps -a ===; docker ps -a; echo; echo === docker images ===; docker images; echo; echo === git status ===; cd ~/Genshin-Ban-Pick/Genshin-Ban-Pick && git log --oneline -5 && git status -s'\")",
+      "Bash(git commit *)"
+    ]
+  }
+}
