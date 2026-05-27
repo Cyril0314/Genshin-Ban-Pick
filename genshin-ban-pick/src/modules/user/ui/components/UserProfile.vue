@@ -3,6 +3,7 @@
 import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { History, LogOut } from '@lucide/vue';
 import { useSocketStore } from '@/app/stores/socketStore';
 import { useAuthStore } from '@/modules/auth/store/authStore';
 import { useAuthUseCase } from '@/modules/auth/ui/composables/useAuthUseCase';
@@ -73,11 +74,11 @@ function handleLogout() {
         </button>
 
         <transition name="user-profile-fade">
-            <div v-if="isOpen" class="dropdown">
+            <div v-if="isOpen" class="dropdown scale-context">
                 <div class="header">
                     <div class="large-avatar">{{ userInitial }}</div>
                     <div class="info">
-                        <span class="name">{{ nickname || '訪客' }}</span>
+                        <span class="name">{{ nickname }}</span>
                     </div>
                 </div>
 
@@ -85,11 +86,11 @@ function handleLogout() {
 
                 <div class="actions">
                     <button class="item" @click="handleViewHistory">
-                        <span class="icon">history</span>
+                        <History class="icon" />
                         <span>我的紀錄</span>
                     </button>
-                    <button class="item" @click="handleLogout">
-                        <span class="icon">logout</span>
+                    <button class="item item--danger" @click="handleLogout">
+                        <LogOut class="icon" />
                         <span>登出</span>
                     </button>
                 </div>
@@ -107,13 +108,15 @@ function handleLogout() {
 }
 
 .avatar-button {
-    height: 100%;
+    height: 80%;
     aspect-ratio: 1;
     border-radius: 50%;
-    border: none;
-    background-color: var(--md-sys-color-primary-container);
-    color: var(--md-sys-color-on-primary-container);
-    font-size: var(--font-size-md);
+    border: 2px solid transparent;
+    background:
+        linear-gradient(var(--md-sys-color-surface), var(--md-sys-color-surface)) padding-box,
+        linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-tertiary)) border-box;
+    color: var(--md-sys-color-primary);
+    font-size: var(--font-size-lg);
     font-weight: var(--font-weight-medium);
     cursor: pointer;
     display: flex;
@@ -121,113 +124,128 @@ function handleLogout() {
     justify-content: center;
     transition:
         transform 0.2s ease,
-        background-color 0.2s ease;
+        box-shadow 0.2s ease;
 }
 
-.avatar-button:hover {
-    background-color: var(--primary-filled-hover);
-}
-
+.avatar-button:hover,
 .avatar-button.is-active {
-    background-color: var(--primary-filled-pressed);
+    transform: scale(1.08);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--md-sys-color-primary) 20%, transparent);
 }
 
 .dropdown {
+    --base-size: 1.2vw;
+    --size-avatar: calc(var(--base-size) * 3);
     position: absolute;
-    top: calc(100% + var(--space-xs));
+    top: calc(100% + var(--space-sm));
     left: 0;
-    min-width: 280px;
+    min-width: 260px;
     background-color: var(--md-sys-color-surface-container-high);
+    border: 1px solid var(--md-sys-color-outline-variant);
     border-radius: var(--radius-lg);
-    box-shadow:
-        0 4px 6px -1px rgba(0, 0, 0, 0.1),
-        0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    padding: var(--space-md);
+    padding: var(--space-sm);
     z-index: 100;
     overflow: hidden;
+    box-shadow:
+        0 4px 6px -1px rgb(0 0 0 / 0.15),
+        0 10px 24px -4px rgb(0 0 0 / 0.2);
+    backdrop-filter: blur(12px);
 }
 
 .header {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: var(--space-sm);
-    padding: var(--space-sm);
+    gap: var(--space-md);
+    padding: var(--space-sm) var(--space-sm) var(--space-md);
 }
 
 .large-avatar {
-    width: 64px;
-    height: 64px;
+    width: var(--size-avatar);
+    height: var(--size-avatar);
+    flex-shrink: 0;
     border-radius: 50%;
-    background-color: var(--md-sys-color-primary-container);
-    color: var(--md-sys-color-on-primary-container);
+    background: linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-tertiary));
+    color: var(--md-sys-color-on-primary);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
-    font-weight: 500;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-medium);
 }
 
 .info {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 4px;
+    gap: 2px;
+    overflow: hidden;
 }
 
 .name {
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-medium);
     color: var(--md-sys-color-on-surface);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .divider {
     height: 1px;
     background-color: var(--md-sys-color-outline-variant);
-    margin: var(--space-md) 0;
+    margin-inline: var(--space-sm);
 }
 
 .actions {
     display: flex;
     flex-direction: column;
+    gap: 2px;
+    padding-top: var(--space-sm);
 }
 
 .item {
     display: flex;
     align-items: center;
-    gap: var(--space-md);
+    gap: var(--space-sm);
     width: 100%;
     padding: var(--space-sm) var(--space-md);
     background: transparent;
     border: none;
-    border-radius: var(--radius-sm);
-    color: var(--md-sys-color-on-surface);
+    border-radius: var(--radius-md);
+    color: var(--md-sys-color-on-surface-variant);
     cursor: pointer;
     text-align: left;
     font-size: var(--font-size-sm);
-    transition: background-color 0.2s;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
 }
 
 .item:hover {
     background-color: var(--md-sys-color-surface-container-highest);
+    color: var(--md-sys-color-on-surface);
+}
+
+.item--danger:hover {
+    background-color: color-mix(in srgb, var(--md-sys-color-error) 12%, transparent);
+    color: var(--md-sys-color-error);
 }
 
 .icon {
-    font-family: 'Material Symbols Outlined';
-    font-size: 20px;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
 }
 
-/* Transition Names also following the block name */
 .user-profile-fade-enter-active,
 .user-profile-fade-leave-active {
     transition:
-        opacity 0.2s ease,
-        transform 0.2s ease;
+        opacity 0.18s ease,
+        transform 0.18s ease;
 }
 
 .user-profile-fade-enter-from,
 .user-profile-fade-leave-to {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-6px) scale(0.97);
 }
 </style>

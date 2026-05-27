@@ -69,7 +69,7 @@ function enterRoom(roomId: string) {
 
 <style scoped>
 .room-list-view {
-    --base-size: 1.6vw;
+    --base-size: 1.2vw;
     width: 100%;
     min-height: 100vh;
     padding: var(--space-xl);
@@ -122,7 +122,7 @@ function enterRoom(roomId: string) {
 }
 
 .room-header h3 {
-    font-size: var(--font-size-md);
+    font-size: var(--font-size-lg);
     font-weight: var(--font-weight-bold);
     color: var(--md-sys-color-on-surface);
 }
@@ -136,7 +136,7 @@ function enterRoom(roomId: string) {
 .room-meta .item {
     display: flex;
     justify-content: space-between;
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-md);
     color: var(--md-sys-color-on-surface-variant);
 }
 
@@ -148,7 +148,7 @@ function enterRoom(roomId: string) {
     border: none;
     background-color: var(--md-sys-color-primary);
     color: var(--md-sys-color-on-primary);
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-md);
     font-weight: var(--font-weight-bold);
     cursor: pointer;
     transition: 0.2s ease;

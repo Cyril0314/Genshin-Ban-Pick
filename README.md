@@ -1,148 +1,127 @@
-## Prisma
+# Genshin Ban Pick
 
-### 本地建立新的 migration
-#### Schema 有變動時
--   npx prisma migrate dev --name init
-#### 需要資料庫資料回填：
--   手動新增 SQL Migration 檔案！
--   npx prisma migrate dev
--   
-#### 有刪除資料的 migration 要分兩次部署
+多人即時協作的 Ban/Pick 系統，支援即時同步（Socket.IO）、角色管理、戰術白板。
 
-### 遠端套用 migration
+## 技術堆疊
 
--   npx prisma generate 產生 Prisma Client
--   npx prisma migrate deploy 套用已存在的 migration 到資料庫
--   
--   npx tsx prisma/scripts/importGenshinVersions.ts 匯入版本靜態資料
--   npx tsx prisma/scripts/importCharacters.ts 匯入角色靜態資料
-<!-- -   npx prisma db seed 執行種子資料程式 -->
+| 層      | 技術                                      |
+| ------- | ----------------------------------------- |
+| Frontend | Vue 3 + TypeScript + Pinia + Naive UI + Vite |
+| Backend  | Node.js + Express + Socket.IO + Prisma   |
+| Database | PostgreSQL                                |
 
-## Clean Architecture
+## Repository 結構
 
--   Component: UI 渲染、觸發行為
--   Store: 狀態保存、快取、提供給 UI 使用
--   Use Case / Sync: (流程 & I/O orchestration) 協調 Service/Socket/Store/Flow
--   Domain: Model: (純邏輯) 定義、資料轉換、業務規則
+```
+backend/            # Express + Socket.IO + Prisma
+genshin-ban-pick/   # Vue 3 frontend
+shared/contracts/   # 共用 TS 型別（兩端都用 @shared/* alias 引入）
+```
 
-| 模組特性                                                  | 推薦 Store 型式      |
-| --------------------------------------------------------- | -------------------- |
-| **短週期資料 (即時訊息 / socket / draggable state)**      | **Setup Store** ✅   |
-| **長週期資料 (一次載入 / 大量快取 / Dictionary / Index)** | **Options Store** ✅ |
+## 快速開始
 
-## 複製 Server DB
+### 前置需求
 
-### Connect EC2 and build 5433 db tunnel
+- Node.js v22+
+- PostgreSQL
 
-docker pg
-WINDOWS
-ssh -i "C:\Users\asdfg\ec2_keys\aws-discord-bot-farmer-licence-key.pem" -L 5435:localhost:5434 ec2-user@98.86.73.53 
-MAC
-ssh -i "/Users/wangxiaoyu/Desktop/ec2_keys/aws-discord-bot-farmer-licence-key.pem" -L 5435:localhost:5434 ec2-user@98.86.73.53
-
-原生 pg
-WINDOWS
-ssh -i "C:\Users\asdfg\ec2_keys\aws-discord-bot-farmer-licence-key.pem" -L 5433:localhost:5432 ec2-user@98.86.73.53 
-MAC
-ssh -i "/Users/wangxiaoyu/Desktop/ec2_keys/aws-discord-bot-farmer-licence-key.pem" -L 5433:localhost:5432 ec2-user@98.86.73.53
-
-
-### Connect EC2 PSQL in local powershell
-
-psql -h localhost -p 5433 -U postgres -d genshin_banpick
-
-- 改綁定會員
-UPDATE "MatchTeamMember" SET "memberRef" = 20 WHERE "name" = 'AhWeiGoo' AND "memberRef" IS NULL;
-
-### PGAdmin 左側 Servers → 右鍵 → Register → Server…
-
-| Field | Value                        |
-| ----- | ---------------------------- |
-| Name  | genshin-ec2 (或任何你想叫的) |
-
-| Field                | Value                                |
-| -------------------- | ------------------------------------ |
-| Host name / address  | **localhost** ← 很重要               |
-| Port                 | **5433** ← 我們 Tunnel 用的本機 port |
-| Maintenance database | genshin_banpick                      |
-| Username             | postgres                             |
-| Password             | 你自己設定的 DB 密碼                 |
-
-
-### 匯出正式資料（EC2 → 本機）
-pg_dump -h localhost -p 5433 -U postgres -d genshin_banpick -F c -f prod_dump.backup
-
-pg_dump: error: server version: 15.8; pg_dump version: 14.20 (Homebrew)
-pg_dump: error: aborting because of server version mismatch
-如果你已經安裝了多個版本的 PostgreSQL，不需要更改全域變數，直接呼叫 v15 的二進制檔案：
-/opt/homebrew/opt/postgresql@15/bin/pg_dump -h localhost -p 5433 -U postgres -d genshin_banpick -F c -f prod_dump.backup
-
-### 清空本機資料庫
-psql -h localhost -p 5432 -U postgres -d postgres -c "DROP DATABASE genshin_banpick;"
-psql -h localhost -p 5432 -U wangxiaoyu -d postgres -c "DROP DATABASE genshin_banpick;"
-
-psql -h localhost -p 5432 -U postgres -d postgres -c "CREATE DATABASE genshin_banpick;"
-psql -h localhost -p 5432 -U wangxiaoyu -d postgres -c "CREATE DATABASE genshin_banpick;"
-
-### 匯入正式資料 → 本機
-pg_restore -h localhost -p 5432 -U postgres -d genshin_banpick -F c prod_dump.backup
-pg_restore -h localhost -p 5432 -U wangxiaoyu -d genshin_banpick -F c /Users/wangxiaoyu/Desktop/prod_dump.backup 
-
-### 檢查備份檔案
-
-dir prod_dump.backup
-
-## 下載 npm ipv4 優先
-
-NODE_OPTIONS=--dns-result-order=ipv4first npm install
-
-## pm2
-
-pm2 ls 列出所有 pm2 的程序
-pm2 status 當前狀態
-pm2 start "npx tsx src/index.ts" --name genshin-ban-pick 啟動服務
-pm2 stop --name 暫停服務
-pm2 restart --name 重啟服務
-
-## Docker (EC2 prod)
-
-服務跑在 docker compose stack 裡（postgres + backend），由 `docker-compose.yml` 定義。
-本機 build image 後用 `scripts/deploy-to-ec2.sh` 推到 EC2 (t3.micro 撐不起 docker build)。
-
-### 部署 (Mac → EC2)
+### 安裝
 
 ```bash
-# 預設 EC2_HOST = ec2-user@<EIP>，可覆蓋
+# 若 npm install 卡住，用 ipv4 優先模式
+NODE_OPTIONS=--dns-result-order=ipv4first npm install
+```
+
+### 環境變數
+
+`.env` 放在 repo 根目錄（`backend/` 的上層）。
+
+### 開發伺服器
+
+```bash
+# Terminal 1 — Backend (port 3000)
+cd backend && npm run dev
+
+# Terminal 2 — Frontend (port 5173, proxy /api → 3000)
+cd genshin-ban-pick && npm run dev
+```
+
+## 常用指令
+
+### Backend (`cd backend`)
+
+```bash
+npm run dev      # 開發伺服器
+npm run build    # 打包 → dist/
+npm start        # 執行 dist/index.js
+```
+
+### Frontend (`cd genshin-ban-pick`)
+
+```bash
+npm run dev          # Vite dev server
+npm run build        # vue-tsc + vite build
+npm run type-check   # 型別檢查（不產出 bundle）
+npm run lint         # oxlint + eslint --fix
+npm run format       # prettier --write src/
+```
+
+## 資料庫
+
+### Prisma
+
+```bash
+npx prisma generate                     # 產生 Prisma Client
+npx prisma migrate dev --name <name>    # 建立新 migration（本地）
+npx prisma migrate deploy               # 套用 migration（正式）
+```
+
+### Seed 靜態資料
+
+```bash
+npx tsx --env-file=../.env prisma/scripts/importGenshinVersions.ts
+npx tsx --env-file=../.env prisma/scripts/importCharacters.ts
+```
+
+> `--env-file=../.env` 是必要的，tsx 不會自動載入 .env。
+
+### Migration 注意事項
+
+- 有資料回填需求：手動新增 SQL migration 檔案，再執行 `npx prisma migrate dev`
+- 有刪除欄位/表格的 migration：分兩次部署（先移除應用層參照，再套用 schema 變更）
+
+## 部署（Docker + EC2）
+
+服務跑在 EC2 的 docker compose stack（postgres + backend）。本機 build image，用 `scripts/deploy-to-ec2.sh` 推到 EC2（t3.micro 撐不起 docker build）。
+
+```bash
+# 部署（Mac → EC2）
 EC2_HOST=ec2-user@98.86.73.53 ./scripts/deploy-to-ec2.sh
 ```
 
-流程：buildx (linux/amd64) → save+gzip → scp → EC2 docker load → recreate backend container。
-不會動到 postgres container 跟 volume，DB 資料安全。
+流程：`buildx (linux/amd64)` → gzip → scp → EC2 docker load → recreate backend container。不動 postgres container 與 volume。
 
-### EC2 上日常操作
+### EC2 日常操作
 
 ```bash
 ssh ec2-user@98.86.73.53
 cd ~/Genshin-Ban-Pick/Genshin-Ban-Pick
 
-docker compose ps              # 看 container 狀態
-docker compose logs -f backend # 即時 log
-docker compose stop            # 暫停（保留資料、image，不耗 RAM/CPU）
-docker compose start           # 從 stop 狀態恢復，秒起
-docker compose down            # 拆 container + network（volume 保留）
-docker compose up -d           # 從 down 狀態起
+docker compose ps               # container 狀態
+docker compose logs -f backend  # 即時 log
+docker compose stop             # 暫停（保留資料）
+docker compose start            # 從 stop 恢復
+docker compose down             # 拆 container（volume 保留）
+docker compose up -d            # 重新啟動
 ```
 
-⚠️ **絕對不要 `docker compose down -v`** — `-v` 會砍 volume，DB 資料蒸發。
+⚠️ **絕對不要 `docker compose down -v`** — 會砍 volume，DB 資料蒸發。
 
-### 進 container 看內部
+### 進 container
 
 ```bash
-docker exec -it genshin-banpick-backend sh                     # 進 backend
-docker exec -it genshin-banpick-db psql -U postgres -d genshin_banpick   # 進 PG
-
-# 從 host 連 docker PG（也可以從 Mac 透過 SSH tunnel 5434）
-psql -h localhost -p 5434 -U postgres -d genshin_banpick
+docker exec -it genshin-banpick-backend sh
+docker exec -it genshin-banpick-db psql -U postgres -d genshin_banpick
 ```
 
 ### Mac 端 alias（選用）
@@ -154,47 +133,33 @@ alias genshin-start='ssh ec2-user@98.86.73.53 "cd ~/Genshin-Ban-Pick/Genshin-Ban
 alias genshin-deploy='EC2_HOST=ec2-user@98.86.73.53 ~/Desktop/side/Genshin-Ban-Pick/scripts/deploy-to-ec2.sh'
 ```
 
-### Local 開發 (Hybrid)
-
-平常開發用本機 docker postgres + npm run dev (host)，HMR 完整：
+### 本地 Hybrid 開發（docker postgres + host backend）
 
 ```bash
-# Terminal 1: docker 只起 postgres (port 5434)
+# Terminal 1 — 只起 postgres (port 5434)
 docker compose up -d postgres
 
-# Terminal 2: backend dev server
+# Terminal 2 — backend dev server
 cd backend && npm run dev
 
-# Terminal 3: frontend dev server (vite, port 5173)
+# Terminal 3 — frontend dev server
 cd genshin-ban-pick && npm run dev
 ```
 
-要驗證 prod-like build：
+驗證 prod-like build：
 ```bash
-docker compose up -d --build   # 完整 stack 含 backend
+docker compose up -d --build  # 完整 stack
 # 開 http://localhost:3000
 ```
 
-### 從 host PG 同步資料到 docker PG
-
+從 host PG 同步資料到 docker PG：
 ```bash
-./scripts/sync-host-db-to-docker.sh    # dump host PG → restore 進 docker volume
+./scripts/sync-host-db-to-docker.sh
 ```
 
-### Port 配置（Mac 端）
+## 複製 Server DB（EC2 → 本機）
 
-| Port  | 用途                                                           |
-| ----- | -------------------------------------------------------------- |
-| 5432  | host 原生 PG14（其他專案，如 discord bot）                     |
-| 5433  | SSH tunnel → EC2 **原生** PG (discord bot 的 DB)               |
-| 5434  | **local** docker postgres 對外                                 |
-| 5435  | SSH tunnel → EC2 **docker** PG (genshin docker stack)          |
-| 3000  | backend (frontend 也從這個 port 服)                            |
-| 5173  | vite dev server (HMR 開發用)                                   |
-
-兩個 EC2 tunnel 用不同 Mac port 區分，避免「同一條 5433 不確定通到哪個 PG」。
-
-### 連 EC2 PG 的 SSH config（推薦）
+### 建立 SSH Tunnel（推薦用 SSH config）
 
 ```ssh-config
 # ~/.ssh/config
@@ -202,200 +167,50 @@ Host genshin-ec2
     HostName 98.86.73.53
     User ec2-user
     IdentityFile ~/Desktop/ec2_keys/aws-discord-bot-farmer-licence-key.pem
-    LocalForward 5433 localhost:5432   # EC2 原生 PG (discord bot)
+    LocalForward 5433 localhost:5432   # EC2 原生 PG
     LocalForward 5435 localhost:5434   # EC2 docker PG (genshin)
 ```
 
-設好後 `ssh genshin-ec2` 一條指令同時建兩條 tunnel。Mac 端：
+```bash
+ssh genshin-ec2   # 同時建兩條 tunnel
+```
+
+手動建 tunnel（不用 SSH config）：
+```bash
+# EC2 原生 PG
+ssh -i "~/Desktop/ec2_keys/aws-discord-bot-farmer-licence-key.pem" -L 5433:localhost:5432 ec2-user@98.86.73.53
+ssh -i "C:\Users\asdfg\ec2_keys\aws-discord-bot-farmer-licence-key.pem" -L 5433:localhost:5432 ec2-user@98.86.73.53
+
+# EC2 docker PG
+ssh -i "~/Desktop/ec2_keys/aws-discord-bot-farmer-licence-key.pem" -L 5435:localhost:5434 ec2-user@98.86.73.53
+ssh -i "C:\Users\asdfg\ec2_keys\aws-discord-bot-farmer-licence-key.pem" -L 5435:localhost:5434 ec2-user@98.86.73.53
+```
+
+### 匯出（EC2 → 本機）
 
 ```bash
-psql -h localhost -p 5433 -U postgres                          # → EC2 原生 PG
-psql -h localhost -p 5435 -U postgres -d genshin_banpick       # → EC2 docker PG
+# pg_dump 版本不符時改用 homebrew v15
+/opt/homebrew/opt/postgresql@15/bin/pg_dump -h localhost -p 5435 -U postgres -d genshin_banpick -F c -f prod_dump.backup
 ```
 
-1. 基本原則
-✔ 一致性優先
+### 匯入（本機）
 
-全專案保持 同一種檔名格式（建議：kebab-case）。
+```bash
+# 清空本機 DB
+psql -h localhost -p 5432 -U wangxiaoyu -d postgres -c "DROP DATABASE genshin_banpick;"
+psql -h localhost -p 5432 -U wangxiaoyu -d postgres -c "CREATE DATABASE genshin_banpick;"
 
-避免縮寫，例如 usr, cfg，除非為業界慣用（如 id, api）。
-
-✔ 可讀性 > 簡短
-
-名稱需要看得懂、可以推測角色用途。
-
-避免無意義命名，如 data, info, obj, utils2。
-
-2. JavaScript / TypeScript 命名規則
-類型	命名規則	範例
-變數 / 函式 / 屬性	lowerCamelCase	stepIndex, getUserTeam
-類別 / 型別 / Enum	UpperCamelCase (PascalCase)	RoomService, MatchFlow, MoveType
-常數	UPPER_SNAKE_CASE	MAX_STEP_COUNT, DEFAULT_ROOM_SIZE
-介面 (Interface)	首字母加 I（可選，但要一致）	IRoomState, IChatMessageDTO
-泛型參數	單字母大寫	T, K, V
-
-5. REST API 路由命名
-
-參考 RESTful 標準：
-
-✔ 使用 複數名詞 表示「集合資源」
-/rooms
-/matches
-/characters
-
-✔ 單一資源用 ID 指定
-/rooms/:roomId
-/matches/:matchId
-
-✔ 子資源（階層式）
-/rooms/:roomId/users
-/rooms/:roomId/messages
-
-
-| **Scope**    | **Intent / Purpose**                                                                | **Expected Output (Data)**                                                                    | **SQL Analogy**                                                         |
-| ------------ | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| **Minimal**  | Data strictly limited to what is essential for identification or existence checks   | Only key identifiers and a few critical fields, heavily filtered                              | `SELECT id, name FROM table WHERE active = true LIMIT 1;`               |
-| **Core**     | Default working dataset for routine application operations                          | Essential fields + frequently used relationships (typically via foreign keys or one relation) | `SELECT * FROM table WHERE user_id = 123 AND status='active';`          |
-| **Light**    | Lightweight enrichment beyond the default dataset                                   | Core fields + one small related metric or column (e.g., a count or timestamp)                 | `SELECT t.*, COUNT(c.id) FROM table t LEFT JOIN child c GROUP BY t.id;` |
-| **Expanded** | Dataset prepared for standard UI views requiring joined context                     | Core fields + 2–3 commonly required relationships (joined data for display or sync)           | `SELECT * FROM table t JOIN rel1 r1 JOIN rel2 r2 WHERE t.room_id = 7;`  |
-| **Summary**  | Aggregated or analytical result set, not raw row data                               | Computed statistics such as totals, averages, max/min, grouped values                         | `SELECT AVG(score), COUNT(id) FROM table GROUP BY category;`            |
-| **Detailed** | Most complete dataset needed for focused inspection of a single record or small set | All available columns + most related entities, fully joined for depth                         | `SELECT * FROM table t JOIN rel1 JOIN rel2 ... WHERE t.id = 42;`        |
-| **Full**     | Near-unrestricted operational dataset                                               | All fields + all standard filters but without pagination or strict limits                     | `SELECT * FROM table WHERE deleted IN (true,false);`                    |
-| **Full**     | Absolute unrestricted fetch (truly "no filter")                                     | All rows, including inactive, soft-deleted, archived, or orphaned records                     | `SELECT * FROM table;`                                                  |
-
-
-# Genshin Ban Pick
-
-一個基於 **Clean Architecture** 與 **Modular Monolith** 架構設計的原神 (Genshin Impact) Ban/Pick 模擬應用程式。
-
-## 專案簡介
-
-本專案旨在提供一個多人即時協作的 Ban/Pick 系統，支援：
-
--   **即時同步**：透過 Socket.IO 實現多端狀態同步 (Ban/Pick 狀態、聊天室)。
--   **角色管理**：完整的原神角色資料庫。
--   **戰術白板**：可拖曳的角色與標記功能。
-
-## 系統架構 (Architecture)
-
-本專案採用 **Modular Monolith** 搭配 **Clean Architecture**，前後端架構高度一致，確保可維護性與擴充性。
-
-### 分層設計 (Layered Architecture)
-
-無論是前端或後端，每個模組 (Module) 皆遵循以下分層：
-
-1.  **Domain Layer (核心層)**
-
-    -   **職責**：定義業務規則、實體 (Entities) 與純邏輯運算。
-    -   **特性**：不依賴任何外部框架或 UI，純 TypeScript 函式。
-    -   **路徑**：`src/modules/*/domain`
-
-2.  **Application Layer (應用層)**
-
-    -   **職責**：Use Cases (使用案例)。協調 Domain、Store 與 Infrastructure。
-    -   **特性**：定義系統能「做什麼」(User Actions)。
-    -   **路徑**：`src/modules/*/application`
-
-3.  **Interface Adapter Layer (介面適配層)**
-
-    -   **Frontend**：UI Components (`.vue`), Composables (Controllers), Stores (Pinia).
-    -   **Backend**：Controllers, Socket Handlers.
-    -   **路徑**：`src/modules/*/ui`, `src/modules/*/store`, `src/modules/*/controller`
-
-4.  **Infrastructure Layer (基礎設施層)**
-    -   **職責**：實作具體的技術細節 (API Client, Database Repository, Socket Client)。
-    -   **路徑**：`src/modules/*/infrastructure`
-
-### 目錄結構
-
-```
-src/
-├── app/                 # 全域應用設定 (Bootstrap, Global Stores, Errors)
-├── modules/             # 功能模組 (Feature Modules)
-│   ├── auth/            # 認證模組
-│   ├── board/           # 戰術白板與 Ban/Pick 核心
-│   ├── character/       # 角色資料
-│   ├── chat/            # 聊天室
-│   ├── match/           # 對局流程
-│   ├── room/            # 房間管理
-│   └── ...
-└── shared/              # 前後端共用合約 (Contracts/Types)
+# 還原
+pg_restore -h localhost -p 5432 -U wangxiaoyu -d genshin_banpick -F c prod_dump.backup
 ```
 
-## 技術堆疊 (Tech Stack)
+## Port 配置（Mac 端）
 
-### Frontend
-
--   **Framework**: Vue 3 (Composition API)
--   **Language**: TypeScript
--   **State Management**: Pinia
--   **UI Library**: Naive UI
--   **Build Tool**: Vite
--   **Communication**: Socket.IO Client, Axios
-
-### Backend
-
--   **Runtime**: Node.js
--   **Framework**: Express
--   **Language**: TypeScript
--   **Database**: PostgreSQL
--   **ORM**: Prisma
--   **Real-time**: Socket.IO
-
-## 快速開始 (Getting Started)
-
-### 前置需求
-
--   Node.js (v18+)
--   PostgreSQL
-
-### 安裝與執行
-
-1.  **安裝依賴**
-
-    ```bash
-    # 下載 npm ipv4 優先 (解決某些網路問題)
-    NODE_OPTIONS=--dns-result-order=ipv4first npm install
-    ```
-
-2.  **資料庫設定 (Backend)**
-
-    ```bash
-    # 產生 Prisma Client
-    npx prisma generate
-
-    # 執行 Migration
-    npx prisma migrate dev
-    ```
-
--   **變數 / 函式**: `lowerCamelCase` (e.g., `getUserTeam`)
--   **類別 / 型別**: `UpperCamelCase` (e.g., `RoomService`, `IRoomState`)
--   **常數**: `UPPER_SNAKE_CASE` (e.g., `MAX_STEP_COUNT`)
--   **檔案命名**: `kebab-case` (e.g., `room-user.service.ts`)
-
-### 檔案後綴
-
-| 類型          | 後綴             | 範例                 |
-| ------------- | ---------------- | -------------------- |
-| Service       | `.service.ts`    | `room.service.ts`    |
-| UseCase       | `UseCase.ts`     | `authUseCase.ts`     |
-| Repository    | `Repository.ts`  | `AuthRepository.ts`  |
-| Controller    | `.controller.ts` | `room.controller.ts` |
-| Socket        | `.socket.ts`     | `chat.socket.ts`     |
-| Vue Component | `.vue`           | `ChatRoom.vue`       |
-
-### Git 規範
-
--   確保檔案名稱大小寫一致 (避免 macOS/Windows 大小寫不敏感導致的問題)。
--   Commit Message 建議遵循 Conventional Commits (e.g., `feat: add chat drawer`, `fix: resolve dependency injection error`).
-
-## 架構審查總結 (Architecture Review)
-
-本專案架構完整度極高，具備以下優點：
-
-1.  **關注點分離 (SoC)**：業務邏輯與 UI 完全解耦，測試容易。
-2.  **模組化**：功能模組獨立，降低耦合度。
-3.  **型別安全**：前後端共用 `shared/contracts`，減少整合錯誤。
-4.  **依賴注入 (DI)**：透過 Vue `provide/inject` 與後端 DI 容器，實現鬆散耦合。
-
-建議持續保持此架構規範，並注意 UseCase 與 Store 之間的職責邊界。
+| Port | 用途                                        |
+| ---- | ------------------------------------------- |
+| 5432 | host 原生 PG（其他專案）                    |
+| 5433 | SSH tunnel → EC2 原生 PG                    |
+| 5434 | local docker postgres                       |
+| 5435 | SSH tunnel → EC2 docker PG（genshin stack） |
+| 3000 | backend（同時服 frontend 靜態檔）           |
+| 5173 | Vite dev server（HMR）                      |

@@ -175,13 +175,11 @@ const { option, overview } = useMatchOverviewChart();
     gap: var(--space-sm);
     border: 1px solid var(--md-sys-color-outline-variant);
     transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
+        transform 0.2s ease;
 }
 
 .stat-card:hover {
     transform: translateY(-2px);
-    box-shadow: var(--elevation-2);
     border-color: var(--md-sys-color-outline);
 }
 

@@ -14,7 +14,7 @@ const emit = defineEmits<{
 function handleAfterEnter() {
     // 確保 DOM 全部載入後才聚焦內部元素
     requestAnimationFrame(() => {
-        const el = document.querySelector('.drawer .some-focusable') as HTMLElement | null;;
+        const el = document.querySelector('.drawer .some-focusable') as HTMLElement | null;
         el?.focus();
     });
 }

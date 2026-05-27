@@ -54,7 +54,7 @@ async function handleSubmit() {
 
 <style scoped>
 .room-setting-view {
-    --base-size: 1.6vw;
+    --base-size: 1.2vw;
     --size-card-lg: calc(var(--base-size) * 16);
     display: flex;
     justify-content: center;
@@ -76,7 +76,7 @@ async function handleSubmit() {
 }
 
 .header h2 {
-    font-size: var(--font-size-md);
+    font-size: var(--font-size-lg);
     font-weight: var(--font-weight-medium);
     text-align: center;
     line-height: var(--line-height-loosest);
@@ -96,7 +96,7 @@ async function handleSubmit() {
 }
 
 .form-group label {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-md);
     font-weight: var(--font-weight-medium);
     color: var(--md-sys-color-on-surface);
 }
@@ -107,7 +107,7 @@ async function handleSubmit() {
     border: none;
     background-color: transparent;
     color: var(--md-sys-color-on-surface);
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-md);
     outline: 1px solid var(--md-sys-color-on-surface-variant);
 }
 
@@ -131,7 +131,7 @@ async function handleSubmit() {
     padding: var(--space-sm);
     border-radius: var(--radius-md);
     border: none;
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-md);
     font-weight: var(--font-weight-bold);
     cursor: pointer;
     transition:

@@ -1,6 +1,7 @@
 <!-- src/features/Team/TeamInfo.vue -->
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { X } from '@lucide/vue';
 
 import { createLogger } from '@/app/utils/logger';
 import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
@@ -99,7 +100,8 @@ function handleDropEvent( memberSlot: number, event: DragEvent) {
                     v-for="(_, memberSlot) in totalSlots"
                     @dragover.prevent @drop="(e) => handleDropEvent(memberSlot, e)">
                     <span class="name" @click="openPlayerHistory(memberSlot)">{{ getTeamMemberName(memberSlot) }}</span>
-                    <button class="remove" @click="handleRemoveMemberButtonClick(memberSlot)">✕</button>
+                    <X class="remove" @click="handleRemoveMemberButtonClick(memberSlot)"/>
+                    
                 </div>
                 <input class="input" type="text"
                     :placeholder="`輸入成員名稱`" v-model="inputValue" @keydown.enter.prevent="handleInput"
@@ -220,9 +222,8 @@ function handleDropEvent( memberSlot: number, event: DragEvent) {
     border: none;
     background: transparent;
     color: var(--team-color);
-    font-weight: bold;
+    padding: var(--space-xs);
     transition: opacity 0.15s ease;
-    margin-left: var(--space-xs);
 }
 
 .member:hover {

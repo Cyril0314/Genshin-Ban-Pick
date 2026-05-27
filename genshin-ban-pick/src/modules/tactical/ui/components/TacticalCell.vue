@@ -72,7 +72,7 @@ function handleClickEvent() {
   align-items: center;
   justify-content: center;
   transition:
-    transform 0.2s ease,;
+    transform 0.2s ease;
   overflow: hidden;
   padding: var(--space-md) var(--space-sm);
 }

@@ -10,7 +10,16 @@
       "PowerShell(wsl -d Ubuntu -- bash -c \"mkdir -p ~/.ssh && chmod 700 ~/.ssh && cp /mnt/c/Users/asdfg/OneDrive/Desktop/ec2_keys/aws-discord-bot-farmer-licence-key.pem ~/.ssh/aws-discord-bot-farmer-licence-key.pem && chmod 600 ~/.ssh/aws-discord-bot-farmer-licence-key.pem && ls -la ~/.ssh/aws-discord-bot-farmer-licence-key.pem && echo '---' && ssh -i ~/.ssh/aws-discord-bot-farmer-licence-key.pem -o ConnectTimeout=5 -o BatchMode=yes ec2-user@98.86.73.53 'echo ok && uname -a'\")",
       "PowerShell(wsl -d Ubuntu -- bash -c \"ssh -i ~/.ssh/aws-discord-bot-farmer-licence-key.pem ec2-user@98.86.73.53 'cd ~/Genshin-Ban-Pick/Genshin-Ban-Pick && pwd && ls -la docker-compose.yml .env 2>&1 && echo --- && docker compose ps 2>&1'\")",
       "PowerShell(wsl -d Ubuntu -- bash -c \"ssh -i ~/.ssh/aws-discord-bot-farmer-licence-key.pem ec2-user@98.86.73.53 'echo === pm2 list ===; pm2 list 2>&1 || echo no-pm2; echo; echo === listening on 3000 ===; sudo ss -tlnp 2>/dev/null | grep :3000 || ss -tlnp 2>/dev/null | grep :3000 || echo none; echo; echo === docker ps -a ===; docker ps -a; echo; echo === docker images ===; docker images; echo; echo === git status ===; cd ~/Genshin-Ban-Pick/Genshin-Ban-Pick && git log --oneline -5 && git status -s'\")",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(npm run *)",
+      "Bash(npm install *)",
+      "Bash(npm uninstall *)",
+      "Bash(sed -n '35,42p' /Users/wangxiaoyu/Desktop/side/Genshin-Ban-Pick/genshin-ban-pick/src/modules/chat/ui/components/ChatFloatWindow.vue)",
+      "Bash(sed -n '70,77p' /Users/wangxiaoyu/Desktop/side/Genshin-Ban-Pick/genshin-ban-pick/src/modules/analysis/ui/components/PlayerHistoryModal.vue)",
+      "Bash(sed -n '100,105p' /Users/wangxiaoyu/Desktop/side/Genshin-Ban-Pick/genshin-ban-pick/src/modules/team/ui/components/TeamInfo.vue)",
+      "Bash(sed -n '88,94p' /Users/wangxiaoyu/Desktop/side/Genshin-Ban-Pick/genshin-ban-pick/src/modules/character/ui/components/CharacterSelector.vue)",
+      "Bash(sed -n '35,55p' /Users/wangxiaoyu/Desktop/side/Genshin-Ban-Pick/genshin-ban-pick/src/modules/chat/ui/components/ChatFloatWindow.vue)",
+      "Bash(sed -n '70,90p' /Users/wangxiaoyu/Desktop/side/Genshin-Ban-Pick/genshin-ban-pick/src/modules/analysis/ui/components/PlayerHistoryModal.vue)"
     ]
   }
 }

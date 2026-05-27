@@ -2,6 +2,7 @@
 
 <script setup lang="ts">
 import { reactive, watch } from 'vue';
+import { X } from '@lucide/vue';
 // @ts-ignore
 import vSelect from 'vue-select';
 import { createLogger } from '@/app/utils/logger';
@@ -87,8 +88,7 @@ function handleRandomButtonClick(zoneType: ZoneType) {
                     <div class="selected-option">
                         <span class="selected-option-label">{{ selectorOption.translateFn(option.label)
                             }}</span>
-                        <span v-if="!disabled" class="remove-btn" @click.stop="deselect(option.label)"> ×
-                        </span>
+                        <X v-if="!disabled" class="remove-btn" @click.stop="deselect(option.label)" />
                     </div>
                 </template>
             </v-select>
@@ -229,8 +229,6 @@ function handleRandomButtonClick(zoneType: ZoneType) {
     cursor: pointer;
     color: var(--md-sys-color-on-surface);
     padding: 0 var(--space-xs);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-regular);
     transition: color 0.2s ease;
 }
 

@@ -47,7 +47,7 @@ function handleDragStartEvent(event: DragEvent, id: string) {
   cursor: grab;
   transition:
     filter 0.18s ease,
-    transform 0.18s ease, ;
+    transform 0.18s ease;
   filter: saturate(0.8) brightness(0.9);
 }
 

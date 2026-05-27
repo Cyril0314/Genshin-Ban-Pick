@@ -115,6 +115,7 @@ Full hierarchy and decision table: [`docs/identity-model.md`](docs/identity-mode
 - Import order is enforced by `eslint-plugin-import` on both sides: builtin → external → internal → parent/sibling/index → object → type, with blank lines between groups, alphabetized.
 - Commits follow Conventional Commits (`feat:`, `fix:`, `chore:`, `doc:` are visible in recent history).
 - Frontend CSS naming rules (one-block-per-file, `is-*` for state vs `--` for variant, design tokens) live in `genshin-ban-pick/CSS_CONVENTIONS.md`. When editing or creating `.vue` files, follow that style (currently a touch-time migration — old files keep their BEM until naturally touched).
+- **CSS spacing**: prefer `gap` (on flex/grid containers) and `padding` over `margin`. Avoid components self-applying `margin` — margin leaks outside the component boundary and bleeds into the caller's layout. Use `margin` only when the caller controls spacing externally (e.g., a utility class applied at the usage site).
 
 ### Logger scope (backend)
 
