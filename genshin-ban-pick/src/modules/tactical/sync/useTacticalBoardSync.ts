@@ -1,9 +1,14 @@
 // src/modules/tactical/sync/useTacticalBoardSync.ts
+import { computed } from 'vue';
+import { storeToRefs } from 'pinia';
+
 import { useSocketStore } from '@/app/stores/socketStore';
 import { useTacticalBoardStore } from '../store/tacticalBoardStore';
 import { createLogger } from '@/app/utils/logger';
 import { TacticalEvent } from '@shared/contracts/tactical/value-types';
-import { useMyTeamInfo } from '@/modules/shared/ui/composables/useMyTeamInfo';
+import { useTeamInfoStore } from '@/modules/team';
+import { useAuthStore } from '@/modules/auth';
+import { findMyTeamSlot } from '@/modules/team/domain/findMyTeamSlotDomain';
 import { useTacticalUseCase } from '../ui/composables/useTacticalUseCase';
 
 import type { TacticalCellImageMap } from '@shared/contracts/tactical/TacticalCellImageMap';
@@ -14,7 +19,11 @@ const logger = createLogger('tactical.sync');
 export function useTacticalBoardSync() {
     const socket = useSocketStore().getSocket();
     const tacticalBoardStore = useTacticalBoardStore();
-    const { myTeamSlot } = useMyTeamInfo()
+    const { teamMembersMap } = storeToRefs(useTeamInfoStore());
+    const { identity } = storeToRefs(useAuthStore());
+    const myTeamSlot = computed(() =>
+        identity.value ? findMyTeamSlot(teamMembersMap.value, identity.value) : undefined,
+    );
     const tacticalUseCase =
         useTacticalUseCase();
 
@@ -100,5 +109,6 @@ export function useTacticalBoardSync() {
         tacticalCellImagePlace,
         tacticalCellImageRemove,
         handleAllTeamResetBoard,
+        myTeamSlot,
     };
 }

@@ -27,7 +27,9 @@
       "Bash(npx tsc *)",
       "Bash(echo \"backend tsc exit: $?\")",
       "Read(//Users/wangxiaoyu/Desktop/side/**)",
-      "Bash(echo \"backend exit: $?\")"
+      "Bash(echo \"backend exit: $?\")",
+      "Bash(git add *)",
+      "Bash(grep -v \"useMyTeamInfo.ts$\")"
     ]
   }
 }

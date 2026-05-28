@@ -10,15 +10,11 @@ import TacticalPool from './TacticalPool.vue'
 import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
 import { useTeamInfoStore } from '@/modules/team';
 import { useTacticalBoardSync } from '../../sync/useTacticalBoardSync';
-import { useMyTeamInfo } from '@/modules/shared/ui/composables/useMyTeamInfo';
 
 const teamInfoStore = useTeamInfoStore();
 const { teamInfoPair } = storeToRefs(teamInfoStore);
 
-const tacticalBoardSync = useTacticalBoardSync();
-const { fetchCellImageMapState, tacticalCellImagePlace, tacticalCellImageRemove } = tacticalBoardSync
-
-const { myTeamSlot } = useMyTeamInfo()
+const { fetchCellImageMapState, tacticalCellImagePlace, tacticalCellImageRemove, myTeamSlot } = useTacticalBoardSync();
 
 const logger = createLogger('tactical.ui.boardPanel');
 const currentTeamSlot = ref<number>(myTeamSlot.value ?? teamInfoPair.value!.left.slot)
