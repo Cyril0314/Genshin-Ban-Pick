@@ -4,21 +4,14 @@ import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
 import { ref, computed } from 'vue';
 import { History, LogOut } from '@lucide/vue';
-import { useSocketStore } from '@/app/stores/socketStore';
-import { useAuthStore } from '@/modules/auth/store/authStore';
-import { useAuthUseCase } from '@/modules/auth/ui/composables/useAuthUseCase';
+import { useSession } from '@/app/composables/useSession';
 import { useUserStore } from '../../store/userStore';
-import { useUserUseCase } from '../composables/useUserUseCase';
 import { usePlayerHistory } from '@/modules/shared/ui/composables/usePlayerHistory';
 
 const router = useRouter();
-const authStore = useAuthStore();
-const { identity } = storeToRefs(authStore);
 const userStore = useUserStore();
-const { nickname } = storeToRefs(userStore);
-const authUseCase = useAuthUseCase();
-const userUseCase = useUserUseCase();
-const socketStore = useSocketStore();
+const { user, nickname } = storeToRefs(userStore);
+const session = useSession();
 const playerHistory = usePlayerHistory();
 
 const showMenu = ref(false);
@@ -29,8 +22,8 @@ const userInitial = computed(() => {
 
 function handleViewHistory() {
     showMenu.value = false;
-    if (!identity.value) return;
-    playerHistory.open(identity.value);
+    if (!user.value) return;
+    playerHistory.open(user.value);
 }
 
 function handleLogout() {
@@ -38,9 +31,7 @@ function handleLogout() {
     // eslint-disable-next-line no-restricted-globals
     if (!confirm('確定要登出嗎？')) return;
 
-    socketStore.disconnect();
-    userUseCase.clearProfile();
-    authUseCase.logout();
+    session.logout();
     router.push('/login');
 }
 </script>

@@ -5,17 +5,11 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { createLogger } from '@/app/utils/logger';
-import { useSocketStore } from '@/app/stores/socketStore';
-import { useAuthStore } from '../../store/authStore';
-import { useAuthUseCase } from '../composables/useAuthUseCase';
-import { useUserUseCase } from '@/modules/user/ui/composables/useUserUseCase';
+import { useSession } from '@/app/composables/useSession';
 
 const logger = createLogger('auth.ui.register');
 const router = useRouter();
-const authUseCase = useAuthUseCase();
-const userUseCase = useUserUseCase();
-const authStore = useAuthStore();
-const socketStore = useSocketStore();
+const session = useSession();
 
 const accountInput = ref('');
 const nicknameInput = ref('');
@@ -30,12 +24,7 @@ async function handleRegisterMemberSubmit() {
     }
     logger.debug('register submit', accountInput.value);
     try {
-        await authUseCase.registerMember(accountInput.value, passwordInput.value, nicknameInput.value);
-        logger.debug('register ok, connecting socket');
-        const token = authStore.getToken();
-        if (!token) { logger.error('register ok but token missing'); return; }
-        socketStore.connect(token);
-        await userUseCase.fetchProfile();
+        await session.registerMember(accountInput.value, passwordInput.value, nicknameInput.value);
         router.push(`/room-list`);
     } catch (error: any) {
         logger.error('register failed', error);

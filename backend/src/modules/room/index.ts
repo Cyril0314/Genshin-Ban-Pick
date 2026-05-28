@@ -11,8 +11,6 @@ import createRoomsRouter from './http/rooms.routes';
 import type { IRoomStateRepository } from './domain/IRoomStateRepository';
 import type { IRoomStateManager } from './domain/IRoomStateManager';
 
-// import {  } from './domain/IRoomState'
-
 export { RoomUserService, RoomStateRepository, IRoomStateRepository };
 
 export function createRoomModule(prisma: PrismaClient, roomStateManager: IRoomStateManager) {

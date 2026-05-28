@@ -16,10 +16,7 @@ export const useSocketStore = defineStore('socket', () => {
 
     function connect(token: string) {
         logger.info('connecting');
-        if (socket.value?.connected) {
-            logger.warn('already connected');
-            return;
-        }
+        disconnect();
         // 空字串 / 未設 → undefined → socket.io 連 page origin
         const baseURL = import.meta.env.VITE_SOCKET_URL || undefined;
         socket.value = io(baseURL, { auth: { token } });
@@ -43,10 +40,6 @@ export const useSocketStore = defineStore('socket', () => {
 
     function disconnect() {
         logger.info('disconnecting');
-        if (!socket.value || socket.value.disconnected) {
-            logger.warn('already disconnected');
-            return;
-        }
         socket.value?.disconnect();
     }
 

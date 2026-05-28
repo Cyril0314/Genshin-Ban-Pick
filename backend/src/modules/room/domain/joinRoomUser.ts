@@ -19,7 +19,7 @@ export function joinRoomUser(roomUsers: IRoomUser[], identity: Identity, nicknam
 
     if (index >= 0) {
         // 重連 → 替換舊值
-        newRoomUsers = roomUsers.map((u, i) => (i === index ? { ...u, socketId: socketId, timestamp: Date.now() } : u));
+        newRoomUsers = roomUsers.map((u, i) => (i === index ? { ...u, socketId, nickname, timestamp: Date.now() } : u));
         return { joinedUser: undefined, roomUsers: newRoomUsers };
     } else {
         newRoomUsers = [...roomUsers, joinedUser];

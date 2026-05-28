@@ -12,10 +12,10 @@ import App from './App.vue';
 import router from './router';
 import { createLogger } from './app/utils/logger';
 import { registerHttpClient } from './app/bootstrap/registerHttpClient';
+import { useSession } from './app/composables/useSession';
 import api from './app/infrastructure/http/httpClient';
 import { registerAuthDependencies, useAuthStore } from './modules/auth';
 import { registerUserDependencies, useUserStore } from './modules/user';
-import { useSocketStore } from './app/stores/socketStore';
 import { registerGenshinVersionDependencies } from './modules/genshinVersion';
 import { registerCharacterDependencies, useCharacterStore } from './modules/character';
 import { registerBoardDependencies, useBoardStore } from './modules/board';
@@ -48,8 +48,8 @@ const analysisMetaStore = useAnalysisMetaStore(pinia);
 
 registerHttpClient(authStore);
 
-const { authUseCase } = registerAuthDependencies(app, httpClient, authStore);
-const { userUseCase } = registerUserDependencies(app, httpClient, userStore);
+registerAuthDependencies(app, httpClient, authStore);
+registerUserDependencies(app, httpClient, userStore);
 registerGenshinVersionDependencies(app, httpClient)
 registerCharacterDependencies(app, httpClient, characterStore);
 registerMatchDependencies(app, httpClient)
@@ -60,12 +60,8 @@ registerTeamDependencies(app, teamInfoStore);
 registerTacticalDependencies(app, tacticalBoardStore)
 registerChatDependencies(app, chatStore);
 
-await authUseCase.autoLogin();
-const token = authStore.getToken();
-if (token) {
-    useSocketStore(pinia).connect(token);
-    await userUseCase.fetchProfile();
-}
+// runWithContext lets us call the useSession composable outside of a setup() — providers registered above are now in scope, so inject() resolves.
+await app.runWithContext(() => useSession().autoLogin());
 
 // router must install after autoLogin — beforeEach guard evaluates immediately on install
 app.use(router);
