@@ -11,10 +11,12 @@ import RoomUserPool from '@/modules/room/ui/components/RoomUserPool.vue';
 import BanPickBoard from '@/modules/board/ui/components/BanPickBoard.vue';
 import UserProfile from '@/modules/user/ui/components/UserProfile.vue';
 import PlayerHistoryModal from '@/modules/analysis/ui/components/PlayerHistoryModal.vue';
+import CharacterHoverCard from '@/modules/analysis/ui/components/CharacterHoverCard.vue';
 
 import { useViewportScale } from '../composables/useViewportScale';
 import { useBanPickFacade } from '../composables/useBanPickFacade';
-import { providePlayerHistory } from '@/modules/analysis/ui/composables/usePlayerHistory';
+import { providePlayerHistory } from '@/modules/shared/ui/composables/usePlayerHistory';
+import { provideCharacterAvatarWrapper } from '@/modules/shared/ui/composables/useCharacterAvatarWrapper';
 
 import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 
@@ -58,6 +60,9 @@ providePlayerHistory({
         isPlayerHistoryOpen.value = true;
     },
 });
+
+provideCharacterAvatarWrapper(CharacterHoverCard);
+
 </script>
 <template>
     <div class="ban-pick-page scale-context">

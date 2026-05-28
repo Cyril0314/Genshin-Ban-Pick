@@ -8,6 +8,7 @@ import { createLogger } from '@/app/utils/logger';
 import { DragTypes } from '@/app/constants/customMIMETypes';
 import { getWishImagePath } from '@/modules/shared/infrastructure/imageRegistry';
 import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
+import { useCharacterAvatarWrapper } from '@/modules/shared/ui/composables/useCharacterAvatarWrapper';
 import { useBoardStore } from '../../store/boardStore';
 
 import type { IZone } from '@shared/contracts/board/IZone';
@@ -42,11 +43,18 @@ const highlightColor = computed(() => {
     return teamTheme.value.themeVars.value['--team-color-rgb'];
 });
 
+const isDragging = ref(false);
+
 function handleDragStartEvent(event: DragEvent) {
     logger.debug('drag start');
     if (imageId.value && event.dataTransfer) {
+        isDragging.value = true;
         event?.dataTransfer?.setData(DragTypes.CHARACTER_IMAGE, imageId.value);
     }
+}
+
+function handleDragEndEvent() {
+    isDragging.value = false;
 }
 
 function handleDropEvent(event: DragEvent) {
@@ -67,6 +75,8 @@ function handleClickEvent(event: MouseEvent) {
 }
 
 const isHighlighted = computed(() => props.zone.id === currentStep.value?.zoneId);
+
+const AvatarWrapper = useCharacterAvatarWrapper();
 </script>
 
 <template>
@@ -77,12 +87,15 @@ const isHighlighted = computed(() => props.zone.id === currentStep.value?.zoneId
         @dragover.prevent="isOver = true"
         @dragleave="isOver = false"
         @dragstart="handleDragStartEvent"
+        @dragend="handleDragEndEvent"
         @drop="handleDropEvent"
         @click="handleClickEvent"
     >
         <template v-if="imageId">
             <img class="background" :src="getWishImagePath(imageId)" aria-hidden="true" />
-            <img class="image" :src="getWishImagePath(imageId)" />
+            <component :is="AvatarWrapper" :character-key="imageId" :disabled="isDragging">
+                <img class="image" :src="getWishImagePath(imageId)" />
+            </component>
         </template>
         <span v-else class="label">{{ label }}</span>
     </div>

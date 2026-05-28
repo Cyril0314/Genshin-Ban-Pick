@@ -24,7 +24,7 @@ import { registerRoomDependencies, useRoomUserStore } from './modules/room';
 import { registerMatchDependencies } from './modules/match';
 import { registerTeamDependencies, useTeamInfoStore } from './modules/team';
 import { registerTacticalDependencies, useTacticalBoardStore } from './modules/tactical';
-import { registerAnalysisDependencies } from './modules/analysis';
+import { registerAnalysisDependencies, useAnalysisMetaStore } from './modules/analysis';
 
 const logger = createLogger('app.main');
 
@@ -44,6 +44,7 @@ const boardStore = useBoardStore(pinia);
 const teamInfoStore = useTeamInfoStore(pinia);
 const tacticalBoardStore = useTacticalBoardStore(pinia);
 const chatStore = useChatStore(pinia);
+const analysisMetaStore = useAnalysisMetaStore(pinia);
 
 registerHttpClient(authStore);
 
@@ -52,7 +53,7 @@ const { userUseCase } = registerUserDependencies(app, httpClient, userStore);
 registerGenshinVersionDependencies(app, httpClient)
 registerCharacterDependencies(app, httpClient, characterStore);
 registerMatchDependencies(app, httpClient)
-registerAnalysisDependencies(app, httpClient)
+registerAnalysisDependencies(app, httpClient, analysisMetaStore)
 registerRoomDependencies(app, httpClient, roomUserStore);
 registerBoardDependencies(app, boardStore);
 registerTeamDependencies(app, teamInfoStore);

@@ -9,7 +9,7 @@ import { DragTypes } from '@/app/constants/customMIMETypes.ts';
 import { useTeamInfoStore } from '@/modules/team';
 import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme.ts';
 import { useRoomUserStore } from '../../store/roomUserStore';
-import { usePlayerHistory } from '@/modules/analysis/ui/composables/usePlayerHistory';
+import { usePlayerHistory } from '@/modules/shared/ui/composables/usePlayerHistory';
 import { stringifyPlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 
 import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
@@ -54,7 +54,7 @@ function handleDragStartEvent(roomUser: IRoomUser, event: DragEvent) {
     event?.dataTransfer?.setData(DragTypes.ROOM_USER, stringifyPlayerIdentity(roomUser.identity));
 }
 
-function openPlayerHistory(roomUser: IRoomUser) {
+function handleClick(roomUser: IRoomUser) {
     playerHistory.open(roomUser.identity);
 }
 
@@ -81,7 +81,7 @@ function getStyleForUser(roomUser: IRoomUser) {
                 :style="getStyleForUser(roomUser)"
                 draggable="true"
                 @dragstart="handleDragStartEvent(roomUser, $event)"
-                @click="openPlayerHistory(roomUser)"
+                @click="handleClick(roomUser)"
             >
                 <span class="label">{{ roomUser.nickname }}</span>
             </div>

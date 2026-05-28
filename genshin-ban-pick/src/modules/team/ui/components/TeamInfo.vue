@@ -6,19 +6,13 @@ import { X } from '@lucide/vue';
 import { createLogger } from '@/app/utils/logger';
 import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
 import { DragTypes } from '@/app/constants/customMIMETypes';
-import { usePlayerHistory } from '@/modules/analysis/ui/composables/usePlayerHistory';
+import { usePlayerHistory } from '@/modules/shared/ui/composables/usePlayerHistory';
 import { parsePlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 import type { Identity } from '@shared/contracts/identity/Identity';
 import type { TeamMember } from '@shared/contracts/team/TeamMember';
 
 const logger = createLogger('team.ui.info');
 const playerHistory = usePlayerHistory();
-
-function openPlayerHistory(memberSlot: number) {
-    const m = props.teamInfo.members[memberSlot];
-    if (!m) return;
-    playerHistory.open(m);
-}
 
 const props = defineProps<{
     side: 'left' | 'right';
@@ -86,6 +80,14 @@ function handleDropEvent( memberSlot: number, event: DragEvent) {
     if (!parsed || parsed.type === 'Name') return;
     emit('member-drop', { identity: parsed, teamSlot: props.teamInfo.slot, memberSlot });
 }
+
+
+function handleMemberNameClick(memberSlot: number) {
+    const m = props.teamInfo.members[memberSlot];
+    if (!m) return;
+    playerHistory.open(m);
+}
+
 </script>
 
 <template>
@@ -99,7 +101,7 @@ function handleDropEvent( memberSlot: number, event: DragEvent) {
                 <div class="member"
                     v-for="(_, memberSlot) in totalSlots"
                     @dragover.prevent @drop="(e) => handleDropEvent(memberSlot, e)">
-                    <span class="name" @click="openPlayerHistory(memberSlot)">{{ getTeamMemberName(memberSlot) }}</span>
+                    <span class="name" @click="handleMemberNameClick(memberSlot)">{{ getTeamMemberName(memberSlot) }}</span>
                     <X class="remove" @click="handleRemoveMemberButtonClick(memberSlot)"/>
                     
                 </div>

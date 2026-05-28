@@ -19,7 +19,15 @@
       "Bash(sed -n '100,105p' /Users/wangxiaoyu/Desktop/side/Genshin-Ban-Pick/genshin-ban-pick/src/modules/team/ui/components/TeamInfo.vue)",
       "Bash(sed -n '88,94p' /Users/wangxiaoyu/Desktop/side/Genshin-Ban-Pick/genshin-ban-pick/src/modules/character/ui/components/CharacterSelector.vue)",
       "Bash(sed -n '35,55p' /Users/wangxiaoyu/Desktop/side/Genshin-Ban-Pick/genshin-ban-pick/src/modules/chat/ui/components/ChatFloatWindow.vue)",
-      "Bash(sed -n '70,90p' /Users/wangxiaoyu/Desktop/side/Genshin-Ban-Pick/genshin-ban-pick/src/modules/analysis/ui/components/PlayerHistoryModal.vue)"
+      "Bash(sed -n '70,90p' /Users/wangxiaoyu/Desktop/side/Genshin-Ban-Pick/genshin-ban-pick/src/modules/analysis/ui/components/PlayerHistoryModal.vue)",
+      "Bash([ -d \"$m/domain\" ])",
+      "Bash(find src/modules/*/domain -name \"*.ts\")",
+      "Bash(echo \"exit: $?\")",
+      "Bash(git mv *)",
+      "Bash(npx tsc *)",
+      "Bash(echo \"backend tsc exit: $?\")",
+      "Read(//Users/wangxiaoyu/Desktop/side/**)",
+      "Bash(echo \"backend exit: $?\")"
     ]
   }
 }

@@ -10,6 +10,7 @@ import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useChar
 import { useCharacterStore } from '@/modules/character';
 import { getProfileImagePath } from '@/modules/shared/infrastructure/imageRegistry';
 import { elementColors } from '@/modules/shared/ui/constants/elementColors';
+import CharacterHoverCard from './CharacterHoverCard.vue';
 
 import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 import type { Element } from '@shared/contracts/character/value-types';
@@ -72,7 +73,9 @@ function getRowStyle(characterKey: string) {
                                     class="frequency-row"
                                     :style="getRowStyle(f.characterKey)"
                                 >
-                                    <img class="avatar" :src="getProfileImagePath(f.characterKey)" :alt="getCharacterDisplayName(f.characterKey)" />
+                                    <CharacterHoverCard :character-key="f.characterKey">
+                                        <img class="avatar" :src="getProfileImagePath(f.characterKey)" :alt="getCharacterDisplayName(f.characterKey)" />
+                                    </CharacterHoverCard>
                                     <div class="content">
                                         <div class="head">
                                             <span class="name">{{ getCharacterDisplayName(f.characterKey) }}</span>
@@ -87,15 +90,17 @@ function getRowStyle(characterKey: string) {
                                         <div v-if="f.topSynergies.length > 0" class="synergies">
                                             <span class="synergies-label">常用隊友</span>
                                             <ul class="synergy-list">
-                                                <li v-for="s in f.topSynergies" :key="s.characterKey" class="synergy-chip">
-                                                    <img
-                                                        class="synergy-avatar"
-                                                        :src="getProfileImagePath(s.characterKey)"
-                                                        :alt="getCharacterDisplayName(s.characterKey)"
-                                                    />
-                                                    <span class="synergy-name">{{ getCharacterDisplayName(s.characterKey) }}</span>
-                                                    <span class="synergy-count">×{{ s.count }}</span>
-                                                </li>
+                                                <CharacterHoverCard v-for="s in f.topSynergies" :key="s.characterKey" :character-key="s.characterKey">
+                                                    <li class="synergy-chip">
+                                                        <img
+                                                            class="synergy-avatar"
+                                                            :src="getProfileImagePath(s.characterKey)"
+                                                            :alt="getCharacterDisplayName(s.characterKey)"
+                                                        />
+                                                        <span class="synergy-name">{{ getCharacterDisplayName(s.characterKey) }}</span>
+                                                        <span class="synergy-count">×{{ s.count }}</span>
+                                                    </li>
+                                                </CharacterHoverCard>
                                             </ul>
                                         </div>
                                         <div v-else class="synergy-empty">尚無全域共現資料</div>
@@ -112,8 +117,6 @@ function getRowStyle(characterKey: string) {
 
 <style scoped>
 .modal-card {
-    --base-size: 1.2vw;
-
     width: 60vw;
     max-height: 85vh;
     display: flex;

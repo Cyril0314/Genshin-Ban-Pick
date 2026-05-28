@@ -56,7 +56,7 @@ export function useBanPickInitializer(roomId: string) {
             registerAllSyncModules(socket.getSocket())
 
             // 1. 抓全部角色
-            await characterUseCase.fetchCharacterMap();
+            await characterUseCase.loadCharacterMap();
 
             // 2. 抓房間設定
             roomSetting.value = await roomUseCase.fetchRoomSetting(roomId);

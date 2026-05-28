@@ -2,14 +2,14 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed } from 'vue';
 import { History, LogOut } from '@lucide/vue';
 import { useSocketStore } from '@/app/stores/socketStore';
 import { useAuthStore } from '@/modules/auth/store/authStore';
 import { useAuthUseCase } from '@/modules/auth/ui/composables/useAuthUseCase';
 import { useUserStore } from '../../store/userStore';
 import { useUserUseCase } from '../composables/useUserUseCase';
-import { usePlayerHistory } from '@/modules/analysis/ui/composables/usePlayerHistory';
+import { usePlayerHistory } from '@/modules/shared/ui/composables/usePlayerHistory';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -21,42 +21,20 @@ const userUseCase = useUserUseCase();
 const socketStore = useSocketStore();
 const playerHistory = usePlayerHistory();
 
-function handleViewHistory() {
-    closeMenu();
-    if (!identity.value) return;
-    playerHistory.open(identity.value);
-}
-
-const isOpen = ref(false);
-const containerRef = ref<HTMLElement | null>(null);
+const showMenu = ref(false);
 
 const userInitial = computed(() => {
     return nickname.value ? nickname.value.charAt(0).toUpperCase() : 'G';
 });
 
-function toggleMenu() {
-    isOpen.value = !isOpen.value;
+function handleViewHistory() {
+    showMenu.value = false;
+    if (!identity.value) return;
+    playerHistory.open(identity.value);
 }
-
-function closeMenu() {
-    isOpen.value = false;
-}
-
-function handleClickOutside(event: MouseEvent) {
-    if (containerRef.value && !containerRef.value.contains(event.target as Node)) {
-        closeMenu();
-    }
-}
-
-onMounted(() => {
-    document.addEventListener('click', handleClickOutside);
-});
-
-onUnmounted(() => {
-    document.removeEventListener('click', handleClickOutside);
-});
 
 function handleLogout() {
+    showMenu.value = false;
     // eslint-disable-next-line no-restricted-globals
     if (!confirm('確定要登出嗎？')) return;
 
@@ -68,13 +46,16 @@ function handleLogout() {
 </script>
 
 <template>
-    <div class="user-profile" ref="containerRef">
-        <button class="avatar-button" @click="toggleMenu" :class="{ 'is-active': isOpen }">
-            {{ userInitial }}
-        </button>
+    <div class="user-profile">
+        <n-popover trigger="click" placement="bottom-start" raw v-model:show="showMenu"
+            class="user-profile-popover">
+            <template #trigger>
+                <button class="avatar-button" :class="{ 'is-active': showMenu }">
+                    {{ userInitial }}
+                </button>
+            </template>
 
-        <transition name="user-profile-fade">
-            <div v-if="isOpen" class="dropdown scale-context">
+            <div class="dropdown scale-context">
                 <div class="header">
                     <div class="large-avatar">{{ userInitial }}</div>
                     <div class="info">
@@ -95,13 +76,12 @@ function handleLogout() {
                     </button>
                 </div>
             </div>
-        </transition>
+        </n-popover>
     </div>
 </template>
 
 <style scoped>
 .user-profile {
-    position: relative;
     height: 100%;
     display: flex;
     align-items: center;
@@ -134,29 +114,28 @@ function handleLogout() {
 }
 
 .dropdown {
-    --base-size: 1.2vw;
-    --size-avatar: calc(var(--base-size) * 3);
-    position: absolute;
-    top: calc(100% + var(--space-sm));
-    left: 0;
+    --base-size: 1.25rem;
+    --size-avatar: calc(var(--base-size) * 2.5);
+    --size-icon: calc(var(--base-size) * 1);
+    display: flex;
+    flex-direction: column;
     min-width: 260px;
     background-color: var(--md-sys-color-surface-container-high);
     border: 1px solid var(--md-sys-color-outline-variant);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-md);
     padding: var(--space-sm);
-    z-index: 100;
     overflow: hidden;
     box-shadow:
         0 4px 6px -1px rgb(0 0 0 / 0.15),
         0 10px 24px -4px rgb(0 0 0 / 0.2);
     backdrop-filter: blur(12px);
+    gap: var(--space-md);
 }
 
 .header {
     display: flex;
     align-items: center;
     gap: var(--space-md);
-    padding: var(--space-sm) var(--space-sm) var(--space-md);
 }
 
 .large-avatar {
@@ -169,7 +148,7 @@ function handleLogout() {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-lg);
     font-weight: var(--font-weight-medium);
 }
 
@@ -192,14 +171,11 @@ function handleLogout() {
 .divider {
     height: 1px;
     background-color: var(--md-sys-color-outline-variant);
-    margin-inline: var(--space-sm);
 }
 
 .actions {
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    padding-top: var(--space-sm);
 }
 
 .item {
@@ -207,7 +183,7 @@ function handleLogout() {
     align-items: center;
     gap: var(--space-sm);
     width: 100%;
-    padding: var(--space-sm) var(--space-md);
+    padding: var(--space-sm) var(--space-sm);
     background: transparent;
     border: none;
     border-radius: var(--radius-md);
@@ -231,21 +207,8 @@ function handleLogout() {
 }
 
 .icon {
-    width: 16px;
-    height: 16px;
+    width: var(--size-icon);
+    height: var(--size-icon);
     flex-shrink: 0;
-}
-
-.user-profile-fade-enter-active,
-.user-profile-fade-leave-active {
-    transition:
-        opacity 0.18s ease,
-        transform 0.18s ease;
-}
-
-.user-profile-fade-enter-from,
-.user-profile-fade-leave-to {
-    opacity: 0;
-    transform: translateY(-6px) scale(0.97);
 }
 </style>

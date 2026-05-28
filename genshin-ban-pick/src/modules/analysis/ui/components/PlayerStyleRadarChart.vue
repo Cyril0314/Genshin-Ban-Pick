@@ -5,7 +5,7 @@ import { CanvasRenderer } from 'echarts/renderers';
 import { RadarChart, PieChart } from 'echarts/charts';
 import { GridComponent, TooltipComponent, LegendComponent } from 'echarts/components';
 import { usePlayerStyleChart } from '../composables/usePlayerStyleChart';
-import { usePlayerHistory } from '../composables/usePlayerHistory';
+import { usePlayerHistory } from '@/modules/shared/ui/composables/usePlayerHistory';
 
 import type { TeamMember } from '@shared/contracts/team/TeamMember';
 

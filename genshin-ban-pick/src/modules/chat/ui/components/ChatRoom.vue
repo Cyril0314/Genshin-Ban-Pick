@@ -9,7 +9,7 @@ import { useUserStore } from '@/modules/user';
 import { useCurrentTime, formatRelativeTime } from '@/modules/shared/ui/composables/useRelativeTime';
 import { useChatSync } from '../../sync/useChatSync.ts';
 import { useChatStore } from '../../store/chatStore.ts';
-import { usePlayerHistory } from '@/modules/analysis/ui/composables/usePlayerHistory';
+import { usePlayerHistory } from '@/modules/shared/ui/composables/usePlayerHistory';
 import { isSameIdentity } from '@shared/contracts/identity/Identity';
 import type { IChatMessage } from '@shared/contracts/chat/IChatMessage.ts';
 
@@ -46,6 +46,10 @@ function handleSend() {
     }
 }
 
+function handleAuthorClick(msg: IChatMessage) {
+    playerHistory.open(msg.identity);
+}
+
 function scrollToBottom() {
     nextTick(() => {
         if (messagesContainer.value) {
@@ -58,10 +62,6 @@ function isSelfMessage(msg: IChatMessage) {
     return !!identity.value && isSameIdentity(msg.identity, identity.value);
 }
 
-function openPlayerHistory(msg: IChatMessage) {
-    playerHistory.open(msg.identity);
-}
-
 </script>
 
 <template>
@@ -69,7 +69,7 @@ function openPlayerHistory(msg: IChatMessage) {
         <div ref="messagesContainer" class="messages">
             <div v-for="(msg, index) in messages" :key="index" class="message-row"
                 :class="{ 'message-row--self': isSelfMessage(msg) }">
-                <span v-if="!isSelfMessage(msg)" class="author" @click="openPlayerHistory(msg)">{{ `${msg.nickname}:` }}</span>
+                <span v-if="!isSelfMessage(msg)" class="author" @click="handleAuthorClick(msg)">{{ `${msg.nickname}:` }}</span>
                 <div class="bubble"> {{ msg.message }} </div>
                 <span class="time">{{ formatRelativeTime(msg.timestamp ?? 0, now) }}</span>
             </div>

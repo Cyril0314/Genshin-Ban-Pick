@@ -9,7 +9,7 @@
     /* --base-size: clamp(1rem, 1vw, 4rem);  約 16px ~ 24px */
     /* --base-size: 2rem;  約 16px ~ 24px */
     /* --base-size: 1.2vw; */
-    --base-size: 20px;
+    --base-size: 1.25rem;
 
     /* 📏 行高與字重  */
     --line-height-tightest: 1;

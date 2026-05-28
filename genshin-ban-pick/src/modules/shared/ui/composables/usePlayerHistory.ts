@@ -1,7 +1,9 @@
-// src/modules/analysis/ui/composables/usePlayerHistory.ts
+// src/modules/shared/ui/composables/usePlayerHistory.ts
 //
-// PlayerHistory 開窗器：由 ancestor（BanPickView）注入 `open(identity)` 函式。
-// displayName 由 backend resolve 後跟著 IPlayerRecord 一起回來，caller 只需識別身分。
+// PlayerHistory 開窗器：跨 feature 共用的 inject 介面。
+// - 介面（key + context）住在 shared，誰都能 inject。
+// - 實作（modal 本體）住在 analysis，由 composition root（BanPickView）provide。
+// - 這樣 user/team/room/chat 等 feature 只依賴 shared，不再橫向依賴 analysis。
 
 import { inject, provide, type InjectionKey } from 'vue';
 
