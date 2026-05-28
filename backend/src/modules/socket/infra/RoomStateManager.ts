@@ -2,7 +2,7 @@
 
 import { createLogger } from '../../../utils/logger';
 
-import type { IRoomStateManager } from '../domain/IRoomStateManager';
+import type { IRoomStateManager } from '../../room/domain/IRoomStateManager';
 import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 import type { IRoomState } from '@shared/contracts/room/IRoomState';
 import type { BoardImageMap } from '@shared/contracts/board/BoardImageMap';

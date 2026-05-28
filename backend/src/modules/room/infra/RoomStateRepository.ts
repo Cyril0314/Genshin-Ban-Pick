@@ -3,7 +3,7 @@
 import { RoomNotFoundError } from '../../../errors/AppError';
 
 import type { BoardImageMap } from '@shared/contracts/board/BoardImageMap';
-import type { IRoomStateManager } from '../../socket/domain/IRoomStateManager';
+import type { IRoomStateManager } from '../domain/IRoomStateManager';
 import type { IRoomStateRepository } from '../domain/IRoomStateRepository';
 import type { IRoomState } from '@shared/contracts/room/IRoomState';
 import type { IRoomUser } from '@shared/contracts/room/IRoomUser';

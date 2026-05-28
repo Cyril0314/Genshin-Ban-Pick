@@ -14,7 +14,7 @@ import { ChatService } from '../chat';
 import { TeamService } from '../team';
 import { TacticalService } from '../tactical';
 
-import type { IRoomStateManager } from './domain/IRoomStateManager';
+import type { IRoomStateManager } from '../room/domain/IRoomStateManager';
 import type UserService from '../user/application/user.service';
 
 const logger = createLogger('socket.controller');

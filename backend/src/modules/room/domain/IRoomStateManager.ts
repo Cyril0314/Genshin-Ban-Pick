@@ -1,4 +1,4 @@
-// backend/src/modules/socket/domain/IRoomStateManager.ts
+// backend/src/modules/room/domain/IRoomStateManager.ts
 
 import type { IChatMessage } from '@shared/contracts/chat/IChatMessage';
 import type { IRoomUser } from '@shared/contracts/room/IRoomUser';

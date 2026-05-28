@@ -13,7 +13,7 @@ import { createGenshinVersionModule } from '../modules/genshinVersion';
 import { createRequireAuth } from '../middlewares/requireAuth';
 
 import type { Express } from 'express';
-import type { IRoomStateManager } from '../modules/socket/domain/IRoomStateManager';
+import type { IRoomStateManager } from '../modules/room/domain/IRoomStateManager';
 import type { IJwtProvider } from '../modules/auth/domain/IJwtProvider';
 
 export function registerAppRouters(app: Express, prisma: PrismaClient, roomStateManager: IRoomStateManager, jwtProvider: IJwtProvider) {

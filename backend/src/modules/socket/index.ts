@@ -5,7 +5,7 @@ import { Server } from 'socket.io';
 import { createSocketAuth } from './infra/socketAuth';
 import { setupSocketIO } from './socketController';
 
-import type { IRoomStateManager } from './domain/IRoomStateManager';
+import type { IRoomStateManager } from '../room/domain/IRoomStateManager';
 import type { IJwtProvider } from '../auth/domain/IJwtProvider';
 import type UserService from '../user/application/user.service';
 

@@ -9,7 +9,7 @@ import createMatchesRouter from './http/matches.routes';
 import MatchSnapshotRepository from './infra/MatchSnapshotRepository';
 import MatchRepository from './infra/MatchRepository';
 
-import type { IRoomStateManager } from '../socket/domain/IRoomStateManager';
+import type { IRoomStateManager } from '../room/domain/IRoomStateManager';
 
 export function createMatchModule(prisma: PrismaClient, roomStateManager: IRoomStateManager) {
     const matchRepository = new MatchRepository(prisma);
