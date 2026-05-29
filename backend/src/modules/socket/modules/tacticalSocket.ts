@@ -39,6 +39,16 @@ export function registerTacticalSocket(io: Server, socket: Socket, tacticalServi
         logger.debug(`Sent ${TacticalEvent.CellImageMapResetBroadcast}`, { teamSlot });
     });
 
+    socket.on(`${TacticalEvent.AllTeamCellImageMapResetRequest}`, () => {
+        logger.debug(`Received ${TacticalEvent.AllTeamCellImageMapResetRequest}`);
+        const roomId = (socket as any).roomId;
+        if (!roomId) return;
+
+        tacticalService.resetAll(roomId);
+        socket.to(roomId).emit(`${TacticalEvent.AllTeamCellImageMapResetBroadcast}`);
+        logger.debug(`Sent ${TacticalEvent.AllTeamCellImageMapResetBroadcast}`);
+    });
+
     socket.on(`${TacticalEvent.CellImageMapStateRequest}`, ({ teamSlot }: { teamSlot: number }) => {
         logger.debug(`Received ${TacticalEvent.CellImageMapStateRequest}`, { teamSlot });
         const roomId = (socket as any).roomId;

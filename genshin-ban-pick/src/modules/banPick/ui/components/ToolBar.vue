@@ -12,7 +12,7 @@ import { useAuthStore } from '@/modules/auth';
 import { useChatWindow } from '@/modules/chat/ui/composables/useChatWindow';
 
 const emit = defineEmits<{
-    (e: 'image-map-reset'): void;
+    (e: 'match-reset'): void;
     (e: 'match-save'): void;
 }>();
 
@@ -41,7 +41,7 @@ function handleAnalysisButtonClickEvent() {
 
 function handleResetButtonClickEvent() {
     logger.debug('reset button click');
-    emit('image-map-reset');
+    emit('match-reset');
 }
 
 function handleSaveButtonClickEvent() {

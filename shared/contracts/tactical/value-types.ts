@@ -10,4 +10,7 @@ export enum TacticalEvent {
 
     CellImageMapStateRequest = 'tactical.cell.image_map.state.request',
     CellImageMapStateSyncSelf = 'tactical.cell.image_map.state.sync.self',
+
+    AllTeamCellImageMapResetRequest = 'all_team.tactical.cell.image_map.reset.request',
+    AllTeamCellImageMapResetBroadcast = 'all_team.tactical.cell.image_map.reset.broadcast',
 }

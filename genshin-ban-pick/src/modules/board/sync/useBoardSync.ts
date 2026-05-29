@@ -2,7 +2,6 @@
 
 import { useSocketStore } from '@/app/stores/socketStore';
 import { useBoardUseCase } from '../ui/composables/useBoardUseCase';
-import { useTacticalBoardSync } from '@/modules/tactical';
 import { createLogger } from '@/app/utils/logger';
 import { BoardEvent } from '@shared/contracts/board/value-types';
 
@@ -13,8 +12,6 @@ const logger = createLogger('board.sync');
 export function useBoardSync() {
     const socket = useSocketStore().getSocket();
     const boardUseCase = useBoardUseCase();
-
-    const { handleAllTeamResetBoard } = useTacticalBoardSync();
 
     function registerBoardSync() {
         socket.on(`${BoardEvent.ImageMapStateSyncSelf}`, handleBoardImageMapStateSync);
@@ -47,7 +44,6 @@ export function useBoardSync() {
     function boardImageMapReset() {
         logger.debug('image map reset');
         boardUseCase.handleBoardImageMapReset();
-        handleAllTeamResetBoard();
 
         logger.debug('sent image map reset request');
         socket.emit(`${BoardEvent.ImageMapResetRequest}`);
@@ -66,7 +62,6 @@ export function useBoardSync() {
     function handleBoardImageMapResetBroadcast() {
         logger.debug('image map reset broadcast');
         boardUseCase.handleBoardImageMapReset();
-        handleAllTeamResetBoard();
     }
 
     function handleBoardImageMapStateSync(imageMap: Record<number, string>) {

@@ -33,6 +33,13 @@ export default class TacticalUseCase {
         this.tacticalBoardStore.setTacticalCellImageMap(teamSlot, nextMap);
     }
 
+    handleAllTeamTacticalCellImageMapReset() {
+        for (const teamSlotString of Object.keys(this.tacticalBoardStore.teamTacticalCellImageMap)) {
+            const teamSlot = Number(teamSlotString);
+            this.handleTacticalCellImageMapReset(teamSlot);
+        }
+    }
+
     setTacticalCellImageMap(teamSlot: number, newTacticalCellImageMap: TacticalCellImageMap) {
         this.tacticalBoardStore.setTacticalCellImageMap(teamSlot, newTacticalCellImageMap);
     }

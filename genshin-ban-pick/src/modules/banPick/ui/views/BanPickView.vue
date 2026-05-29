@@ -31,11 +31,11 @@ const {
 
     filter: { change: filterChange },
 
-    board: { imageMap, usedImageIds, imageDrop, imageRestore, imageMapReset, randomPull },
+    board: { imageMap, usedImageIds, imageDrop, imageRestore, randomPull },
 
     team: { userToTeamSlotMap, memberInput, memberDrop, memberRestore },
 
-    match: { save: matchSave, isLoading: isMatchSaveLoading, result: matchResult, error: matchError },
+    match: { save, reset, isLoading: isMatchSaveLoading, result: matchResult, error: matchError },
 } = useBanPickFacade(roomId);
 
 watch(matchResult, (val) => {
@@ -85,7 +85,7 @@ provideCharacterAvatarWrapper(CharacterHoverCard);
                             </div>
 
                             <div class="top-section top-section--align-right">
-                                <Toolbar @image-map-reset="imageMapReset" @match-save="matchSave" />
+                                <Toolbar @match-reset="reset" @match-save="save" />
                             </div>
                         </div>
 

@@ -32,7 +32,9 @@
       "Bash(grep -v \"useMyTeamInfo.ts$\")",
       "Bash(git push *)",
       "Bash(npx oxlint *)",
-      "Bash(npx eslint *)"
+      "Bash(npx eslint *)",
+      "Bash(git status *)",
+      "Bash(echo \"exit=$?\")"
     ]
   }
 }
