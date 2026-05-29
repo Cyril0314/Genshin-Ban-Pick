@@ -2,7 +2,7 @@ import type { IWeightContext } from "./IWeightContext";
 
 export interface ICharacterUsage {
     characterKey: string;
-    tacticalUsage: number;
+    adjustedUsage: number;
     globalUsage: number;
     effectiveUsage: number;
     validMatchCount: number;

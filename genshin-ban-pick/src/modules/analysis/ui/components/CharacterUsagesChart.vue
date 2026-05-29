@@ -35,7 +35,7 @@ const { option } = useCharacterUsagesChart();
                 每場比賽依動作類型（Wc）給予權重，隨機（Random）行動或未使用（Not Used）時會降權。<br />
                 GlobalUsage = AllMatches / Wc​, EffectiveUsage = ValidMatches / Wc<br />
                 StabilityFactor = 1 − e ^ (−30 / ValidMatches)​<br />
-                TacticalUsage​ = GlobalUsage × StabilityFactor + EffectiveUsage × (1 − StabilityFactor)
+                AdjustedUsage​ = GlobalUsage × StabilityFactor + EffectiveUsage × (1 − StabilityFactor)
             </small>
         </footer>
     </div>

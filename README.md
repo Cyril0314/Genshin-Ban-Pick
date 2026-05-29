@@ -18,6 +18,76 @@ genshin-ban-pick/   # Vue 3 frontend
 shared/contracts/   # 共用 TS 型別（兩端都用 @shared/* alias 引入）
 ```
 
+## 模組依賴
+
+兩邊都是 Clean Architecture，各自分成 ~12 個 feature 模組。下圖只畫 feature 模組之間的依賴邊；省略純工具模組（後端 `errors` / `utils`，前端 `shared`）。箭頭方向 = 依賴方向（`A → B` 代表 A import B）。
+
+### Backend (`backend/src/modules/`)
+
+```mermaid
+flowchart LR
+    socket --> auth
+    socket --> board
+    socket --> chat
+    socket --> lineup
+    socket --> room
+    socket --> team
+    board --> room
+    chat --> room
+    lineup --> room
+    team --> room
+    room --> user
+    auth --> user
+    match --> character
+    match --> room
+    analysis --> character
+    analysis --> match
+    analysis --> user
+```
+
+- **`room`** 是房間內 in-memory 狀態的中央 hub：`board / chat / lineup / team` 都透過 `IRoomStateRepository` 讀寫它，本身只依賴 `user`（identity 解析）。
+- **`socket`** 是 realtime 模組的 composition root，把所有 feature service 接到 Socket.IO 事件上。
+- **`match`** 是 DB 寫入路徑：吃 `room` 的 snapshot，寫出帶 `character` reference 的 row。
+- **`analysis`** 是 DB 讀取/統計路徑：從 `match` + `character` + `user` 算 aggregate。
+
+### Frontend (`genshin-ban-pick/src/modules/`)
+
+```mermaid
+flowchart LR
+    banPick --> analysis
+    banPick --> auth
+    banPick --> board
+    banPick --> character
+    banPick --> chat
+    banPick --> lineup
+    banPick --> match
+    banPick --> room
+    banPick --> team
+    banPick --> user
+    lineup --> auth
+    lineup --> board
+    lineup --> team
+    board --> character
+    board --> team
+    chat --> auth
+    chat --> user
+    team --> room
+    analysis --> character
+    analysis --> genshinVersion
+    analysis --> match
+    analysis --> user
+```
+
+- **`banPick`** 是頁面層 orchestrator（`useBanPickFacade` 把所有 feature 串起來），fan-out 最大。
+- **`lineup → board`** 不只是型別共用：`useLineupPool` 讀 `boardStore.boardImageMap` + `matchSteps` 來決定哪些 Pick 過的角色可以拖進 lineup 格子。砍掉這條邊就得複製 board state 或把 pool 解析推到 `board` 裡。
+- **`auth`** 是底層 identity provider（leaf）。
+- **`shared`**（圖中略）是 DI keys / image registry / theme composable / 共用元件的雜物間，每個模組都會 import 它，但反向不會。
+
+### 跨邊（shared contracts）
+
+`shared/contracts/<domain>/` 是兩邊都吃的 TS-only DTO / value-type 倉庫，用 `@shared/*` alias 引入。
+新增跨邊型別必須放這，不能在某一邊複製一份。
+
 ## 快速開始
 
 ### 前置需求

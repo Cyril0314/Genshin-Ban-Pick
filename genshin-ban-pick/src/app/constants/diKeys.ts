@@ -11,6 +11,6 @@ export const DIKeys = {
     RoomUserUseCase: Symbol('room-user-use-case'),
     BoardUseCase: Symbol('board-use-case'),
     TeamUseCase: Symbol('team-use-case'),
-    TacticalUseCase: Symbol('tactical-use-case'),
+    LineupUseCase: Symbol('lineup-use-case'),
     ChatUseCase: Symbol('chat-use-case'),
 };

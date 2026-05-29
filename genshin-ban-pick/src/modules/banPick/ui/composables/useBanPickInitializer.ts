@@ -8,7 +8,7 @@ import { useRoomUseCase, useRoomUserSync } from '@/modules/room';
 import { useCharacterStore, useCharacterUseCase } from '@/modules/character';
 import { useBoardUseCase, useBoardSync } from '@/modules/board';
 import { useTeamUseCase, useTeamInfoSync } from '@/modules/team';
-import { useTacticalUseCase } from '@/modules/tactical';
+import { useLineupUseCase } from '@/modules/lineup';
 import { useChatSync } from '@/modules/chat';
 import { registerAllSyncModules } from '@/app/bootstrap/registerAllSyncModules';
 
@@ -39,7 +39,7 @@ export function useBanPickInitializer(roomId: string) {
     const boardUseCase = useBoardUseCase();
     const roomUseCase = useRoomUseCase();
     const tamUseCase = useTeamUseCase();
-    const tacticalUseCase = useTacticalUseCase();
+    const lineupUseCase = useLineupUseCase();
 
     const { joinRoom, leaveRoom } = useRoomUserSync();
     const { fetchBoardImageMapState } = useBoardSync();
@@ -65,7 +65,7 @@ export function useBanPickInitializer(roomId: string) {
             if (roomSetting.value) {
                 boardUseCase.initZoneMetaTableAndSteps(roomSetting.value.zoneMetaTable, roomSetting.value.matchFlow.steps);
                 tamUseCase.initTeams(roomSetting.value.teams);
-                tacticalUseCase.initTeamTacticalCellImageMap(roomSetting.value.teams, roomSetting.value.numberOfTeamSetup, roomSetting.value.numberOfSetupCharacter);
+                lineupUseCase.initTeamLineupImageMap(roomSetting.value.teams, roomSetting.value.numberOfTeamSetup, roomSetting.value.numberOfSetupCharacter);
             }
 
             // 4. 初始化 Filter 預設值

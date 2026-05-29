@@ -7,12 +7,12 @@ import { registerChatSocket } from './modules/chatSocket';
 import { registerBoardSocket } from './modules/boardSocket';
 import { registerRoomSocket } from './modules/roomSocket';
 import { registerTeamSocket } from './modules/teamSocket';
-import { registerTacticalSocket } from './modules/tacticalSocket';
+import { registerLineupSocket } from './modules/lineupSocket';
 import { RoomStateRepository, RoomUserService } from '../room/index';
 import { BoardService } from '../board';
 import { ChatService } from '../chat';
 import { TeamService } from '../team';
-import { TacticalService } from '../tactical';
+import { LineupService } from '../lineup';
 
 import type { IRoomStateManager } from '../room/domain/IRoomStateManager';
 import type UserService from '../user/application/user.service';
@@ -25,7 +25,7 @@ export function setupSocketIO(io: Server, roomStateManager: IRoomStateManager, u
     const boardService = new BoardService(roomStateRepository);
     const chatService = new ChatService(roomStateRepository);
     const teamService = new TeamService(roomStateRepository);
-    const tacticalService = new TacticalService(roomStateRepository);
+    const lineupService = new LineupService(roomStateRepository);
 
     io.on('connection', (socket: Socket) => {
         logger.info(`User connected socket.id: ${socket.id} identity:`, socket.data.identity);
@@ -34,7 +34,7 @@ export function setupSocketIO(io: Server, roomStateManager: IRoomStateManager, u
         registerBoardSocket(io, socket, boardService);
         registerTeamSocket(io, socket, teamService);
         registerChatSocket(io, socket, chatService);
-        registerTacticalSocket(io, socket, tacticalService);
+        registerLineupSocket(io, socket, lineupService);
     });
 }
 

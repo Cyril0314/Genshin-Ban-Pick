@@ -11,7 +11,7 @@ export interface IRoomSetting {
     numberOfBan: number;
     numberOfPick: number;
     teams: ITeam[];
-    tacticalVersion: number;
+    lineupVersion: number;
     numberOfTeamSetup: number;
     numberOfSetupCharacter: number;
 }

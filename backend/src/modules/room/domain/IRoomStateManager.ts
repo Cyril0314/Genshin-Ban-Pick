@@ -5,7 +5,7 @@ import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 import type { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';
 import type { IRoomState } from '@shared/contracts/room/IRoomState';
 import type { BoardImageMap } from '@shared/contracts/board/BoardImageMap';
-import type { TeamTacticalCellImageMap } from '@shared/contracts/tactical/TeamTacticalCellImageMap';
+import type { TeamLineupImageMap } from '@shared/contracts/lineup/TeamLineupImageMap';
 import type { CharacterRandomContextMap } from '@shared/contracts/character/CharacterRandomContextMap';
 
 export interface IRoomStateManager {
@@ -24,6 +24,6 @@ export interface IRoomStateManager {
   setCharacterRandomContextMap(roomId: string, characterRandomContextMap: CharacterRandomContextMap): void;
   getTeamMembersMap(roomId: string): TeamMembersMap | undefined;
   setTeamMembersMap(roomId: string, teamMembersMap: TeamMembersMap): void
-  getTeamTacticalCellImageMap(roomId: string): TeamTacticalCellImageMap | undefined;
-  setTeamTacticalCellImageMap(roomId: string, teamTacticalCellImageMap: TeamTacticalCellImageMap): void;
+  getTeamLineupImageMap(roomId: string): TeamLineupImageMap | undefined;
+  setTeamLineupImageMap(roomId: string, teamLineupImageMap: TeamLineupImageMap): void;
 }

@@ -3,7 +3,7 @@
 import { useBoardSync } from '@/modules/board';
 import { useChatSync } from '@/modules/chat';
 import { useRoomUserSync } from '@/modules/room';
-import { useTacticalBoardSync } from '@/modules/tactical';
+import { useLineupSync } from '@/modules/lineup';
 import { useTeamInfoSync } from '@/modules/team';
 import { createLogger } from '@/app/utils/logger';
 import type { Socket } from 'socket.io-client';
@@ -18,13 +18,13 @@ export function registerAllSyncModules(socket: Socket) {
     const { registerRoomUserSync } = useRoomUserSync();
     const { registerTeamInfoSync } = useTeamInfoSync();
     const { registerBoardSync } = useBoardSync();
-    const { registerTacticalBoardSync } = useTacticalBoardSync();
+    const { registerLineupSync } = useLineupSync();
     const { registerChatSync } = useChatSync();
 
     registerRoomUserSync();
     registerTeamInfoSync();
     registerBoardSync();
-    registerTacticalBoardSync();
+    registerLineupSync();
     registerChatSync();
 
     logger.debug('all sync modules registered');

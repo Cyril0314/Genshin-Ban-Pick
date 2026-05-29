@@ -14,7 +14,7 @@ const defaultNumberOfBan = 6;
 const defaultNumberOfPick = 32;
 
 const defaultTeams = createDefaultTeams();
-const defaultTacticalVersion = 1;
+const defaultLineupVersion = 1;
 const defaultNumberOfTeamSetup = 4;
 const defaultNumberOfSetupCharacter = 4;
 
@@ -52,7 +52,7 @@ export function createRoomSetting({
         numberOfBan: numberOfBan ?? defaultNumberOfBan,
         numberOfPick: numberOfPick ?? defaultNumberOfPick,
         teams: teams ?? defaultTeams,
-        tacticalVersion: defaultTacticalVersion,
+        lineupVersion: defaultLineupVersion,
         numberOfTeamSetup: numberOfTeamSetup ?? defaultNumberOfTeamSetup,
         numberOfSetupCharacter: numberOfSetupCharacter ?? defaultNumberOfSetupCharacter,
     };

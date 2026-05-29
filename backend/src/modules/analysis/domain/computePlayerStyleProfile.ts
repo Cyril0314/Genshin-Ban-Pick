@@ -1,13 +1,13 @@
 // backend/src/modules/analysis/domain/computePlayerStyleProfile.ts
 
 import type { IPlayerStyleProfile } from '@shared/contracts/analysis/IPlayerStyleProfile';
-import type { IMatchTacticalUsageWithCharacter } from '../types/IMatchTacticalUsageWithCharacter';
+import type { IMatchLineupSlotWithCharacter } from '../types/IMatchLineupSlotWithCharacter';
 import type { ICharacter } from '@shared/contracts/character/ICharacter';
 import { computeCharacterAttributeDistributions } from './computeCharacterAttributeDistributions';
 
 export function computePlayerStyleProfile(
-    memberUsages: IMatchTacticalUsageWithCharacter[],
-    globalUsages: IMatchTacticalUsageWithCharacter[],
+    memberUsages: IMatchLineupSlotWithCharacter[],
+    globalUsages: IMatchLineupSlotWithCharacter[],
 ): IPlayerStyleProfile | undefined {
     const playerTotalPicks = memberUsages.length;
 

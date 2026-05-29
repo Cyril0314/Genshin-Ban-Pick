@@ -6,7 +6,7 @@ import type { BoardImageMap } from '@shared/contracts/board/BoardImageMap';
 import type { CharacterRandomContextMap } from '@shared/contracts/character/CharacterRandomContextMap';
 import type { IChatMessage } from '@shared/contracts/chat/IChatMessage';
 import type { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';
-import type { TeamTacticalCellImageMap } from '@shared/contracts/tactical/TeamTacticalCellImageMap';
+import type { TeamLineupImageMap } from '@shared/contracts/lineup/TeamLineupImageMap';
 
 export interface IRoomStateRepository {
     findAll(): Record<string, IRoomState>;
@@ -29,6 +29,6 @@ export interface IRoomStateRepository {
     findTeamMembersMapById(roomId: string): TeamMembersMap;
     updateTeamMembersMapById(roomId: string, teamMembersMap: TeamMembersMap): number;
 
-    findTeamTacticalCellImageMapById(roomId: string): TeamTacticalCellImageMap;
-    updateTeamTacticalCellImageMapById(roomId: string, teamTacticalCellImageMap: TeamTacticalCellImageMap): number;
+    findTeamLineupImageMapById(roomId: string): TeamLineupImageMap;
+    updateTeamLineupImageMapById(roomId: string, teamLineupImageMap: TeamLineupImageMap): number;
 }

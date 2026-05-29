@@ -23,7 +23,7 @@ import { registerChatDependencies, useChatStore} from './modules/chat';
 import { registerRoomDependencies, useRoomUserStore } from './modules/room';
 import { registerMatchDependencies } from './modules/match';
 import { registerTeamDependencies, useTeamInfoStore } from './modules/team';
-import { registerTacticalDependencies, useTacticalBoardStore } from './modules/tactical';
+import { registerLineupDependencies, useLineupStore } from './modules/lineup';
 import { registerAnalysisDependencies, useAnalysisMetaStore } from './modules/analysis';
 
 const logger = createLogger('app.main');
@@ -42,7 +42,7 @@ const characterStore = useCharacterStore(pinia);
 const roomUserStore = useRoomUserStore(pinia);
 const boardStore = useBoardStore(pinia);
 const teamInfoStore = useTeamInfoStore(pinia);
-const tacticalBoardStore = useTacticalBoardStore(pinia);
+const lineupStore = useLineupStore(pinia);
 const chatStore = useChatStore(pinia);
 const analysisMetaStore = useAnalysisMetaStore(pinia);
 
@@ -57,7 +57,7 @@ registerAnalysisDependencies(app, httpClient, analysisMetaStore)
 registerRoomDependencies(app, httpClient, roomUserStore);
 registerBoardDependencies(app, boardStore);
 registerTeamDependencies(app, teamInfoStore);
-registerTacticalDependencies(app, tacticalBoardStore)
+registerLineupDependencies(app, lineupStore)
 registerChatDependencies(app, chatStore);
 
 // runWithContext lets us call the useSession composable outside of a setup() — providers registered above are now in scope, so inject() resolves.

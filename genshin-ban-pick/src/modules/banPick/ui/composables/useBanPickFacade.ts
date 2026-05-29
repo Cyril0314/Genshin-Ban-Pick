@@ -10,7 +10,7 @@ import { useCharacterStore } from '@/modules/character';
 import { useTeamInfoStore, useTeamInfoSync } from '@/modules/team';
 import { buildUserToTeamSlotMap } from '@/modules/team/domain/buildUserToTeamSlotMap';
 import { useBanPickMatchSave } from './useBanPickMatchSave';
-import { useTacticalBoardSync } from '@/modules/tactical';
+import { useLineupSync } from '@/modules/lineup';
 
 export function useBanPickFacade(roomId: string) {
     const { isLoading: isInitLoading, roomSetting, filteredCharacterKeys, characterFilter } = useBanPickInitializer(roomId);
@@ -30,13 +30,13 @@ export function useBanPickFacade(roomId: string) {
     const userToTeamSlotMap = computed(() => buildUserToTeamSlotMap(teamMembersMap.value));
     const { memberInput, memberDrop, memberRestore } = useTeamInfoSync();
 
-    const { allTeamTacticalCellImageMapReset } = useTacticalBoardSync();
+    const { allTeamLineupImageMapReset } = useLineupSync();
 
     const { matchSave, result: matchResult, isLoading: isMatchSavingLoading, error: matchSaveError } = useBanPickMatchSave(roomId);
 
     function matchReset() {
         boardImageMapReset();
-        allTeamTacticalCellImageMapReset();
+        allTeamLineupImageMapReset();
     }
 
     return {

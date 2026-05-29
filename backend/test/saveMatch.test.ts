@@ -85,11 +85,11 @@ async function main() {
         }
     }
 
-    const tacticalCellCount = roomSetting.numberOfTeamSetup * roomSetting.numberOfSetupCharacter;
-    const teamTacticalCellImageMap: Record<number, Record<number, string>> = Object.fromEntries(
+    const lineupCellCount = roomSetting.numberOfTeamSetup * roomSetting.numberOfSetupCharacter;
+    const teamLineupImageMap: Record<number, Record<number, string>> = Object.fromEntries(
         roomSetting.teams.map((team) => [
             team.slot,
-            Object.fromEntries(selectN(teamCharacterPools[team.slot], tacticalCellCount).map((key, i) => [i, key])),
+            Object.fromEntries(selectN(teamCharacterPools[team.slot], lineupCellCount).map((key, i) => [i, key])),
         ]),
     );
 
@@ -103,7 +103,7 @@ async function main() {
             roomSetting,
             teamMembersMap,
             boardImageMap,
-            teamTacticalCellImageMap,
+            teamLineupImageMap,
             characterRandomContextMap,
         },
         true,

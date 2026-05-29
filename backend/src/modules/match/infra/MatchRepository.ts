@@ -6,7 +6,7 @@ import MatchCreator from '../application/creators/MatchCreator';
 import MatchTeamCreator from '../application/creators/MatchTeamCreator';
 import MatchTeamMemberCreator from '../application/creators/MatchTeamMemberCreator';
 import MatchMoveCreator from '../application/creators/MatchMoveCreator';
-import MatchTacticalUsageCreator from '../application/creators/MatchTacticalUsageCreator';
+import MatchLineupSlotCreator from '../application/creators/MatchLineupSlotCreator';
 import { DataNotFoundError, DbConnectionError, DbForeignKeyConstraintError, DbUniqueConstraintError, DryRunError } from '../../../errors/AppError';
 import { createLogger } from '../../../utils/logger';
 import { mapMatchFromPrisma } from '../domain/mapMatchFromPrisma';
@@ -28,7 +28,7 @@ export default class MatchRepository implements IMatchRepository {
                     include: {
                         teamMembers: {
                             include: {
-                                tacticalUsages: {
+                                lineupSlots: {
                                     include: {
                                         character: true,
                                     },
@@ -86,17 +86,17 @@ export default class MatchRepository implements IMatchRepository {
 
                 await MatchMoveCreator.createMatchMoves(tx, match.id, steps, zoneMetaTable, boardImageMap, characterRandomContextMap, matchTeamIdMap);
 
-                // 5. MatchTacticalUsage: 戰術版
+                // 5. MatchLineupSlot: 出場表
 
-                const tacticalVersion = roomSetting.tacticalVersion;
-                const teamTacticalCellImageMap = snapshot.teamTacticalCellImageMap;
+                const lineupVersion = roomSetting.lineupVersion;
+                const teamLineupImageMap = snapshot.teamLineupImageMap;
                 const numberOfTeamSetup = roomSetting.numberOfTeamSetup;
                 const numberOfSetupCharacter = roomSetting.numberOfSetupCharacter;
 
-                await MatchTacticalUsageCreator.createMatchTacticalUsages(
+                await MatchLineupSlotCreator.createMatchLineupSlots(
                     tx,
-                    tacticalVersion,
-                    teamTacticalCellImageMap,
+                    lineupVersion,
+                    teamLineupImageMap,
                     numberOfSetupCharacter,
                     matchTeamIdMap,
                 );
@@ -108,7 +108,7 @@ export default class MatchRepository implements IMatchRepository {
                             include: {
                                 teamMembers: {
                                     include: {
-                                        tacticalUsages: {
+                                        lineupSlots: {
                                             include: {
                                                 character: true,
                                             },

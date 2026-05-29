@@ -82,7 +82,7 @@ Pick the right form when adding a new store; mixing them tends to produce stale-
 
 ### Real-time flow
 
-Socket.IO is the live channel; REST (Express routers) is for static/historical data and auth. Backend socket handlers receive `RoomUserService`, `BoardService`, `ChatService`, `TeamService`, `TacticalService` (all sharing a single `RoomStateRepository` over an in-memory `RoomStateManager`). Frontend mirrors this: each feature has a `sync/` folder (e.g. `modules/board/sync/useBoardSync.ts`) that bridges socket events ↔ Pinia store.
+Socket.IO is the live channel; REST (Express routers) is for static/historical data and auth. Backend socket handlers receive `RoomUserService`, `BoardService`, `ChatService`, `TeamService`, `LineupService` (all sharing a single `RoomStateRepository` over an in-memory `RoomStateManager`). Frontend mirrors this: each feature has a `sync/` folder (e.g. `modules/board/sync/useBoardSync.ts`) that bridges socket events ↔ Pinia store.
 
 Auth on sockets goes through `createSocketAuth(jwtProvider)` middleware before `setupSocketIO` registers handlers — it calls `jwtProvider.verify(token)` directly and stores the result in `socket.data.identity` (no DB call).
 

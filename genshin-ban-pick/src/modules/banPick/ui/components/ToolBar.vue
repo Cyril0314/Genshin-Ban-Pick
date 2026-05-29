@@ -6,7 +6,7 @@ import { storeToRefs } from 'pinia';
 
 import { createLogger } from '@/app/utils/logger';
 import ChatFloatWindow from '@/modules/chat/ui/components/ChatFloatWindow.vue';
-import TacticalBoardPanelDrawer from '@/modules/tactical/ui/components/TacticalBoardPanelDrawer.vue';
+import LineupDrawer from '@/modules/lineup/ui/components/LineupDrawer.vue';
 import AnalysisDrawer from '@/modules/analysis/ui/components/AnalysisDrawer.vue';
 import { useAuthStore } from '@/modules/auth';
 import { useChatWindow } from '@/modules/chat/ui/composables/useChatWindow';
@@ -21,12 +21,12 @@ const { isAdmin } = storeToRefs(authStore);
 const { isChatOpen, hasUnreadMessage } = useChatWindow()
 
 const logger = createLogger('banPick.ui.toolbar');
-const isTacticalDrawerOpen = ref(false);
+const isLineupDrawerOpen = ref(false);
 const isAnalysisDrawerOpen = ref(false);
 
-function handleTacticalButtonClickEvent() {
-    logger.debug('tactical button click');
-    isTacticalDrawerOpen.value = !isTacticalDrawerOpen.value;
+function handleLineupButtonClickEvent() {
+    logger.debug('lineup button click');
+    isLineupDrawerOpen.value = !isLineupDrawerOpen.value;
 }
 
 function handleChatButtonClickEvent() {
@@ -52,8 +52,8 @@ function handleSaveButtonClickEvent() {
 
 <template>
     <div class="toolbar">
-        <button class="button button--tactical" @click="handleTacticalButtonClickEvent">編隊</button>
-        <TacticalBoardPanelDrawer v-model:open="isTacticalDrawerOpen" />
+        <button class="button button--lineup" @click="handleLineupButtonClickEvent">編隊</button>
+        <LineupDrawer v-model:open="isLineupDrawerOpen" />
 
         <div class="button-wrapper">
             <button class="button button--chat" @click="handleChatButtonClickEvent">聊天</button>

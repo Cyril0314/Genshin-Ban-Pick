@@ -16,7 +16,7 @@ export default class MatchSnapshotRepository implements IMatchSnapshotRepository
             roomSetting: roomState.roomSetting,
             teamMembersMap: roomState.teamMembersMap,
             boardImageMap: roomState.boardImageMap,
-            teamTacticalCellImageMap: roomState.teamTacticalCellImageMap,
+            teamLineupImageMap: roomState.teamLineupImageMap,
             characterRandomContextMap: roomState.characterRandomContextMap,
         };
     }

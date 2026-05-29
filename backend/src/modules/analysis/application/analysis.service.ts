@@ -27,7 +27,7 @@ import type { KeyIndexedMatrix } from '@shared/contracts/analysis/KeyIndexedMatr
 import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 import type { ICharacterPickPriority } from '@shared/contracts/analysis/ICharacterPickPriority';
 import type { ICharacterAttributeDistributions } from '@shared/contracts/analysis/character/ICharacterAttributeDistributions';
-import type { IMatchTacticalUsageWithCharacter } from '../types/IMatchTacticalUsageWithCharacter';
+import type { IMatchLineupSlotWithCharacter } from '../types/IMatchLineupSlotWithCharacter';
 import type { IAnalysisOverview } from '@shared/contracts/analysis/IAnalysisOverview';
 import type { IAnalysisTimeWindow } from '@shared/contracts/analysis/IAnalysisTimeWindow';
 import type { IMatchTimeMinimal } from '@shared/contracts/analysis/IMatchTimeMinimal';
@@ -79,8 +79,8 @@ export default class AnalysisService {
     async fetchCharacterUsageSummary(timeWindow?: IAnalysisTimeWindow): Promise<ICharacterUsage[]> {
         const matches = await this.analysisRepository.findAllMatchMinimalTimestamps(timeWindow);
         const matcheMoves = await this.analysisRepository.findAllMatchMoveCoreForWeightCalc(timeWindow);
-        const matchTacticalUsages = await this.analysisRepository.findAllMatchTacticalUsageForAnalysis(timeWindow);
-        return computeCharacterUsage(matches, matcheMoves, matchTacticalUsages);
+        const matchLineupSlots = await this.analysisRepository.findAllMatchLineupSlotsForAnalysis(timeWindow);
+        return computeCharacterUsage(matches, matcheMoves, matchLineupSlots);
     }
 
     async fetchCharacterUsagePickPriority(): Promise<ICharacterPickPriority[]> {
@@ -89,8 +89,8 @@ export default class AnalysisService {
     }
 
     async fetchCharacterSynergyMatrix(mode: SynergyMode = 'setup'): Promise<CharacterSynergyMatrix> {
-        const matchTacticalUsages = await this.analysisRepository.findAllMatchTacticalUsageForAnalysis();
-        const groups = this.characterSynergyCalculator.buildCooccurrenceGroups(matchTacticalUsages, mode);
+        const matchLineupSlots = await this.analysisRepository.findAllMatchLineupSlotsForAnalysis();
+        const groups = this.characterSynergyCalculator.buildCooccurrenceGroups(matchLineupSlots, mode);
         const synergy = this.characterSynergyCalculator.buildSynergyMatrix(groups);
         return synergy;
     }
@@ -100,13 +100,13 @@ export default class AnalysisService {
         const characterMap = Object.fromEntries(characters.map((character) => [character.key, character]));
 
         // Consistent calculation
-        const matchTacticalUsages = await this.analysisRepository.findAllMatchTacticalUsageForAnalysis();
-        const groups = this.characterSynergyCalculator.buildCooccurrenceGroups(matchTacticalUsages, 'setup');
+        const matchLineupSlots = await this.analysisRepository.findAllMatchLineupSlotsForAnalysis();
+        const groups = this.characterSynergyCalculator.buildCooccurrenceGroups(matchLineupSlots, 'setup');
         const synergyMatrix = this.characterSynergyCalculator.buildSynergyMatrix(groups);
 
         const pickCounts: Record<string, number> = {};
-        for (const matchTacticalUsage of matchTacticalUsages) {
-            const characterKey = matchTacticalUsage.characterKey
+        for (const matchLineupSlot of matchLineupSlots) {
+            const characterKey = matchLineupSlot.characterKey
             pickCounts[characterKey] = (pickCounts[characterKey] || 0) + 1;
         }
 
@@ -134,11 +134,11 @@ export default class AnalysisService {
     }
 
     async fetchPlayerCharacterUsage(): Promise<KeyIndexedMatrix<string, string>> {
-        const matchTacticalUsages = await this.analysisRepository.findAllMatchTacticalUsageIdentities();
+        const matchLineupSlots = await this.analysisRepository.findAllMatchLineupSlotIdentities();
 
         const matrix: KeyIndexedMatrix<string, string> = {};
 
-        for (const u of matchTacticalUsages) {
+        for (const u of matchLineupSlots) {
             const playerName = u.memberNickname ?? u.guestNickname ?? u.teamMemberName;
             const charKey = u.characterKey;
 
@@ -152,15 +152,15 @@ export default class AnalysisService {
     }
 
     async fetchPlayerStyleProfile(playerIdentity: PlayerIdentity): Promise<IPlayerStyleProfile | undefined> {
-        const memberUsages = await this.analysisRepository.findMatchTacticalUsageWithCharacterByPlayerIdentity(playerIdentity);
-        const allUsages = await this.analysisRepository.findAllMatchTacticalUsageWithCharacter();
+        const memberUsages = await this.analysisRepository.findMatchLineupSlotsWithCharacterByPlayerIdentity(playerIdentity);
+        const allUsages = await this.analysisRepository.findAllMatchLineupSlotsWithCharacter();
         return computePlayerStyleProfile(memberUsages, allUsages);
     }
 
     async fetchPlayerRecord(playerIdentity: PlayerIdentity): Promise<IPlayerRecord> {
         const [playerRows, usages, displayName] = await Promise.all([
-            this.analysisRepository.findMatchTacticalUsageWithCharacterByPlayerIdentity(playerIdentity),
-            this.analysisRepository.findAllMatchTacticalUsageForAnalysis(),
+            this.analysisRepository.findMatchLineupSlotsWithCharacterByPlayerIdentity(playerIdentity),
+            this.analysisRepository.findAllMatchLineupSlotsForAnalysis(),
             this.resolveDisplayName(playerIdentity),
         ]);
         const groups = this.characterSynergyCalculator.buildCooccurrenceGroups(usages, 'setup');
@@ -176,13 +176,13 @@ export default class AnalysisService {
     }
 
     async fetchCharacterAttributeDistributions(scope: { type: 'Player'; playerIdentity: PlayerIdentity } | { type: 'Global' }): Promise<ICharacterAttributeDistributions> {
-        let usages: IMatchTacticalUsageWithCharacter[]
+        let usages: IMatchLineupSlotWithCharacter[]
         switch (scope.type) {
             case 'Global':
-                usages = await this.analysisRepository.findAllMatchTacticalUsageWithCharacter();
+                usages = await this.analysisRepository.findAllMatchLineupSlotsWithCharacter();
                 break
             case 'Player':
-                usages = await this.analysisRepository.findMatchTacticalUsageWithCharacterByPlayerIdentity(scope.playerIdentity);
+                usages = await this.analysisRepository.findMatchLineupSlotsWithCharacterByPlayerIdentity(scope.playerIdentity);
                 break
         }
         return computeCharacterAttributeDistributions(usages)

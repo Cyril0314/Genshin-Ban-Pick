@@ -26,13 +26,13 @@ export default class AnalysisController {
 
     fetchCharacterUsageSummary = async (req: Request, res: Response) => {
         const timeWindow = parseTimeWindowQuery(req.query);
-        const tacticalUsages = await this.analysisService.fetchCharacterUsageSummary(timeWindow);
-        res.status(200).json(tacticalUsages);
+        const summary = await this.analysisService.fetchCharacterUsageSummary(timeWindow);
+        res.status(200).json(summary);
     };
 
     fetchCharacterUsagePickPriority = async (req: Request, res: Response) => {
-        const result = await this.analysisService.fetchCharacterUsagePickPriority();
-        res.status(200).json(result);
+        const pickPriority = await this.analysisService.fetchCharacterUsagePickPriority();
+        res.status(200).json(pickPriority);
     };
 
     fetchCharacterSynergyMatrix = async (req: Request, res: Response) => {
@@ -47,8 +47,8 @@ export default class AnalysisController {
     };
 
     fetchPlayerCharacterUsage = async (req: Request, res: Response) => {
-        const preference = await this.analysisService.fetchPlayerCharacterUsage();
-        res.status(200).json(preference);
+        const usage = await this.analysisService.fetchPlayerCharacterUsage();
+        res.status(200).json(usage);
     };
 
     fetchPlayerStyleProfile = async (req: Request, res: Response) => {

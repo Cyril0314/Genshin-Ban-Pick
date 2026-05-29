@@ -10,7 +10,7 @@ export function createRoomState(roomSetting: IRoomSetting) {
         boardImageMap: {},
         characterRandomContextMap: {},
         teamMembersMap: initializeTeamMembersMap(roomSetting.teams),
-        teamTacticalCellImageMap: initializeTeamTacticalCellImageMap(roomSetting.teams),
+        teamLineupImageMap: initializeTeamLineupImageMap(roomSetting.teams),
         roomSetting,
     };
 }
@@ -19,6 +19,6 @@ function initializeTeamMembersMap(teams: ITeam[]) {
     return Object.fromEntries(teams.map((t) => [t.slot, {}]))
 }
 
-function initializeTeamTacticalCellImageMap(teams: ITeam[]) {
+function initializeTeamLineupImageMap(teams: ITeam[]) {
     return Object.fromEntries(teams.map((t) => [t.slot, {}]))
 }
