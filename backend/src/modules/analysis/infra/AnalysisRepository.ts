@@ -8,12 +8,12 @@ import type { IAnalysisRepository } from '../domain/IAnalysisRepository';
 import type { IMatchStatisticsOverview } from '../types/IMatchStatisticsOverview';
 import type { IMatchTimeMinimal } from '@shared/contracts/analysis/IMatchTimeMinimal';
 import type { IMatchMoveWeightCalcCore } from '../types/IMatchMoveWeightCalcCore';
-import type { IMatchTacticalUsageExpandedRefs } from '../types/IMatchTacticalUsageExpandedRefs';
-import type { IMatchTacticalUsageTeamMemberIdentityRefs } from '../types/IMatchTacticalUsageUserPreferenceCore';
-import type { IMatchTacticalUsageWithCharacter } from '../types/IMatchTacticalUsageWithCharacter';
+import type { IMatchLineupSlotExpandedRefs } from '../types/IMatchLineupSlotExpandedRefs';
+import type { IMatchLineupSlotTeamMemberIdentityRefs } from '../types/IMatchLineupSlotUserPreferenceCore';
+import type { IMatchLineupSlotWithCharacter } from '../types/IMatchLineupSlotWithCharacter';
 import type { MoveSource, MoveType } from '@shared/contracts/match/value-types';
 import type { CharacterFilterKey } from '@shared/contracts/character/CharacterFilterKey';
-import type { PlayerIdentity } from '@shared/contracts/player/PlayerIdentity';
+import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 import type { IAnalysisTimeWindow } from '@shared/contracts/analysis/IAnalysisTimeWindow';
 
 export default class AnalysisRepository implements IAnalysisRepository {
@@ -23,7 +23,7 @@ export default class AnalysisRepository implements IAnalysisRepository {
         const [
             matches,
             totalMoves,
-            matchTacticalUsages,
+            matchLineupSlots,
             dateRange,
             uniqueCharacters,
             uniqueCharacterRarityCounts,
@@ -51,19 +51,19 @@ export default class AnalysisRepository implements IAnalysisRepository {
                 },
             }),
             this.prisma.matchMove.count(),
-            this.prisma.matchTacticalUsage.findMany(matchTacticalUsageExpandedRefsQuery),
+            this.prisma.matchLineupSlot.findMany(matchLineupSlotExpandedRefsQuery),
             this.prisma.match.aggregate({
                 _min: { createdAt: true },
                 _max: { createdAt: true },
             }),
-            this.prisma.matchTacticalUsage.findMany({
+            this.prisma.matchLineupSlot.findMany({
                 distinct: ['characterKey'],
                 select: { characterKey: true },
             }),
             this.prisma.character.groupBy({
                 by: ['rarity'],
                 where: {
-                    matchTacticalUsages: {
+                    matchLineupSlots: {
                         some: {}, // 至少出現過一次
                     },
                 },
@@ -74,7 +74,7 @@ export default class AnalysisRepository implements IAnalysisRepository {
             this.prisma.character.groupBy({
                 by: ['element'],
                 where: {
-                    matchTacticalUsages: {
+                    matchLineupSlots: {
                         some: {}, // 至少出現過一次
                     },
                 },
@@ -118,13 +118,13 @@ export default class AnalysisRepository implements IAnalysisRepository {
 
         const setupMap = new Map<string, string[]>();
 
-        for (const matchTacticalUsage of matchTacticalUsages) {
-            const setupKey = this.setupKey(matchTacticalUsage);
+        for (const matchLineupSlot of matchLineupSlots) {
+            const setupKey = this.setupKey(matchLineupSlot);
 
             if (!setupMap.has(setupKey)) {
                 setupMap.set(setupKey, []);
             }
-            setupMap.get(setupKey)!.push(matchTacticalUsage.characterKey);
+            setupMap.get(setupKey)!.push(matchLineupSlot.characterKey);
         }
         const characterCombinationGroupCount = new Map<string, number>();
 
@@ -135,7 +135,6 @@ export default class AnalysisRepository implements IAnalysisRepository {
         }
 
         const uniqueCharacterCombinations = characterCombinationGroupCount.size;
-        console.log(`characterCombinationGroupCount`, characterCombinationGroupCount)
         // const repeatedCombinations = Array.from(characterCombinationGroupCount.entries())
         //     .map(([key, count]) => ({
         //         characters: key.split('|'),
@@ -151,7 +150,6 @@ export default class AnalysisRepository implements IAnalysisRepository {
             }
         }
         const uniqueTeamMemberCombinations = teamMemberCombinationGroupCount.size;
-        console.log(`teamMemberCombinationGroupCount`, teamMemberCombinationGroupCount)
 
         const versions = await this.prisma.genshinVersion.findMany({
             where: {
@@ -263,10 +261,10 @@ export default class AnalysisRepository implements IAnalysisRepository {
         });
     }
 
-    async findAllMatchTacticalUsageIdentities(): Promise<IMatchTacticalUsageTeamMemberIdentityRefs[]> {
-        type Entity = Prisma.MatchTacticalUsageGetPayload<typeof matchTacticalUsageTeamMemberIdentityRefsQuery>;
+    async findAllMatchLineupSlotIdentities(): Promise<IMatchLineupSlotTeamMemberIdentityRefs[]> {
+        type Entity = Prisma.MatchLineupSlotGetPayload<typeof matchLineupSlotTeamMemberIdentityRefsQuery>;
 
-        const entities: Entity[] = await this.prisma.matchTacticalUsage.findMany(matchTacticalUsageTeamMemberIdentityRefsQuery);
+        const entities: Entity[] = await this.prisma.matchLineupSlot.findMany(matchLineupSlotTeamMemberIdentityRefsQuery);
 
         return entities.map((entity) => ({
             teamId: entity.teamMember.teamId,
@@ -278,11 +276,11 @@ export default class AnalysisRepository implements IAnalysisRepository {
         }));
     }
 
-    async findAllMatchTacticalUsageForAnalysis(timeWindow?: IAnalysisTimeWindow): Promise<IMatchTacticalUsageExpandedRefs[]> {
-        type Entity = Prisma.MatchTacticalUsageGetPayload<typeof matchTacticalUsageExpandedRefsQuery>;
+    async findAllMatchLineupSlotsForAnalysis(timeWindow?: IAnalysisTimeWindow): Promise<IMatchLineupSlotExpandedRefs[]> {
+        type Entity = Prisma.MatchLineupSlotGetPayload<typeof matchLineupSlotExpandedRefsQuery>;
 
-        const entities: Entity[] = await this.prisma.matchTacticalUsage.findMany({
-            ...matchTacticalUsageExpandedRefsQuery,
+        const entities: Entity[] = await this.prisma.matchLineupSlot.findMany({
+            ...matchLineupSlotExpandedRefsQuery,
             where: {
                 teamMember: {
                     team: {
@@ -300,8 +298,8 @@ export default class AnalysisRepository implements IAnalysisRepository {
         }));
     }
 
-    async findAllMatchTacticalUsageWithCharacter(): Promise<IMatchTacticalUsageWithCharacter[]> {
-        const entities = await this.prisma.matchTacticalUsage.findMany({
+    async findAllMatchLineupSlotsWithCharacter(): Promise<IMatchLineupSlotWithCharacter[]> {
+        const entities = await this.prisma.matchLineupSlot.findMany({
             include: {
                 character: true,
             },
@@ -313,35 +311,35 @@ export default class AnalysisRepository implements IAnalysisRepository {
         }));
     }
 
-    async findMatchTacticalUsageWithCharacterByIdentityKey(
-        identityKey: PlayerIdentity,
-    ): Promise<IMatchTacticalUsageWithCharacter[]> {
-        let whereInput: Prisma.MatchTacticalUsageWhereInput;
-        switch (identityKey.type) {
+    async findMatchLineupSlotsWithCharacterByPlayerIdentity(
+        playerIdentity: PlayerIdentity,
+    ): Promise<IMatchLineupSlotWithCharacter[]> {
+        let whereInput: Prisma.MatchLineupSlotWhereInput;
+        switch (playerIdentity.type) {
             case 'Member':
                 whereInput = {
                     teamMember: {
-                        memberRef: identityKey.id,
+                        memberRef: playerIdentity.id,
                     },
                 };
                 break;
             case 'Guest':
                 whereInput = {
                     teamMember: {
-                        guestRef: identityKey.id,
+                        guestRef: playerIdentity.id,
                     },
                 };
                 break;
             case 'Name':
                 whereInput = {
                     teamMember: {
-                        name: identityKey.name,
+                        name: playerIdentity.name,
                     },
                 };
                 break;
         }
 
-        const entities = await this.prisma.matchTacticalUsage.findMany({
+        const entities = await this.prisma.matchLineupSlot.findMany({
             where: whereInput,
             include: {
                 character: true,
@@ -386,7 +384,7 @@ export default class AnalysisRepository implements IAnalysisRepository {
         return `name:${m.name}`;
     }
 
-    setupKey(entity: Prisma.MatchTacticalUsageGetPayload<typeof matchTacticalUsageExpandedRefsQuery>) {
+    setupKey(entity: Prisma.MatchLineupSlotGetPayload<typeof matchLineupSlotExpandedRefsQuery>) {
         const matchId = entity.teamMember.team.matchId;
         const teamId = entity.teamMember.teamId;
         const setupNumber = entity.setupNumber;
@@ -408,7 +406,7 @@ const matchMoveWeightCalcCoreQuery = Prisma.validator<Prisma.MatchMoveFindManyAr
     },
 });
 
-const matchTacticalUsageTeamMemberIdentityRefsQuery = Prisma.validator<Prisma.MatchTacticalUsageFindManyArgs>()({
+const matchLineupSlotTeamMemberIdentityRefsQuery = Prisma.validator<Prisma.MatchLineupSlotFindManyArgs>()({
     include: {
         teamMember: {
             include: {
@@ -419,7 +417,7 @@ const matchTacticalUsageTeamMemberIdentityRefsQuery = Prisma.validator<Prisma.Ma
     },
 });
 
-const matchTacticalUsageExpandedRefsQuery = Prisma.validator<Prisma.MatchTacticalUsageFindManyArgs>()({
+const matchLineupSlotExpandedRefsQuery = Prisma.validator<Prisma.MatchLineupSlotFindManyArgs>()({
     select: {
         setupNumber: true,
         characterKey: true,

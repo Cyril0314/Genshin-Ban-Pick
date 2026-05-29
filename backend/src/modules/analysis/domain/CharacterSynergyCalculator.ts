@@ -1,7 +1,7 @@
 // backend/src/modules/analysis/domain/CharacterSynergyCalculator.ts
 
 import type { SynergyMode } from '@shared/contracts/analysis/value-types';
-import type { IMatchTacticalUsageExpandedRefs } from '../types/IMatchTacticalUsageExpandedRefs';
+import type { IMatchLineupSlotExpandedRefs } from '../types/IMatchLineupSlotExpandedRefs';
 import type { CharacterSynergyMatrix } from '@shared/contracts/analysis/CharacterSynergyMatrix';
 
 export default class CharacterSynergyCalculator {
@@ -28,7 +28,7 @@ export default class CharacterSynergyCalculator {
         return synergyMatrix;
     }
 
-    buildCooccurrenceGroups(usages: IMatchTacticalUsageExpandedRefs[], mode: SynergyMode): Record<string, string[]> {
+    buildCooccurrenceGroups(usages: IMatchLineupSlotExpandedRefs[], mode: SynergyMode): Record<string, string[]> {
         const groups: Record<string, string[]> = {};
 
         for (const u of usages) {
@@ -41,17 +41,17 @@ export default class CharacterSynergyCalculator {
     }
 
 
-    private buildCooccurrenceGroupKey(rawTacticalUsage: IMatchTacticalUsageExpandedRefs, mode: SynergyMode): string {
+    private buildCooccurrenceGroupKey(rawLineupSlot: IMatchLineupSlotExpandedRefs, mode: SynergyMode): string {
         switch (mode) {
             case 'match':
                 // 一場比賽當作一個 group
-                return `${rawTacticalUsage.matchId}`;
+                return `${rawLineupSlot.matchId}`;
             case 'team':
                 // 同一個隊伍（整體）當作一個 group
-                return `${rawTacticalUsage.teamId}`;
+                return `${rawLineupSlot.teamId}`;
             case 'setup':
                 // 一場比賽 + 一隊 + 一個編成（setup）當作一個 group
-                return `${rawTacticalUsage.matchId}:${rawTacticalUsage.teamId}:${rawTacticalUsage.setupNumber}`;
+                return `${rawLineupSlot.matchId}:${rawLineupSlot.teamId}:${rawLineupSlot.setupNumber}`;
         }
     }
 }

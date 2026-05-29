@@ -2,15 +2,20 @@
 
 import { useSocketStore } from '@/app/stores/socketStore';
 import { useAuthStore } from '@/modules/auth';
+import { useUserStore } from '@/modules/user';
+import { createLogger } from '@/app/utils/logger';
 import { ChatEvent } from '@shared/contracts/chat/value-types';
 import { useChatUseCase } from '../ui/composables/useChatUseCase';
 
 import type { IChatMessage } from '@shared/contracts/chat/IChatMessage';
 
+const logger = createLogger('chat.sync');
+
 export function useChatSync() {
     const socket = useSocketStore().getSocket();
     const chatUseCase = useChatUseCase();
     const authStore = useAuthStore();
+    const userStore = useUserStore();
 
     function registerChatSync() {
         socket.on(`${ChatEvent.MessagesStateSyncSelf}`, handleChatMessagesStateSync);
@@ -18,24 +23,24 @@ export function useChatSync() {
     }
 
     function fetchChatState() {
-        console.debug('[Chat] Sent chat state request');
+        logger.debug('sent chat state request');
         socket.emit(`${ChatEvent.MessagesStateRequest}`);
     }
 
     function sendMessage(messageText: string) {
-        console.debug('[CHAT] Sent chat message send request', messageText);
-        if (!authStore.identityKey || !authStore.nickname) return;
-        const message = chatUseCase.handleSendMessage(authStore.identityKey, authStore.nickname, messageText);
+        logger.debug('sent message request', messageText);
+        if (!authStore.identity || !userStore.nickname) return;
+        const message = chatUseCase.handleSendMessage(authStore.identity, userStore.nickname, messageText);
         socket.emit(`${ChatEvent.MessageSendRequest}`, { message });
     }
 
     function handleChatMessagesStateSync(newMessages: IChatMessage[]) {
-        console.debug(`[CHAT] Handle chat messages state sync`, newMessages);
+        logger.debug('messages state sync', newMessages);
         chatUseCase.setMessages(newMessages);
     }
 
     function handleChatMessageSendBroadcast(message: IChatMessage) {
-        console.debug(`[CHAT] Handle chat message send broadcast`, message);
+        logger.debug('message send broadcast', message);
         chatUseCase.addMessage(message);
     }
 

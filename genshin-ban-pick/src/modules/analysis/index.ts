@@ -3,3 +3,4 @@
 export * from './application/AnalysisUseCase';
 export * from './ui/composables/useAnalysisUseCase'
 export * from './registerAnalysisDependencies'
+export * from './store/analysisMetaStore'

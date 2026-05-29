@@ -1,4 +1,3 @@
-
 export interface ICharacterPickPriority {
     characterKey: string;
     pickPriority: number;

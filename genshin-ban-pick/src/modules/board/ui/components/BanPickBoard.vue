@@ -3,6 +3,8 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 
+import type { Identity } from '@shared/contracts/identity/Identity';
+
 import CharacterSelector from '@/modules/character/ui/components/CharacterSelector.vue';
 import TeamInfo from '@/modules/team/ui/components/TeamInfo.vue';
 import ImageOptions from './ImageOptions.vue';
@@ -31,7 +33,7 @@ const emit = defineEmits<{
     (e: 'image-restore', payload: { zoneId: number }): void;
     (e: 'filter-change', payload: { filteredCharacterKeys: string[]; characterFilter: Record<CharacterFilterKey, string[]> }): void;
     (e: 'random-pull', payload: { zoneType: ZoneType }): void;
-    (e: 'member-drop', payload: { identityKey: string; teamSlot: number; memberSlot: number }): void;
+    (e: 'member-drop', payload: { identity: Identity; teamSlot: number; memberSlot: number }): void;
     (e: 'member-input', payload: { name: string; teamSlot: number; memberSlot: number }): void;
     (e: 'member-restore', payload: { teamSlot: number; memberSlot: number }): void;
 }>();
@@ -52,7 +54,7 @@ const emitters = {
     memberInput: (payload: { name: string; teamSlot: number; memberSlot: number }) =>
         emit('member-input', payload),
 
-    memberDrop: (payload: { identityKey: string; teamSlot: number; memberSlot: number }) =>
+    memberDrop: (payload: { identity: Identity; teamSlot: number; memberSlot: number }) =>
         emit('member-drop', payload),
 
     memberRestore: (payload: { teamSlot: number; memberSlot: number }) =>

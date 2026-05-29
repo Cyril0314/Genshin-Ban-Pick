@@ -2,7 +2,7 @@
 
 import type { SynergyMode } from '@shared/contracts/analysis/value-types';
 import type AnalysisService from './AnalysisService';
-import type { PlayerIdentity } from '@shared/contracts/player/PlayerIdentity';
+import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 import type { IPlayerIdentityQuery } from '@shared/contracts/analysis/dto/IPlayerIdentityQuery';
 import type { IAnalysisScopeWithPlayerIdentityQuery } from '@shared/contracts/analysis/dto/IAnalysisScopeWithPlayerIdentityQuery';
 import type { IAnalysisTimeWindowQuery } from '@shared/contracts/analysis/dto/IAnalysisTimeWindowQuery';
@@ -51,7 +51,7 @@ export default class AnalysisRepository {
         return response.data;
     }
 
-    async fetchCharacterAttributeDistributions(scope: { type: 'Player'; identityKey: PlayerIdentity } | { type: 'Global' }) {
+    async fetchCharacterAttributeDistributions(scope: { type: 'Player'; playerIdentity: PlayerIdentity } | { type: 'Global' }) {
         let query: IAnalysisScopeWithPlayerIdentityQuery;
         switch (scope.type) {
             case 'Global':
@@ -60,29 +60,7 @@ export default class AnalysisRepository {
                 };
                 break;
             case 'Player':
-                switch (scope.identityKey.type) {
-                    case 'Guest':
-                        query = {
-                            scope: 'player',
-                            type: 'guest',
-                            id: scope.identityKey.id,
-                        };
-                        break;
-                    case 'Member':
-                        query = {
-                            scope: 'player',
-                            type: 'member',
-                            id: scope.identityKey.id,
-                        };
-                        break;
-                    case 'Name':
-                        query = {
-                            scope: 'player',
-                            type: 'name',
-                            name: scope.identityKey.name,
-                        };
-                        break;
-                }
+                query = { scope: 'player', ...toPlayerIdentityQuery(scope.playerIdentity) };
                 break;
         }
         const response = await this.analysisService.getCharacterAttributeDistributions(query);
@@ -91,11 +69,6 @@ export default class AnalysisRepository {
 
     async fetchCharacteSynergyMatrix(payload: { mode: SynergyMode }) {
         const response = await this.analysisService.getCharacterSynergyMatrix(payload);
-        return response.data;
-    }
-
-    async fetchCharacterSynergyGraph() {
-        const response = await this.analysisService.getCharacterSynergyGraph();
         return response.data;
     }
 
@@ -109,26 +82,26 @@ export default class AnalysisRepository {
         return response.data;
     }
 
-    async fetchPlayerStyleProfile(identityKey: PlayerIdentity) {
-        const query = toPlayerIdentityQuery(identityKey);
+    async fetchPlayerStyleProfile(playerIdentity: PlayerIdentity) {
+        const query = toPlayerIdentityQuery(playerIdentity);
         const response = await this.analysisService.getPlayerStyleProfile(query);
         return response.data;
     }
 
-    async fetchPlayerRecord(identityKey: PlayerIdentity) {
-        const query = toPlayerIdentityQuery(identityKey);
+    async fetchPlayerRecord(playerIdentity: PlayerIdentity) {
+        const query = toPlayerIdentityQuery(playerIdentity);
         const response = await this.analysisService.getPlayerRecord(query);
         return response.data;
     }
 }
 
-function toPlayerIdentityQuery(identityKey: PlayerIdentity): IPlayerIdentityQuery {
-    switch (identityKey.type) {
+function toPlayerIdentityQuery(playerIdentity: PlayerIdentity): IPlayerIdentityQuery {
+    switch (playerIdentity.type) {
         case 'Guest':
-            return { type: 'guest', id: identityKey.id };
+            return { type: 'guest', id: playerIdentity.id };
         case 'Member':
-            return { type: 'member', id: identityKey.id };
+            return { type: 'member', id: playerIdentity.id };
         case 'Name':
-            return { type: 'name', name: identityKey.name };
+            return { type: 'name', name: playerIdentity.name };
     }
 }

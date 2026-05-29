@@ -1,9 +1,12 @@
 // backend/src/modules/room/application/room.service.ts
 
+import { createLogger } from '../../../utils/logger';
 import { createRoomSetting } from '../domain/createRoomSetting';
 import { createRoomState } from '../domain/createRoomState';
 
 import type { IRoomStateRepository } from '../domain/IRoomStateRepository';
+
+const logger = createLogger('room.service');
 
 export default class RoomService {
     constructor(private roomStateRepository: IRoomStateRepository) {}
@@ -20,6 +23,7 @@ export default class RoomService {
         const roomSetting = createRoomSetting(payload);
         const roomState = createRoomState(roomSetting);
         this.roomStateRepository.create(roomId, roomState);
+        logger.info(`room created roomId=${roomId}`);
 
         return roomSetting;
     }

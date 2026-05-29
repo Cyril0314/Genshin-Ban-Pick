@@ -52,10 +52,17 @@ Both backend and frontend organize features under `src/modules/<feature>/` with 
 
 | Layer              | Backend path                  | Frontend path                                   | Responsibility                                                   |
 | ------------------ | ----------------------------- | ----------------------------------------------- | ---------------------------------------------------------------- |
-| Domain             | `modules/*/domain`            | `modules/*/domain`                              | Pure types, business rules, interface declarations (`I*`)        |
+| Domain             | `modules/*/domain`            | `modules/*/domain`                              | Business rules (pure fns) + behavioral interface contracts (`I*Repository`, `I*Provider`) |
 | Application        | `modules/*/application`       | `modules/*/application`                         | Services / UseCases — orchestrate domain + infra + store         |
 | Interface adapters | `modules/*/controller`, `http`| `modules/*/ui` (`.vue`), `store` (Pinia), `sync`| HTTP/Socket handlers on backend; components/stores on frontend   |
 | Infrastructure     | `modules/*/infra`             | `modules/*/infrastructure`, `app/infrastructure`| Prisma repos, socket clients, axios client                       |
+
+**`domain/` vs `types/`** — both hold `I*`-prefixed declarations, split by nature, not by name:
+
+- `domain/` — declarations that describe **behavior**: repository/provider interfaces (methods), and pure domain functions/business rules.
+- `types/` — plain **data shapes** with no behavior: entity rows returned by repositories, DTOs, query results (e.g. `IMemberData`, `IGuestData`, `IMatchStatisticsOverview`).
+
+Rule of thumb: if it has methods or encodes a rule it belongs in `domain/`; if it is just fields it belongs in `types/`. (Cross-boundary data shapes go in `shared/contracts/` instead — `types/` is for module-internal shapes.)
 
 ### Module composition (DI)
 
@@ -75,13 +82,29 @@ Pick the right form when adding a new store; mixing them tends to produce stale-
 
 ### Real-time flow
 
-Socket.IO is the live channel; REST (Express routers) is for static/historical data and auth. Backend socket handlers receive `RoomUserService`, `BoardService`, `ChatService`, `TeamService`, `TacticalService` (all sharing a single `RoomStateRepository` over an in-memory `RoomStateManager`). Frontend mirrors this: each feature has a `sync/` folder (e.g. `modules/board/sync/useBoardSync.ts`) that bridges socket events ↔ Pinia store.
+Socket.IO is the live channel; REST (Express routers) is for static/historical data and auth. Backend socket handlers receive `RoomUserService`, `BoardService`, `ChatService`, `TeamService`, `LineupService` (all sharing a single `RoomStateRepository` over an in-memory `RoomStateManager`). Frontend mirrors this: each feature has a `sync/` folder (e.g. `modules/board/sync/useBoardSync.ts`) that bridges socket events ↔ Pinia store.
 
-Auth on sockets goes through `createSocketAuth(authValidator)` middleware before `setupSocketIO` registers handlers — `authValidator` reuses the HTTP `AuthService`.
+Auth on sockets goes through `createSocketAuth(jwtProvider)` middleware before `setupSocketIO` registers handlers — it calls `jwtProvider.verify(token)` directly and stores the result in `socket.data.identity` (no DB call).
 
 ### Shared contracts
 
 When adding a cross-boundary type, put it under `shared/contracts/<domain>/` and import as `@shared/contracts/...`. Both sides resolve this alias; do not duplicate types per side.
+
+### Identity model
+
+Four types represent users in different contexts. Pick the right one — using the wrong type is a common source of bugs.
+
+| Type | Where it lives | What it carries | When to use |
+| --- | --- | --- | --- |
+| `Identity` | `shared/contracts/identity/Identity.ts` | `{ type, id }` | DB lookup parameter; socket presence |
+| `Principal` | `shared/contracts/auth/Principal.ts` | `Identity` + `role` (Member only) | JWT payload; `req.user`; authorization checks |
+| `User` | `shared/contracts/user/User.ts` | `Identity` + `nickname` (+ `account` for Member) | Display name in UI; fetched from DB via `UserService.fetchUser` |
+| `PlayerIdentity` | `shared/contracts/identity/PlayerIdentity.ts` | `Identity` ∪ `{ type: 'Name'; name }` | Analysis queries; includes name-only historical players |
+| `TeamMember` | `shared/contracts/team/TeamMember.ts` | `PlayerIdentity` + eager `nickname` | Match records; team slot payloads |
+
+**Frontend store split:** `authStore.principal` holds the `Principal` (from JWT, no DB). `userStore.user` holds the `User` (fetched after login). Components read `nickname` from `userStore`, never from `authStore`.
+
+Full hierarchy and decision table: [`docs/identity-model.md`](docs/identity-model.md)
 
 ## Conventions (enforced by README + tooling)
 
@@ -92,6 +115,17 @@ When adding a cross-boundary type, put it under `shared/contracts/<domain>/` and
 - Import order is enforced by `eslint-plugin-import` on both sides: builtin → external → internal → parent/sibling/index → object → type, with blank lines between groups, alphabetized.
 - Commits follow Conventional Commits (`feat:`, `fix:`, `chore:`, `doc:` are visible in recent history).
 - Frontend CSS naming rules (one-block-per-file, `is-*` for state vs `--` for variant, design tokens) live in `genshin-ban-pick/CSS_CONVENTIONS.md`. When editing or creating `.vue` files, follow that style (currently a touch-time migration — old files keep their BEM until naturally touched).
+- **CSS spacing**: prefer `gap` (on flex/grid containers) and `padding` over `margin`. Avoid components self-applying `margin` — margin leaks outside the component boundary and bleeds into the caller's layout. Use `margin` only when the caller controls spacing externally (e.g., a utility class applied at the usage site).
+
+### Logger scope (backend)
+
+`createLogger(scope)` in `backend/src/utils/logger.ts` takes a `scope` string that prints as `[LEVEL][scope]`. Use the form **`module.layer[.detail]`** — lowercase, dot-separated, no spaces.
+
+- `module` is the feature folder under `modules/` (`room`, `auth`, `match`, `analysis`, `socket`, …) or a top-level area (`app`, `http`).
+- `layer` matches the Clean Architecture folder: `routes`, `service`, `domain`, `infra`, plus `socket.*` for individual socket handlers and `socket.controller` for the dispatcher.
+- `detail` is only added when one layer has multiple files in the same module (`room.service.user`, `socket.infra.roomStateManager`). Single-file layers stay at two parts (`auth.service`, `analysis.routes`).
+
+One logger per file. Scope is "where I am," not "what I do" — keep task wording in the log message. Examples in use today: `app.bootstrap`, `http.errorHandler`, `room.routes`, `room.service.user`, `room.domain.matchFlow`, `match.infra.repository`, `socket.board`, `socket.controller`.
 
 ## Database / Ops Notes
 

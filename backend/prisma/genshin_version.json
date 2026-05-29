@@ -339,6 +339,13 @@
         "code": "Luna VI",
         "name": "Augured Homecoming",
         "order": 48,
-        "start_at": "April 8, 2026"
+        "start_at": "April 8, 2026",
+        "end_at": "May 20, 2026"
+    },
+    {
+        "code": "Luna VII",
+        "name": "Truth Amongst the Pages of Purana",
+        "order": 49,
+        "start_at": "May 20, 2026"
     }
 ]

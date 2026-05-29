@@ -16,7 +16,6 @@ export function findNextMatchStepZoneIdDomain(
         return zone.type === zoneType && !boardImageMap[step.zoneId];
     });
     if (!step) {
-        console.warn(`[RANDOM PULL] Cannot find next ${zoneType} step `);
         return undefined;
     }
     return step.zoneId;

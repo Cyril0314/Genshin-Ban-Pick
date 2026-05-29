@@ -2,16 +2,16 @@
 
 import { createLogger } from '../../../utils/logger';
 
-import type { IRoomStateManager } from '../domain/IRoomStateManager';
+import type { IRoomStateManager } from '../../room/domain/IRoomStateManager';
 import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 import type { IRoomState } from '@shared/contracts/room/IRoomState';
 import type { BoardImageMap } from '@shared/contracts/board/BoardImageMap';
 import type { CharacterRandomContextMap } from '@shared/contracts/character/CharacterRandomContextMap';
 import type { IChatMessage } from '@shared/contracts/chat/IChatMessage';
-import type { TeamTacticalCellImageMap } from '@shared/contracts/tactical/TeamTacticalCellImageMap';
+import type { TeamLineupImageMap } from '@shared/contracts/lineup/TeamLineupImageMap';
 import type { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';
 
-const logger = createLogger('ROOM STATE MANAGER');
+const logger = createLogger('socket.infra.roomStateManager');
 
 export default class RoomStateManager implements IRoomStateManager {
     roomStates: Record<string, IRoomState> = {};
@@ -76,12 +76,12 @@ export default class RoomStateManager implements IRoomStateManager {
         this.roomStates[roomId].teamMembersMap = teamMembersMap;
     }
     
-    getTeamTacticalCellImageMap(roomId: string) {
-        return this.get(roomId)?.teamTacticalCellImageMap;
+    getTeamLineupImageMap(roomId: string) {
+        return this.get(roomId)?.teamLineupImageMap;
     }
 
-    setTeamTacticalCellImageMap(roomId: string, teamTacticalCellImageMap: TeamTacticalCellImageMap): void {
+    setTeamLineupImageMap(roomId: string, teamLineupImageMap: TeamLineupImageMap): void {
         if (!this.roomStates[roomId]) return
-        this.roomStates[roomId].teamTacticalCellImageMap = teamTacticalCellImageMap;
+        this.roomStates[roomId].teamLineupImageMap = teamLineupImageMap;
     }
 }

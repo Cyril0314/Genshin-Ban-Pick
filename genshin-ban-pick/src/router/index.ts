@@ -7,7 +7,7 @@ import RegisterView from '@/modules/auth/ui/views/RegisterView.vue';
 import RoomSettingView from '@/modules/room/ui/views/RoomSettingView.vue';
 import RoomListView from '@/modules/room/ui/views/RoomListView.vue';
 
-import { useAuthUseCase, useAuthStore } from '@/modules/auth';
+import { useAuthStore } from '@/modules/auth';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -45,13 +45,8 @@ const router = createRouter({
     ],
 });
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach((to, from, next) => {
     const auth = useAuthStore();
-    const authUseCase = useAuthUseCase()
-
-    if (!auth.isInitialized) {
-        await authUseCase.autoLogin();
-    }
 
     if (to.meta.requiresAuth && !auth.isLoggedIn) {
         return next('/login');

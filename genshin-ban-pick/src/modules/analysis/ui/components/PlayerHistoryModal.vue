@@ -4,13 +4,15 @@
 import { computed, toRef } from 'vue';
 import { storeToRefs } from 'pinia';
 
+import { X } from '@lucide/vue';
 import { usePlayerHistoryModal } from '../composables/usePlayerHistoryModal';
 import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
 import { useCharacterStore } from '@/modules/character';
 import { getProfileImagePath } from '@/modules/shared/infrastructure/imageRegistry';
 import { elementColors } from '@/modules/shared/ui/constants/elementColors';
+import CharacterHoverCard from './CharacterHoverCard.vue';
 
-import type { PlayerIdentity } from '@shared/contracts/player/PlayerIdentity';
+import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 import type { Element } from '@shared/contracts/character/value-types';
 
 const props = defineProps<{
@@ -26,14 +28,12 @@ const { isLoading, record, error } = usePlayerHistoryModal(toRef(props, 'open'),
 const { getByKey: getCharacterDisplayName } = useCharacterDisplayName();
 const { characterMap } = storeToRefs(useCharacterStore());
 
-// 進度條相對縮放：最高的角色 = 滿條，其他依比例縮放，讓 1~10 名差距視覺化
 const maxCount = computed(() => record.value?.characterFrequency[0]?.count ?? 0);
 function getBarWidth(count: number): string {
     if (maxCount.value <= 0) return '0%';
     return `${(count / maxCount.value) * 100}%`;
 }
 
-// 元素色彩點綴：從 character store 抓 element，沒抓到就 fallback 中性灰
 function getElementAccent(characterKey: string): string {
     const element = characterMap.value[characterKey]?.element as Element | undefined;
     return element ? elementColors[element].main : '#555555';
@@ -41,110 +41,112 @@ function getElementAccent(characterKey: string): string {
 function getRowStyle(characterKey: string) {
     return { '--row-accent': getElementAccent(characterKey) };
 }
-
-function close() {
-    emit('update:open', false);
-}
 </script>
 
 <template>
-    <n-modal
-        :show="open"
-        preset="card"
-        :title="record?.displayName ?? '玩家紀錄'"
-        :bordered="false"
-        :closable="false"
-        size="large"
-        :mask-closable="true"
-        :style="{
-            width: '60vw',
-            maxHeight: '85vh',
-            display: 'flex',
-            flexDirection: 'column',
-            backgroundColor: 'var(--md-sys-color-surface-container-high)',
-        }"
-        content-class="scale-context"
-        content-style="overflow-y: auto; min-height: 0; --base-size: 1.2vw;"
-        @update:show="emit('update:open', $event)"
-        @close="close"
-    >
-        <template #header-extra>
-            <n-button text class="close-button" @click="emit('update:open', false)">
-                <template #icon>
-                    <n-icon size="20">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <path
-                                fill="currentColor"
-                                d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12z"
-                            />
-                        </svg>
-                    </n-icon>
-                </template>
-            </n-button>
-        </template>
+    <n-modal :show="open" :mask-closable="true" @update:show="emit('update:open', $event)">
+        <div class="modal-card scale-context">
+            <div class="modal-header">
+                <span class="modal-title">{{ record?.displayName ?? '玩家紀錄' }}</span>
+                <n-button text class="close-button" @click="emit('update:open', false)">
+                    <template #icon>
+                        <X />
+                    </template>
+                </n-button>
+            </div>
 
-        <div class="player-history">
-            <div v-if="isLoading" class="state-message">載入中…</div>
-            <div v-else-if="error" class="state-message is-error">{{ error }}</div>
-            <div v-else-if="!record || record.totalSetups === 0" class="state-message">尚無紀錄</div>
-            <template v-else>
-                <section class="section">
-                    <div class="section-header">
-                        <h3 class="section-title">角色使用頻率（Top 10）</h3>
-                        <span class="section-meta">共 {{ record.totalSetups }} 場</span>
-                    </div>
-                    <ol class="frequency-list">
-                        <li
-                            v-for="f in record.characterFrequency"
-                            :key="f.characterKey"
-                            class="frequency-row"
-                            :style="getRowStyle(f.characterKey)"
-                        >
-                            <img
-                                class="avatar"
-                                :src="getProfileImagePath(f.characterKey)"
-                                :alt="getCharacterDisplayName(f.characterKey)"
-                            />
-                            <div class="content">
-                                <div class="head">
-                                    <span class="name">{{ getCharacterDisplayName(f.characterKey) }}</span>
-                                    <div class="metrics">
-                                        <span class="count">{{ f.count }} 次</span>
-                                        <div class="rate-cell">
-                                            <span class="rate">{{ (f.rate * 100).toFixed(0) }}%</span>
-                                            <div class="rate-bar">
-                                                <div class="rate-fill" :style="{ width: getBarWidth(f.count) }" />
+            <div class="modal-body">
+                <div class="player-history">
+                    <div v-if="isLoading" class="state-message">載入中…</div>
+                    <div v-else-if="error" class="state-message is-error">{{ error }}</div>
+                    <div v-else-if="!record || record.totalSetups === 0" class="state-message">尚無紀錄</div>
+                    <template v-else>
+                        <section class="section">
+                            <div class="section-header">
+                                <h3 class="section-title">角色使用頻率（Top 10）</h3>
+                                <span class="section-meta">共 {{ record.totalSetups }} 場</span>
+                            </div>
+                            <ol class="frequency-list">
+                                <li
+                                    v-for="f in record.characterFrequency"
+                                    :key="f.characterKey"
+                                    class="frequency-row"
+                                    :style="getRowStyle(f.characterKey)"
+                                >
+                                    <CharacterHoverCard :character-key="f.characterKey">
+                                        <img class="avatar" :src="getProfileImagePath(f.characterKey)" :alt="getCharacterDisplayName(f.characterKey)" />
+                                    </CharacterHoverCard>
+                                    <div class="content">
+                                        <div class="head">
+                                            <span class="name">{{ getCharacterDisplayName(f.characterKey) }}</span>
+                                            <div class="stats">
+                                                <span class="count">{{ f.count }} 次</span>
+                                                <span class="rate">{{ (f.rate * 100).toFixed(0) }}%</span>
                                             </div>
                                         </div>
+                                        <div class="rate-bar">
+                                            <div class="rate-fill" :style="{ width: getBarWidth(f.count) }" />
+                                        </div>
+                                        <div v-if="f.topSynergies.length > 0" class="synergies">
+                                            <span class="synergies-label">常用隊友</span>
+                                            <ul class="synergy-list">
+                                                <CharacterHoverCard v-for="s in f.topSynergies" :key="s.characterKey" :character-key="s.characterKey">
+                                                    <li class="synergy-chip">
+                                                        <img
+                                                            class="synergy-avatar"
+                                                            :src="getProfileImagePath(s.characterKey)"
+                                                            :alt="getCharacterDisplayName(s.characterKey)"
+                                                        />
+                                                        <span class="synergy-name">{{ getCharacterDisplayName(s.characterKey) }}</span>
+                                                        <span class="synergy-count">×{{ s.count }}</span>
+                                                    </li>
+                                                </CharacterHoverCard>
+                                            </ul>
+                                        </div>
+                                        <div v-else class="synergy-empty">尚無全域共現資料</div>
                                     </div>
-                                </div>
-                                <div v-if="f.topSynergies.length > 0" class="synergies">
-                                    <span class="synergies-label">常用隊友</span>
-                                    <ul class="synergy-list">
-                                        <li v-for="s in f.topSynergies" :key="s.characterKey" class="synergy-chip">
-                                            <img
-                                                class="synergy-avatar"
-                                                :src="getProfileImagePath(s.characterKey)"
-                                                :alt="getCharacterDisplayName(s.characterKey)"
-                                            />
-                                            <span class="synergy-name">{{ getCharacterDisplayName(s.characterKey) }}</span>
-                                            <span class="synergy-count">×{{ s.count }}</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div v-else class="synergy-empty">尚無全域共現資料</div>
-                            </div>
-                        </li>
-                    </ol>
-                </section>
-            </template>
+                                </li>
+                            </ol>
+                        </section>
+                    </template>
+                </div>
+            </div>
         </div>
     </n-modal>
 </template>
 
 <style scoped>
+.modal-card {
+    width: 60vw;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--md-sys-color-surface-container-high);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    padding: var(--space-lg);
+    justify-content: space-between;
+}
+
+.modal-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--md-sys-color-on-surface);
+}
+
 .close-button {
     color: var(--md-sys-color-on-surface-variant);
+}
+
+.modal-body {
+    overflow-y: auto;
+    min-height: 0;
+    padding: var(--space-lg);
 }
 
 .player-history {
@@ -153,7 +155,7 @@ function close() {
 
     display: flex;
     flex-direction: column;
-    gap: var(--space-md);
+    /* gap: var(--space-md); */
 }
 
 .state-message {
@@ -170,7 +172,7 @@ function close() {
 .section {
     display: flex;
     flex-direction: column;
-    gap: var(--space-sm);
+    /* gap: var(--space-sm); */
 }
 
 .section-header {
@@ -185,16 +187,11 @@ function close() {
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-bold);
     color: var(--md-sys-color-on-surface);
-    margin: 0;
 }
 
 .section-meta {
     color: var(--md-sys-color-on-surface-variant);
     font-size: var(--font-size-sm);
-}
-
-.section-meta::before {
-    content: '· ';
 }
 
 .frequency-list {
@@ -204,7 +201,6 @@ function close() {
     list-style: none;
 }
 
-/* 每一列：底色為「深灰 + 元素色極淡漸層」，列間用 border-bottom 分隔；hover 亮起 */
 .frequency-row {
     display: flex;
     align-items: flex-start;
@@ -213,11 +209,7 @@ function close() {
     border-bottom: 1px solid var(--md-sys-color-outline-variant);
     color: var(--md-sys-color-on-surface);
     font-size: var(--font-size-md);
-    background: linear-gradient(
-        to right,
-        color-mix(in srgb, var(--row-accent, transparent) 14%, transparent) 0%,
-        transparent 70%
-    );
+    background: linear-gradient(to right, color-mix(in srgb, var(--row-accent, transparent) 14%, transparent) 0%, transparent 70%);
     transition: background-color 0.18s ease;
 }
 
@@ -227,11 +219,7 @@ function close() {
 
 .frequency-row:hover {
     background:
-        linear-gradient(
-            to right,
-            color-mix(in srgb, var(--row-accent, transparent) 14%, transparent) 0%,
-            transparent 70%
-        ),
+        linear-gradient(to right, color-mix(in srgb, var(--row-accent, transparent) 14%, transparent) 0%, transparent 70%),
         var(--md-sys-color-surface-container-low);
 }
 
@@ -243,7 +231,6 @@ function close() {
     min-width: 0;
 }
 
-/* head 一列：name 左 + metrics 右、垂直置中對齊 */
 .head {
     display: flex;
     align-items: center;
@@ -253,33 +240,29 @@ function close() {
 .head .name {
     flex: 1;
     font-weight: var(--font-weight-medium);
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-md);
 }
 
-.metrics {
+.stats {
     display: flex;
     align-items: center;
     gap: var(--space-md);
+    flex-shrink: 0;
 }
 
-.head .count {
+.count {
     color: var(--md-sys-color-on-surface-variant);
     min-width: calc(var(--base-size) * 2.5);
     text-align: right;
+    font-size: var(--font-size-sm);
 }
 
-/* rate cell：百分比 + 細長進度條（相對最高者縮放） */
-.rate-cell {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: var(--space-xs);
-    min-width: calc(var(--base-size) * 5);
-}
-
-.rate-cell .rate {
+.rate {
     font-weight: var(--font-weight-bold);
-    color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-surface);
+    min-width: calc(var(--base-size) * 2.5);
+    text-align: right;
+    font-size: var(--font-size-sm);
 }
 
 .rate-bar {
@@ -292,12 +275,11 @@ function close() {
 
 .rate-fill {
     height: 100%;
-    background: var(--md-sys-color-primary);
+    background: var(--row-accent, var(--md-sys-color-primary));
     border-radius: inherit;
     transition: width 0.35s ease;
 }
 
-/* synergies 區塊：「常用隊友」label 左 + 膠囊列 */
 .synergies {
     display: flex;
     align-items: center;
@@ -338,7 +320,7 @@ function close() {
 
 .synergy-count {
     color: var(--md-sys-color-on-surface-variant);
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-sm);
 }
 
 .synergy-empty {

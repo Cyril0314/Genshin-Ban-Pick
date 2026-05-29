@@ -6,7 +6,7 @@ import tinycolor from 'tinycolor2';
 
 import { useEchartTheme } from '@/modules/shared/ui/composables/useEchartTheme';
 import { useDesignTokens } from '@/modules/shared/ui/composables/useDesignTokens';
-import { useAuthStore } from '@/modules/auth';
+import { createLogger } from '@/app/utils/logger';
 import { useAnalysisUseCase } from './useAnalysisUseCase';
 import { useMatchUseCase } from '@/modules/match';
 import { useCharacterStore } from '@/modules/character';
@@ -20,12 +20,11 @@ import type { ICharacter } from '@shared/contracts/character/ICharacter';
 import type { IMatchTimeMinimal } from '@shared/contracts/analysis/IMatchTimeMinimal';
 import type { IAnalysisOverview } from '@shared/contracts/analysis/IAnalysisOverview';
 
+const logger = createLogger('analysis.ui.matchOverview');
+
 export function useMatchOverviewChart() {
     const { tooltipStyle, gridStyle, dataZoomStyle, timeAxisStyle } = useEchartTheme();
     const designTokens = useDesignTokens();
-    const authStore = useAuthStore();
-    const { identity } = storeToRefs(authStore);
-
     const genshinVersionUseCase = useGenshinVersionUseCase();
     const analysisUseCase = useAnalysisUseCase();
     const matchUseCase = useMatchUseCase();
@@ -40,6 +39,7 @@ export function useMatchOverviewChart() {
     const matchTimeline = ref<IMatchTimeMinimal[]>();
 
     onMounted(async () => {
+        logger.debug('fetching overview + version periods + match timeline');
         const [overviewResult, periodsResult, matchTimelineResult] = await Promise.all([
             analysisUseCase.fetchOverview(),
             genshinVersionUseCase.fetchGenshinVersionPeriods(),
@@ -51,6 +51,7 @@ export function useMatchOverviewChart() {
         overview.value = overviewResult;
         periods.value = periodsResult;
         matchTimeline.value = matchTimelineResult;
+        logger.debug('data loaded', { periods: periodsResult.length, matches: matchTimelineResult.length });
     });
 
     const option = computed(() => {
@@ -217,10 +218,6 @@ export function useMatchOverviewChart() {
                 },
             ],
         };
-    });
-
-    watch(option, async () => {
-        console.log(option.value);
     });
 
     return {

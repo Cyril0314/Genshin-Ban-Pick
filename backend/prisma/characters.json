@@ -936,6 +936,19 @@
         "wish": "Limited-Time Event Wish"
     },
     {
+        "icon": "Nicole Icon",
+        "name": "Nicole",
+        "rarity": "5 Stars",
+        "element": "Pyro",
+        "weapon": "Catalyst",
+        "region": "None",
+        "model_type": "Tall Female",
+        "release_at": "May 20, 2026",
+        "version": "Luna VII",
+        "role": "Support",
+        "wish": "Limited-Time Event Wish"
+    },
+    {
         "icon": "Nilou Icon",
         "name": "Nilou",
         "rarity": "5 Stars",
@@ -985,6 +998,19 @@
         "release_at": "November 20, 2024",
         "version": "5.2",
         "role": "Sub DPS",
+        "wish": "Standard Wish"
+    },
+    {
+        "icon": "Prune Icon",
+        "name": "Prune",
+        "rarity": "4 Stars",
+        "element": "Anemo",
+        "weapon": "Catalyst",
+        "region": "Mondstadt",
+        "model_type": "Short Female",
+        "release_at": "May 20, 2026",
+        "version": "Luna VII",
+        "role": "Support",
         "wish": "Standard Wish"
     },
     {

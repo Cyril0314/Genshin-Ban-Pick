@@ -1,3 +1,6 @@
-import type { IRoomUser } from "../room/IRoomUser";
+import type { PlayerIdentity } from '../identity/PlayerIdentity';
 
-export type TeamMember = { type: 'Online'; user: IRoomUser } | { type: 'Manual'; name: string };
+export type TeamMember =
+    | (Extract<PlayerIdentity, { type: 'Member' }> & { nickname: string })
+    | (Extract<PlayerIdentity, { type: 'Guest' }> & { nickname: string })
+    | Extract<PlayerIdentity, { type: 'Name' }>;

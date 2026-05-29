@@ -1,4 +1,6 @@
 import { computed, onMounted, ref } from 'vue';
+
+import { createLogger } from '@/app/utils/logger';
 import { useAnalysisUseCase } from './useAnalysisUseCase';
 import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
 import { useDesignTokens } from '@/modules/shared/ui/composables/useDesignTokens';
@@ -9,6 +11,8 @@ import { elementColors } from '@/modules/shared/ui/constants/elementColors';
 import type { CallbackDataParams } from 'echarts/types/dist/shared';
 import type { ICharacterUsage } from '@shared/contracts/analysis/ICharacterUsage';
 import type { ICharacterPickPriority } from '@shared/contracts/analysis/ICharacterPickPriority';
+
+const logger = createLogger('analysis.ui.scatterChart');
 
 interface IScatterPoint {
     characterKey: string;
@@ -33,12 +37,14 @@ export function useCharacterScatterChart() {
     const pickPriorities = ref<ICharacterPickPriority[]>([]);
 
     onMounted(async () => {
+        logger.debug('fetching usage summary + pick priorities');
         const [usages, priorities] = await Promise.all([
             analysisUseCase.fetchCharacterUsageSummary(),
             analysisUseCase.fetchCharacterUsagePickPriority(),
         ]);
         characterUsages.value = usages;
         pickPriorities.value = priorities;
+        logger.debug('data loaded', { usages: usages.length, priorities: priorities.length });
     });
 
     const option = computed(() => {

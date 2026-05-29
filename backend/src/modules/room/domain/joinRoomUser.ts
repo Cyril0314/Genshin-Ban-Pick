@@ -1,22 +1,25 @@
 // backend/src/modules/room/domain/joinRoomUser.ts
 
+import { isSameIdentity } from '@shared/contracts/identity/Identity';
+
+import type { Identity } from '@shared/contracts/identity/Identity';
 import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 
-export function joinRoomUser(roomUsers: IRoomUser[], identityKey: string, nickname: string, socketId: string) {
+export function joinRoomUser(roomUsers: IRoomUser[], identity: Identity, nickname: string, socketId: string) {
     const joinedUser: IRoomUser = {
-        id: socketId,
-        identityKey: identityKey,
+        socketId: socketId,
+        identity,
         nickname: nickname,
         timestamp: Date.now(),
     };
 
-    const index = roomUsers.findIndex((u) => u.identityKey === identityKey);
+    const index = roomUsers.findIndex((u) => isSameIdentity(u.identity, identity));
 
     let newRoomUsers: IRoomUser[];
 
     if (index >= 0) {
         // 重連 → 替換舊值
-        newRoomUsers = roomUsers.map((u, i) => (i === index ? { ...u, id: socketId, timestamp: Date.now() } : u));
+        newRoomUsers = roomUsers.map((u, i) => (i === index ? { ...u, socketId, nickname, timestamp: Date.now() } : u));
         return { joinedUser: undefined, roomUsers: newRoomUsers };
     } else {
         newRoomUsers = [...roomUsers, joinedUser];

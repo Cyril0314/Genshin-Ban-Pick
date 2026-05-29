@@ -1,6 +1,4 @@
-// shared/contracts/analysis/IPlayerRecord.ts
-
-import type { PlayerIdentity } from '../player/PlayerIdentity';
+import type { PlayerIdentity } from '../identity/PlayerIdentity';
 
 export interface ICharacterSynergy {
     characterKey: string;     // 與本角色共現的搭檔

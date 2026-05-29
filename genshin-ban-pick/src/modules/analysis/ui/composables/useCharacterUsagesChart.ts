@@ -8,11 +8,14 @@ import type { CallbackDataParams } from 'echarts/types/dist/shared';
 import { useCharacterStore } from '@/modules/character';
 import { useDesignTokens } from '@/modules/shared/ui/composables/useDesignTokens';
 import { useEchartTheme } from '@/modules/shared/ui/composables/useEchartTheme';
+import { createLogger } from '@/app/utils/logger';
 import { useAnalysisUseCase } from './useAnalysisUseCase';
 import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
 import { elementColors } from '@/modules/shared/ui/constants/elementColors';
 
 import type { ICharacterUsage } from '@shared/contracts/analysis/ICharacterUsage';
+
+const logger = createLogger('analysis.ui.usagesChart');
 
 export function useCharacterUsagesChart() {
     const { getByKey: getCharacterDisplayName } = useCharacterDisplayName();
@@ -25,7 +28,9 @@ export function useCharacterUsagesChart() {
     const usages = ref<ICharacterUsage[]>();
 
     onMounted(async () => {
+        logger.debug('fetching usage summary');
         usages.value = await analysisUseCase.fetchCharacterUsageSummary();
+        logger.debug('data loaded', usages.value?.length);
     });
 
     const option = computed(() => {
@@ -40,7 +45,7 @@ export function useCharacterUsagesChart() {
                         <b>${getCharacterDisplayName(d.characterKey)}</b><br/>
                         <b>僅計算登場後的有效權重: ${d.effectiveUsage.toFixed(2)}</b><br/>
                         在全部場次中的平均權重: ${d.globalUsage.toFixed(2)}<br/>
-                        綜合全期平均與有效權重: ${d.tacticalUsage.toFixed(2)}<br/>
+                        綜合全期平均與有效權重: ${d.adjustedUsage.toFixed(2)}<br/>
                         <b>登場後參與場數: ${d.validMatchCount}</b><br/>
                         非隨機Pick次數: ${d.context.pick.manualNotUsed + d.context.pick.manualUsed}<br/>
                         隨機Pick次數: ${d.context.pick.randomNotUsed + d.context.pick.randomUsed}<br/>
@@ -124,7 +129,7 @@ export function useCharacterUsagesChart() {
                 {
                     name: '綜合全期平均與有效權重',
                     type: 'bar',
-                    data: sorted.map((d) => d.tacticalUsage.toFixed(2)),
+                    data: sorted.map((d) => d.adjustedUsage.toFixed(2)),
                     // barWidth: parseFloat(designTokens.baseSize.value!) * 12,
                     barCategoryGap: '40%',
                     barGap: '-100%',
@@ -134,7 +139,7 @@ export function useCharacterUsagesChart() {
                             const characterKey = sorted[params.dataIndex].characterKey;
                             const element = characterMap.value[characterKey].element;
                             const base = elementColors[element]?.main ?? '#bdbdbd';
-                            // const alpha = Math.min(0.45 + d.tacticalUsage / 1, 1);
+                            // const alpha = Math.min(0.45 + d.adjustedUsage / 1, 1);
                             return tinycolor(base).brighten(10).toRgbString();
                         },
                         borderRadius: [0, parseFloat(designTokens.radiusMd.value!), parseFloat(designTokens.radiusMd.value!), 0],
@@ -145,7 +150,7 @@ export function useCharacterUsagesChart() {
                         color: designTokens.colorOnSurface.value,
                         fontSize: designTokens.fontSizeSm.value,
 
-                        formatter: (p: any) => `${sorted[p.dataIndex].tacticalUsage.toFixed(2)}`,
+                        formatter: (p: any) => `${sorted[p.dataIndex].adjustedUsage.toFixed(2)}`,
                     },
                     z: 2,
                 },

@@ -3,6 +3,10 @@
 import { defineStore } from 'pinia';
 import { ref, computed, watch, shallowRef } from 'vue';
 
+import { createLogger } from '@/app/utils/logger';
+
+const logger = createLogger('team.store');
+
 import type { TeamMember } from '@shared/contracts/team/TeamMember';
 import type { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';
 import type { ITeam } from '@shared/contracts/team/ITeam';
@@ -23,23 +27,23 @@ export const useTeamInfoStore = defineStore('teamInfo', () => {
     watch(
         teamInfoPair,
         (teamInfoPair) => {
-            console.debug('[TEAM INFO STORE] Watch team info pair', teamInfoPair);
+            logger.debug('watch team info pair', teamInfoPair);
         },
         { deep: true, immediate: true },
     );
 
     function initTeams(newTeams: ITeam[]) {
-        console.debug('[TEAM INFO STORE] Init teams', newTeams);
+        logger.debug('init teams', newTeams);
         teams.value = newTeams;
     }
 
     function setTeamMembersMap(newTeamMembersMap: TeamMembersMap) {
-        console.debug(`[TEAM INFO STORE] Set team members map`, newTeamMembersMap);
+        logger.debug('set team members map', newTeamMembersMap);
         teamMembersMap.value = newTeamMembersMap;
     }
 
     function setTeamMemberMap(teamSlot: number, newTeamMemberMap: Record<string, TeamMember>) {
-        console.debug(`[TEAM INFO STORE] Set team member map`, newTeamMemberMap);
+        logger.debug('set team member map', newTeamMemberMap);
         teamMembersMap.value[teamSlot] = newTeamMemberMap;
     }
 

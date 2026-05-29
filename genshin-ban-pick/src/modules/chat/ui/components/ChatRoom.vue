@@ -5,11 +5,12 @@ import { ref, nextTick, watch, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import { useAuthStore } from '@/modules/auth';
+import { useUserStore } from '@/modules/user';
 import { useCurrentTime, formatRelativeTime } from '@/modules/shared/ui/composables/useRelativeTime';
 import { useChatSync } from '../../sync/useChatSync.ts';
 import { useChatStore } from '../../store/chatStore.ts';
-import { usePlayerHistory } from '@/modules/analysis/ui/composables/usePlayerHistory';
-import { parseIdentity } from '@shared/contracts/player/identitySerialization';
+import { usePlayerHistory } from '@/modules/shared/ui/composables/usePlayerHistory';
+import { isSameIdentity } from '@shared/contracts/identity/Identity';
 import type { IChatMessage } from '@shared/contracts/chat/IChatMessage.ts';
 
 const playerHistory = usePlayerHistory();
@@ -20,7 +21,9 @@ const chatStore = useChatStore();
 const { messages } = storeToRefs(chatStore)
 const { sendMessage } = useChatSync();
 const authStore = useAuthStore();
-const { nickname, identityKey } = storeToRefs(authStore);
+const { identity } = storeToRefs(authStore);
+const userStore = useUserStore();
+const { nickname } = storeToRefs(userStore);
 const now = useCurrentTime();
 
 onMounted(() => {
@@ -43,6 +46,10 @@ function handleSend() {
     }
 }
 
+function handleAuthorClick(msg: IChatMessage) {
+    playerHistory.open(msg.identity);
+}
+
 function scrollToBottom() {
     nextTick(() => {
         if (messagesContainer.value) {
@@ -52,13 +59,7 @@ function scrollToBottom() {
 }
 
 function isSelfMessage(msg: IChatMessage) {
-    return msg.identityKey === identityKey.value
-}
-
-function openPlayerHistory(msg: IChatMessage) {
-    const identity = parseIdentity(msg.identityKey);
-    if (!identity) return;
-    playerHistory.open(identity);
+    return !!identity.value && isSameIdentity(msg.identity, identity.value);
 }
 
 </script>
@@ -68,7 +69,7 @@ function openPlayerHistory(msg: IChatMessage) {
         <div ref="messagesContainer" class="messages">
             <div v-for="(msg, index) in messages" :key="index" class="message-row"
                 :class="{ 'message-row--self': isSelfMessage(msg) }">
-                <span v-if="!isSelfMessage(msg)" class="author" @click="openPlayerHistory(msg)">{{ `${msg.nickname}:` }}</span>
+                <span v-if="!isSelfMessage(msg)" class="author" @click="handleAuthorClick(msg)">{{ `${msg.nickname}:` }}</span>
                 <div class="bubble"> {{ msg.message }} </div>
                 <span class="time">{{ formatRelativeTime(msg.timestamp ?? 0, now) }}</span>
             </div>

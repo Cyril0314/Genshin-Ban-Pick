@@ -18,15 +18,13 @@ import CharacterCommunityScanEngine from './infra/clustering/CharacterCommunityS
 
 import type { ICharacterRepository } from '../character/domain/ICharacterRepository';
 import type { IMatchRepository } from '../match/domain/IMatchRepository';
-import type { IMemberRepository } from '../auth/domain/IMemberRepository';
-import type { IGuestRepository } from '../auth/domain/IGuestRepository';
+import type UserService from '../user/application/user.service';
 
 export function createAnalysisModule(
     prisma: PrismaClient,
     characterRepository: ICharacterRepository,
     matchRepository: IMatchRepository,
-    memberRepository: IMemberRepository,
-    guestRepository: IGuestRepository,
+    userService: UserService,
 ) {
     const analysisRepository = new AnalysisRepository(prisma)
 
@@ -48,8 +46,7 @@ export function createAnalysisModule(
         characterCommunityScanEngine,
         characterRepository,
         matchRepository,
-        memberRepository,
-        guestRepository,
+        userService,
     );
 
     const controller = new AnalysisController(service);

@@ -1,9 +1,9 @@
 // backend/src/modules/auth/domain/IJwtProvider.ts
 
-import type { IAuthPayload } from "./IAuthPayload"
+import type { Principal } from '@shared/contracts/auth/Principal';
 
 export interface IJwtProvider {
-    sign(authPayload: IAuthPayload, expiresInDays: number): string
+    sign(user: Principal, expiresInDays: number): string
 
-    verify(token: string): IAuthPayload
+    verify(token: string): Principal
 }

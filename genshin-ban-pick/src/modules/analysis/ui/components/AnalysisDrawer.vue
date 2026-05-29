@@ -14,7 +14,7 @@ const emit = defineEmits<{
 function handleAfterEnter() {
     // 確保 DOM 全部載入後才聚焦內部元素
     requestAnimationFrame(() => {
-        const el = document.querySelector('.drawer .some-focusable') as HTMLElement | null;;
+        const el = document.querySelector('.drawer .some-focusable') as HTMLElement | null;
         el?.focus();
     });
 }
@@ -24,7 +24,7 @@ function handleAfterEnter() {
 <template>
     <n-drawer class="drawer" :show="props.open" @after-enter="handleAfterEnter"
         @update:show="emit('update:open', $event)" placement="bottom" height="undefined" content-class="scale-context"
-        content-style="background-color: var(--md-sys-color-surface-container); --base-size: 2.2vh;">
+        content-style="background-color: var(--md-sys-color-surface-container);">
         <Analysis />
     </n-drawer>
 </template>

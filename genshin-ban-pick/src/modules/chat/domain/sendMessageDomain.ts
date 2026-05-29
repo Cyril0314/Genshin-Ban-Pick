@@ -3,10 +3,11 @@
 import { addMessageDomain } from "./addMessageDomain";
 import { buildChatMessageDomain } from "./buildChatMessageDomain";
 
+import type { Identity } from "@shared/contracts/identity/Identity";
 import type { IChatMessage } from "@shared/contracts/chat/IChatMessage";
 
-export function sendMessageDomain(messages: IChatMessage[], identityKey: string, nickname: string, message: string, date = Date.now()) {
-    const newMessage = buildChatMessageDomain(identityKey, nickname, message, date)
+export function sendMessageDomain(messages: IChatMessage[], identity: Identity, nickname: string, message: string, date = Date.now()) {
+    const newMessage = buildChatMessageDomain(identity, nickname, message, date)
     const newMessages = addMessageDomain(messages, newMessage)
     return { messages: newMessages, newMessage}
 }

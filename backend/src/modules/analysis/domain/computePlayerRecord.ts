@@ -6,14 +6,14 @@ import type {
     IPlayerRecord,
 } from '@shared/contracts/analysis/IPlayerRecord';
 import type { CharacterSynergyMatrix } from '@shared/contracts/analysis/CharacterSynergyMatrix';
-import type { PlayerIdentity } from '@shared/contracts/player/PlayerIdentity';
-import type { IMatchTacticalUsageWithCharacter } from '../types/IMatchTacticalUsageWithCharacter';
+import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
+import type { IMatchLineupSlotWithCharacter } from '../types/IMatchLineupSlotWithCharacter';
 
 const TOP_CHARACTERS_COUNT = 10;
 const TOP_SYNERGIES_COUNT = 3;
 
 export function computePlayerRecord(
-    playerRows: IMatchTacticalUsageWithCharacter[],
+    playerRows: IMatchLineupSlotWithCharacter[],
     synergyMatrix: CharacterSynergyMatrix,
     identity: PlayerIdentity,
     displayName: string,

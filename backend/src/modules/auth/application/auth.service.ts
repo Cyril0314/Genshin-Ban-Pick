@@ -1,73 +1,55 @@
-// backend/src/modules/auth/application/auth.service.ts
+import bcrypt from 'bcryptjs';
 
-import MemberService from './member.service';
-import GuestService from './guest.service';
 import { createLogger } from '../../../utils/logger';
-import { UserNotFoundError } from '../../../errors/AppError';
+import { InvalidPasswordError } from '../../../errors/AppError';
 
+import type { Principal } from '@shared/contracts/auth/Principal';
 import type { IJwtProvider } from '../domain/IJwtProvider';
-import type { IGuestData } from '../types/IGuestData';
-import type { IMemberData } from '../types/IMemberData';
+import type UserService from '../../user/application/user.service';
 
-const logger = createLogger('AUTH');
+const logger = createLogger('auth.service');
+
 export default class AuthService {
     constructor(
-        private memberService: MemberService,
-        private guestService: GuestService,
+        private userService: UserService,
         private jwtProvider: IJwtProvider,
     ) {}
 
-    async registerMember(account: string, password: string, nickname: string) {
-        const member = await this.memberService.register(account, password, nickname);
-        const token = this.createToken('Member', member.id, 7);
-        logger.debug('Register member', member);
-        return {
-            ...member,
-            token,
-        };
+    async registerMember(account: string, password: string, nickname: string): Promise<Extract<Principal, { type: 'Member' }> & { token: string }> {
+        const passwordHash = await bcrypt.hash(password, 10);
+        const member = await this.userService.createMember(account, passwordHash, nickname);
+        const principal: Extract<Principal, { type: 'Member' }> = { type: 'Member', id: member.id, role: member.role };
+        const token = this.createToken(principal, 7);
+        logger.info(`register member ok account=${account} id=${member.id}`);
+        return { ...principal, token };
     }
 
-    async loginMember(account: string, password: string) {
-        const member = await this.memberService.login(account, password);
-        const token = this.createToken('Member', member.id, 7);
-        logger.debug('Login member', member);
-        return {
-            ...member,
-            token,
-        };
-    }
-
-    async loginGuest(nickname: string) {
-        const guest = await this.guestService.login(nickname);
-        const token = this.createToken('Guest', guest.id, 180);
-        logger.debug('Login guest', guest);
-        return {
-            ...guest,
-            token,
-        };
-    }
-
-    async fetchSession(token: string): Promise<{ type: 'Member'; user: IMemberData } | { type: 'Guest'; user: IGuestData }> {
-        const payload = this.jwtProvider.verify(token);
-        switch (payload.type) {
-            case 'Guest':
-                const guest = await this.guestService.getById(payload.id);
-                if (!guest) throw new UserNotFoundError();
-                return {
-                    type: 'Guest',
-                    user: guest,
-                };
-            case 'Member':
-                const member = await this.memberService.getById(payload.id);
-                if (!member) throw new UserNotFoundError();
-                return {
-                    type: 'Member',
-                    user: member,
-                };
+    async loginMember(account: string, password: string): Promise<Extract<Principal, { type: 'Member' }> & { token: string }> {
+        const member = await this.userService.fetchMemberByAccount(account);
+        const isValid = await bcrypt.compare(password, member.passwordHash);
+        if (!isValid) {
+            logger.warn(`login member failed: invalid password account=${account}`);
+            throw new InvalidPasswordError();
         }
+        const principal: Extract<Principal, { type: 'Member' }> = { type: 'Member', id: member.id, role: member.role };
+        const token = this.createToken(principal, 7);
+        logger.info(`login member ok account=${account} id=${member.id}`);
+        return { ...principal, token };
     }
 
-    private createToken(type: 'Member' | 'Guest', id: number, days: number) {
-        return this.jwtProvider.sign({ id, type }, days);
+    async loginGuest(nickname: string): Promise<Extract<Principal, { type: 'Guest' }> & { token: string }> {
+        const guest = await this.userService.createGuest(nickname);
+        const principal: Extract<Principal, { type: 'Guest' }> = { type: 'Guest', id: guest.id };
+        const token = this.createToken(principal, 180);
+        logger.info(`login guest ok nickname=${nickname} id=${guest.id}`);
+        return { ...principal, token };
+    }
+
+    fetchSession(token: string): Principal {
+        return this.jwtProvider.verify(token);
+    }
+
+    private createToken(user: Principal, days: number) {
+        return this.jwtProvider.sign(user, days);
     }
 }

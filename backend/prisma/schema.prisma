@@ -80,13 +80,13 @@ model MatchTeamMember {
   team           MatchTeam            @relation(fields: [teamId], references: [id], onDelete: Cascade)
   member         Member?              @relation(fields: [memberRef], references: [id])
   guest          Guest?               @relation(fields: [guestRef], references: [id])
-  tacticalUsages MatchTacticalUsage[]
+  lineupSlots MatchLineupSlot[]
 
   @@index([teamId, memberRef])
   @@index([teamId, guestRef])
 }
 
-model MatchTacticalUsage {
+model MatchLineupSlot {
   id Int @id @default(autoincrement())
 
   modelVersion Int @default(1)
@@ -215,8 +215,8 @@ model Character {
   releaseAt   DateTime?
   genshinVersionCode String?
 
-  matchMoves          MatchMove[]
-  matchTacticalUsages MatchTacticalUsage[]
+  matchMoves      MatchMove[]
+  matchLineupSlots MatchLineupSlot[]
   genshinVersion      GenshinVersion? @relation(fields: [genshinVersionCode], references: [code])
 
   @@index([genshinVersionCode])

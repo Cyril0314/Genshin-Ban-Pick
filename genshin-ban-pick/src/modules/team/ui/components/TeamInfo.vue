@@ -1,26 +1,18 @@
 <!-- src/features/Team/TeamInfo.vue -->
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { X } from '@lucide/vue';
 
+import { createLogger } from '@/app/utils/logger';
 import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
 import { DragTypes } from '@/app/constants/customMIMETypes';
-import { usePlayerHistory } from '@/modules/analysis/ui/composables/usePlayerHistory';
-import { parseIdentity } from '@shared/contracts/player/identitySerialization';
+import { usePlayerHistory } from '@/modules/shared/ui/composables/usePlayerHistory';
+import { parsePlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
+import type { Identity } from '@shared/contracts/identity/Identity';
 import type { TeamMember } from '@shared/contracts/team/TeamMember';
 
+const logger = createLogger('team.ui.info');
 const playerHistory = usePlayerHistory();
-
-function openPlayerHistory(memberSlot: number) {
-    const m = props.teamInfo.members[memberSlot];
-    if (!m) return;
-    if (m.type === 'Online') {
-        const identity = parseIdentity(m.user.identityKey);
-        if (!identity) return;
-        playerHistory.open(identity);
-    } else {
-        playerHistory.open({ type: 'Name', name: m.name });
-    }
-}
 
 const props = defineProps<{
     side: 'left' | 'right';
@@ -33,7 +25,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    (e: 'member-drop', payload: { identityKey: string; teamSlot: number; memberSlot: number }): void;
+    (e: 'member-drop', payload: { identity: Identity; teamSlot: number; memberSlot: number }): void;
     (e: 'member-input', payload: { name: string; teamSlot: number; memberSlot: number }): void;
     (e: 'member-restore', payload: { teamSlot: number; memberSlot: number }): void;
 }>();
@@ -53,11 +45,11 @@ function getTeamMember(memberSlot: number): TeamMember | undefined {
 function getTeamMemberName(memberSlot: number): string | undefined {
     const member = getTeamMember(memberSlot)
     if (!member) return undefined;
-    return member.type === 'Manual' ? member.name : member.user.nickname
+    return member.type === 'Name' ? member.name : member.nickname
 }
 
 function handleInput(e: Event) {
-    console.debug(`[TEAM INFO] Handle input`);
+    logger.debug('input');
  
     const name = inputValue.value.trim();
     if (!name) return;
@@ -72,20 +64,30 @@ function handleInput(e: Event) {
 }
 
 function handleRemoveMemberButtonClick(memberSlot: number) {
-    console.debug('[TEAM INFO] Remove member button click', memberSlot);
+    logger.debug('remove member click', memberSlot);
     const member = getTeamMember(memberSlot)
     if (!member) return;
     emit('member-restore', { teamSlot: props.teamInfo.slot, memberSlot });
 }
 
 function handleDropEvent( memberSlot: number, event: DragEvent) {
-    console.debug(`[TEAM INFO] Handle drop event`);
+    logger.debug('drop', memberSlot);
     event.preventDefault();
     // isOver.value = false
-    const identityKey = event.dataTransfer?.getData(DragTypes.ROOM_USER);
-    if (identityKey === undefined) return;
-    emit('member-drop', { identityKey, teamSlot: props.teamInfo.slot, memberSlot });
+    const identityStr = event.dataTransfer?.getData(DragTypes.ROOM_USER);
+    if (!identityStr) return;
+    const parsed = parsePlayerIdentity(identityStr);
+    if (!parsed || parsed.type === 'Name') return;
+    emit('member-drop', { identity: parsed, teamSlot: props.teamInfo.slot, memberSlot });
 }
+
+
+function handleMemberNameClick(memberSlot: number) {
+    const m = props.teamInfo.members[memberSlot];
+    if (!m) return;
+    playerHistory.open(m);
+}
+
 </script>
 
 <template>
@@ -99,8 +101,9 @@ function handleDropEvent( memberSlot: number, event: DragEvent) {
                 <div class="member"
                     v-for="(_, memberSlot) in totalSlots"
                     @dragover.prevent @drop="(e) => handleDropEvent(memberSlot, e)">
-                    <span class="name" @click="openPlayerHistory(memberSlot)">{{ getTeamMemberName(memberSlot) }}</span>
-                    <button class="remove" @click="handleRemoveMemberButtonClick(memberSlot)">✕</button>
+                    <span class="name" @click="handleMemberNameClick(memberSlot)">{{ getTeamMemberName(memberSlot) }}</span>
+                    <X class="remove" @click="handleRemoveMemberButtonClick(memberSlot)"/>
+                    
                 </div>
                 <input class="input" type="text"
                     :placeholder="`輸入成員名稱`" v-model="inputValue" @keydown.enter.prevent="handleInput"
@@ -221,9 +224,8 @@ function handleDropEvent( memberSlot: number, event: DragEvent) {
     border: none;
     background: transparent;
     color: var(--team-color);
-    font-weight: bold;
+    padding: var(--space-xs);
     transition: opacity 0.15s ease;
-    margin-left: var(--space-xs);
 }
 
 .member:hover {

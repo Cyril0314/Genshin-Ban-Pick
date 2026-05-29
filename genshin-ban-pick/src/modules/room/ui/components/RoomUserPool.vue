@@ -1,37 +1,27 @@
 <!-- src/modules/room/ui/components/RoomUserPool.vue -->
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 
+import { createLogger } from '@/app/utils/logger';
 import { DragTypes } from '@/app/constants/customMIMETypes.ts';
-import { useTeamInfoStore } from '@/modules/team';
 import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme.ts';
 import { useRoomUserStore } from '../../store/roomUserStore';
-import { usePlayerHistory } from '@/modules/analysis/ui/composables/usePlayerHistory';
-import { parseIdentity } from '@shared/contracts/player/identitySerialization';
+import { usePlayerHistory } from '@/modules/shared/ui/composables/usePlayerHistory';
+import { stringifyPlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 
 import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 
+const logger = createLogger('room.ui.userPool');
 const playerHistory = usePlayerHistory();
+
+const props = defineProps<{ userToTeamSlotMap: Record<string, number> }>();
 
 const roomUserStore = useRoomUserStore();
 const { roomUsers } = storeToRefs(roomUserStore);
-const teamInfoStore = useTeamInfoStore();
-const { teamMembersMap } = storeToRefs(teamInfoStore);
 
 const usersRef = ref<HTMLElement | null>(null);
-
-const userToTeamSlotMap = computed(() => {
-    const map: Record<string, number> = {};
-    for (const [teamSlot, members] of Object.entries(teamMembersMap.value)) {
-        Object.values(members).forEach(m => {
-            if (m.type === 'Online')
-                map[m.user.identityKey] = Number(teamSlot)
-        });
-    }
-    return map;
-});
 
 onMounted(() => {
     const el = usersRef.value;
@@ -48,18 +38,16 @@ onMounted(() => {
 });
 
 function handleDragStartEvent(roomUser: IRoomUser, event: DragEvent) {
-    console.debug(`[ROOM USER POOL] Handle drag start event`, roomUser.identityKey);
-    event?.dataTransfer?.setData(DragTypes.ROOM_USER, roomUser.identityKey);
+    logger.debug('drag start', roomUser.identity);
+    event?.dataTransfer?.setData(DragTypes.ROOM_USER, stringifyPlayerIdentity(roomUser.identity));
 }
 
-function openPlayerHistory(roomUser: IRoomUser) {
-    const identity = parseIdentity(roomUser.identityKey);
-    if (!identity) return;
-    playerHistory.open(identity);
+function handleClick(roomUser: IRoomUser) {
+    playerHistory.open(roomUser.identity);
 }
 
 function getStyleForUser(roomUser: IRoomUser) {
-    const teamSlot = userToTeamSlotMap.value[roomUser.identityKey];
+    const teamSlot = props.userToTeamSlotMap[stringifyPlayerIdentity(roomUser.identity)];
     if (teamSlot === undefined) {
         return {
             '--team-color-bg': `var(--md-sys-color-surface-container-high)`,
@@ -77,11 +65,11 @@ function getStyleForUser(roomUser: IRoomUser) {
             <div
                 class="user"
                 v-for="roomUser in roomUsers"
-                :key="roomUser.identityKey"
+                :key="stringifyPlayerIdentity(roomUser.identity)"
                 :style="getStyleForUser(roomUser)"
                 draggable="true"
                 @dragstart="handleDragStartEvent(roomUser, $event)"
-                @click="openPlayerHistory(roomUser)"
+                @click="handleClick(roomUser)"
             >
                 <span class="label">{{ roomUser.nickname }}</span>
             </div>

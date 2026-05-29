@@ -14,7 +14,7 @@ export function handleBoardImageDropDomain(
     let nextMap = { ...boardImageMap };
 
     const previousZoneId = findZoneIdByImageIdDomain(nextMap, imgId);
-    const displacedImgId = nextMap[zoneId] ?? undefined;
+    const displacedImgId = nextMap[zoneId];
 
     // 移除原本出現的位置
     if (previousZoneId !== undefined) {

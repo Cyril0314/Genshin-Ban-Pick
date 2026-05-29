@@ -9,9 +9,7 @@ import RoomStateRepository from './infra/RoomStateRepository';
 import createRoomsRouter from './http/rooms.routes';
 
 import type { IRoomStateRepository } from './domain/IRoomStateRepository';
-import type { IRoomStateManager } from '../socket/domain/IRoomStateManager';
-
-// import {  } from './domain/IRoomState'
+import type { IRoomStateManager } from './domain/IRoomStateManager';
 
 export { RoomUserService, RoomStateRepository, IRoomStateRepository };
 

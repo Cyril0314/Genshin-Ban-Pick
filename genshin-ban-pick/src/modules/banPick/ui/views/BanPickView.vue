@@ -4,20 +4,24 @@
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
+import { createLogger } from '@/app/utils/logger';
 import Toolbar from '../components/ToolBar.vue';
 import StepIndicator from '@/modules/board/ui/components/StepIndicator.vue';
 import RoomUserPool from '@/modules/room/ui/components/RoomUserPool.vue';
 import BanPickBoard from '@/modules/board/ui/components/BanPickBoard.vue';
-import UserProfile from '@/modules/auth/ui/components/UserProfile.vue';
+import UserProfile from '@/modules/user/ui/components/UserProfile.vue';
 import PlayerHistoryModal from '@/modules/analysis/ui/components/PlayerHistoryModal.vue';
+import CharacterHoverCard from '@/modules/analysis/ui/components/CharacterHoverCard.vue';
 
 import { useViewportScale } from '../composables/useViewportScale';
 import { useBanPickFacade } from '../composables/useBanPickFacade';
-import { providePlayerHistory } from '@/modules/analysis/ui/composables/usePlayerHistory';
+import { providePlayerHistory } from '@/modules/shared/ui/composables/usePlayerHistory';
+import { provideCharacterAvatarWrapper } from '@/modules/shared/ui/composables/useCharacterAvatarWrapper';
 
-import type { PlayerIdentity } from '@shared/contracts/player/PlayerIdentity';
+import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 
 const route = useRoute();
+const logger = createLogger('banPick.ui.view');
 const roomId = (route.query.room as string) || 'default-room';
 
 useViewportScale();
@@ -27,23 +31,27 @@ const {
 
     filter: { change: filterChange },
 
-    board: { imageMap, usedImageIds, imageDrop, imageRestore, imageMapReset, randomPull },
+    board: { imageMap, usedImageIds, imageDrop, imageRestore, randomPull },
 
-    team: { memberInput, memberDrop, memberRestore },
+    team: { userToTeamSlotMap, memberInput, memberDrop, memberRestore },
 
-    match: { save: matchSave, isLoading: isMatchSaveLoading, result: matchResult, error: matchError },
+    match: { save, reset, isLoading: isMatchSaveLoading, result: matchResult, error: matchError },
 } = useBanPickFacade(roomId);
 
 watch(matchResult, (val) => {
-    if (val) alert('儲存成功！');
+    if (val) {
+        logger.info('match saved', val.id);
+        alert('儲存成功！');
+    }
 });
 
 watch(matchError, (err) => {
-    if (err) alert('儲存失敗：' + err);
+    if (err) {
+        logger.error('match save error', err);
+        alert('儲存失敗：' + err);
+    }
 });
 
-// PlayerHistory modal：散落的觸發源透過 inject 拿到 open() 來開啟。
-// displayName 由 backend 解析，caller 只傳 identity。
 const isPlayerHistoryOpen = ref(false);
 const playerHistoryIdentity = ref<PlayerIdentity>();
 providePlayerHistory({
@@ -52,6 +60,9 @@ providePlayerHistory({
         isPlayerHistoryOpen.value = true;
     },
 });
+
+provideCharacterAvatarWrapper(CharacterHoverCard);
+
 </script>
 <template>
     <div class="ban-pick-page scale-context">
@@ -66,7 +77,7 @@ providePlayerHistory({
                             <div class="top-section top-section--align-left">
                                 <UserProfile />
                                 <div class="separator"></div>
-                                <RoomUserPool />
+                                <RoomUserPool :user-to-team-slot-map="userToTeamSlotMap" />
                             </div>
 
                             <div class="indicator-slot">
@@ -74,7 +85,7 @@ providePlayerHistory({
                             </div>
 
                             <div class="top-section top-section--align-right">
-                                <Toolbar @image-map-reset="imageMapReset" @match-save="matchSave" />
+                                <Toolbar @match-reset="reset" @match-save="save" />
                             </div>
                         </div>
 

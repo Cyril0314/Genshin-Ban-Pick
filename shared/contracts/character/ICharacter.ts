@@ -1,5 +1,3 @@
-// src/modules/character/types/ICharacter.ts
-
 import { CharacterRole, Element, ModelType, Rarity, Region, Weapon, Wish } from "./value-types"
 
 export interface ICharacter {

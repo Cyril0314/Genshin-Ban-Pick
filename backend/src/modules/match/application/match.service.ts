@@ -7,7 +7,7 @@ import { validateSnapshot } from '../domain/validateSnapshot';
 import type { IMatchSnapshotRepository } from '../domain/IMatchSnapshotRepository';
 import type { IMatchRepository } from '../domain/IMatchRepository';
 
-const logger = createLogger('MATCH');
+const logger = createLogger('match.service');
 
 export default class MatchService {
     constructor(
@@ -30,6 +30,6 @@ export default class MatchService {
     }
 
     async fetchMatchTeamMembers() {
-        return this.matchRepository.findAllMatchTeamMemberUniqueIdentities()
+        return this.matchRepository.findAllMatchTeamMembers()
     }
 }

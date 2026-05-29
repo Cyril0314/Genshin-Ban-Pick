@@ -1,5 +1,5 @@
 import type { IMatchMemberUser } from "./IMatchMemberUser";
-import type { IMatchTacticalUsage } from "./IMatchTacticalUsage";
+import type { IMatchLineupSlot } from "./IMatchLineupSlot";
 
 export interface IMatchTeamMember {
     id: number;
@@ -10,7 +10,7 @@ export interface IMatchTeamMember {
     memberRef?: number;
     guestRef?: number;
 
-    tacticalUsages?: IMatchTacticalUsage[];
+    lineupSlots?: IMatchLineupSlot[];
 
     member?: IMatchMemberUser;
     guest?: IMatchMemberUser;

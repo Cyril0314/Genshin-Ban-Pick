@@ -11,7 +11,7 @@ export function handleMemberInputDomain(
     name: string,
 ): TeamMember | undefined {
     const teamMembers = Object.values(teamMembersMap[teamSlot]);
-    if (teamMembers.some((m) => m.type === 'Manual' && m.name === name)) {
+    if (teamMembers.some((m) => m.type === 'Name' && m.name === name)) {
         return undefined;
     }
     let teamMember = createManualMemberDomain(name);

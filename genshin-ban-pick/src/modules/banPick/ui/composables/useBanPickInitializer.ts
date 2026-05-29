@@ -8,12 +8,16 @@ import { useRoomUseCase, useRoomUserSync } from '@/modules/room';
 import { useCharacterStore, useCharacterUseCase } from '@/modules/character';
 import { useBoardUseCase, useBoardSync } from '@/modules/board';
 import { useTeamUseCase, useTeamInfoSync } from '@/modules/team';
-import { useTacticalUseCase } from '@/modules/tactical';
+import { useLineupUseCase } from '@/modules/lineup';
 import { useChatSync } from '@/modules/chat';
 import { registerAllSyncModules } from '@/app/bootstrap/registerAllSyncModules';
 
+import { createLogger } from '@/app/utils/logger';
+
 import type { IRoomSetting } from '@shared/contracts/room/IRoomSetting.ts';
 import type { CharacterFilterKey } from '@shared/contracts/character/CharacterFilterKey';
+
+const logger = createLogger('banPick.ui.init');
 
 export function useBanPickInitializer(roomId: string) {
     // --- states ---
@@ -35,7 +39,7 @@ export function useBanPickInitializer(roomId: string) {
     const boardUseCase = useBoardUseCase();
     const roomUseCase = useRoomUseCase();
     const tamUseCase = useTeamUseCase();
-    const tacticalUseCase = useTacticalUseCase();
+    const lineupUseCase = useLineupUseCase();
 
     const { joinRoom, leaveRoom } = useRoomUserSync();
     const { fetchBoardImageMapState } = useBoardSync();
@@ -52,7 +56,7 @@ export function useBanPickInitializer(roomId: string) {
             registerAllSyncModules(socket.getSocket())
 
             // 1. 抓全部角色
-            await characterUseCase.fetchCharacterMap();
+            await characterUseCase.loadCharacterMap();
 
             // 2. 抓房間設定
             roomSetting.value = await roomUseCase.fetchRoomSetting(roomId);
@@ -61,7 +65,7 @@ export function useBanPickInitializer(roomId: string) {
             if (roomSetting.value) {
                 boardUseCase.initZoneMetaTableAndSteps(roomSetting.value.zoneMetaTable, roomSetting.value.matchFlow.steps);
                 tamUseCase.initTeams(roomSetting.value.teams);
-                tacticalUseCase.initTeamTacticalCellImageMap(roomSetting.value.teams, roomSetting.value.numberOfTeamSetup, roomSetting.value.numberOfSetupCharacter);
+                lineupUseCase.initTeamLineupImageMap(roomSetting.value.teams, roomSetting.value.numberOfTeamSetup, roomSetting.value.numberOfSetupCharacter);
             }
 
             // 4. 初始化 Filter 預設值
@@ -69,13 +73,13 @@ export function useBanPickInitializer(roomId: string) {
 
             // 5. 加入 socket 房間
             joinRoom(roomId).then(() => {
-                console.debug('[BAN PICK INITEALIZER] Joined room', roomId);
+                logger.debug('joined room', roomId);
                 fetchBoardImageMapState();
                 fetchChatState();
                 fetchMembersMapState();
             });
         } catch (error) {
-            console.error('[BAN PICK INITEALIZER] Fetched character and room setting failed:', error);
+            logger.error('init failed:', error);
         } finally {
             isLoading.value = false;
         }

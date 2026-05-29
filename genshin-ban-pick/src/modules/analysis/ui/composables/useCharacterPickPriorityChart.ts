@@ -1,6 +1,8 @@
 // src/modules/analysis/ui/composables/useCharacterPickPriorityChart.ts
 
 import { computed, onMounted, ref } from 'vue';
+
+import { createLogger } from '@/app/utils/logger';
 import { useAnalysisUseCase } from './useAnalysisUseCase';
 import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
 import { useDesignTokens } from '@/modules/shared/ui/composables/useDesignTokens';
@@ -10,6 +12,8 @@ import { storeToRefs } from 'pinia';
 import { elementColors } from '@/modules/shared/ui/constants/elementColors';
 import type { CallbackDataParams } from 'echarts/types/dist/shared';
 import type { ICharacterPickPriority } from '@shared/contracts/analysis/ICharacterPickPriority';
+
+const logger = createLogger('analysis.ui.pickPriorityChart');
 
 export function useCharacterPickPriorityChart() {
     const analysisUseCase = useAnalysisUseCase();
@@ -23,7 +27,9 @@ export function useCharacterPickPriorityChart() {
     const data = ref<ICharacterPickPriority[]>();
 
     onMounted(async () => {
+        logger.debug('fetching pick priority');
         data.value = await analysisUseCase.fetchCharacterUsagePickPriority();
+        logger.debug('data loaded', data.value?.length);
     });
 
     const option = computed(() => {

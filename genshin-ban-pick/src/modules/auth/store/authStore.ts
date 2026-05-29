@@ -3,30 +3,28 @@
 import { defineStore } from 'pinia';
 import { ref, computed, watch } from 'vue';
 
+import { createLogger } from '@/app/utils/logger';
 import { MemberRole } from '@shared/contracts/auth/value_types';
 import { tokenStorage } from '../infrastructure/tokenStorage';
 
-import type { Identity } from '../types/Identity';
+import type { Principal } from '@shared/contracts/auth/Principal';
+import type { Identity } from '@shared/contracts/identity/Identity';
+
+const logger = createLogger('auth.store');
 
 export const useAuthStore = defineStore('auth', () => {
-    const isInitialized = ref(false);
-    const identity = ref<Identity>();
-    const isLoggedIn = computed(() => identity.value !== undefined);
-    const isAdmin = computed(() => identity.value?.type === 'Member' && identity.value.user.role === MemberRole.Admin);
-    const isGuest = computed(() => identity.value?.type === 'Guest');
-    const identityKey = computed(() => {
-        if (!identity.value) return undefined;
-        return `${identity.value.type}:${identity.value.user.id}`;
-    });
-    const nickname = computed(() => {
-        if (!identity.value) return undefined;
-        return identity.value.user.nickname;
+    const principal = ref<Principal>();
+    const isLoggedIn = computed(() => principal.value !== undefined);
+    const isAdmin = computed(() => principal.value?.type === 'Member' && principal.value.role === MemberRole.Admin);
+    const identity = computed<Identity | undefined>(() => {
+        if (!principal.value) return undefined;
+        return principal.value;
     });
 
     watch(
-        identity,
-        (identity) => {
-            console.debug('[AUTH STORE] Watch identity', identity);
+        principal,
+        (principal) => {
+            logger.debug('watch principal', principal);
         },
         { immediate: true },
     );
@@ -39,24 +37,17 @@ export const useAuthStore = defineStore('auth', () => {
         tokenStorage.set(token);
     }
 
-    function setIdentity(newIdentity: Identity | undefined) {
-        console.debug(`[AUTH STORE] Set Identity`, newIdentity);
-        identity.value = newIdentity;
-    }
-
-    function setInitialized(value: boolean) {
-        isInitialized.value = value;
+    function setPrincipal(newPrincipal: Principal | undefined) {
+        logger.debug('set principal', newPrincipal);
+        principal.value = newPrincipal;
     }
 
     return {
+        principal,
         identity,
-        identityKey,
-        nickname,
         isLoggedIn,
         isAdmin,
-        isInitialized,
-        setIdentity,
-        setInitialized,
+        setPrincipal,
         getToken,
         setToken,
     };

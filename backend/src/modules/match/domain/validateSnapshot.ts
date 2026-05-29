@@ -4,7 +4,7 @@ import { InvalidFieldsError } from '../../../errors/AppError';
 import type { IMatchSnapshot } from './IMatchSnapshot';
 
 export function validateSnapshot(snapshot: IMatchSnapshot) {
-    const { roomSetting, teamMembersMap, boardImageMap, teamTacticalCellImageMap } = snapshot;
+    const { roomSetting, teamMembersMap, boardImageMap, teamLineupImageMap } = snapshot;
 
     // Team 成員驗證
     for (const [teamSlotString, teamMembers] of Object.entries(teamMembersMap)) {
@@ -19,10 +19,10 @@ export function validateSnapshot(snapshot: IMatchSnapshot) {
         throw new InvalidFieldsError();
     }
 
-    // Tactical 驗證
-    for (const tacticalCellImageMap of Object.values(teamTacticalCellImageMap)) {
+    // Lineup 驗證
+    for (const lineupImageMap of Object.values(teamLineupImageMap)) {
         const totalCells = roomSetting.numberOfSetupCharacter * roomSetting.numberOfTeamSetup;
-        if (Object.values(tacticalCellImageMap).length !== totalCells) {
+        if (Object.values(lineupImageMap).length !== totalCells) {
             throw new InvalidFieldsError();
         }
     }

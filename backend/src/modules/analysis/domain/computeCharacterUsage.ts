@@ -4,7 +4,7 @@ import { aggregateMoveWeightContext } from './aggregateMoveWeightContext';
 import { calculateTacticalWeight } from './calculateTacticalWeight';
 
 import type { IMatchTimeMinimal } from '@shared/contracts/analysis/IMatchTimeMinimal';
-import type { IMatchTacticalUsageExpandedRefs } from '../types/IMatchTacticalUsageExpandedRefs';
+import type { IMatchLineupSlotExpandedRefs } from '../types/IMatchLineupSlotExpandedRefs';
 import type { IMatchMoveWeightCalcCore } from '../types/IMatchMoveWeightCalcCore';
 import type { IWeightContext } from '@shared/contracts/analysis/IWeightContext';
 import type { ICharacterUsage } from '@shared/contracts/analysis/ICharacterUsage';
@@ -12,14 +12,14 @@ import type { ICharacterUsage } from '@shared/contracts/analysis/ICharacterUsage
 export function computeCharacterUsage(
     matches: IMatchTimeMinimal[],
     matchMoves: IMatchMoveWeightCalcCore[],
-    matchTacticalUsages: IMatchTacticalUsageExpandedRefs[],
+    matchLineupSlots: IMatchLineupSlotExpandedRefs[],
 ): ICharacterUsage[] {
     const matchCount = matches.length;
 
-    const usedSet = new Set(matchTacticalUsages.map((u) => `${u.matchId}:${u.characterKey}`));
+    const usedSet = new Set(matchLineupSlots.map((u) => `${u.matchId}:${u.characterKey}`));
 
     const usageCountByMatch = new Map<string, number>();
-    for (const u of matchTacticalUsages) {
+    for (const u of matchLineupSlots) {
         const key = `${u.matchId}:${u.characterKey}`;
         usageCountByMatch.set(key, (usageCountByMatch.get(key) ?? 0) + 1);
     }
@@ -71,21 +71,20 @@ export function computeCharacterUsage(
 
             const globalUsage = totalWeight / matchCount;
             const effectiveUsage = totalWeight / valid;
-            const adjustedUsage = effectiveUsage;
 
             const stability = 1 - Math.exp(-valid / 30);
-            const tacticalUsage = globalUsage * stability + adjustedUsage * (1 - stability);
+            const adjustedUsage = globalUsage * stability + effectiveUsage * (1 - stability);
 
             return {
                 characterKey: key,
-                tacticalUsage,
+                adjustedUsage,
                 globalUsage,
                 effectiveUsage,
                 validMatchCount: valid,
                 context,
             };
         })
-        .sort((a, b) => b.tacticalUsage - a.tacticalUsage);
+        .sort((a, b) => b.adjustedUsage - a.adjustedUsage);
 }
 
 function mergeContext(prev: any, add: any) {

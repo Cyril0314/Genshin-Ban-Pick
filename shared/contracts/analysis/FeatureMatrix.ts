@@ -1,5 +1,3 @@
-// src/modules/analysis/types/FeatureMatrix.ts
-
 export type FeatureMatrix<RowKey = string, ColKey = string, Value = number> = {
     /** keys for each row */
     rowKeys: RowKey[];

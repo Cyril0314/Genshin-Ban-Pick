@@ -2,7 +2,7 @@
 
 import type { IMatchSnapshotRepository } from '../domain/IMatchSnapshotRepository';
 import type { IMatchSnapshot } from '../domain/IMatchSnapshot';
-import type { IRoomStateManager } from '../../socket/domain/IRoomStateManager';
+import type { IRoomStateManager } from '../../room/domain/IRoomStateManager';
 
 export default class MatchSnapshotRepository implements IMatchSnapshotRepository {
     constructor(private readonly roomStateManager: IRoomStateManager) {}
@@ -16,7 +16,7 @@ export default class MatchSnapshotRepository implements IMatchSnapshotRepository
             roomSetting: roomState.roomSetting,
             teamMembersMap: roomState.teamMembersMap,
             boardImageMap: roomState.boardImageMap,
-            teamTacticalCellImageMap: roomState.teamTacticalCellImageMap,
+            teamLineupImageMap: roomState.teamLineupImageMap,
             characterRandomContextMap: roomState.characterRandomContextMap,
         };
     }

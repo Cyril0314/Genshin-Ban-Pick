@@ -1,4 +1,4 @@
-// backend/src/modules/match/domain/matchMapper.ts
+// backend/src/modules/match/domain/mapMatchFromPrisma.ts
 import { mapCharacter } from '../../character';
 
 import type {
@@ -6,7 +6,7 @@ import type {
     Guest,
     Match,
     MatchMove,
-    MatchTacticalUsage,
+    MatchLineupSlot,
     MatchTeam,
     MatchTeamMember,
     Member,
@@ -15,12 +15,10 @@ import type {
 import type { IMatch } from '@shared/contracts/match/IMatch';
 import type { IMatchTeam } from '@shared/contracts/match/IMatchTeam';
 import type { IMatchTeamMember } from '@shared/contracts/match/IMatchTeamMember';
-import type { IMatchTacticalUsage } from '@shared/contracts/match/IMatchTacticalUsage';
+import type { IMatchLineupSlot } from '@shared/contracts/match/IMatchLineupSlot';
 import type { IMatchMove } from '@shared/contracts/match/IMatchMove';
 import type { MoveSource, MoveType } from '@shared/contracts/match/value-types';
 
-
-// type PrismaMatchResult = Prisma.MatchGetPayload<typeof matchQuery>;
 
 // Prisma include 查詢結果轉 Domain IMatch
 // 入參需保證非 null/undefined — 由 caller (repository) 確認資料存在
@@ -47,7 +45,7 @@ function mapTeam(team: MatchTeam & { teamMembers?: MatchTeamMember[] }): IMatchT
 }
 
 // nested: TeamMemberMapper
-function mapTeamMember(tm: MatchTeamMember & { tacticalUsages?: MatchTacticalUsage[]; member?: Member; guest?: Guest }): IMatchTeamMember {
+function mapTeamMember(tm: MatchTeamMember & { lineupSlots?: MatchLineupSlot[]; member?: Member; guest?: Guest }): IMatchTeamMember {
     return {
         id: tm.id,
         slot: tm.slot,
@@ -55,14 +53,14 @@ function mapTeamMember(tm: MatchTeamMember & { tacticalUsages?: MatchTacticalUsa
         teamId: tm.teamId,
         memberRef: tm.memberRef ?? undefined,
         guestRef: tm.guestRef ?? undefined,
-        tacticalUsages: tm.tacticalUsages?.map(mapTacticalUsage),
+        lineupSlots: tm.lineupSlots?.map(mapLineupSlot),
         member: tm.member,
         guest: tm.guest,
     };
 }
 
-// nested: TacticalUsageMapper
-function mapTacticalUsage(t: MatchTacticalUsage & { character?: Character }): IMatchTacticalUsage {
+// nested: LineupSlotMapper
+function mapLineupSlot(t: MatchLineupSlot & { character?: Character }): IMatchLineupSlot {
     return {
         id: t.id,
         modelVersion: t.modelVersion,

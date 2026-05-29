@@ -2,17 +2,8 @@
 
 import express from 'express';
 
-import { createLogger } from '../../../utils/logger';
 import { asyncHandler } from '../../../utils/asyncHandler';
 import AnalysisController from '../controller/analysis.controller';
-
-const logger = createLogger('ANALYSIS');
-
-// /{domain}/{capability}/{scope-or-subject}/{representation}
-// domain: analyses
-// capability: player-style/character-usage/character-synergy/character-cluster/match-summary
-// scope: player/global/character/team/match
-// representation: summary/profile/distribution/matrix/graph/radar
 
 export default function createAnalysesRouter(analysisController: AnalysisController) {
     const router = express.Router();
@@ -24,7 +15,6 @@ export default function createAnalysesRouter(analysisController: AnalysisControl
     router.get('/character-usages/pick-priority', asyncHandler(analysisController.fetchCharacterUsagePickPriority));
 
     router.get('/character-synergy/matrix', asyncHandler(analysisController.fetchCharacterSynergyMatrix));
-    router.get('/character-synergy/graph', asyncHandler(analysisController.fetchCharacterSynergyGraph));
     router.get('/character-cluster', asyncHandler(analysisController.fetchCharacterCluster));
 
     router.get('/player-character-usages', asyncHandler(analysisController.fetchPlayerCharacterUsage));

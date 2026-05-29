@@ -29,33 +29,25 @@ async function main() {
 
     const dbUsers: TeamMember[] = [
         ...members.map((m) => ({
-            type: 'Online' as const,
-            user: {
-                id: '111',
-                identityKey: `Member:${m.id}`,
-                nickname: m.nickname,
-                timestamp: Date.now(),
-            },
+            type: 'Member' as const,
+            id: m.id,
+            nickname: m.nickname,
         })),
         ...guests.map((g) => ({
-            type: 'Online' as const,
-            user: {
-                id: '111',
-                identityKey: `Guest:${g.id}`,
-                nickname: g.nickname,
-                timestamp: Date.now(),
-            },
+            type: 'Guest' as const,
+            id: g.id,
+            nickname: g.nickname,
         })),
     ];
 
     const manualUsers: TeamMember[] = ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve', 'Frank', 'Grace', 'Heidi'].map((name) => ({
-        type: 'Manual' as const,
+        type: 'Name' as const,
         name,
     }));
     const memberPools: TeamMember[] = [...dbUsers, ...manualUsers];
     let teamMembersMap: TeamMembersMap = takeTeamMembers(memberPools, roomSetting.numberOfSetupCharacter);
 
-    console.log(`teamMembersMap`, teamMembersMap);
+    console.debug(`teamMembersMap`, teamMembersMap);
 
     const characters = await prisma.character.findMany({
         orderBy: [{ releaseAt: 'asc' }, { key: 'asc' }],
@@ -93,11 +85,11 @@ async function main() {
         }
     }
 
-    const tacticalCellCount = roomSetting.numberOfTeamSetup * roomSetting.numberOfSetupCharacter;
-    const teamTacticalCellImageMap: Record<number, Record<number, string>> = Object.fromEntries(
+    const lineupCellCount = roomSetting.numberOfTeamSetup * roomSetting.numberOfSetupCharacter;
+    const teamLineupImageMap: Record<number, Record<number, string>> = Object.fromEntries(
         roomSetting.teams.map((team) => [
             team.slot,
-            Object.fromEntries(selectN(teamCharacterPools[team.slot], tacticalCellCount).map((key, i) => [i, key])),
+            Object.fromEntries(selectN(teamCharacterPools[team.slot], lineupCellCount).map((key, i) => [i, key])),
         ]),
     );
 
@@ -111,7 +103,7 @@ async function main() {
             roomSetting,
             teamMembersMap,
             boardImageMap,
-            teamTacticalCellImageMap,
+            teamLineupImageMap,
             characterRandomContextMap,
         },
         true,

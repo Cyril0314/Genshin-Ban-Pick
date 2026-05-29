@@ -3,14 +3,14 @@
 import { RoomNotFoundError } from '../../../errors/AppError';
 
 import type { BoardImageMap } from '@shared/contracts/board/BoardImageMap';
-import type { IRoomStateManager } from '../../socket/domain/IRoomStateManager';
+import type { IRoomStateManager } from '../domain/IRoomStateManager';
 import type { IRoomStateRepository } from '../domain/IRoomStateRepository';
 import type { IRoomState } from '@shared/contracts/room/IRoomState';
 import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 import type { CharacterRandomContextMap } from '@shared/contracts/character/CharacterRandomContextMap';
 import type { IChatMessage } from '@shared/contracts/chat/IChatMessage';
 import type { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';
-import type { TeamTacticalCellImageMap } from '@shared/contracts/tactical/TeamTacticalCellImageMap';
+import type { TeamLineupImageMap } from '@shared/contracts/lineup/TeamLineupImageMap';
 
 export default class RoomStateRepository implements IRoomStateRepository {
     constructor(private roomStateManager: IRoomStateManager) {}
@@ -88,14 +88,14 @@ export default class RoomStateRepository implements IRoomStateRepository {
         return Object.values(teamMembersMap).length;
     }
 
-    findTeamTacticalCellImageMapById(roomId: string): TeamTacticalCellImageMap {
-        const result = this.roomStateManager.getTeamTacticalCellImageMap(roomId);
+    findTeamLineupImageMapById(roomId: string): TeamLineupImageMap {
+        const result = this.roomStateManager.getTeamLineupImageMap(roomId);
         if (result === undefined) throw new RoomNotFoundError();
         return result;
     }
 
-    updateTeamTacticalCellImageMapById(roomId: string, teamTacticalCellImageMap: TeamTacticalCellImageMap): number {
-        this.roomStateManager.setTeamTacticalCellImageMap(roomId, teamTacticalCellImageMap);
-        return Object.values(teamTacticalCellImageMap).length;
+    updateTeamLineupImageMapById(roomId: string, teamLineupImageMap: TeamLineupImageMap): number {
+        this.roomStateManager.setTeamLineupImageMap(roomId, teamLineupImageMap);
+        return Object.values(teamLineupImageMap).length;
     }
 }

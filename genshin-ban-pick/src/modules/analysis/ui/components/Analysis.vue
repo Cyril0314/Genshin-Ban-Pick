@@ -12,7 +12,6 @@ import CharacterScatterChart from './CharacterScatterChart.vue';
 
 import PlayerCharacterChart from './PlayerCharacterChart.vue';
 import PlayerStyleRadarChart from './PlayerStyleRadarChart.vue';
-import CharacterSynergyGraphChart from './CharacterSynergyGraphChart.vue';
 import MatchOverviewChart from './MatchOverviewChart.vue';
 
 const props = defineProps<{}>();
@@ -26,10 +25,9 @@ const tabs = [
     { name: '搶角優先級', component: CharacterPickPriorityChart },
     { name: '角色定位象限', component: CharacterScatterChart },
     { name: '角色使用構成', component: CharacterUsagesCompositionChart },
-    { name: '角色共現熱圖', component: CharacterSynergyChart },
-    // { name: '角色圖', component: CharacterSynergyGraphChart },
     { name: '角色群聚圖', component: CharacterClusterChart },
-    { name: '玩家偏好角色', component: PlayerCharacterChart },
+    // { name: '角色共現熱圖', component: CharacterSynergyChart }, 暫時移除原因：被 CharacterHoverCard 取代
+    // { name: '玩家偏好角色', component: PlayerCharacterChart }, 暫時移除原因：被 PlayerHistoryModal 取代
 ];
 
 const currentTabIndex = ref<number>(0);

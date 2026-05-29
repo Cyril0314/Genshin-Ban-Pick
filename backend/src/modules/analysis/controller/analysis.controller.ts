@@ -26,13 +26,13 @@ export default class AnalysisController {
 
     fetchCharacterUsageSummary = async (req: Request, res: Response) => {
         const timeWindow = parseTimeWindowQuery(req.query);
-        const tacticalUsages = await this.analysisService.fetchCharacterUsageSummary(timeWindow);
-        res.status(200).json(tacticalUsages);
+        const summary = await this.analysisService.fetchCharacterUsageSummary(timeWindow);
+        res.status(200).json(summary);
     };
 
     fetchCharacterUsagePickPriority = async (req: Request, res: Response) => {
-        const result = await this.analysisService.fetchCharacterUsagePickPriority();
-        res.status(200).json(result);
+        const pickPriority = await this.analysisService.fetchCharacterUsagePickPriority();
+        res.status(200).json(pickPriority);
     };
 
     fetchCharacterSynergyMatrix = async (req: Request, res: Response) => {
@@ -41,32 +41,27 @@ export default class AnalysisController {
         res.status(200).json(synergy);
     };
 
-    fetchCharacterSynergyGraph = async (req: Request, res: Response) => {
-        const graph = await this.analysisService.fetchCharacterSynergyGraph();
-        res.status(200).json(graph);
-    };
-
     fetchCharacterCluster = async (req: Request, res: Response) => {
         const characterClusters = await this.analysisService.fetchCharacterCluster();
         res.status(200).json(characterClusters);
     };
 
     fetchPlayerCharacterUsage = async (req: Request, res: Response) => {
-        const preference = await this.analysisService.fetchPlayerCharacterUsage();
-        res.status(200).json(preference);
+        const usage = await this.analysisService.fetchPlayerCharacterUsage();
+        res.status(200).json(usage);
     };
 
     fetchPlayerStyleProfile = async (req: Request, res: Response) => {
-        const identityKey = parsePlayerIdentityQuery(req.query);
-        if (!identityKey) throw new InvalidFieldsError();
-        const style = await this.analysisService.fetchPlayerStyleProfile(identityKey);
+        const playerIdentity = parsePlayerIdentityQuery(req.query);
+        if (!playerIdentity) throw new InvalidFieldsError();
+        const style = await this.analysisService.fetchPlayerStyleProfile(playerIdentity);
         res.status(200).json(style);
     };
 
     fetchPlayerRecord = async (req: Request, res: Response) => {
-        const identityKey = parsePlayerIdentityQuery(req.query);
-        if (!identityKey) throw new InvalidFieldsError();
-        const record = await this.analysisService.fetchPlayerRecord(identityKey);
+        const playerIdentity = parsePlayerIdentityQuery(req.query);
+        if (!playerIdentity) throw new InvalidFieldsError();
+        const record = await this.analysisService.fetchPlayerRecord(playerIdentity);
         res.status(200).json(record);
     };
 

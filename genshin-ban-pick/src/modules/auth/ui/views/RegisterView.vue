@@ -4,12 +4,12 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-import { useSocketStore } from '@/app/stores/socketStore';
-import { useAuthUseCase } from '../composables/useAuthUseCase';
+import { createLogger } from '@/app/utils/logger';
+import { useSession } from '@/app/composables/useSession';
 
+const logger = createLogger('auth.ui.register');
 const router = useRouter();
-const authUseCase = useAuthUseCase();
-const socketStore = useSocketStore();
+const session = useSession();
 
 const accountInput = ref('');
 const nicknameInput = ref('');
@@ -18,14 +18,16 @@ const confirmPasswordInput = ref('');
 
 async function handleRegisterMemberSubmit() {
     if (passwordInput.value !== confirmPasswordInput.value) {
+        logger.warn('password mismatch');
         alert('密碼不一致');
         return;
     }
+    logger.debug('register submit', accountInput.value);
     try {
-        const { token } = await authUseCase.registerMember(accountInput.value, passwordInput.value, nicknameInput.value);
-        socketStore.connect(token);
+        await session.registerMember(accountInput.value, passwordInput.value, nicknameInput.value);
         router.push(`/room-list`);
     } catch (error: any) {
+        logger.error('register failed', error);
         alert(`${error.response?.data?.message || '註冊失敗'}`);
     }
 }

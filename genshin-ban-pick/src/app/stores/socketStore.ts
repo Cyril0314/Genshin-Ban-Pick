@@ -6,45 +6,40 @@ import { defineStore } from 'pinia';
 import { io, type Socket } from 'socket.io-client';
 import { computed, ref } from 'vue';
 
+import { createLogger } from '@/app/utils/logger';
+
+const logger = createLogger('app.socket');
+
 export const useSocketStore = defineStore('socket', () => {
     const socket = ref<Socket>();
     const connected = computed(() => socket.value?.connected ?? false);
 
     function connect(token: string) {
-        console.info(`[SOCKET] Connecting`);
-        if (socket.value?.connected) {
-            console.warn(`[SOCKET] Has Connected`);
-            return;
-        }
+        logger.info('connecting');
+        disconnect();
         // 空字串 / 未設 → undefined → socket.io 連 page origin
         const baseURL = import.meta.env.VITE_SOCKET_URL || undefined;
         socket.value = io(baseURL, { auth: { token } });
 
         socket.value.on('connect', () => {
-            console.info('[SOCKET] Connected:', socket.value!.id);
+            logger.info('connected id=' + socket.value!.id);
         });
 
         socket.value.on('disconnect', () => {
-            console.warn('[SOCKET] Disconnected');
+            logger.warn('disconnected');
         });
 
         socket.value.on('connect_error', (err) => {
-            console.error('[SOCKET] Connect Error:', err.message);
-            // 例如跳回 /login 或顯示錯誤訊息：
-            // router.push("/login")
+            logger.error('connect error:', err.message);
         });
 
         socket.value.onAny((event, ...args) => {
-            console.debug('[SOCKET] emit:', event, args);
+            logger.debug('event:', event, args);
         });
     }
 
     function disconnect() {
-        console.info(`[SOCKET] Disconnecting`);
-        if (!socket.value || socket.value.disconnected) {
-            console.warn(`[SOCKET] Has Disconnected`);
-            return;
-        }
+        logger.info('disconnecting');
         socket.value?.disconnect();
     }
 

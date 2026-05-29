@@ -4,32 +4,34 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-import { useSocketStore } from '@/app/stores/socketStore';
-import { useAuthUseCase } from '../composables/useAuthUseCase';
+import { createLogger } from '@/app/utils/logger';
+import { useSession } from '@/app/composables/useSession';
 
+const logger = createLogger('auth.ui.login');
 const router = useRouter();
-const authUseCase = useAuthUseCase();
-const socketStore = useSocketStore();
+const session = useSession();
 
 const accountInput = ref('');
 const passwordInput = ref('');
 
 async function handleLoginMemberSubmit() {
+    logger.debug('member login submit');
     try {
-        const { token } = await authUseCase.loginMember(accountInput.value, passwordInput.value);
-        socketStore.connect(token);
+        await session.loginMember(accountInput.value, passwordInput.value);
         router.push(`/room-list`);
     } catch (error: any) {
+        logger.error('member login failed', error);
         alert(`${error.response?.data?.message || '登入失敗，請確認帳密'}`);
     }
 }
 
 async function handleLoginGuestButtonClick() {
+    logger.debug('guest login');
     try {
-        const { token } = await authUseCase.loginGuest();
-        socketStore.connect(token);
+        await session.loginGuest();
         router.push(`/room-list`);
     } catch (error: any) {
+        logger.error('guest login failed', error);
         alert(`${error.response?.data?.message || '登入失敗，請確認帳密'}`);
     }
 }

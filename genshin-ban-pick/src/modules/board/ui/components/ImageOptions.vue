@@ -1,10 +1,16 @@
 <!-- src/modules/board/ui/components/ImageOptions.vue -->
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue';
 
+import { createLogger } from '@/app/utils/logger';
 import { getProfileImagePath } from '@/modules/shared/infrastructure/imageRegistry'
+import { useCharacterAvatarWrapper } from '@/modules/shared/ui/composables/useCharacterAvatarWrapper';
 import type { ICharacter } from '@shared/contracts/character/ICharacter';
-import { DragTypes } from '@/app/constants/customMIMETypes'
+import { DragTypes } from '@/app/constants/customMIMETypes';
+
+const AvatarWrapper = useCharacterAvatarWrapper();
+
+const logger = createLogger('board.ui.imageOptions');
 
 const props = defineProps<{
   characterMap: Record<string, ICharacter>
@@ -23,17 +29,26 @@ const filteredSet = computed(() => new Set(props.filteredCharacterKeys ?? []))
 
 const isFiltered = (id: string) => filteredSet.value.has(id)
 
+const isDragging = ref(false);
+
 function handleDragStartEvent(id: string, event: DragEvent) {
-  console.debug(`[IMAGE OPTIONS] Handle drag start event`, id)
-  event?.dataTransfer?.setData(DragTypes.CHARACTER_IMAGE, id)
+    logger.debug('drag start', id);
+    isDragging.value = true;
+    event?.dataTransfer?.setData(DragTypes.CHARACTER_IMAGE, id);
+}
+
+function handleDragEndEvent() {
+    isDragging.value = false;
 }
 
 </script>
 
 <template>
   <div class="image-options">
-    <img v-for="id in availableCharacterKeys" class="option" :class="{ 'is-dimmed': !isFiltered(id) }" :key="id" :id="id"
-      :src="getProfileImagePath(id)" draggable="true" @dragstart="handleDragStartEvent(id, $event)" />
+    <component :is="AvatarWrapper" v-for="id in availableCharacterKeys" :key="id" :character-key="id" :disabled="isDragging">
+        <img class="option" :class="{ 'is-dimmed': !isFiltered(id) }" :id="id" :src="getProfileImagePath(id)"
+            draggable="true" @dragstart="handleDragStartEvent(id, $event)" @dragend="handleDragEndEvent" />
+    </component>
   </div>
 </template>
 

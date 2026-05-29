@@ -5,6 +5,7 @@ import { handleMemberDropDomain } from '../domain/handleMemberDropDomain';
 import { handleMemberLeaveDomain } from '../domain/handleMemberLeaveDomain';
 import { handleMemberJoinDomain } from '../domain/handleMemberJoinDomain';
 
+import type { Identity } from '@shared/contracts/identity/Identity';
 import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 import type { TeamMember } from '@shared/contracts/team/TeamMember';
 import type { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';
@@ -30,9 +31,9 @@ export default class TeamUseCase {
         return teamMember
     }
 
-    handleMemberDrop(roomUsers: IRoomUser[], identityKey: string, teamSlot: number, memberSlot: number) {
+    handleMemberDrop(roomUsers: IRoomUser[], identity: Identity, teamSlot: number, memberSlot: number) {
         const prevMap = this.teamInfoStore.teamMembersMap;
-        const teamMember = handleMemberDropDomain(prevMap, roomUsers, identityKey, teamSlot);
+        const teamMember = handleMemberDropDomain(prevMap, roomUsers, identity, teamSlot);
         if (!teamMember) return undefined
         this.handleMemberJoin(teamSlot, memberSlot, teamMember)
         return teamMember

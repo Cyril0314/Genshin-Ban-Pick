@@ -4,11 +4,14 @@ import { computed, onMounted, ref, watch } from 'vue';
 
 import { useDesignTokens } from '@/modules/shared/ui/composables/useDesignTokens';
 import { useEchartTheme } from '@/modules/shared/ui/composables/useEchartTheme';
+import { createLogger } from '@/app/utils/logger';
 import { useAnalysisUseCase } from './useAnalysisUseCase';
 import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
 
 import type { SynergyMode } from '@shared/contracts/analysis/value-types';
 import type { CharacterSynergyMatrix } from '@shared/contracts/analysis/CharacterSynergyMatrix';
+
+const logger = createLogger('analysis.ui.synergyChart');
 
 export function useCharacterSynergyChart() {
     const { getByKey: getCharacterDisplayName } = useCharacterDisplayName();
@@ -20,10 +23,13 @@ export function useCharacterSynergyChart() {
     const synergy = ref<CharacterSynergyMatrix>();
 
     onMounted(async () => {
+        logger.debug('fetching synergy matrix', scope.value);
         synergy.value = await analysisUseCase.fetchCharacteSynergyMatrix({ mode: scope.value });
+        logger.debug('data loaded', Object.keys(synergy.value ?? {}).length, 'characters');
     });
 
     watch(scope, async () => {
+        logger.debug('scope changed to', scope.value, ', refetching');
         synergy.value = await analysisUseCase.fetchCharacteSynergyMatrix({ mode: scope.value });
     });
 

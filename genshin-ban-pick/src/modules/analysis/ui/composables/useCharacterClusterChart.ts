@@ -5,12 +5,15 @@ import { computed, onMounted, ref } from 'vue';
 import { useEchartTheme } from '@/modules/shared/ui/composables/useEchartTheme';
 import { useDesignTokens } from '@/modules/shared/ui/composables/useDesignTokens';
 import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
+import { createLogger } from '@/app/utils/logger';
 import { useAnalysisUseCase } from './useAnalysisUseCase';
 import { chartColors } from '@/modules/shared/ui/constants/chartColors';
 
 import type { CallbackDataParams } from 'echarts/types/dist/shared';
 import type { ICharacterCluster } from '@shared/contracts/analysis/ICharacterCluster';
 import type { ICharacterUsage } from '@shared/contracts/analysis/ICharacterUsage';
+
+const logger = createLogger('analysis.ui.clusterChart');
 
 export function useCharacterClusterChart() {
     const { getByKey: getCharacterDisplayName } = useCharacterDisplayName();
@@ -31,9 +34,10 @@ export function useCharacterClusterChart() {
     const clusterNames: string[] = ['群0', '群1', '群2', '群3', '群4', '連續過渡地帶', '群6', '群7',]
 
     onMounted(async () => {
+        logger.debug('fetching usage summary + cluster');
         usages.value = await analysisUseCase.fetchCharacterUsageSummary();
         characterCluster.value = await analysisUseCase.fetchCharacterCluster();
-        console.log(`characterClusters`, characterCluster.value);
+        logger.debug('data loaded', { usages: usages.value?.length, clusters: characterCluster.value?.archetypePoints?.length });
     });
 
     const option = computed(() => {
