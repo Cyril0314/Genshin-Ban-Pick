@@ -33,7 +33,7 @@ const {
 
     board: { imageMap, usedImageIds, imageDrop, imageRestore, imageMapReset, randomPull },
 
-    team: { memberInput, memberDrop, memberRestore },
+    team: { userToTeamSlotMap, memberInput, memberDrop, memberRestore },
 
     match: { save: matchSave, isLoading: isMatchSaveLoading, result: matchResult, error: matchError },
 } = useBanPickFacade(roomId);
@@ -77,7 +77,7 @@ provideCharacterAvatarWrapper(CharacterHoverCard);
                             <div class="top-section top-section--align-left">
                                 <UserProfile />
                                 <div class="separator"></div>
-                                <RoomUserPool />
+                                <RoomUserPool :user-to-team-slot-map="userToTeamSlotMap" />
                             </div>
 
                             <div class="indicator-slot">

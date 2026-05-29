@@ -1,12 +1,11 @@
 <!-- src/modules/room/ui/components/RoomUserPool.vue -->
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import { createLogger } from '@/app/utils/logger';
 import { DragTypes } from '@/app/constants/customMIMETypes.ts';
-import { useTeamInfoStore } from '@/modules/team';
 import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme.ts';
 import { useRoomUserStore } from '../../store/roomUserStore';
 import { usePlayerHistory } from '@/modules/shared/ui/composables/usePlayerHistory';
@@ -17,23 +16,12 @@ import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 const logger = createLogger('room.ui.userPool');
 const playerHistory = usePlayerHistory();
 
+const props = defineProps<{ userToTeamSlotMap: Record<string, number> }>();
+
 const roomUserStore = useRoomUserStore();
 const { roomUsers } = storeToRefs(roomUserStore);
-const teamInfoStore = useTeamInfoStore();
-const { teamMembersMap } = storeToRefs(teamInfoStore);
 
 const usersRef = ref<HTMLElement | null>(null);
-
-const userToTeamSlotMap = computed(() => {
-    const map: Record<string, number> = {};
-    for (const [teamSlot, members] of Object.entries(teamMembersMap.value)) {
-        Object.values(members).forEach(m => {
-            if (m.type !== 'Name')
-                map[stringifyPlayerIdentity(m)] = Number(teamSlot)
-        });
-    }
-    return map;
-});
 
 onMounted(() => {
     const el = usersRef.value;
@@ -59,7 +47,7 @@ function handleClick(roomUser: IRoomUser) {
 }
 
 function getStyleForUser(roomUser: IRoomUser) {
-    const teamSlot = userToTeamSlotMap.value[stringifyPlayerIdentity(roomUser.identity)];
+    const teamSlot = props.userToTeamSlotMap[stringifyPlayerIdentity(roomUser.identity)];
     if (teamSlot === undefined) {
         return {
             '--team-color-bg': `var(--md-sys-color-surface-container-high)`,
