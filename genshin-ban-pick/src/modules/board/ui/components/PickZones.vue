@@ -65,6 +65,13 @@ const zoneMatrix = computed(() =>
     gap: var(--size-drop-zone-space);
     border-radius: var(--radius-lg);
     background-color: var(--md-sys-color-surface-container-high);
+    max-width: calc(2 * var(--size-drop-zone-width) + 3 * var(--size-drop-zone-space));
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.pick-zone::-webkit-scrollbar {
+    display: none;
 }
 
 .column {
