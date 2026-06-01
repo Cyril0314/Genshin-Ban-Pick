@@ -25,33 +25,24 @@ const lineupImageMap = computed(() => teamLineupImageMap.value[props.teamSlot]);
 const rows = computed(() => numberOfTeamSetup.value);
 const cols = computed(() => numberOfSetupCharacter.value);
 
-const memberNames = computed(() => {
-    // 如果成員不足 4 個，補空字串
-    return Array.from({ length: numberOfSetupCharacter.value }, (_, i) => {
-        const teamMember = props.teamMembers[i];
-        if (!teamMember) return '';
-        return teamMember.type === 'Name' ? teamMember.name : teamMember.nickname;
-    });
-});
+const memberNames = computed(() =>
+    Array.from({ length: cols.value }, (_, i) => {
+        const member = props.teamMembers[i];
+        if (!member) return '';
+        return member.type === 'Name' ? member.name : member.nickname;
+    }),
+);
 
-const setupNumbers = computed(() => {
-    return Array.from({ length: numberOfTeamSetup.value }, (_, i) => {
-        return `${i + 1}`;
-    });
-});
+const rowsData = computed(() =>
+    Array.from({ length: rows.value }, (_, rowIndex) => ({
+        setupNumber: String(rowIndex + 1),
+        cells: Array.from({ length: cols.value }, (_, colIndex) => ({
+            id: rowIndex * cols.value + colIndex,
+        })),
+    })),
+);
 
-const cells = computed(() => {
-    return Array.from({ length: rows.value * cols.value }, (_, i) => {
-        // 將 i 轉換成 row 與 col（0-indexed）
-        const row = Math.floor(i / cols.value);
-        const col = i % cols.value;
-        return { row, col, id: i };
-    });
-});
-
-const themeVars = computed(() => {
-  return useTeamTheme(props.teamSlot).themeVars.value
-})
+const themeVars = computed(() => useTeamTheme(props.teamSlot).themeVars.value);
 
 const logger = createLogger('lineup.ui.board');
 const imageId = (cellId: number) => lineupImageMap.value[cellId];
@@ -68,28 +59,26 @@ function handleImageRestore({ cellId }: { cellId: number }) {
 </script>
 
 <template>
-    <div class="lineup-board" :style="{ '--number-of-team-setup': numberOfTeamSetup, '--number-of-setup-character': numberOfSetupCharacter, ...themeVars }">
+    <div class="lineup-board" :style="themeVars">
         <div class="member-names">
-            <div class="corner-spacer"></div>
-            <div v-for="(memberName, index) in memberNames" :key="index" class="member-name">
-                <span class="text">{{ memberName }}</span>
+            <div v-for="(name, i) in memberNames" :key="i" class="member-name">
+                <span class="text">{{ name }}</span>
             </div>
         </div>
-        <div class="setup">
-            <div class="setup-numbers">
-                <div v-for="(setupNumber, index) in setupNumbers" :key="index" class="setup-number">
-                    <span class="text">{{ setupNumber }}</span>
-                </div>
+        <div v-for="(rowData, i) in rowsData" :key="i" class="setup">
+            <div class="setup-label">
+                <span class="label-text">{{ rowData.setupNumber }}</span>
             </div>
-            <div class="grid">
-                <template v-for="cell in cells">
-                    <LineupCell
+            <div class="card-slots">
+                <LineupCell
+                    v-for="cell in rowData.cells"
+                    :key="cell.id"
                     :cellId="cell.id"
                     :imageId="imageId(cell.id)"
                     :teamSlot="props.teamSlot"
                     @image-drop="handleImageDrop"
-                    @image-restore="handleImageRestore" />
-                </template>
+                    @image-restore="handleImageRestore"
+                />
             </div>
         </div>
     </div>
@@ -97,80 +86,76 @@ function handleImageRestore({ cellId }: { cellId: number }) {
 
 <style scoped>
 .lineup-board {
-    --size-setup-number: calc(var(--base-size) * 1.5);
-    --size-lineup-cell: calc(var(--base-size) * 5.5);
+    --size-setup-label: calc(var(--base-size) * 1);
+    --size-lineup-cell: calc(var(--base-size) * 6);
+    --border-width: 3px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    padding: var(--space-md);
+    gap: var(--space-lg);
+    padding: var(--space-lg);
     background-color: var(--md-sys-color-surface-container-low);
     border-radius: var(--radius-lg);
 }
 
+/* indent to align with card-slots: card-padding + label + gap */
 .member-names {
     display: flex;
     flex-direction: row;
+    gap: var(--space-sm);
+    padding-left: calc(var(--border-width) + var(--space-md) + var(--size-setup-label) + var(--space-sm));
+    padding-right: var(--space-md);
+}
+
+.member-name {
+    width: var(--size-lineup-cell);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.member-name .text {
+    font-size: var(--font-size-sm);
+    font-family: var(--font-family-tech-ui);
+    font-weight: var(--font-weight-medium);
+    color: var(--team-surface-high-tinted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
 }
 
 .setup {
     display: flex;
     flex-direction: row;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    background-color: var(--md-sys-color-surface-container);
+    border-radius: var(--radius-md);
+    border-left: var(--border-width) solid var(--team-color);
 }
 
-.setup-numbers {
-    display: flex;
-    flex-direction: column;
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: repeat(var(--number-of-setup-character), auto);
-    grid-template-rows: repeat(var(--number-of-team-setup), auto);
-    justify-content: center;
-}
-
-.member-name,
-.setup-number {
+.setup-label {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 10;
-}
-
-.corner-spacer {
     flex-shrink: 0;
-    height: calc(var(--base-size) * 3);
-    width: var(--size-setup-number);
+    width: var(--size-setup-label);
 }
 
-.member-name {
-    height: calc(var(--base-size) * 3);
-    padding: 0 var(--space-sm);
-}
-
-.setup-number {
-    height: 100%;
-    width: var(--size-setup-number);
-}
-
-.member-name .text,
-.setup-number .text {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: normal;
-
-    text-align: center;
-    font-size: var(--font-size-md);
-    font-weight: var(--font-weight-medium);
+.label-text {
+    font-size: var(--font-size-sm);
     font-family: var(--font-family-tech-ui);
-    color: var(--team-color);
-    z-index: 11;
+    font-weight: var(--font-weight-bold);
+    color: var(--team-surface-tinted);
+    user-select: none;
 }
 
-.member-name .text {
-    width: var(--size-lineup-cell);
+.card-slots {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-sm);
 }
 </style>

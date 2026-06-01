@@ -14,8 +14,8 @@ export function useTeamTheme(teamSlot: number) {
         '--team-color-bg': `var(--team-${key}-color-bg)`,
         '--team-on-color-bg': `var(--team-${key}-on-color-bg)`,
         '--team-color-hover': `var(--team-${key}-color-hover)`,
-        '--team-surface-tinted': `color-mix(in srgb, var(--md-sys-color-surface-container) 84%, var(--team-color) 16%)`,
-        '--team-surface-high-tinted': `color-mix(in srgb, var(--md-sys-color-surface-container) 60%, var(--team-color) 40%)`
+        '--team-surface-tinted': `color-mix(in srgb, var(--md-sys-color-surface-container) 36%, var(--team-color) 64%)`,
+        '--team-surface-high-tinted': `color-mix(in srgb, var(--md-sys-color-surface-container) 16%, var(--team-color) 84%)`
     }))
 
     return { themeVars }
