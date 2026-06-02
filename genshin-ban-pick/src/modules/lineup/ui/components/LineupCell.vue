@@ -58,10 +58,8 @@ function handleClickEvent() {
   @dragstart="handleDragStartEvent"
   @drop="handleDropEvent"
   @click="handleClickEvent">
-      <div class="image-container" :class="{ 'is-active': isOver }">
-      <template v-if="imageId">
-        <img class="image" :src="getWishImagePath(imageId)" />
-      </template>
+      <div class="image-container" :class="{ 'is-active': isOver, 'is-empty': !imageId }">
+          <img v-if="imageId" class="image" :src="getWishImagePath(imageId)" />
       </div>
   </div>
 </template>
@@ -71,30 +69,36 @@ function handleClickEvent() {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition:
-    transform 0.2s ease;
-  overflow: hidden;
-  padding: var(--space-md) var(--space-sm);
 }
 
 .image-container {
-  background-color: var(--md-sys-color-surface-container);
-  border-radius: var(--radius-md);
+  position: relative;
+  border-radius: var(--radius-sm);
   width: var(--size-lineup-cell);
   aspect-ratio: 16 / 9;
-  object-fit: cover;
   z-index: 10;
-  cursor: grab;
   overflow: hidden;
+  background-color: var(--md-sys-color-surface-container);
+  cursor: grab;
+  transition: transform 0.2s ease;
+}
+
+.image-container.is-empty {
+  background-color: var(--md-sys-color-surface-container-low);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.35),
+    inset 0 1px 8px rgba(0, 0, 0, 0.2);
+  cursor: default;
 }
 
 .image-container.is-active {
   outline: 2px solid rgba(var(--highlight-color-rgb));
 }
 
-.image-container:hover {
+.image-container:not(.is-empty):hover {
   transform: scale(1.05);
 }
+
 
 .image {
   width: 100%;

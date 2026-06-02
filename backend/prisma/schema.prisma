@@ -57,14 +57,16 @@ model Match {
 model MatchTeam {
   id Int @id @default(autoincrement())
 
-  slot     Int
-  name     String?
+  slot Int
+  name String?
 
   matchId Int
 
   match       Match             @relation(fields: [matchId], references: [id], onDelete: Cascade)
   teamMembers MatchTeamMember[]
   MatchMove   MatchMove[]
+
+  @@unique([matchId, slot])
 }
 
 model MatchTeamMember {
@@ -77,11 +79,12 @@ model MatchTeamMember {
   memberRef Int?
   guestRef  Int?
 
-  team           MatchTeam            @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  member         Member?              @relation(fields: [memberRef], references: [id])
-  guest          Guest?               @relation(fields: [guestRef], references: [id])
+  team        MatchTeam         @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  member      Member?           @relation(fields: [memberRef], references: [id])
+  guest       Guest?            @relation(fields: [guestRef], references: [id])
   lineupSlots MatchLineupSlot[]
 
+  @@unique([teamId, slot])
   @@index([teamId, memberRef])
   @@index([teamId, guestRef])
 }
@@ -129,7 +132,7 @@ model MatchMove {
   character         Character          @relation(fields: [characterKey], references: [key])
   randomMoveContext RandomMoveContext?
 
-  @@index([matchId, order])
+  @@unique([matchId, order])
   @@index([characterKey])
   @@index([teamId, characterKey])
 }
@@ -203,29 +206,29 @@ enum Wish {
 }
 
 model Character {
-  key         String         @id
-  name        String
-  rarity      Rarity
-  element     Element
-  weapon      Weapon
-  region      Region
-  modelType   ModelType
-  role        CharacterRole?
-  wish        Wish?
-  releaseAt   DateTime?
+  key                String        @id
+  name               String
+  rarity             Rarity
+  element            Element
+  weapon             Weapon
+  region             Region
+  modelType          ModelType
+  role               CharacterRole
+  wish               Wish
+  releaseAt          DateTime?
   genshinVersionCode String?
 
-  matchMoves      MatchMove[]
+  matchMoves       MatchMove[]
   matchLineupSlots MatchLineupSlot[]
-  genshinVersion      GenshinVersion? @relation(fields: [genshinVersionCode], references: [code])
+  genshinVersion   GenshinVersion?   @relation(fields: [genshinVersionCode], references: [code])
 
   @@index([genshinVersionCode])
 }
 
 model GenshinVersion {
-  code    String     @id
+  code String @id
 
-  order   Int        @unique
+  order   Int       @unique
   name    String
   startAt DateTime
   endAt   DateTime?

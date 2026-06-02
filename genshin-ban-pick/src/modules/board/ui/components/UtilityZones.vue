@@ -59,6 +59,13 @@ const zoneMatrix = computed(() =>
     border-radius: var(--radius-lg);
     background-color: color-mix(in srgb, var(--md-sys-color-surface-container) 68%, var(--md-sys-color-tertiary) 32%);
     background-color: var(--md-sys-color-surface-container-high);
+    max-height: calc(2 * var(--size-drop-zone-height) + 3 * var(--size-drop-zone-space));
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.utility-zone::-webkit-scrollbar {
+    display: none;
 }
 
 .row {

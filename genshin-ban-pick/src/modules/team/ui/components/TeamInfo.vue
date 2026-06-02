@@ -150,7 +150,6 @@ function handleMemberNameClick(memberSlot: number) {
     display: flex;
     flex-direction: column;
     flex: 4;
-    /* background-color: var(--team-surface-tinted); */
     background-color: var(--md-sys-color-surface-container);
     resize: none;
 }
