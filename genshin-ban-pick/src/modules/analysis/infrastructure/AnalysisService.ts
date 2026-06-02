@@ -3,7 +3,6 @@
 import type { HttpClient } from '@/app/infrastructure/http/httpClient';
 import type { SynergyMode } from '@shared/contracts/analysis/value-types';
 import type { IPlayerIdentityQuery } from '@shared/contracts/analysis/dto/IPlayerIdentityQuery';
-import type { IAnalysisScopeWithPlayerIdentityQuery } from '@shared/contracts/analysis/dto/IAnalysisScopeWithPlayerIdentityQuery';
 import type { IAnalysisTimeWindowQuery } from '@shared/contracts/analysis/dto/IAnalysisTimeWindowQuery';
 
 export default class AnalysisService {
@@ -14,7 +13,7 @@ export default class AnalysisService {
     }
 
     async getMatchTimeline(query?: IAnalysisTimeWindowQuery) {
-        return this.client.get(`/analyses/match-timeline`);
+        return this.client.get(`/analyses/match-timeline`, { params: query });
     }
 
     async getCharacterUsageSummary(query?: IAnalysisTimeWindowQuery) {
@@ -25,7 +24,7 @@ export default class AnalysisService {
         return this.client.get(`/analyses/character-usages/pick-priority`);
     }
 
-    async getCharacterAttributeDistributions(query: IAnalysisScopeWithPlayerIdentityQuery) {
+    async getCharacterAttributeDistributions(query?: IPlayerIdentityQuery) {
         return this.client.get(`/analyses/character-attribute/distributions`, { params: query });
     }
 

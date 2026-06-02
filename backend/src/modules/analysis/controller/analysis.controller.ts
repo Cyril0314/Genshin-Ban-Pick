@@ -3,12 +3,11 @@
 import { Request, Response } from 'express';
 import AnalysisService from '../application/analysis.service';
 
-import { parsePlayerIdentityQuery } from './query/parsePlayerIdentityQuery';
-import { parseAnalysisScopeQuery } from './query/parseAnalysisScopeQuery';
 import { InvalidFieldsError } from '../../../errors/AppError';
 
 import type { SynergyMode } from '@shared/contracts/analysis/value-types';
 import { parseTimeWindowQuery } from './query/parseTimeWindowQuery';
+import { parsePlayerIdentityQuery } from './query/parsePlayerIdentityQuery';
 
 export default class AnalysisController {
     constructor(private analysisService: AnalysisService) {}
@@ -66,9 +65,8 @@ export default class AnalysisController {
     };
 
     fetchCharacterAttributeDistributions = async (req: Request, res: Response) => {
-        const scope = parseAnalysisScopeQuery(req.query)
-        if (!scope) throw new InvalidFieldsError();
-        const distributions = await this.analysisService.fetchCharacterAttributeDistributions(scope);
+        const playerIdentity = parsePlayerIdentityQuery(req.query);
+        const distributions = await this.analysisService.fetchCharacterAttributeDistributions(playerIdentity);
         res.status(200).json(distributions);
     };
 }

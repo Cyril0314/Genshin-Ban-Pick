@@ -27,7 +27,6 @@ import type { KeyIndexedMatrix } from '@shared/contracts/analysis/KeyIndexedMatr
 import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 import type { ICharacterPickPriority } from '@shared/contracts/analysis/ICharacterPickPriority';
 import type { ICharacterAttributeDistributions } from '@shared/contracts/analysis/character/ICharacterAttributeDistributions';
-import type { IMatchLineupSlotWithCharacter } from '../types/IMatchLineupSlotWithCharacter';
 import type { IAnalysisOverview } from '@shared/contracts/analysis/IAnalysisOverview';
 import type { IAnalysisTimeWindow } from '@shared/contracts/analysis/IAnalysisTimeWindow';
 import type { IMatchTimeMinimal } from '@shared/contracts/analysis/IMatchTimeMinimal';
@@ -72,24 +71,24 @@ export default class AnalysisService {
     }
 
     async fetchMatchTimeline(timeWindow?: IAnalysisTimeWindow): Promise<IMatchTimeMinimal[]>  {
-        const matches = await this.analysisRepository.findAllMatchMinimalTimestamps(timeWindow);
+        const matches = await this.analysisRepository.findMatchMinimalTimestamps(timeWindow);
         return matches
     }
 
     async fetchCharacterUsageSummary(timeWindow?: IAnalysisTimeWindow): Promise<ICharacterUsage[]> {
-        const matches = await this.analysisRepository.findAllMatchMinimalTimestamps(timeWindow);
-        const matcheMoves = await this.analysisRepository.findAllMatchMoveCoreForWeightCalc(timeWindow);
-        const matchLineupSlots = await this.analysisRepository.findAllMatchLineupSlotsForAnalysis(timeWindow);
+        const matches = await this.analysisRepository.findMatchMinimalTimestamps(timeWindow);
+        const matcheMoves = await this.analysisRepository.findMatchMoveCoreForWeightCalc(timeWindow);
+        const matchLineupSlots = await this.analysisRepository.findMatchLineupSlotsForAnalysis(timeWindow);
         return computeCharacterUsage(matches, matcheMoves, matchLineupSlots);
     }
 
     async fetchCharacterUsagePickPriority(): Promise<ICharacterPickPriority[]> {
-        const matcheMoves = await this.analysisRepository.findAllMatchMoveCoreForWeightCalc();
+        const matcheMoves = await this.analysisRepository.findMatchMoveCoreForWeightCalc();
         return computeCharacterPickPriority(matcheMoves);
     }
 
     async fetchCharacterSynergyMatrix(mode: SynergyMode = 'setup'): Promise<CharacterSynergyMatrix> {
-        const matchLineupSlots = await this.analysisRepository.findAllMatchLineupSlotsForAnalysis();
+        const matchLineupSlots = await this.analysisRepository.findMatchLineupSlotsForAnalysis();
         const groups = this.characterSynergyCalculator.buildCooccurrenceGroups(matchLineupSlots, mode);
         const synergy = this.characterSynergyCalculator.buildSynergyMatrix(groups);
         return synergy;
@@ -100,7 +99,7 @@ export default class AnalysisService {
         const characterMap = Object.fromEntries(characters.map((character) => [character.key, character]));
 
         // Consistent calculation
-        const matchLineupSlots = await this.analysisRepository.findAllMatchLineupSlotsForAnalysis();
+        const matchLineupSlots = await this.analysisRepository.findMatchLineupSlotsForAnalysis();
         const groups = this.characterSynergyCalculator.buildCooccurrenceGroups(matchLineupSlots, 'setup');
         const synergyMatrix = this.characterSynergyCalculator.buildSynergyMatrix(groups);
 
@@ -152,21 +151,24 @@ export default class AnalysisService {
     }
 
     async fetchPlayerStyleProfile(playerIdentity: PlayerIdentity): Promise<IPlayerStyleProfile | undefined> {
-        const memberUsages = await this.analysisRepository.findMatchLineupSlotsWithCharacterByPlayerIdentity(playerIdentity);
-        const allUsages = await this.analysisRepository.findAllMatchLineupSlotsWithCharacter();
-        return computePlayerStyleProfile(memberUsages, allUsages);
+        const [playerSlots, globalSlots] = await Promise.all([
+            this.analysisRepository.findMatchLineupSlotsWithCharacter(playerIdentity),
+            this.analysisRepository.findMatchLineupSlotsWithCharacter(),
+        ]);
+
+        return computePlayerStyleProfile(playerSlots, globalSlots);
     }
 
     async fetchPlayerRecord(playerIdentity: PlayerIdentity): Promise<IPlayerRecord> {
-        const [playerRows, usages, displayName] = await Promise.all([
-            this.analysisRepository.findMatchLineupSlotsWithCharacterByPlayerIdentity(playerIdentity),
-            this.analysisRepository.findAllMatchLineupSlotsForAnalysis(),
+        const [playerSlots, globalSlots, displayName] = await Promise.all([
+            this.analysisRepository.findMatchLineupSlotsWithCharacter(playerIdentity),
+            this.analysisRepository.findMatchLineupSlotsForAnalysis(),
             this.resolveDisplayName(playerIdentity),
         ]);
-        const groups = this.characterSynergyCalculator.buildCooccurrenceGroups(usages, 'setup');
+        const groups = this.characterSynergyCalculator.buildCooccurrenceGroups(globalSlots, 'setup');
         const synergyMatrix = this.characterSynergyCalculator.buildSynergyMatrix(groups);
 
-        return computePlayerRecord(playerRows, synergyMatrix, playerIdentity, displayName);
+        return computePlayerRecord(playerSlots, synergyMatrix, playerIdentity, displayName);
     }
 
     private async resolveDisplayName(playerIdentity: PlayerIdentity): Promise<string> {
@@ -175,16 +177,8 @@ export default class AnalysisService {
         return user.nickname;
     }
 
-    async fetchCharacterAttributeDistributions(scope: { type: 'Player'; playerIdentity: PlayerIdentity } | { type: 'Global' }): Promise<ICharacterAttributeDistributions> {
-        let usages: IMatchLineupSlotWithCharacter[]
-        switch (scope.type) {
-            case 'Global':
-                usages = await this.analysisRepository.findAllMatchLineupSlotsWithCharacter();
-                break
-            case 'Player':
-                usages = await this.analysisRepository.findMatchLineupSlotsWithCharacterByPlayerIdentity(scope.playerIdentity);
-                break
-        }
-        return computeCharacterAttributeDistributions(usages)
+    async fetchCharacterAttributeDistributions(playerIdentity?: PlayerIdentity): Promise<ICharacterAttributeDistributions> {
+        const slots = await this.analysisRepository.findMatchLineupSlotsWithCharacter(playerIdentity);
+        return computeCharacterAttributeDistributions(slots);
     }
 }

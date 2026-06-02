@@ -214,21 +214,19 @@ export default class AnalysisRepository implements IAnalysisRepository {
         };
     }
 
-    async findAllMatchMinimalTimestamps(timeWindow?: IAnalysisTimeWindow): Promise<IMatchTimeMinimal[]> {
+    async findMatchMinimalTimestamps(timeWindow?: IAnalysisTimeWindow): Promise<IMatchTimeMinimal[]> {
         return await this.prisma.match.findMany({
-            where: this.buildMatchTimeWindowWhere(timeWindow),
+            where: timeWindow ? this.buildMatchTimeWindowWhere(timeWindow) : undefined,
             select: { id: true, createdAt: true },
         });
     }
 
-    async findAllMatchMoveCoreForWeightCalc(timeWindow?: IAnalysisTimeWindow): Promise<IMatchMoveWeightCalcCore[]> {
+    async findMatchMoveCoreForWeightCalc(timeWindow?: IAnalysisTimeWindow): Promise<IMatchMoveWeightCalcCore[]> {
         type Entity = Prisma.MatchMoveGetPayload<typeof matchMoveWeightCalcCoreQuery>;
 
         const entities: Entity[] = await this.prisma.matchMove.findMany({
             ...matchMoveWeightCalcCoreQuery,
-            where: {
-                match: this.buildMatchTimeWindowWhere(timeWindow),
-            },
+            where: { match: timeWindow ? this.buildMatchTimeWindowWhere(timeWindow) : undefined },
         });
 
         return entities.map((entity) => {
@@ -267,8 +265,6 @@ export default class AnalysisRepository implements IAnalysisRepository {
         const entities: Entity[] = await this.prisma.matchLineupSlot.findMany(matchLineupSlotTeamMemberIdentityRefsQuery);
 
         return entities.map((entity) => ({
-            teamId: entity.teamMember.teamId,
-            setupNumber: entity.setupNumber,
             characterKey: entity.characterKey,
             teamMemberName: entity.teamMember.name,
             memberNickname: entity.teamMember.member?.nickname ?? undefined,
@@ -276,7 +272,7 @@ export default class AnalysisRepository implements IAnalysisRepository {
         }));
     }
 
-    async findAllMatchLineupSlotsForAnalysis(timeWindow?: IAnalysisTimeWindow): Promise<IMatchLineupSlotExpandedRefs[]> {
+    async findMatchLineupSlotsForAnalysis(timeWindow?: IAnalysisTimeWindow): Promise<IMatchLineupSlotExpandedRefs[]> {
         type Entity = Prisma.MatchLineupSlotGetPayload<typeof matchLineupSlotExpandedRefsQuery>;
 
         const entities: Entity[] = await this.prisma.matchLineupSlot.findMany({
@@ -284,7 +280,7 @@ export default class AnalysisRepository implements IAnalysisRepository {
             where: {
                 teamMember: {
                     team: {
-                        match: this.buildMatchTimeWindowWhere(timeWindow),
+                        match: timeWindow ? this.buildMatchTimeWindowWhere(timeWindow) : undefined,
                     },
                 },
             },
@@ -298,11 +294,12 @@ export default class AnalysisRepository implements IAnalysisRepository {
         }));
     }
 
-    async findAllMatchLineupSlotsWithCharacter(): Promise<IMatchLineupSlotWithCharacter[]> {
+    async findMatchLineupSlotsWithCharacter(playerIdentity?: PlayerIdentity): Promise<IMatchLineupSlotWithCharacter[]> {
         const entities = await this.prisma.matchLineupSlot.findMany({
             include: {
                 character: true,
             },
+            where: playerIdentity ? this.buildPlayerIdentityWhere(playerIdentity) : undefined,
         });
 
         return entities.map((entity) => ({
@@ -311,61 +308,29 @@ export default class AnalysisRepository implements IAnalysisRepository {
         }));
     }
 
-    async findMatchLineupSlotsWithCharacterByPlayerIdentity(
-        playerIdentity: PlayerIdentity,
-    ): Promise<IMatchLineupSlotWithCharacter[]> {
-        let whereInput: Prisma.MatchLineupSlotWhereInput;
-        switch (playerIdentity.type) {
-            case 'Member':
-                whereInput = {
-                    teamMember: {
-                        memberRef: playerIdentity.id,
-                    },
-                };
-                break;
-            case 'Guest':
-                whereInput = {
-                    teamMember: {
-                        guestRef: playerIdentity.id,
-                    },
-                };
-                break;
-            case 'Name':
-                whereInput = {
-                    teamMember: {
-                        name: playerIdentity.name,
-                    },
-                };
-                break;
-        }
-
-        const entities = await this.prisma.matchLineupSlot.findMany({
-            where: whereInput,
-            include: {
-                character: true,
-            },
-        });
-
-        return entities.map((entity) => ({
-            characterKey: entity.characterKey,
-            character: mapCharacter(entity.character),
-        }));
-    }
-
-    private buildMatchTimeWindowWhere(timeWindow?: IAnalysisTimeWindow) {
-        if (!timeWindow) return undefined;
-
-        const createdAt: Prisma.DateTimeFilter = {};
+    private buildMatchTimeWindowWhere(timeWindow: IAnalysisTimeWindow): { createdAt: Prisma.DateTimeFilter<never> } | undefined {
+        const filter: Prisma.DateTimeFilter = {};
 
         if (timeWindow.startAt) {
-            createdAt.gte = timeWindow.startAt;
+            filter.gte = timeWindow.startAt;
         }
 
         if (timeWindow.endAt) {
-            createdAt.lte = timeWindow.endAt;
+            filter.lte = timeWindow.endAt;
         }
 
-        return Object.keys(createdAt).length > 0 ? { createdAt } : undefined;
+        return Object.keys(filter).length > 0 ? { createdAt: filter } : undefined;
+    }
+
+    private buildPlayerIdentityWhere(playerIdentity: PlayerIdentity): Prisma.MatchLineupSlotWhereInput {
+        switch (playerIdentity.type) {
+            case 'Member':
+                return { teamMember: { memberRef: playerIdentity.id } };
+            case 'Guest':
+                return { teamMember: { guestRef: playerIdentity.id } };
+            case 'Name':
+                return { teamMember: { name: playerIdentity.name } };
+        }
     }
 
     mapGroupCount<K extends string, T extends string>(rows: Array<Record<K, T> & { _count: { _all: number } }>, key: K): Record<T, number> {

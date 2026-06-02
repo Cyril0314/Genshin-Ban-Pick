@@ -12,15 +12,13 @@ import type { IMatchTimeMinimal } from '@shared/contracts/analysis/IMatchTimeMin
 export interface IAnalysisRepository {
     findMatchStatisticsOverview(): Promise<IMatchStatisticsOverview>;
 
-    findAllMatchMinimalTimestamps(timeWindow?: IAnalysisTimeWindow): Promise<IMatchTimeMinimal[]>;
+    findMatchMinimalTimestamps(timeWindow?: IAnalysisTimeWindow): Promise<IMatchTimeMinimal[]>;
 
     findAllMatchLineupSlotIdentities(): Promise<IMatchLineupSlotTeamMemberIdentityRefs[]>;
 
-    findAllMatchMoveCoreForWeightCalc(timeWindow?: IAnalysisTimeWindow): Promise<IMatchMoveWeightCalcCore[]>;
+    findMatchMoveCoreForWeightCalc(timeWindow?: IAnalysisTimeWindow): Promise<IMatchMoveWeightCalcCore[]>;
 
-    findAllMatchLineupSlotsForAnalysis(timeWindow?: IAnalysisTimeWindow): Promise<IMatchLineupSlotExpandedRefs[]>;
+    findMatchLineupSlotsForAnalysis(timeWindow?: IAnalysisTimeWindow): Promise<IMatchLineupSlotExpandedRefs[]>;
 
-    findAllMatchLineupSlotsWithCharacter(): Promise<IMatchLineupSlotWithCharacter[]>;
-
-    findMatchLineupSlotsWithCharacterByPlayerIdentity(playerIdentity: PlayerIdentity): Promise<IMatchLineupSlotWithCharacter[]>;
+    findMatchLineupSlotsWithCharacter(playerIdentity?: PlayerIdentity): Promise<IMatchLineupSlotWithCharacter[]>;
 }

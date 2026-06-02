@@ -97,7 +97,7 @@ export function usePlayerStyleChart() {
             playerStyle.value = await analysisUseCase.fetchPlayerStyleProfile(selectedScope.value.player);
             characterAttributeDistributions.value = playerStyle.value?.characterAttributeDistributions;
         } else {
-            characterAttributeDistributions.value = await analysisUseCase.fetchGlobalCharacterAttributeDistributions();
+            characterAttributeDistributions.value = await analysisUseCase.fetchCharacterAttributeDistributions();
         }
     });
 

@@ -1,10 +1,11 @@
 // src/modules/analysis/infrastructure/AnalysisRepository.ts
 
-import type { SynergyMode } from '@shared/contracts/analysis/value-types';
+import { toPlayerIdentityQuery } from '@shared/contracts/analysis/dto/IPlayerIdentityQuery';
+
 import type AnalysisService from './AnalysisService';
+
+import type { SynergyMode } from '@shared/contracts/analysis/value-types';
 import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
-import type { IPlayerIdentityQuery } from '@shared/contracts/analysis/dto/IPlayerIdentityQuery';
-import type { IAnalysisScopeWithPlayerIdentityQuery } from '@shared/contracts/analysis/dto/IAnalysisScopeWithPlayerIdentityQuery';
 import type { IAnalysisTimeWindowQuery } from '@shared/contracts/analysis/dto/IAnalysisTimeWindowQuery';
 import type { IAnalysisTimeWindow } from '@shared/contracts/analysis/IAnalysisTimeWindow';
 import type { IMatchTimeMinimal } from '@shared/contracts/analysis/IMatchTimeMinimal';
@@ -51,18 +52,8 @@ export default class AnalysisRepository {
         return response.data;
     }
 
-    async fetchCharacterAttributeDistributions(scope: { type: 'Player'; playerIdentity: PlayerIdentity } | { type: 'Global' }) {
-        let query: IAnalysisScopeWithPlayerIdentityQuery;
-        switch (scope.type) {
-            case 'Global':
-                query = {
-                    scope: 'global',
-                };
-                break;
-            case 'Player':
-                query = { scope: 'player', ...toPlayerIdentityQuery(scope.playerIdentity) };
-                break;
-        }
+    async fetchCharacterAttributeDistributions(playerIdentity?: PlayerIdentity) {
+        const query = playerIdentity ? toPlayerIdentityQuery(playerIdentity) : undefined;
         const response = await this.analysisService.getCharacterAttributeDistributions(query);
         return response.data;
     }
@@ -92,16 +83,5 @@ export default class AnalysisRepository {
         const query = toPlayerIdentityQuery(playerIdentity);
         const response = await this.analysisService.getPlayerRecord(query);
         return response.data;
-    }
-}
-
-function toPlayerIdentityQuery(playerIdentity: PlayerIdentity): IPlayerIdentityQuery {
-    switch (playerIdentity.type) {
-        case 'Guest':
-            return { type: 'guest', id: playerIdentity.id };
-        case 'Member':
-            return { type: 'member', id: playerIdentity.id };
-        case 'Name':
-            return { type: 'name', name: playerIdentity.name };
     }
 }

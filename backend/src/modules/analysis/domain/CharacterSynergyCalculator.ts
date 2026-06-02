@@ -28,13 +28,13 @@ export default class CharacterSynergyCalculator {
         return synergyMatrix;
     }
 
-    buildCooccurrenceGroups(usages: IMatchLineupSlotExpandedRefs[], mode: SynergyMode): Record<string, string[]> {
+    buildCooccurrenceGroups(slots: IMatchLineupSlotExpandedRefs[], mode: SynergyMode): Record<string, string[]> {
         const groups: Record<string, string[]> = {};
 
-        for (const u of usages) {
-            const key = this.buildCooccurrenceGroupKey(u, mode);
+        for (const slot of slots) {
+            const key = this.buildCooccurrenceGroupKey(slot, mode);
             if (!groups[key]) groups[key] = [];
-            groups[key].push(u.characterKey);
+            groups[key].push(slot.characterKey);
         }
 
         return groups;
@@ -47,10 +47,10 @@ export default class CharacterSynergyCalculator {
                 // 一場比賽當作一個 group
                 return `${rawLineupSlot.matchId}`;
             case 'team':
-                // 同一個隊伍（整體）當作一個 group
-                return `${rawLineupSlot.teamId}`;
+                // 一場比賽 + 一隊當作一個 group
+                return `${rawLineupSlot.matchId}:${rawLineupSlot.teamId}`;
             case 'setup':
-                // 一場比賽 + 一隊 + 一個編成（setup）當作一個 group
+                // 一場比賽 + 一隊 + 一個編成當作一個 group
                 return `${rawLineupSlot.matchId}:${rawLineupSlot.teamId}:${rawLineupSlot.setupNumber}`;
         }
     }
