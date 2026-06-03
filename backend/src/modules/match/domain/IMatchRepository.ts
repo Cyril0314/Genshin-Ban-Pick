@@ -7,7 +7,8 @@ import type { TeamMember } from '@shared/contracts/team/TeamMember';
 export interface IMatchRepository {
     findAllMatches(): Promise<IMatch[]>;
 
-    create(snapshot: IMatchSnapshot, dryRun?: boolean): Promise<IMatch>;
+    create(snapshot: IMatchSnapshot): Promise<IMatch>;
+    preview(snapshot: IMatchSnapshot): Promise<IMatch>;
 
     delete(matchId: number): Promise<void>;
 

@@ -1,12 +1,12 @@
 // src/modules/analysis/infrastructure/AnalysisRepository.ts
 
 import { toPlayerIdentityQuery } from '@shared/contracts/analysis/dto/IPlayerIdentityQuery';
+import { toAnalysisTimeWindowQuery } from '@shared/contracts/analysis/dto/IAnalysisTimeWindowQuery';
 
 import type AnalysisService from './AnalysisService';
 
 import type { SynergyMode } from '@shared/contracts/analysis/value-types';
 import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
-import type { IAnalysisTimeWindowQuery } from '@shared/contracts/analysis/dto/IAnalysisTimeWindowQuery';
 import type { IAnalysisTimeWindow } from '@shared/contracts/analysis/IAnalysisTimeWindow';
 import type { IMatchTimeMinimal } from '@shared/contracts/analysis/IMatchTimeMinimal';
 
@@ -19,13 +19,7 @@ export default class AnalysisRepository {
     }
 
     async fetchMatchTimeline(timeWindow?: IAnalysisTimeWindow) {
-        var query: IAnalysisTimeWindowQuery = { };
-        if (timeWindow?.startAt) {
-            query.startAt = timeWindow.startAt.toISOString()
-        }
-        if (timeWindow?.endAt) {
-            query.endAt = timeWindow.endAt.toISOString()
-        }
+        const query = timeWindow ? toAnalysisTimeWindowQuery(timeWindow) : undefined
         const response = await this.analysisService.getMatchTimeline(query);
         const matchTimestamps: IMatchTimeMinimal[] = response.data.map((m: any) => ({
             id: m.id,
@@ -36,13 +30,7 @@ export default class AnalysisRepository {
 
 
     async fetchCharacterUsageSummary(timeWindow?: IAnalysisTimeWindow) {
-        var query: IAnalysisTimeWindowQuery = { };
-        if (timeWindow?.startAt) {
-            query.startAt = timeWindow.startAt.toISOString()
-        }
-        if (timeWindow?.endAt) {
-            query.endAt = timeWindow.endAt.toISOString()
-        }
+        const query = timeWindow ? toAnalysisTimeWindowQuery(timeWindow) : undefined
         const response = await this.analysisService.getCharacterUsageSummary(query);
         return response.data;
     }

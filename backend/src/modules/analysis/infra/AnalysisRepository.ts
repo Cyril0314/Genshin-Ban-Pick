@@ -8,13 +8,14 @@ import type { IAnalysisRepository } from '../domain/IAnalysisRepository';
 import type { IMatchStatisticsOverview } from '../types/IMatchStatisticsOverview';
 import type { IMatchTimeMinimal } from '@shared/contracts/analysis/IMatchTimeMinimal';
 import type { IMatchMoveWeightCalcCore } from '../types/IMatchMoveWeightCalcCore';
-import type { IMatchLineupSlotExpandedRefs } from '../types/IMatchLineupSlotExpandedRefs';
-import type { IMatchLineupSlotTeamMemberIdentityRefs } from '../types/IMatchLineupSlotUserPreferenceCore';
+import type { IMatchLineupSlotCooccurrenceRow } from '../types/IMatchLineupSlotCooccurrenceRow';
+import type { IMatchLineupSlotWithTeamMember } from '../types/IMatchLineupSlotWithTeamMember';
 import type { IMatchLineupSlotWithCharacter } from '../types/IMatchLineupSlotWithCharacter';
 import type { MoveSource, MoveType } from '@shared/contracts/match/value-types';
 import type { CharacterFilterKey } from '@shared/contracts/character/CharacterFilterKey';
 import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 import type { IAnalysisTimeWindow } from '@shared/contracts/analysis/IAnalysisTimeWindow';
+import { TeamMember } from '@shared/contracts/team/TeamMember';
 
 export default class AnalysisRepository implements IAnalysisRepository {
     constructor(private prisma: PrismaClient) {}
@@ -51,7 +52,7 @@ export default class AnalysisRepository implements IAnalysisRepository {
                 },
             }),
             this.prisma.matchMove.count(),
-            this.prisma.matchLineupSlot.findMany(matchLineupSlotExpandedRefsQuery),
+            this.prisma.matchLineupSlot.findMany(matchLineupSlotCooccurrenceRowQuery),
             this.prisma.match.aggregate({
                 _min: { createdAt: true },
                 _max: { createdAt: true },
@@ -259,24 +260,35 @@ export default class AnalysisRepository implements IAnalysisRepository {
         });
     }
 
-    async findAllMatchLineupSlotIdentities(): Promise<IMatchLineupSlotTeamMemberIdentityRefs[]> {
+    async findMatchLineupSlotsWithTeamMember(playerIdentity?: PlayerIdentity): Promise<IMatchLineupSlotWithTeamMember[]> {
         type Entity = Prisma.MatchLineupSlotGetPayload<typeof matchLineupSlotTeamMemberIdentityRefsQuery>;
 
-        const entities: Entity[] = await this.prisma.matchLineupSlot.findMany(matchLineupSlotTeamMemberIdentityRefsQuery);
+        const entities: Entity[] = await this.prisma.matchLineupSlot.findMany({
+            ...matchLineupSlotTeamMemberIdentityRefsQuery,
+            where: playerIdentity ? this.buildPlayerIdentityWhere(playerIdentity) : undefined,
+        });
 
-        return entities.map((entity) => ({
-            characterKey: entity.characterKey,
-            teamMemberName: entity.teamMember.name,
-            memberNickname: entity.teamMember.member?.nickname ?? undefined,
-            guestNickname: entity.teamMember.guest?.nickname ?? undefined,
-        }));
+        return entities.map((entity) => {
+            let teamMember: TeamMember
+            if (entity.teamMember.memberRef && entity.teamMember.member) {
+                teamMember = { type: 'Member', id: entity.teamMember.memberRef, nickname: entity.teamMember.member.nickname };
+            } else if (entity.teamMember.guestRef && entity.teamMember.guest) {
+                teamMember = { type: 'Guest', id: entity.teamMember.guestRef, nickname: entity.teamMember.guest.nickname };
+            } else {
+                teamMember = { type: 'Name', name: entity.teamMember.name };
+            }
+            return {
+                teamMember,
+                characterKey: entity.characterKey
+            }
+        });
     }
 
-    async findMatchLineupSlotsForAnalysis(timeWindow?: IAnalysisTimeWindow): Promise<IMatchLineupSlotExpandedRefs[]> {
-        type Entity = Prisma.MatchLineupSlotGetPayload<typeof matchLineupSlotExpandedRefsQuery>;
+    async findMatchLineupSlotsForCooccurrence(timeWindow?: IAnalysisTimeWindow): Promise<IMatchLineupSlotCooccurrenceRow[]> {
+        type Entity = Prisma.MatchLineupSlotGetPayload<typeof matchLineupSlotCooccurrenceRowQuery>;
 
         const entities: Entity[] = await this.prisma.matchLineupSlot.findMany({
-            ...matchLineupSlotExpandedRefsQuery,
+            ...matchLineupSlotCooccurrenceRowQuery,
             where: {
                 teamMember: {
                     team: {
@@ -349,7 +361,7 @@ export default class AnalysisRepository implements IAnalysisRepository {
         return `name:${m.name}`;
     }
 
-    setupKey(entity: Prisma.MatchLineupSlotGetPayload<typeof matchLineupSlotExpandedRefsQuery>) {
+    setupKey(entity: Prisma.MatchLineupSlotGetPayload<typeof matchLineupSlotCooccurrenceRowQuery>) {
         const matchId = entity.teamMember.team.matchId;
         const teamId = entity.teamMember.teamId;
         const setupNumber = entity.setupNumber;
@@ -382,7 +394,7 @@ const matchLineupSlotTeamMemberIdentityRefsQuery = Prisma.validator<Prisma.Match
     },
 });
 
-const matchLineupSlotExpandedRefsQuery = Prisma.validator<Prisma.MatchLineupSlotFindManyArgs>()({
+const matchLineupSlotCooccurrenceRowQuery = Prisma.validator<Prisma.MatchLineupSlotFindManyArgs>()({
     select: {
         setupNumber: true,
         characterKey: true,

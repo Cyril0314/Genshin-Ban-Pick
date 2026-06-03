@@ -11,6 +11,7 @@ import { useCharacterStore } from '@/modules/character';
 import { getProfileImagePath } from '@/modules/shared/infrastructure/imageRegistry';
 import { elementColors } from '@/modules/shared/ui/constants/elementColors';
 import CharacterHoverCard from './CharacterHoverCard.vue';
+import { getTeamMemberName } from '@shared/contracts/team/TeamMember';
 
 import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 import type { Element } from '@shared/contracts/character/value-types';
@@ -27,6 +28,11 @@ const emit = defineEmits<{
 const { isLoading, record, error } = usePlayerHistoryModal(toRef(props, 'open'), toRef(props, 'identity'));
 const { getByKey: getCharacterDisplayName } = useCharacterDisplayName();
 const { characterMap } = storeToRefs(useCharacterStore());
+
+const title = computed(() => {
+    const teamMember = record.value?.teamMember;
+    return teamMember ? getTeamMemberName(teamMember) : '玩家紀錄';
+});
 
 const maxCount = computed(() => record.value?.characterFrequency[0]?.count ?? 0);
 function getBarWidth(count: number): string {
@@ -47,7 +53,7 @@ function getRowStyle(characterKey: string) {
     <n-modal :show="open" :mask-closable="true" @update:show="emit('update:open', $event)">
         <div class="modal-card scale-context">
             <div class="modal-header">
-                <span class="modal-title">{{ record?.displayName ?? '玩家紀錄' }}</span>
+                <span class="modal-title">{{ title }}</span>
                 <n-button text class="close-button" @click="emit('update:open', false)">
                     <template #icon>
                         <X />

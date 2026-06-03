@@ -1,4 +1,4 @@
-import type { PlayerIdentity } from '../identity/PlayerIdentity';
+import type { TeamMember } from '../team/TeamMember';
 
 export interface ICharacterSynergy {
     characterKey: string;     // 與本角色共現的搭檔
@@ -13,8 +13,7 @@ export interface IPlayerCharacterFrequency {
 }
 
 export interface IPlayerRecord {
-    identity: PlayerIdentity;
-    displayName: string;
+    teamMember: TeamMember;
     totalSetups: number;
     characterFrequency: IPlayerCharacterFrequency[];   // Top N, sorted desc by count
 }

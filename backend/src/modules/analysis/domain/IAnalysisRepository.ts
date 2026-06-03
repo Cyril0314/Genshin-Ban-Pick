@@ -2,8 +2,8 @@
 
 import type { IMatchStatisticsOverview } from '../types/IMatchStatisticsOverview';
 import type { IMatchMoveWeightCalcCore } from '../types/IMatchMoveWeightCalcCore';
-import type { IMatchLineupSlotExpandedRefs } from '../types/IMatchLineupSlotExpandedRefs';
-import type { IMatchLineupSlotTeamMemberIdentityRefs } from '../types/IMatchLineupSlotUserPreferenceCore';
+import type { IMatchLineupSlotCooccurrenceRow } from '../types/IMatchLineupSlotCooccurrenceRow';
+import type { IMatchLineupSlotWithTeamMember } from '../types/IMatchLineupSlotWithTeamMember';
 import type { IMatchLineupSlotWithCharacter } from '../types/IMatchLineupSlotWithCharacter'
 import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 import type { IAnalysisTimeWindow } from '@shared/contracts/analysis/IAnalysisTimeWindow';
@@ -14,11 +14,11 @@ export interface IAnalysisRepository {
 
     findMatchMinimalTimestamps(timeWindow?: IAnalysisTimeWindow): Promise<IMatchTimeMinimal[]>;
 
-    findAllMatchLineupSlotIdentities(): Promise<IMatchLineupSlotTeamMemberIdentityRefs[]>;
+    findMatchLineupSlotsWithTeamMember(playerIdentity?: PlayerIdentity): Promise<IMatchLineupSlotWithTeamMember[]>;
 
     findMatchMoveCoreForWeightCalc(timeWindow?: IAnalysisTimeWindow): Promise<IMatchMoveWeightCalcCore[]>;
 
-    findMatchLineupSlotsForAnalysis(timeWindow?: IAnalysisTimeWindow): Promise<IMatchLineupSlotExpandedRefs[]>;
+    findMatchLineupSlotsForCooccurrence(timeWindow?: IAnalysisTimeWindow): Promise<IMatchLineupSlotCooccurrenceRow[]>;
 
     findMatchLineupSlotsWithCharacter(playerIdentity?: PlayerIdentity): Promise<IMatchLineupSlotWithCharacter[]>;
 }

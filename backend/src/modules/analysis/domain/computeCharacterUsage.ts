@@ -4,7 +4,6 @@ import { aggregateMoveWeightContext } from './aggregateMoveWeightContext';
 import { calculateTacticalWeight } from './calculateTacticalWeight';
 
 import type { IMatchTimeMinimal } from '@shared/contracts/analysis/IMatchTimeMinimal';
-import type { IMatchLineupSlotExpandedRefs } from '../types/IMatchLineupSlotExpandedRefs';
 import type { IMatchMoveWeightCalcCore } from '../types/IMatchMoveWeightCalcCore';
 import type { IWeightContext } from '@shared/contracts/analysis/IWeightContext';
 import type { ICharacterUsage } from '@shared/contracts/analysis/ICharacterUsage';
@@ -12,7 +11,7 @@ import type { ICharacterUsage } from '@shared/contracts/analysis/ICharacterUsage
 export function computeCharacterUsage(
     matches: IMatchTimeMinimal[],
     matchMoves: IMatchMoveWeightCalcCore[],
-    matchLineupSlots: IMatchLineupSlotExpandedRefs[],
+    matchLineupSlots: { matchId: number; characterKey: string }[],
 ): ICharacterUsage[] {
     const matchCount = matches.length;
 

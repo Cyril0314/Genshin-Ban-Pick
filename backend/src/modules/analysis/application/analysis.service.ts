@@ -9,7 +9,9 @@ import { computeCharacterPickPriority } from '../domain/computeCharacterPickPrio
 import { computePlayerStyleProfile } from '../domain/computePlayerStyleProfile';
 import { computePlayerRecord } from '../domain/computePlayerRecord';
 import { computeCharacterAttributeDistributions } from '../domain/computeCharacterAttributeDistributions';
+import { countCharacterKeys } from '../domain/countCharacterKeys';
 import { createLogger } from '../../../utils/logger';
+import { stringifyPlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 
 import type { ICharacterRepository } from '../../character/domain/ICharacterRepository';
 import type { IMatchRepository } from '../../match/domain/IMatchRepository';
@@ -23,14 +25,14 @@ import type { IPlayerStyleProfile } from '@shared/contracts/analysis/IPlayerStyl
 import type { IPlayerRecord } from '@shared/contracts/analysis/IPlayerRecord';
 import type { SynergyMode } from '@shared/contracts/analysis/value-types';
 import type { ICharacterGraphLink } from '@shared/contracts/analysis/character/ICharacterGraphLink';
-import type { KeyIndexedMatrix } from '@shared/contracts/analysis/KeyIndexedMatrix';
+import type { IPlayerCharacterUsage } from '@shared/contracts/analysis/IPlayerCharacterUsage';
+import type { TeamMember } from '@shared/contracts/team/TeamMember';
 import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 import type { ICharacterPickPriority } from '@shared/contracts/analysis/ICharacterPickPriority';
 import type { ICharacterAttributeDistributions } from '@shared/contracts/analysis/character/ICharacterAttributeDistributions';
 import type { IAnalysisOverview } from '@shared/contracts/analysis/IAnalysisOverview';
 import type { IAnalysisTimeWindow } from '@shared/contracts/analysis/IAnalysisTimeWindow';
 import type { IMatchTimeMinimal } from '@shared/contracts/analysis/IMatchTimeMinimal';
-
 
 const logger = createLogger('analysis.service');
 
@@ -47,7 +49,7 @@ export default class AnalysisService {
     ) {}
 
     async fetchOverview(): Promise<IAnalysisOverview> {
-        const overview = await this.analysisRepository.findMatchStatisticsOverview()
+        const overview = await this.analysisRepository.findMatchStatisticsOverview();
         return {
             volume: {
                 matchCount: overview.totalMatches,
@@ -60,25 +62,28 @@ export default class AnalysisService {
                     onlyName: overview.uniquePlayers.onlyName,
                 },
                 characters: overview.uniqueCharacters,
-                moves: overview.moves
+                moves: overview.moves,
             },
             activity: {
                 earliestMatchAt: overview.dateRange.from.toISOString(),
                 latestMatchAt: overview.dateRange.to.toISOString(),
-                versionSpan: overview.versionSpan
-            }
-        }
+                versionSpan: overview.versionSpan,
+            },
+        };
     }
 
-    async fetchMatchTimeline(timeWindow?: IAnalysisTimeWindow): Promise<IMatchTimeMinimal[]>  {
+    async fetchMatchTimeline(timeWindow?: IAnalysisTimeWindow): Promise<IMatchTimeMinimal[]> {
         const matches = await this.analysisRepository.findMatchMinimalTimestamps(timeWindow);
-        return matches
+        return matches;
     }
 
     async fetchCharacterUsageSummary(timeWindow?: IAnalysisTimeWindow): Promise<ICharacterUsage[]> {
-        const matches = await this.analysisRepository.findMatchMinimalTimestamps(timeWindow);
-        const matcheMoves = await this.analysisRepository.findMatchMoveCoreForWeightCalc(timeWindow);
-        const matchLineupSlots = await this.analysisRepository.findMatchLineupSlotsForAnalysis(timeWindow);
+        const [matches, matcheMoves, matchLineupSlots] = await Promise.all([
+            this.analysisRepository.findMatchMinimalTimestamps(timeWindow),
+            this.analysisRepository.findMatchMoveCoreForWeightCalc(timeWindow),
+            this.analysisRepository.findMatchLineupSlotsForCooccurrence(timeWindow),
+        ]);
+
         return computeCharacterUsage(matches, matcheMoves, matchLineupSlots);
     }
 
@@ -88,24 +93,25 @@ export default class AnalysisService {
     }
 
     async fetchCharacterSynergyMatrix(mode: SynergyMode = 'setup'): Promise<CharacterSynergyMatrix> {
-        const matchLineupSlots = await this.analysisRepository.findMatchLineupSlotsForAnalysis();
+        const matchLineupSlots = await this.analysisRepository.findMatchLineupSlotsForCooccurrence();
         const groups = this.characterSynergyCalculator.buildCooccurrenceGroups(matchLineupSlots, mode);
         const synergy = this.characterSynergyCalculator.buildSynergyMatrix(groups);
         return synergy;
     }
 
     async fetchCharacterCluster(): Promise<ICharacterCluster> {
-        const characters = await this.characterRepository.findAll();
+        const [characters, matchLineupSlots] = await Promise.all([
+            this.characterRepository.findAll(),
+            this.analysisRepository.findMatchLineupSlotsForCooccurrence(),
+        ]);
         const characterMap = Object.fromEntries(characters.map((character) => [character.key, character]));
 
-        // Consistent calculation
-        const matchLineupSlots = await this.analysisRepository.findMatchLineupSlotsForAnalysis();
         const groups = this.characterSynergyCalculator.buildCooccurrenceGroups(matchLineupSlots, 'setup');
         const synergyMatrix = this.characterSynergyCalculator.buildSynergyMatrix(groups);
 
         const pickCounts: Record<string, number> = {};
         for (const matchLineupSlot of matchLineupSlots) {
-            const characterKey = matchLineupSlot.characterKey
+            const characterKey = matchLineupSlot.characterKey;
             pickCounts[characterKey] = (pickCounts[characterKey] || 0) + 1;
         }
 
@@ -132,22 +138,24 @@ export default class AnalysisService {
         };
     }
 
-    async fetchPlayerCharacterUsage(): Promise<KeyIndexedMatrix<string, string>> {
-        const matchLineupSlots = await this.analysisRepository.findAllMatchLineupSlotIdentities();
+    async fetchPlayerCharacterUsage(): Promise<IPlayerCharacterUsage[]> {
+        const slots = await this.analysisRepository.findMatchLineupSlotsWithTeamMember();
 
-        const matrix: KeyIndexedMatrix<string, string> = {};
-
-        for (const u of matchLineupSlots) {
-            const playerName = u.memberNickname ?? u.guestNickname ?? u.teamMemberName;
-            const charKey = u.characterKey;
-
-            if (!matrix[playerName]) matrix[playerName] = {};
-            if (!matrix[playerName][charKey]) matrix[playerName][charKey] = 0;
-
-            matrix[playerName][charKey]++;
+        const slotsMap = new Map<string, { teamMember: TeamMember; slots: { characterKey: string }[] }>();
+        for (const slot of slots) {
+            const key = stringifyPlayerIdentity(slot.teamMember);
+            let bucket = slotsMap.get(key);
+            if (!bucket) {
+                bucket = { teamMember: slot.teamMember, slots: [] };
+                slotsMap.set(key, bucket);
+            }
+            bucket.slots.push(slot);
         }
 
-        return matrix;
+        return Array.from(slotsMap.values()).map(({ teamMember, slots }) => ({
+            teamMember,
+            characterCounts: countCharacterKeys(slots),
+        }));
     }
 
     async fetchPlayerStyleProfile(playerIdentity: PlayerIdentity): Promise<IPlayerStyleProfile | undefined> {
@@ -160,25 +168,26 @@ export default class AnalysisService {
     }
 
     async fetchPlayerRecord(playerIdentity: PlayerIdentity): Promise<IPlayerRecord> {
-        const [playerSlots, globalSlots, displayName] = await Promise.all([
-            this.analysisRepository.findMatchLineupSlotsWithCharacter(playerIdentity),
-            this.analysisRepository.findMatchLineupSlotsForAnalysis(),
-            this.resolveDisplayName(playerIdentity),
+        const [playerSlots, globalSlots] = await Promise.all([
+            this.analysisRepository.findMatchLineupSlotsWithTeamMember(playerIdentity),
+            this.analysisRepository.findMatchLineupSlotsForCooccurrence(),
         ]);
+        // teamMember 直接取自玩家的任一 slot；該玩家無 slot 時（少見）才回退查 user。
+        const teamMember = playerSlots[0]?.teamMember ?? (await this.resolveTeamMember(playerIdentity));
         const groups = this.characterSynergyCalculator.buildCooccurrenceGroups(globalSlots, 'setup');
         const synergyMatrix = this.characterSynergyCalculator.buildSynergyMatrix(groups);
 
-        return computePlayerRecord(playerSlots, synergyMatrix, playerIdentity, displayName);
-    }
-
-    private async resolveDisplayName(playerIdentity: PlayerIdentity): Promise<string> {
-        if (playerIdentity.type === 'Name') return playerIdentity.name;
-        const user = await this.userService.fetchUser({ type: playerIdentity.type, id: playerIdentity.id });
-        return user.nickname;
+        return computePlayerRecord(playerSlots, synergyMatrix, teamMember);
     }
 
     async fetchCharacterAttributeDistributions(playerIdentity?: PlayerIdentity): Promise<ICharacterAttributeDistributions> {
         const slots = await this.analysisRepository.findMatchLineupSlotsWithCharacter(playerIdentity);
         return computeCharacterAttributeDistributions(slots);
+    }
+
+    private async resolveTeamMember(playerIdentity: PlayerIdentity): Promise<TeamMember> {
+        if (playerIdentity.type === 'Name') return { type: 'Name', name: playerIdentity.name };
+        const user = await this.userService.fetchUser({ type: playerIdentity.type, id: playerIdentity.id });
+        return { type: playerIdentity.type, id: playerIdentity.id, nickname: user.nickname };
     }
 }

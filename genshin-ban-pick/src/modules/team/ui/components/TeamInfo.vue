@@ -8,6 +8,7 @@ import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
 import { DragTypes } from '@/app/constants/customMIMETypes';
 import { usePlayerHistory } from '@/modules/shared/ui/composables/usePlayerHistory';
 import { parsePlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
+import { getTeamMemberName } from '@shared/contracts/team/TeamMember';
 import type { Identity } from '@shared/contracts/identity/Identity';
 import type { TeamMember } from '@shared/contracts/team/TeamMember';
 
@@ -42,10 +43,9 @@ function getTeamMember(memberSlot: number): TeamMember | undefined {
     return props.teamInfo.members[memberSlot] ?? undefined
 }
 
-function getTeamMemberName(memberSlot: number): string | undefined {
+function memberNameAt(memberSlot: number): string | undefined {
     const member = getTeamMember(memberSlot)
-    if (!member) return undefined;
-    return member.type === 'Name' ? member.name : member.nickname
+    return member ? getTeamMemberName(member) : undefined;
 }
 
 function handleInput(e: Event) {
@@ -101,7 +101,7 @@ function handleMemberNameClick(memberSlot: number) {
                 <div class="member"
                     v-for="(_, memberSlot) in totalSlots"
                     @dragover.prevent @drop="(e) => handleDropEvent(memberSlot, e)">
-                    <span class="name" @click="handleMemberNameClick(memberSlot)">{{ getTeamMemberName(memberSlot) }}</span>
+                    <span class="name" @click="handleMemberNameClick(memberSlot)">{{ memberNameAt(memberSlot) }}</span>
                     <X class="remove" @click="handleRemoveMemberButtonClick(memberSlot)"/>
                     
                 </div>

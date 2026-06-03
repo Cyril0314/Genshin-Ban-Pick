@@ -55,7 +55,15 @@ export default class MatchRepository implements IMatchRepository {
         return matches;
     }
 
-    async create(snapshot: IMatchSnapshot, dryRun: boolean): Promise<IMatch> {
+    async create(snapshot: IMatchSnapshot): Promise<IMatch> {
+        return this.run(snapshot, false);
+    }
+
+    async preview(snapshot: IMatchSnapshot): Promise<IMatch> {
+        return this.run(snapshot, true);
+    }
+
+    private async run(snapshot: IMatchSnapshot, dryRun: boolean): Promise<IMatch> {
         const { roomSetting } = snapshot;
         try {
             const match = await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
@@ -161,79 +169,24 @@ export default class MatchRepository implements IMatchRepository {
     }
 
     async findAllMatchTeamMembers(): Promise<TeamMember[]> {
-        const teamMembers = await this.prisma.matchTeamMember.findMany({
+        const rows = await this.prisma.matchTeamMember.findMany({
             select: {
-                id: true,
                 name: true,
                 memberRef: true,
                 guestRef: true,
-                member: {
-                    select: {
-                        id: true,
-                        nickname: true,
-                    },
-                },
-                guest: {
-                    select: {
-                        id: true,
-                        nickname: true,
-                    },
-                },
+                member: { select: { nickname: true } },
+                guest: { select: { nickname: true } },
             },
         });
 
-        const teamMemberMap = new Map<string, TeamMember>();
-
-        for (const teamMember of teamMembers) {
-            if (teamMember.memberRef && teamMember.member) {
-                const key = `Member:${teamMember.memberRef}`;
-                if (!teamMemberMap.has(key)) {
-                    teamMemberMap.set(key, {
-                        type: 'Member',
-                        id: teamMember.memberRef,
-                        nickname: teamMember.member.nickname,
-                    });
-                }
-                continue;
+        return rows.map((row) => {
+            if (row.memberRef && row.member) {
+                return { type: 'Member', id: row.memberRef, nickname: row.member.nickname };
+            } else if (row.guestRef && row.guest) {
+                return { type: 'Guest', id: row.guestRef, nickname: row.guest.nickname };
+            } else {
+                return { type: 'Name', name: row.name };
             }
-
-            if (teamMember.guestRef && teamMember.guest) {
-                const key = `Guest:${teamMember.guestRef}`;
-                if (!teamMemberMap.has(key)) {
-                    teamMemberMap.set(key, {
-                        type: 'Guest',
-                        id: teamMember.guestRef,
-                        nickname: teamMember.guest.nickname,
-                    });
-                }
-                continue;
-            }
-
-            // name-only
-            if (teamMember.name) {
-                const key = `Name:${teamMember.name}`;
-                if (!teamMemberMap.has(key)) {
-                    teamMemberMap.set(key, {
-                        type: 'Name',
-                        name: teamMember.name,
-                    });
-                }
-            }
-        }
-
-        const identityOrder: Record<TeamMember['type'], number> = {
-            Member: 0,
-            Guest: 1,
-            Name: 2,
-        };
-
-        const getDisplayName = (m: TeamMember) => m.type === 'Name' ? m.name : m.nickname;
-
-        return Array.from(teamMemberMap.values()).sort((a, b) => {
-            const typeDiff = identityOrder[a.type] - identityOrder[b.type];
-            if (typeDiff !== 0) return typeDiff;
-
-            return getDisplayName(a).localeCompare(getDisplayName(b), 'zh-Hant');
         });
     }
 }

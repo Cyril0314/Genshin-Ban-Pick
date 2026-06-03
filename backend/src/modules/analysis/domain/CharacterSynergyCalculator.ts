@@ -1,7 +1,7 @@
 // backend/src/modules/analysis/domain/CharacterSynergyCalculator.ts
 
 import type { SynergyMode } from '@shared/contracts/analysis/value-types';
-import type { IMatchLineupSlotExpandedRefs } from '../types/IMatchLineupSlotExpandedRefs';
+import type { IMatchLineupSlotCooccurrenceRow } from '../types/IMatchLineupSlotCooccurrenceRow';
 import type { CharacterSynergyMatrix } from '@shared/contracts/analysis/CharacterSynergyMatrix';
 
 export default class CharacterSynergyCalculator {
@@ -28,7 +28,7 @@ export default class CharacterSynergyCalculator {
         return synergyMatrix;
     }
 
-    buildCooccurrenceGroups(slots: IMatchLineupSlotExpandedRefs[], mode: SynergyMode): Record<string, string[]> {
+    buildCooccurrenceGroups(slots: IMatchLineupSlotCooccurrenceRow[], mode: SynergyMode): Record<string, string[]> {
         const groups: Record<string, string[]> = {};
 
         for (const slot of slots) {
@@ -41,7 +41,7 @@ export default class CharacterSynergyCalculator {
     }
 
 
-    private buildCooccurrenceGroupKey(rawLineupSlot: IMatchLineupSlotExpandedRefs, mode: SynergyMode): string {
+    private buildCooccurrenceGroupKey(rawLineupSlot: IMatchLineupSlotCooccurrenceRow, mode: SynergyMode): string {
         switch (mode) {
             case 'match':
                 // 一場比賽當作一個 group

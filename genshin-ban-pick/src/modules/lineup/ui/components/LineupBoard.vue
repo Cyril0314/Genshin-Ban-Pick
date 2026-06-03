@@ -7,6 +7,7 @@ import { createLogger } from '@/app/utils/logger';
 import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
 import LineupCell from './LineupCell.vue';
 import { useLineupStore } from '../../store/lineupStore';
+import { getTeamMemberName } from '@shared/contracts/team/TeamMember';
 
 import type { TeamMember } from '@shared/contracts/team/TeamMember';
 
@@ -29,7 +30,7 @@ const memberNames = computed(() =>
     Array.from({ length: cols.value }, (_, i) => {
         const member = props.teamMembers[i];
         if (!member) return '';
-        return member.type === 'Name' ? member.name : member.nickname;
+        return getTeamMemberName(member);
     }),
 );
 
