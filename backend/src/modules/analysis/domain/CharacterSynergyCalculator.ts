@@ -28,30 +28,29 @@ export default class CharacterSynergyCalculator {
         return synergyMatrix;
     }
 
-    buildCooccurrenceGroups(slots: IMatchLineupSlotCooccurrenceRow[], mode: SynergyMode): Record<string, string[]> {
+    buildCooccurrenceGroups(cooccurrenceRows: IMatchLineupSlotCooccurrenceRow[], mode: SynergyMode): Record<string, string[]> {
         const groups: Record<string, string[]> = {};
 
-        for (const slot of slots) {
-            const key = this.buildCooccurrenceGroupKey(slot, mode);
+        for (const cooccurrenceRow of cooccurrenceRows) {
+            const key = this.buildCooccurrenceGroupKey(cooccurrenceRow, mode);
             if (!groups[key]) groups[key] = [];
-            groups[key].push(slot.characterKey);
+            groups[key].push(cooccurrenceRow.characterKey);
         }
 
         return groups;
     }
 
-
-    private buildCooccurrenceGroupKey(rawLineupSlot: IMatchLineupSlotCooccurrenceRow, mode: SynergyMode): string {
+    private buildCooccurrenceGroupKey(cooccurrenceRow: IMatchLineupSlotCooccurrenceRow, mode: SynergyMode): string {
         switch (mode) {
             case 'match':
                 // 一場比賽當作一個 group
-                return `${rawLineupSlot.matchId}`;
+                return `${cooccurrenceRow.matchId}`;
             case 'team':
                 // 一場比賽 + 一隊當作一個 group
-                return `${rawLineupSlot.matchId}:${rawLineupSlot.teamId}`;
+                return `${cooccurrenceRow.matchId}:${cooccurrenceRow.teamId}`;
             case 'setup':
                 // 一場比賽 + 一隊 + 一個編成當作一個 group
-                return `${rawLineupSlot.matchId}:${rawLineupSlot.teamId}:${rawLineupSlot.setupNumber}`;
+                return `${cooccurrenceRow.matchId}:${cooccurrenceRow.teamId}:${cooccurrenceRow.setupNumber}`;
         }
     }
 }

@@ -64,6 +64,17 @@ Both backend and frontend organize features under `src/modules/<feature>/` with 
 
 Rule of thumb: if it has methods or encodes a rule it belongs in `domain/`; if it is just fields it belongs in `types/`. (Cross-boundary data shapes go in `shared/contracts/` instead — `types/` is for module-internal shapes.)
 
+### Persistence → domain mappers
+
+Functions that turn a DB row into a domain/contract value follow one split. **The prefix states the action (`map` = row→domain); the variant is shown by suffix + folder, never by changing the prefix:**
+
+- `mapX` — single row → single domain value. Takes a **structural input type** (no `@prisma/client` import), lives in `domain/`, may be imported across modules. Examples: `mapCharacter`, `mapTeamMember`, `mapPlayerIdentity`. The structural input is what keeps it ORM-agnostic, so it stays a pure domain fn and is safe to share.
+- `*FromPrisma` — aggregate deserialization (a whole entity tree → DTO). Takes **Prisma types**, lives in `infra/`, used only by its own module's repository. Example: `mapMatchFromPrisma`.
+
+Deciding question: **will it be shared across modules?** Yes → it must be Prisma-agnostic (structural input) and live in `domain/`. No, and it imports Prisma → it's an adapter, put it in `infra/`. Never import another module's `infra/`; when a module needs another's aggregate, depend on that module's repository/service interface (returns a contract DTO), not its mapper. Don't decouple a `*FromPrisma` mapper into structural types just for uniformity — own-module + Prisma means `infra/` is already correct, and the parallel type tree buys nothing.
+
+Mapper vs converter prefix: use `map*` only when the input carries a **DB shape** (Prisma types, `*Ref` columns, groupBy rows). To turn an already-clean domain value into another representation (query DTO, view model, primitive) use `to*` instead — e.g. `toPlayerIdentityQuery`, `toAnalysisTimeWindowQuery`.
+
 ### Module composition (DI)
 
 - **Backend**: each module exposes `createXModule(prisma, ...)` from `modules/<x>/index.ts` returning `{ router, controller, service, repository? }`. `src/app/appRouter.ts` wires modules together and mounts routers under `/api/<resource>`. The socket layer (`modules/socket/`) builds its own services from `RoomStateRepository` + `RoomStateManager` (in-memory room state) and registers per-feature socket handlers in `socketController.ts`.

@@ -1,6 +1,6 @@
 // src/modules/analysis/domain/IAnalysisRepository.ts
 
-import type { IMatchStatisticsOverview } from '../types/IMatchStatisticsOverview';
+import type { IMatchStatisticsRaw } from '../types/IMatchStatisticsRaw';
 import type { IMatchMoveWeightCalcCore } from '../types/IMatchMoveWeightCalcCore';
 import type { IMatchLineupSlotCooccurrenceRow } from '../types/IMatchLineupSlotCooccurrenceRow';
 import type { IMatchLineupSlotWithTeamMember } from '../types/IMatchLineupSlotWithTeamMember';
@@ -10,7 +10,7 @@ import type { IAnalysisTimeWindow } from '@shared/contracts/analysis/IAnalysisTi
 import type { IMatchTimeMinimal } from '@shared/contracts/analysis/IMatchTimeMinimal';
 
 export interface IAnalysisRepository {
-    findMatchStatisticsOverview(): Promise<IMatchStatisticsOverview>;
+    findMatchStatisticsRaw(): Promise<IMatchStatisticsRaw>;
 
     findMatchMinimalTimestamps(timeWindow?: IAnalysisTimeWindow): Promise<IMatchTimeMinimal[]>;
 

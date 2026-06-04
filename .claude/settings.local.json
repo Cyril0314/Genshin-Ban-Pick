@@ -42,7 +42,12 @@
       "Bash(npx --prefix /Users/wangxiaoyu/Desktop/side/Genshin-Ban-Pick/backend tsc --noEmit -p /Users/wangxiaoyu/Desktop/side/Genshin-Ban-Pick/backend)",
       "Bash(echo \"BACKEND_EXIT=$?\")",
       "Bash(shasum -a 256 /Users/wangxiaoyu/Desktop/side/Genshin-Ban-Pick/backend/prisma/migrations/20260505000000_character_key_as_pk/migration.sql /Users/wangxiaoyu/Desktop/side/Genshin-Ban-Pick/backend/prisma/migrations/20260506000000_genshin_version_code_as_pk/migration.sql)",
-      "Bash(xargs ls)"
+      "Bash(xargs ls)",
+      "Bash(nc -z localhost 5434)",
+      "Bash(awk -F/ '{ if \\($1==\"shared\"\\) print \"shared/\"$3; else if \\($1==\"backend\"\\) print \"backend/\"$4; else print \"fe/\"$4 }')",
+      "Bash(echo \"BE_EXIT=$?\")",
+      "Bash(echo \"FE_EXIT=$?\")",
+      "Bash(echo \"exit:$?\")"
     ]
   }
 }

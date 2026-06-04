@@ -9,6 +9,7 @@ import { computeCharacterPickPriority } from '../domain/computeCharacterPickPrio
 import { computePlayerStyleProfile } from '../domain/computePlayerStyleProfile';
 import { computePlayerRecord } from '../domain/computePlayerRecord';
 import { computeCharacterAttributeDistributions } from '../domain/computeCharacterAttributeDistributions';
+import { computeAnalysisOverview } from '../domain/computeAnalysisOverview';
 import { countCharacterKeys } from '../domain/countCharacterKeys';
 import { createLogger } from '../../../utils/logger';
 import { stringifyPlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
@@ -49,27 +50,12 @@ export default class AnalysisService {
     ) {}
 
     async fetchOverview(): Promise<IAnalysisOverview> {
-        const overview = await this.analysisRepository.findMatchStatisticsOverview();
-        return {
-            volume: {
-                matchCount: overview.totalMatches,
-                matchCharacterCombinationCount: overview.uniqueCharacterCombinations,
-                matchTeamMemberCombinationCount: overview.uniqueTeamMemberCombinations,
-                players: {
-                    total: overview.uniquePlayers.member + overview.uniquePlayers.guest + overview.uniquePlayers.onlyName,
-                    member: overview.uniquePlayers.member,
-                    guest: overview.uniquePlayers.guest,
-                    onlyName: overview.uniquePlayers.onlyName,
-                },
-                characters: overview.uniqueCharacters,
-                moves: overview.moves,
-            },
-            activity: {
-                earliestMatchAt: overview.dateRange.from.toISOString(),
-                latestMatchAt: overview.dateRange.to.toISOString(),
-                versionSpan: overview.versionSpan,
-            },
-        };
+        const [raw, cooccurrenceRows] = await Promise.all([
+            this.analysisRepository.findMatchStatisticsRaw(),
+            this.analysisRepository.findMatchLineupSlotsForCooccurrence(),
+        ]);
+
+        return computeAnalysisOverview(raw, cooccurrenceRows);
     }
 
     async fetchMatchTimeline(timeWindow?: IAnalysisTimeWindow): Promise<IMatchTimeMinimal[]> {
@@ -78,13 +64,13 @@ export default class AnalysisService {
     }
 
     async fetchCharacterUsageSummary(timeWindow?: IAnalysisTimeWindow): Promise<ICharacterUsage[]> {
-        const [matches, matcheMoves, matchLineupSlots] = await Promise.all([
+        const [matches, matcheMoves, cooccurrenceRows] = await Promise.all([
             this.analysisRepository.findMatchMinimalTimestamps(timeWindow),
             this.analysisRepository.findMatchMoveCoreForWeightCalc(timeWindow),
             this.analysisRepository.findMatchLineupSlotsForCooccurrence(timeWindow),
         ]);
 
-        return computeCharacterUsage(matches, matcheMoves, matchLineupSlots);
+        return computeCharacterUsage(matches, matcheMoves, cooccurrenceRows);
     }
 
     async fetchCharacterUsagePickPriority(): Promise<ICharacterPickPriority[]> {
@@ -93,25 +79,25 @@ export default class AnalysisService {
     }
 
     async fetchCharacterSynergyMatrix(mode: SynergyMode = 'setup'): Promise<CharacterSynergyMatrix> {
-        const matchLineupSlots = await this.analysisRepository.findMatchLineupSlotsForCooccurrence();
-        const groups = this.characterSynergyCalculator.buildCooccurrenceGroups(matchLineupSlots, mode);
+        const cooccurrenceRows = await this.analysisRepository.findMatchLineupSlotsForCooccurrence();
+        const groups = this.characterSynergyCalculator.buildCooccurrenceGroups(cooccurrenceRows, mode);
         const synergy = this.characterSynergyCalculator.buildSynergyMatrix(groups);
         return synergy;
     }
 
     async fetchCharacterCluster(): Promise<ICharacterCluster> {
-        const [characters, matchLineupSlots] = await Promise.all([
+        const [characters, cooccurrenceRows] = await Promise.all([
             this.characterRepository.findAll(),
             this.analysisRepository.findMatchLineupSlotsForCooccurrence(),
         ]);
         const characterMap = Object.fromEntries(characters.map((character) => [character.key, character]));
 
-        const groups = this.characterSynergyCalculator.buildCooccurrenceGroups(matchLineupSlots, 'setup');
+        const groups = this.characterSynergyCalculator.buildCooccurrenceGroups(cooccurrenceRows, 'setup');
         const synergyMatrix = this.characterSynergyCalculator.buildSynergyMatrix(groups);
 
         const pickCounts: Record<string, number> = {};
-        for (const matchLineupSlot of matchLineupSlots) {
-            const characterKey = matchLineupSlot.characterKey;
+        for (const cooccurrenceRow of cooccurrenceRows) {
+            const characterKey = cooccurrenceRow.characterKey;
             pickCounts[characterKey] = (pickCounts[characterKey] || 0) + 1;
         }
 
@@ -168,16 +154,15 @@ export default class AnalysisService {
     }
 
     async fetchPlayerRecord(playerIdentity: PlayerIdentity): Promise<IPlayerRecord> {
-        const [playerSlots, globalSlots] = await Promise.all([
+        const [slots, cooccurrenceRows] = await Promise.all([
             this.analysisRepository.findMatchLineupSlotsWithTeamMember(playerIdentity),
             this.analysisRepository.findMatchLineupSlotsForCooccurrence(),
         ]);
-        // teamMember 直接取自玩家的任一 slot；該玩家無 slot 時（少見）才回退查 user。
-        const teamMember = playerSlots[0]?.teamMember ?? (await this.resolveTeamMember(playerIdentity));
-        const groups = this.characterSynergyCalculator.buildCooccurrenceGroups(globalSlots, 'setup');
+        const teamMember = slots[0]?.teamMember ?? (await this.resolveTeamMember(playerIdentity));
+        const groups = this.characterSynergyCalculator.buildCooccurrenceGroups(cooccurrenceRows, 'setup');
         const synergyMatrix = this.characterSynergyCalculator.buildSynergyMatrix(groups);
 
-        return computePlayerRecord(playerSlots, synergyMatrix, teamMember);
+        return computePlayerRecord(slots, synergyMatrix, teamMember);
     }
 
     async fetchCharacterAttributeDistributions(playerIdentity?: PlayerIdentity): Promise<ICharacterAttributeDistributions> {

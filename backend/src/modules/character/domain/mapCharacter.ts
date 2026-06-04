@@ -1,10 +1,23 @@
 // src/modules/character/domain/mapCharacter.ts
 
-import { Character } from "@prisma/client";
 import type { ICharacter } from "@shared/contracts/character/ICharacter";
 import type { Rarity, Element, Weapon, Region, ModelType, CharacterRole, Wish } from "@shared/contracts/character/value-types";
 
-export function mapCharacter(raw: Character): ICharacter {
+// character 資料表 row 的結構型投影（不依賴 Prisma），讓 mapper 保持 ORM 無關、可跨模組共用。
+export interface ICharacterRow {
+    key: string;
+    name: string;
+    rarity: string;
+    element: string;
+    weapon: string;
+    region: string;
+    modelType: string;
+    role: string;
+    wish: string;
+    releaseAt: Date | null;
+}
+
+export function mapCharacter(raw: ICharacterRow): ICharacter {
     return {
         key: raw.key,
         name: raw.name,

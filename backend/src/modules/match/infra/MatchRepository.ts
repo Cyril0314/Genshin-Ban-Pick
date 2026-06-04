@@ -9,7 +9,8 @@ import MatchMoveCreator from '../application/creators/MatchMoveCreator';
 import MatchLineupSlotCreator from '../application/creators/MatchLineupSlotCreator';
 import { DataNotFoundError, DbConnectionError, DbForeignKeyConstraintError, DbUniqueConstraintError, DryRunError } from '../../../errors/AppError';
 import { createLogger } from '../../../utils/logger';
-import { mapMatchFromPrisma } from '../domain/mapMatchFromPrisma';
+import { mapMatchFromPrisma } from './mapMatchFromPrisma';
+import { mapTeamMember } from '../domain/mapTeamMember';
 
 import type { IMatchRepository } from '../domain/IMatchRepository';
 import type { IMatchSnapshot } from '../domain/IMatchSnapshot';
@@ -179,14 +180,6 @@ export default class MatchRepository implements IMatchRepository {
             },
         });
 
-        return rows.map((row) => {
-            if (row.memberRef && row.member) {
-                return { type: 'Member', id: row.memberRef, nickname: row.member.nickname };
-            } else if (row.guestRef && row.guest) {
-                return { type: 'Guest', id: row.guestRef, nickname: row.guest.nickname };
-            } else {
-                return { type: 'Name', name: row.name };
-            }
-        });
+        return rows.map(mapTeamMember);
     }
 }
