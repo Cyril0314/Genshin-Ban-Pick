@@ -2,6 +2,7 @@
 
 import { Request, Response } from 'express';
 import MatchService from '../application/match.service';
+import { InvalidFieldsError } from '../../../errors/AppError';
 
 export default class MatchController {
     constructor(private matchService: MatchService) {}
@@ -12,9 +13,17 @@ export default class MatchController {
         res.status(200).json(matchData);
     };
 
+    fetchMatch = async(req: Request, res: Response) => {
+        const matchId = Number(req.params.matchId);
+        if (Number.isNaN(matchId)) throw new InvalidFieldsError();
+        const match = await this.matchService.fetchMatch(matchId);
+        res.status(200).json(match);
+    };
+
     deleteMatch = async(req: Request, res: Response) => {
-        const { matchId } = req.params;
-        await this.matchService.deleteMatch(Number(matchId));
+        const matchId = Number(req.params.matchId);
+        if (Number.isNaN(matchId)) throw new InvalidFieldsError();
+        await this.matchService.deleteMatch(matchId);
         res.status(204).end();
     };
 

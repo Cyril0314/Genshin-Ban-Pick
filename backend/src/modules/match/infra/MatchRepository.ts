@@ -22,38 +22,18 @@ const logger = createLogger('match.infra.repository');
 export default class MatchRepository implements IMatchRepository {
     constructor(private prisma: PrismaClient) {}
 
-    async findAllMatches(): Promise<IMatch[]> {
-        const matchQuery = Prisma.validator<Prisma.MatchFindManyArgs>()({
-            include: {
-                teams: {
-                    include: {
-                        teamMembers: {
-                            include: {
-                                lineupSlots: {
-                                    include: {
-                                        character: true,
-                                    },
-                                },
-                                member: true,
-                                guest: true,
-                            },
-                        },
-                    },
-                },
-                moves: {
-                    include: {
-                        randomMoveContext: true,
-                        character: true,
-                    },
-                },
-            },
-        });
-
-        type Entity = Prisma.MatchGetPayload<typeof matchQuery>;
-
-        const entities: Entity[] = await this.prisma.match.findMany(matchQuery);
+    async findAll(): Promise<IMatch[]> {
+        const entities = await this.prisma.match.findMany({ include: matchInclude });
         const matches = entities.map(mapMatchFromPrisma);
         return matches;
+    }
+
+    async findById(matchId: number): Promise<IMatch | undefined> {
+        const entity = await this.prisma.match.findUnique({
+            where: { id: matchId },
+            include: matchInclude,
+        });
+        return entity ? mapMatchFromPrisma(entity) : undefined;
     }
 
     async create(snapshot: IMatchSnapshot): Promise<IMatch> {
@@ -102,42 +82,12 @@ export default class MatchRepository implements IMatchRepository {
                 const numberOfTeamSetup = roomSetting.numberOfTeamSetup;
                 const numberOfSetupCharacter = roomSetting.numberOfSetupCharacter;
 
-                await MatchLineupSlotCreator.createMatchLineupSlots(
-                    tx,
-                    lineupVersion,
-                    teamLineupImageMap,
-                    numberOfSetupCharacter,
-                    matchTeamIdMap,
-                );
+                await MatchLineupSlotCreator.createMatchLineupSlots(tx, lineupVersion, teamLineupImageMap, numberOfSetupCharacter, matchTeamIdMap);
 
-                const matchQuery = {
+                const allMatchData = await tx.match.findUnique({
                     where: { id: match.id },
-                    include: {
-                        teams: {
-                            include: {
-                                teamMembers: {
-                                    include: {
-                                        lineupSlots: {
-                                            include: {
-                                                character: true,
-                                            },
-                                        },
-                                        member: true,
-                                        guest: true,
-                                    },
-                                },
-                            },
-                        },
-                        moves: {
-                            include: {
-                                randomMoveContext: true,
-                                character: true,
-                            },
-                        },
-                    },
-                } satisfies Prisma.MatchFindUniqueArgs;
-
-                const allMatchData = await tx.match.findUnique(matchQuery);
+                    include: matchInclude,
+                });
                 if (!allMatchData) throw new DataNotFoundError();
                 const aggregate = mapMatchFromPrisma(allMatchData);
                 if (dryRun) throw new DryRunError(aggregate);
@@ -183,3 +133,27 @@ export default class MatchRepository implements IMatchRepository {
         return rows.map(mapTeamMember);
     }
 }
+
+const matchInclude = Prisma.validator<Prisma.MatchInclude>()({
+    teams: {
+        include: {
+            teamMembers: {
+                include: {
+                    lineupSlots: {
+                        include: {
+                            character: true,
+                        },
+                    },
+                    member: true,
+                    guest: true,
+                },
+            },
+        },
+    },
+    moves: {
+        include: {
+            randomMoveContext: true,
+            character: true,
+        },
+    },
+});

@@ -26,6 +26,15 @@ export default class MatchService {
         return this.matchRepository.create(snapshot);
     }
 
+    async fetchMatch(matchId: number) {
+        const match = await this.matchRepository.findById(matchId);
+        if (!match) {
+            logger.error('Match not found', { matchId });
+            throw new DataNotFoundError();
+        }
+        return match;
+    }
+
     async deleteMatch(matchId: number) {
         await this.matchRepository.delete(matchId)
     }

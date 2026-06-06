@@ -12,8 +12,8 @@ export function useRoomSetting() {
 
     const form = reactive({
         roomId: 'default-room',
-        numberOfUtility: 3,
-        numberOfBan: 6,
+        numberOfUtility: 4,
+        numberOfBan: 8,
         numberOfPick: 32,
     });
 

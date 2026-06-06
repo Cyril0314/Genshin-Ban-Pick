@@ -1,16 +1,21 @@
 // src/modules/match/infrastructure/MatchRepository.ts
 
-import type MatchService from "./MatchService";
+import type MatchService from './MatchService';
 
-import type { TeamMember } from "@shared/contracts/team/TeamMember";
+import type { TeamMember } from '@shared/contracts/team/TeamMember';
+import type { IMatch } from '@shared/contracts/match/IMatch';
 
 export default class MatchRepository {
     constructor(private matchService: MatchService) {}
 
     async saveMatch(roomId: string) {
         const response = await this.matchService.post({ roomId });
-        const matchData = response.data;
-        return matchData;
+        return response.data as IMatch;
+    }
+
+    async fetchMatch(matchId: number) {
+        const response = await this.matchService.get({ matchId });
+        return response.data as IMatch;
     }
 
     async deleteMatch(matchId: number) {

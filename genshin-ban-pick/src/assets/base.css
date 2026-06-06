@@ -67,6 +67,7 @@
     --font-size-xxl: calc(var(--base-size) * 1.5);
 
     /* 🅱️ 間距 spacing */
+    --space-xxs: calc(var(--base-size) * 0.125);
     --space-xs: calc(var(--base-size) * 0.25);
     --space-sm: calc(var(--base-size) * 0.375);
     --space-md: calc(var(--base-size) * 0.5);

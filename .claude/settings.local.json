@@ -47,7 +47,17 @@
       "Bash(awk -F/ '{ if \\($1==\"shared\"\\) print \"shared/\"$3; else if \\($1==\"backend\"\\) print \"backend/\"$4; else print \"fe/\"$4 }')",
       "Bash(echo \"BE_EXIT=$?\")",
       "Bash(echo \"FE_EXIT=$?\")",
-      "Bash(echo \"exit:$?\")"
+      "Bash(echo \"exit:$?\")",
+      "Bash(grep -E \"\\\\.\\(vue|ts\\)$\")",
+      "Bash(rm -f /tmp/icon.svg.png)",
+      "Bash(qlmanage -t -s 512 -o /tmp icon.svg)",
+      "Bash(mv /tmp/icon.svg.png /tmp/icon_big.png)",
+      "Bash(qlmanage -t -s 32 -o /tmp icon.svg)",
+      "Bash(mv /tmp/icon.svg.png /tmp/icon_32.png)",
+      "Bash(rm -f /tmp/icon.svg.png /tmp/icon_big.png /tmp/icon_48.png)",
+      "Bash(qlmanage -t -s 48 -o /tmp icon.svg)",
+      "Bash(mv /tmp/icon.svg.png /tmp/icon_48.png)",
+      "Bash(rm -f /tmp/icon.svg.png /tmp/icon_big.png)"
     ]
   }
 }

@@ -10,7 +10,7 @@ import type { ITeam } from '@shared/contracts/team/ITeam';
 const defaultFlowVersion = 1;
 const defaultTotalRounds = 2;
 const defaultNumberOfUtility = 4;
-const defaultNumberOfBan = 6;
+const defaultNumberOfBan = 8;
 const defaultNumberOfPick = 32;
 
 const defaultTeams = createDefaultTeams();

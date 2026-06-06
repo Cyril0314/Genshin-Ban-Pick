@@ -1,7 +1,7 @@
 <!-- src/modules/analysis/ui/components/MatchOverviewChart.vue.vue -->
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 
 import VChart from 'vue-echarts';
 import { use } from 'echarts/core';
@@ -28,7 +28,31 @@ const props = defineProps<{}>();
 
 const emit = defineEmits<{}>();
 
-const { option, overview } = useMatchOverviewChart();
+const { option, overview, findNearestMatch, openMatch } = useMatchOverviewChart();
+
+const chartRef = ref<InstanceType<typeof VChart>>();
+
+// 不靠單一符號的微小命中區，改在整個繪圖區攔截點擊：
+// 將點擊像素轉成時間，找最接近的 match，且與該 match 的水平距離夠近才開窗。
+const HIT_TOLERANCE_PX = 24;
+function onZrClick(event: any) {
+    const chart: any = chartRef.value;
+    if (!chart) return;
+
+    const point = [event.offsetX, event.offsetY];
+    if (!chart.containPixel('grid', point)) return;
+
+    const converted = chart.convertFromPixel({ gridIndex: 0 }, point);
+    const timeMs = Array.isArray(converted) ? converted[0] : converted;
+    const match = findNearestMatch(timeMs);
+    if (!match) return;
+
+    const matchPixel = chart.convertToPixel({ gridIndex: 0 }, [match.createdAt, 0.5]);
+    const matchX = Array.isArray(matchPixel) ? matchPixel[0] : matchPixel;
+    if (Math.abs(matchX - event.offsetX) <= HIT_TOLERANCE_PX) {
+        openMatch(match.id);
+    }
+}
 </script>
 
 <template>
@@ -106,7 +130,7 @@ const { option, overview } = useMatchOverviewChart();
             </div>
         </div>
         <div class="canvas">
-            <VChart v-if="option" :option="option" />
+            <VChart v-if="option" ref="chartRef" :option="option" @zr:click="onZrClick" />
         </div>
     </div>
 </template>

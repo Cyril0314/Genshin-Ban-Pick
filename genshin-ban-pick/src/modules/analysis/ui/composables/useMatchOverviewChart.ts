@@ -1,6 +1,6 @@
 // src/modules/analysis/ui/composables/useMatchOverviewChart.ts
 
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import tinycolor from 'tinycolor2';
 
@@ -8,12 +8,11 @@ import { useEchartTheme } from '@/modules/shared/ui/composables/useEchartTheme';
 import { useDesignTokens } from '@/modules/shared/ui/composables/useDesignTokens';
 import { createLogger } from '@/app/utils/logger';
 import { useAnalysisUseCase } from './useAnalysisUseCase';
-import { useMatchUseCase } from '@/modules/match';
 import { useCharacterStore } from '@/modules/character';
 import { useGenshinVersionUseCase } from '@/modules/genshinVersion';
 import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
+import { useMatchHistory } from '@/modules/shared/ui/composables/useMatchHistory';
 import { chartColors } from '@/modules/shared/ui/constants/chartColors';
-import { elementColors } from '@/modules/shared/ui/constants/elementColors';
 
 import type { IGenshinVersionPeriod } from '@shared/contracts/genshinVersion/IGenshinVersionPeriod';
 import type { ICharacter } from '@shared/contracts/character/ICharacter';
@@ -27,12 +26,12 @@ export function useMatchOverviewChart() {
     const designTokens = useDesignTokens();
     const genshinVersionUseCase = useGenshinVersionUseCase();
     const analysisUseCase = useAnalysisUseCase();
-    const matchUseCase = useMatchUseCase();
 
     const characterStore = useCharacterStore();
     const { characterMap } = storeToRefs(characterStore);
 
     const { getByKey } = useCharacterDisplayName();
+    const matchHistory = useMatchHistory();
 
     const overview = ref<IAnalysisOverview>();
     const periods = ref<IGenshinVersionPeriod[]>();
@@ -128,13 +127,14 @@ export function useMatchOverviewChart() {
                     shadowColor: designTokens.colorPrimary.value,
                 },
                 symbol: 'diamond',
-                symbolSize: 10,
+                symbolSize: 12,
             })) ?? [];
 
         return {
             tooltip: {
                 ...tooltipStyle('single'),
                 position: 'top',
+                transitionDuration: 0,
                 formatter: (params: any) => {
                     const date = params.value[0];
                     const dateStr = date instanceof Date ? date.toLocaleDateString() : date;
@@ -212,6 +212,9 @@ export function useMatchOverviewChart() {
                     type: 'scatter',
                     symbolSize: 12,
                     data: matchData,
+                    cursor: 'pointer',
+                    // 停用 hover 強調：避免重疊點之間切換 active 造成符號/tooltip 閃爍。
+                    emphasis: { disabled: true },
                     tooltip: {
                         show: true,
                     },
@@ -220,8 +223,23 @@ export function useMatchOverviewChart() {
         };
     });
 
+    // 依時間（epoch ms）找最接近的 match，供 canvas 點擊就近開窗使用。
+    function findNearestMatch(timeMs: number): IMatchTimeMinimal | undefined {
+        const list = matchTimeline.value;
+        if (!list || list.length === 0) return undefined;
+        return list.reduce((best, m) =>
+            Math.abs(m.createdAt.getTime() - timeMs) < Math.abs(best.createdAt.getTime() - timeMs) ? m : best,
+        );
+    }
+
+    function openMatch(id: number) {
+        matchHistory.open(id);
+    }
+
     return {
         overview,
         option,
+        findNearestMatch,
+        openMatch,
     };
 }
