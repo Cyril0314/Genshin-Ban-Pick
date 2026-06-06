@@ -6,17 +6,12 @@ import { RadarChart, PieChart } from 'echarts/charts';
 import { GridComponent, TooltipComponent, LegendComponent } from 'echarts/components';
 import { usePlayerStyleChart } from '../composables/usePlayerStyleChart';
 import { usePlayerHistory } from '@/modules/shared/ui/composables/usePlayerHistory';
-
-import type { TeamMember } from '@shared/contracts/team/TeamMember';
+import { getTeamMemberName } from '@shared/contracts/team/TeamMember';
 
 use([CanvasRenderer, RadarChart, PieChart, GridComponent, TooltipComponent, LegendComponent]);
 
 const { option, scopes, selectedScope, selectedScopeKey, getScopeKey } = usePlayerStyleChart();
 const playerHistory = usePlayerHistory();
-
-function getDisplayName(m: TeamMember) {
-    return m.type === 'Name' ? m.name : m.nickname;
-}
 
 function openSelectedPlayerHistory() {
     if (selectedScope.value?.type !== 'Player') return;
@@ -36,7 +31,7 @@ function openSelectedPlayerHistory() {
                     class="player-chip"
                     @click="openSelectedPlayerHistory"
                 >
-                    <span class="player-chip-name">{{ getDisplayName(selectedScope.player) }}</span>
+                    <span class="player-chip-name">{{ getTeamMemberName(selectedScope.player) }}</span>
                     <span class="player-chip-hint">查看紀錄</span>
                 </button>
             </div>
@@ -55,7 +50,7 @@ function openSelectedPlayerHistory() {
                             <span v-if="scope.player.type === 'Member'">✨</span>
                             <span v-else-if="scope.player.type === 'Guest'">❓</span>
                             <span v-else>🪪</span>
-                            {{ getDisplayName(scope.player) }}
+                            {{ getTeamMemberName(scope.player) }}
                         </template>
                     </option>
                 </select>

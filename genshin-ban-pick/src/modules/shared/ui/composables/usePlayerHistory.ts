@@ -1,9 +1,4 @@
 // src/modules/shared/ui/composables/usePlayerHistory.ts
-//
-// PlayerHistory 開窗器：跨 feature 共用的 inject 介面。
-// - 介面（key + context）住在 shared，誰都能 inject。
-// - 實作（modal 本體）住在 analysis，由 composition root（BanPickView）provide。
-// - 這樣 user/team/room/chat 等 feature 只依賴 shared，不再橫向依賴 analysis。
 
 import { inject, provide, type InjectionKey } from 'vue';
 

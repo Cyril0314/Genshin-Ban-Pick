@@ -5,28 +5,25 @@ import type {
     ICharacterSynergy,
     IPlayerRecord,
 } from '@shared/contracts/analysis/IPlayerRecord';
+import { countCharacterKeys } from './countCharacterKeys';
+
 import type { CharacterSynergyMatrix } from '@shared/contracts/analysis/CharacterSynergyMatrix';
-import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
-import type { IMatchLineupSlotWithCharacter } from '../types/IMatchLineupSlotWithCharacter';
+import type { TeamMember } from '@shared/contracts/team/TeamMember';
 
 const TOP_CHARACTERS_COUNT = 10;
 const TOP_SYNERGIES_COUNT = 3;
 
 export function computePlayerRecord(
-    playerRows: IMatchLineupSlotWithCharacter[],
+    playerRows: { characterKey: string }[],
     synergyMatrix: CharacterSynergyMatrix,
-    identity: PlayerIdentity,
-    displayName: string,
+    teamMember: TeamMember,
 ): IPlayerRecord {
     // 一筆 row = 玩家在某 setup 用某角色（每玩家每 setup 只貢獻 1 角色）
     const totalSetups = playerRows.length;
 
-    const characterCounts = new Map<string, number>();
-    for (const r of playerRows) {
-        characterCounts.set(r.characterKey, (characterCounts.get(r.characterKey) ?? 0) + 1);
-    }
+    const characterCounts = countCharacterKeys(playerRows);
 
-    const characterFrequency: IPlayerCharacterFrequency[] = Array.from(characterCounts.entries())
+    const characterFrequency: IPlayerCharacterFrequency[] = Object.entries(characterCounts)
         .sort((a, b) => b[1] - a[1])
         .slice(0, TOP_CHARACTERS_COUNT)
         .map(([characterKey, count]) => ({
@@ -37,8 +34,7 @@ export function computePlayerRecord(
         }));
 
     return {
-        identity,
-        displayName,
+        teamMember,
         totalSetups,
         characterFrequency,
     };

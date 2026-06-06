@@ -20,6 +20,8 @@ import {
 import { sortByEnumOrder } from '@/modules/shared/ui/composables/useCharacterSorter';
 import { elementColors } from '@/modules/shared/ui/constants/elementColors';
 import { isSameIdentity } from '@shared/contracts/identity/Identity';
+import { stringifyPlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
+import { getTeamMemberName } from '@shared/contracts/team/TeamMember';
 
 import type { IPlayerStyleProfile } from '@shared/contracts/analysis/IPlayerStyleProfile';
 import type { CharacterFilterKey } from '@shared/contracts/character/CharacterFilterKey';
@@ -31,6 +33,8 @@ import type { ICharacterAttributeDistributions } from '@shared/contracts/analysi
 const logger = createLogger('analysis.ui.playerStyleChart');
 
 type Scope = { type: 'Player'; player: TeamMember } | { type: 'Global' };
+
+const IDENTITY_ORDER: Record<TeamMember['type'], number> = { Member: 0, Guest: 1, Name: 2 };
 
 export function usePlayerStyleChart() {
     const { tooltipStyle } = useEchartTheme();
@@ -70,7 +74,8 @@ export function usePlayerStyleChart() {
     const characterAttributeDistributions = ref<ICharacterAttributeDistributions>();
 
     onMounted(async () => {
-        players.value = await matchUseCase.fetchMatchTeamMembers();
+        const teamMembers = await matchUseCase.fetchMatchTeamMembers();
+        players.value = sortPlayersForScopeMenu(teamMembers);
         logger.debug('players loaded', players.value.length);
 
         const currentUser = user.value;
@@ -97,24 +102,13 @@ export function usePlayerStyleChart() {
             playerStyle.value = await analysisUseCase.fetchPlayerStyleProfile(selectedScope.value.player);
             characterAttributeDistributions.value = playerStyle.value?.characterAttributeDistributions;
         } else {
-            characterAttributeDistributions.value = await analysisUseCase.fetchGlobalCharacterAttributeDistributions();
+            playerStyle.value = undefined;
+            characterAttributeDistributions.value = await analysisUseCase.fetchCharacterAttributeDistributions();
         }
     });
 
     function getScopeKey(scope: Scope): string {
-        switch (scope.type) {
-            case 'Global':
-                return 'global';
-            case 'Player':
-                switch (scope.player.type) {
-                    case 'Member':
-                        return `member:${scope.player.id}`;
-                    case 'Guest':
-                        return `guest:${scope.player.id}`;
-                    case 'Name':
-                        return `name:${scope.player.name}`;
-                }
-        }
+        return scope.type === 'Global' ? 'Global' : stringifyPlayerIdentity(scope.player);
     }
 
     function getPieColor<K extends CharacterFilterKey>(key: K, index: number, name: EnumOrderValue<K>) {
@@ -329,6 +323,15 @@ export function usePlayerStyleChart() {
                   ],
               };
     });
+
+
+    function sortPlayersForScopeMenu(players: TeamMember[]): TeamMember[] {
+        return [...players].sort((a, b) => {
+            const typeDiff = IDENTITY_ORDER[a.type] - IDENTITY_ORDER[b.type];
+            if (typeDiff !== 0) return typeDiff;
+            return getTeamMemberName(a).localeCompare(getTeamMemberName(b), 'zh-Hant');
+        });
+    }
 
     return { scopes, selectedScopeKey, selectedScope, option, getScopeKey };
 }

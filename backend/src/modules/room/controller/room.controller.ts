@@ -12,14 +12,14 @@ export default class RoomController {
     };
 
     buildRoom = async (req: Request, res: Response) => {
-        const { roomId } = req.params;
+        const roomId = req.params.roomId as string;
         const payload = req.body;
         const roomSetting = this.roomService.buildRoom(roomId, payload);
         res.status(200).json(roomSetting);
     };
 
     getRoomSetting = async (req: Request, res: Response) => {
-        const { roomId } = req.params;
+        const roomId = req.params.roomId as string;
         const roomSetting = this.roomService.getRoomSetting(roomId);
         res.status(200).json(roomSetting);
     };

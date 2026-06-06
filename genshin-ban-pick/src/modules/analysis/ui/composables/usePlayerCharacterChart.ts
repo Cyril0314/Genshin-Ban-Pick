@@ -8,8 +8,10 @@ import { createLogger } from '@/app/utils/logger';
 import { useAnalysisUseCase } from './useAnalysisUseCase';
 import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
 
+import { getTeamMemberName } from '@shared/contracts/team/TeamMember';
+
 import type { CallbackDataParams } from 'echarts/types/dist/shared';
-import type { KeyIndexedMatrix } from '@shared/contracts/analysis/KeyIndexedMatrix';
+import type { IPlayerCharacterUsage } from '@shared/contracts/analysis/IPlayerCharacterUsage';
 
 const logger = createLogger('analysis.ui.playerCharacterChart');
 
@@ -19,16 +21,16 @@ export function usePlayerCharacterChart() {
     const { gridStyle, tooltipStyle, dataZoomStyle } = useEchartTheme();
     const analysisUseCase = useAnalysisUseCase();
 
-    const matrix = ref<KeyIndexedMatrix<string, string>>();
+    const usages = ref<IPlayerCharacterUsage[]>();
 
     onMounted(async () => {
-        matrix.value = await analysisUseCase.fetchPlayerCharacterUsage();
+        usages.value = await analysisUseCase.fetchPlayerCharacterUsage();
     });
 
     const option = computed(() => {
-        if (!matrix.value) return undefined;
+        if (!usages.value) return undefined;
 
-        const top = buildHeatmapData(matrix.value);
+        const top = buildHeatmapData(usages.value);
 
         return {
             tooltip: {
@@ -106,65 +108,44 @@ export function usePlayerCharacterChart() {
         };
     });
 
-    function buildHeatmapData(preference: KeyIndexedMatrix<string, string>, topN = 100) {
-        // 1) 找出全角色使用總次數
-        const characterCountMap: Record<string, number> = {};
-        const playerCountMap: Record<string, number> = {};
-
-        for (const [player, characterMap] of Object.entries(preference)) {
-            for (const [characterKey, count] of Object.entries(characterMap)) {
-                characterCountMap[characterKey] = (characterCountMap[characterKey] || 0) + (count ?? 0);
-                playerCountMap[player] = (playerCountMap[player] || 0) + (count ?? 0);
+    function buildHeatmapData(usages: IPlayerCharacterUsage[]) {
+        // 1) 角色按全體使用總次數排序（X 軸）
+        const characterTotals: Record<string, number> = {};
+        for (const usage of usages) {
+            for (const [characterKey, count] of Object.entries(usage.characterCounts)) {
+                characterTotals[characterKey] = (characterTotals[characterKey] ?? 0) + count;
             }
         }
-
-        const topCharacters = Object.entries(characterCountMap)
+        const topCharacters = Object.entries(characterTotals)
             .sort((a, b) => b[1] - a[1])
-            // .slice(0, topN)
-            .map(([k]) => k);
+            .map(([characterKey]) => characterKey);
 
-        const topPlayers = Object.entries(playerCountMap)
-            .sort((a, b) => b[1] - a[1])
-            .map(([k]) => k);
+        // 2) 玩家按各自使用總次數排序（Y 軸）。以 identity key 為列，同名玩家各自獨立一列。
+        const sortedPlayers = [...usages].sort((a, b) => playerTotal(b) - playerTotal(a));
 
-        const characterIndices = Object.fromEntries(topCharacters.map((c, i) => [c, i]));
-        const playerIndices = Object.fromEntries(topPlayers.map((p, i) => [p, i]));
-
-        const matrix = Array(topPlayers.length)
-            .fill(null)
-            .map(() => Array(topCharacters.length).fill(0));
-
-        for (const player of topPlayers) {
-            const playerIndex = playerIndices[player];
-            if (playerIndex === undefined) {
-                logger.error('playerIndex undefined:', player, playerIndices);
-                continue;
-            }
-            for (const characterKey of topCharacters) {
-                const characterIndex = characterIndices[characterKey];
-
-                if (characterIndex === undefined) {
-                    logger.error('characterIndex undefined:', characterKey, characterIndices);
-                    continue;
-                }
-
-                const count = preference[player][characterKey] ?? 0;
-                matrix[playerIndex][characterIndex] = count;
-            }
-        }
+        const characterIndex = Object.fromEntries(topCharacters.map((characterKey, i) => [characterKey, i]));
 
         const data: [number, number, number][] = [];
-        for (let y = 0; y < topPlayers.length; y++) {
-            for (let x = 0; x < topCharacters.length; x++) {
-                data.push([x, y, matrix[y][x]]);
+        sortedPlayers.forEach((usage, y) => {
+            for (const [characterKey, count] of Object.entries(usage.characterCounts)) {
+                const x = characterIndex[characterKey];
+                if (x === undefined) {
+                    logger.error('characterIndex undefined:', characterKey);
+                    continue;
+                }
+                data.push([x, y, count]);
             }
-        }
+        });
 
         return {
             xAxis: topCharacters,
-            yAxis: topPlayers,
+            yAxis: sortedPlayers.map((usage) => getTeamMemberName(usage.teamMember)),
             data,
         };
+    }
+
+    function playerTotal(usage: IPlayerCharacterUsage): number {
+        return Object.values(usage.characterCounts).reduce((sum, count) => sum + count, 0);
     }
 
     return { option };

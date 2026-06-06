@@ -73,7 +73,7 @@ export default class AnalysisUseCase {
         return await this.analysisRepository.fetchPlayerRecord(playerIdentity);
     }
 
-    async fetchGlobalCharacterAttributeDistributions() {
-        return await this.analysisRepository.fetchCharacterAttributeDistributions({ type: 'Global' });
+    async fetchCharacterAttributeDistributions(playerIdentity?: PlayerIdentity) {
+        return await this.analysisRepository.fetchCharacterAttributeDistributions(playerIdentity);
     }
 }

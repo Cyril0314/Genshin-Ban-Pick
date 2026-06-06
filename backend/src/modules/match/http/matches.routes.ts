@@ -7,8 +7,9 @@ import MatchController from '../controller/match.controller';
 
 export default function createMatchesRouter(matchController: MatchController) {
     const router = express.Router();
+    router.get('/team-members', asyncHandler(matchController.fetchMatchTeamMembers))
+    router.get('/:matchId', asyncHandler(matchController.fetchMatch))
     router.post('/', asyncHandler(matchController.saveMatch))
     router.delete('/:matchId', asyncHandler(matchController.deleteMatch))
-    router.get('/team-members', asyncHandler(matchController.fetchMatchTeamMembers))
     return router;
 }

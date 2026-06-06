@@ -97,17 +97,14 @@ async function main() {
     // 3) 呼叫 save() 寫入資料庫
 
     const repository = new MatchRepository(prisma);
-    const result = await repository.create(
-        {
-            roomId: 'test',
-            roomSetting,
-            teamMembersMap,
-            boardImageMap,
-            teamLineupImageMap,
-            characterRandomContextMap,
-        },
-        true,
-    );
+    const result = await repository.preview({
+        roomId: 'test',
+        roomSetting,
+        teamMembersMap,
+        boardImageMap,
+        teamLineupImageMap,
+        characterRandomContextMap,
+    });
 
     console.log('\n✅ Match saved successfully!');
     // console.log('Match:', JSON.stringify(result.moves, null, 2));

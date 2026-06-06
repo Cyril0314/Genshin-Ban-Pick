@@ -6,21 +6,21 @@ import type { ICharacter } from '@shared/contracts/character/ICharacter';
 import { computeCharacterAttributeDistributions } from './computeCharacterAttributeDistributions';
 
 export function computePlayerStyleProfile(
-    memberUsages: IMatchLineupSlotWithCharacter[],
-    globalUsages: IMatchLineupSlotWithCharacter[],
+    playerSlots: IMatchLineupSlotWithCharacter[],
+    globalSlots: IMatchLineupSlotWithCharacter[],
 ): IPlayerStyleProfile | undefined {
-    const playerTotalPicks = memberUsages.length;
+    const playerTotalPicks = playerSlots.length;
 
     if (playerTotalPicks === 0) { return undefined }
 
-    const uniqueChars = new Set(memberUsages.map((m) => m.characterKey)).size;
+    const uniqueChars = new Set(playerSlots.map((m) => m.characterKey)).size;
     const versatility = Math.min((uniqueChars / 30) * 100, 100);
 
-    const globalCharacterCounts = countBy(globalUsages, 'key');
-    let globalTotalPicks = globalUsages.length;
+    const globalCharacterCounts = countBy(globalSlots, 'key');
+    let globalTotalPicks = globalSlots.length;
 
     let totalMetaScore = 0;
-    memberUsages.forEach((m) => {
+    playerSlots.forEach((m) => {
         const count = globalCharacterCounts[m.characterKey] || 0;
         const rate = globalTotalPicks > 0 ? count / globalTotalPicks : 0;
         totalMetaScore += rate;
@@ -31,8 +31,8 @@ export function computePlayerStyleProfile(
     const avgPickRate = totalMetaScore / playerTotalPicks;
     const metaAffinity = maxPickRate > 0 ? (avgPickRate / maxPickRate) * 100 : 0;
 
-    const playerDistributions = computeCharacterAttributeDistributions(memberUsages)
-    const globalDistributions = computeCharacterAttributeDistributions(globalUsages)
+    const playerDistributions = computeCharacterAttributeDistributions(playerSlots)
+    const globalDistributions = computeCharacterAttributeDistributions(globalSlots)
 
     const roleAdjustedBias = computeGlobalAdjustedEntropy(playerDistributions.roleDistribution, globalDistributions.roleDistribution);
     const roleAdjustedDiversity = 100 - roleAdjustedBias
@@ -65,10 +65,10 @@ export function computePlayerStyleProfile(
     };
 }
 
-function countBy<T extends keyof ICharacter>(usages: { character: ICharacter }[], field: T): Record<string, number> {
+function countBy<T extends keyof ICharacter>(slots: { character: ICharacter }[], field: T): Record<string, number> {
     const counts: Record<string, number> = {};
 
-    usages.forEach((m) => {
+    slots.forEach((m) => {
         const value = m.character[field];
         const key = value instanceof Date ? value.toISOString() : String(value);
         counts[key] = (counts[key] || 0) + 1;

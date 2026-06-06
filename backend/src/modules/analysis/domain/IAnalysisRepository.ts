@@ -1,26 +1,24 @@
 // src/modules/analysis/domain/IAnalysisRepository.ts
 
-import type { IMatchStatisticsOverview } from '../types/IMatchStatisticsOverview';
+import type { IMatchStatisticsRaw } from '../types/IMatchStatisticsRaw';
 import type { IMatchMoveWeightCalcCore } from '../types/IMatchMoveWeightCalcCore';
-import type { IMatchLineupSlotExpandedRefs } from '../types/IMatchLineupSlotExpandedRefs';
-import type { IMatchLineupSlotTeamMemberIdentityRefs } from '../types/IMatchLineupSlotUserPreferenceCore';
+import type { IMatchLineupSlotCooccurrenceRow } from '../types/IMatchLineupSlotCooccurrenceRow';
+import type { IMatchLineupSlotWithTeamMember } from '../types/IMatchLineupSlotWithTeamMember';
 import type { IMatchLineupSlotWithCharacter } from '../types/IMatchLineupSlotWithCharacter'
 import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 import type { IAnalysisTimeWindow } from '@shared/contracts/analysis/IAnalysisTimeWindow';
 import type { IMatchTimeMinimal } from '@shared/contracts/analysis/IMatchTimeMinimal';
 
 export interface IAnalysisRepository {
-    findMatchStatisticsOverview(): Promise<IMatchStatisticsOverview>;
+    findMatchStatisticsRaw(): Promise<IMatchStatisticsRaw>;
 
-    findAllMatchMinimalTimestamps(timeWindow?: IAnalysisTimeWindow): Promise<IMatchTimeMinimal[]>;
+    findMatchMinimalTimestamps(timeWindow?: IAnalysisTimeWindow): Promise<IMatchTimeMinimal[]>;
 
-    findAllMatchLineupSlotIdentities(): Promise<IMatchLineupSlotTeamMemberIdentityRefs[]>;
+    findMatchLineupSlotsWithTeamMember(playerIdentity?: PlayerIdentity): Promise<IMatchLineupSlotWithTeamMember[]>;
 
-    findAllMatchMoveCoreForWeightCalc(timeWindow?: IAnalysisTimeWindow): Promise<IMatchMoveWeightCalcCore[]>;
+    findMatchMoveCoreForWeightCalc(timeWindow?: IAnalysisTimeWindow): Promise<IMatchMoveWeightCalcCore[]>;
 
-    findAllMatchLineupSlotsForAnalysis(timeWindow?: IAnalysisTimeWindow): Promise<IMatchLineupSlotExpandedRefs[]>;
+    findMatchLineupSlotsForCooccurrence(timeWindow?: IAnalysisTimeWindow): Promise<IMatchLineupSlotCooccurrenceRow[]>;
 
-    findAllMatchLineupSlotsWithCharacter(): Promise<IMatchLineupSlotWithCharacter[]>;
-
-    findMatchLineupSlotsWithCharacterByPlayerIdentity(playerIdentity: PlayerIdentity): Promise<IMatchLineupSlotWithCharacter[]>;
+    findMatchLineupSlotsWithCharacter(playerIdentity?: PlayerIdentity): Promise<IMatchLineupSlotWithCharacter[]>;
 }

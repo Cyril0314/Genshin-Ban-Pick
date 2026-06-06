@@ -2,6 +2,7 @@
 
 import { DataNotFoundError } from '../../../errors/AppError';
 import { createLogger } from '../../../utils/logger';
+import { dedupTeamMembers } from '../domain/dedupTeamMembers';
 import { validateSnapshot } from '../domain/validateSnapshot';
 
 import type { IMatchSnapshotRepository } from '../domain/IMatchSnapshotRepository';
@@ -22,7 +23,16 @@ export default class MatchService {
             throw new DataNotFoundError();
         }
         validateSnapshot(snapshot);
-        return this.matchRepository.create(snapshot, false);
+        return this.matchRepository.create(snapshot);
+    }
+
+    async fetchMatch(matchId: number) {
+        const match = await this.matchRepository.findById(matchId);
+        if (!match) {
+            logger.error('Match not found', { matchId });
+            throw new DataNotFoundError();
+        }
+        return match;
     }
 
     async deleteMatch(matchId: number) {
@@ -30,6 +40,7 @@ export default class MatchService {
     }
 
     async fetchMatchTeamMembers() {
-        return this.matchRepository.findAllMatchTeamMembers()
+        const rows = await this.matchRepository.findAllMatchTeamMembers();
+        return dedupTeamMembers(rows);
     }
 }

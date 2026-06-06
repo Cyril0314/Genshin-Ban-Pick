@@ -1,4 +1,4 @@
-// analysis/controller/dto/AnalysisTimeWindowQuery.dto.ts
+// analysis/controller/query/parseTimeWindowQuery.ts
 import type { IAnalysisTimeWindow } from '@shared/contracts/analysis/IAnalysisTimeWindow';
 
 export function parseTimeWindowQuery(query: any): IAnalysisTimeWindow | undefined {

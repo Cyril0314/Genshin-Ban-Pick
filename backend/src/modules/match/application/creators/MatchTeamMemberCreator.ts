@@ -2,7 +2,8 @@
 
 import { Prisma } from '@prisma/client';
 
-import type { TeamMember } from '@shared/contracts/team/TeamMember';
+import { getTeamMemberName } from '@shared/contracts/team/TeamMember';
+
 import type { TeamMembersMap } from '@shared/contracts/team/TeamMembersMap';
 
 export default class MatchTeamMemberCreator {
@@ -16,7 +17,7 @@ export default class MatchTeamMemberCreator {
                 const matchTeamMember = await tx.matchTeamMember.create({
                     data: {
                         slot: memberSlot,
-                        name: resolveName(member),
+                        name: getTeamMemberName(member),
                         teamId: matchTeamId,
                         memberRef: member.type === 'Member' ? member.id : null,
                         guestRef: member.type === 'Guest' ? member.id : null,
@@ -27,8 +28,4 @@ export default class MatchTeamMemberCreator {
         }
         return matchTeamMembers;
     }
-}
-
-function resolveName(member: TeamMember): string {
-    return member.type === 'Name' ? member.name : member.nickname;
 }

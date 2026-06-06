@@ -27,7 +27,7 @@ const tabs = [
     { name: '角色使用構成', component: CharacterUsagesCompositionChart },
     { name: '角色群聚圖', component: CharacterClusterChart },
     // { name: '角色共現熱圖', component: CharacterSynergyChart }, 暫時移除原因：被 CharacterHoverCard 取代
-    // { name: '玩家偏好角色', component: PlayerCharacterChart }, 暫時移除原因：被 PlayerHistoryModal 取代
+    { name: '玩家偏好角色', component: PlayerCharacterChart },
 ];
 
 const currentTabIndex = ref<number>(0);

@@ -1,7 +1,7 @@
 // backend/src/modules/analysis/domain/CharacterSynergyCalculator.ts
 
 import type { SynergyMode } from '@shared/contracts/analysis/value-types';
-import type { IMatchLineupSlotExpandedRefs } from '../types/IMatchLineupSlotExpandedRefs';
+import type { IMatchLineupSlotCooccurrenceRow } from '../types/IMatchLineupSlotCooccurrenceRow';
 import type { CharacterSynergyMatrix } from '@shared/contracts/analysis/CharacterSynergyMatrix';
 
 export default class CharacterSynergyCalculator {
@@ -28,30 +28,29 @@ export default class CharacterSynergyCalculator {
         return synergyMatrix;
     }
 
-    buildCooccurrenceGroups(usages: IMatchLineupSlotExpandedRefs[], mode: SynergyMode): Record<string, string[]> {
+    buildCooccurrenceGroups(cooccurrenceRows: IMatchLineupSlotCooccurrenceRow[], mode: SynergyMode): Record<string, string[]> {
         const groups: Record<string, string[]> = {};
 
-        for (const u of usages) {
-            const key = this.buildCooccurrenceGroupKey(u, mode);
+        for (const cooccurrenceRow of cooccurrenceRows) {
+            const key = this.buildCooccurrenceGroupKey(cooccurrenceRow, mode);
             if (!groups[key]) groups[key] = [];
-            groups[key].push(u.characterKey);
+            groups[key].push(cooccurrenceRow.characterKey);
         }
 
         return groups;
     }
 
-
-    private buildCooccurrenceGroupKey(rawLineupSlot: IMatchLineupSlotExpandedRefs, mode: SynergyMode): string {
+    private buildCooccurrenceGroupKey(cooccurrenceRow: IMatchLineupSlotCooccurrenceRow, mode: SynergyMode): string {
         switch (mode) {
             case 'match':
                 // 一場比賽當作一個 group
-                return `${rawLineupSlot.matchId}`;
+                return `${cooccurrenceRow.matchId}`;
             case 'team':
-                // 同一個隊伍（整體）當作一個 group
-                return `${rawLineupSlot.teamId}`;
+                // 一場比賽 + 一隊當作一個 group
+                return `${cooccurrenceRow.matchId}:${cooccurrenceRow.teamId}`;
             case 'setup':
-                // 一場比賽 + 一隊 + 一個編成（setup）當作一個 group
-                return `${rawLineupSlot.matchId}:${rawLineupSlot.teamId}:${rawLineupSlot.setupNumber}`;
+                // 一場比賽 + 一隊 + 一個編成當作一個 group
+                return `${cooccurrenceRow.matchId}:${cooccurrenceRow.teamId}:${cooccurrenceRow.setupNumber}`;
         }
     }
 }
