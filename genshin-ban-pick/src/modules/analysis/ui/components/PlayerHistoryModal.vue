@@ -1,20 +1,12 @@
 <!-- src/modules/analysis/ui/components/PlayerHistoryModal.vue -->
 
 <script setup lang="ts">
-import { computed, toRef } from 'vue';
-import { storeToRefs } from 'pinia';
-
 import { X } from '@lucide/vue';
 import { usePlayerHistoryModal } from '../composables/usePlayerHistoryModal';
-import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
-import { useCharacterStore } from '@/modules/character';
 import { getProfileImagePath } from '@/modules/shared/infrastructure/imageRegistry';
-import { elementColors } from '@/modules/shared/ui/constants/elementColors';
 import CharacterHoverCard from './CharacterHoverCard.vue';
-import { getTeamMemberName } from '@shared/contracts/team/TeamMember';
 
 import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
-import type { Element } from '@shared/contracts/character/value-types';
 
 const props = defineProps<{
     open: boolean;
@@ -25,28 +17,10 @@ const emit = defineEmits<{
     (e: 'update:open', value: boolean): void;
 }>();
 
-const { isLoading, record, error } = usePlayerHistoryModal(toRef(props, 'open'), toRef(props, 'identity'));
-const { getByKey: getCharacterDisplayName } = useCharacterDisplayName();
-const { characterMap } = storeToRefs(useCharacterStore());
-
-const title = computed(() => {
-    const teamMember = record.value?.teamMember;
-    return teamMember ? getTeamMemberName(teamMember) : '玩家紀錄';
-});
-
-const maxCount = computed(() => record.value?.characterFrequency[0]?.count ?? 0);
-function getBarWidth(count: number): string {
-    if (maxCount.value <= 0) return '0%';
-    return `${(count / maxCount.value) * 100}%`;
-}
-
-function getElementAccent(characterKey: string): string {
-    const element = characterMap.value[characterKey]?.element as Element | undefined;
-    return element ? elementColors[element].main : '#555555';
-}
-function getRowStyle(characterKey: string) {
-    return { '--row-accent': getElementAccent(characterKey) };
-}
+const { isLoading, record, error, title, getBarWidth, getRowStyle, getCharacterDisplayName } = usePlayerHistoryModal(
+    () => props.open,
+    () => props.identity,
+);
 </script>
 
 <template>

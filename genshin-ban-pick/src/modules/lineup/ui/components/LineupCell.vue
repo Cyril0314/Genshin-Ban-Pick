@@ -4,7 +4,7 @@ import { computed, ref } from 'vue';
 
 import { createLogger } from '@/app/utils/logger';
 import { DragTypes } from '@/app/constants/customMIMETypes'
-import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
+import { getTeamTheme } from '@/modules/shared/ui/composables/getTeamTheme';
 import { getWishImagePath } from '@/modules/shared/infrastructure/imageRegistry'
 
 const props = defineProps<{
@@ -22,7 +22,7 @@ const isOver = ref(false)
 
 const logger = createLogger('lineup.ui.cell');
 const highlightColor = computed(() => {
-  return useTeamTheme(props.teamSlot).themeVars.value['--team-color-rgb']
+  return getTeamTheme(props.teamSlot).themeVars['--team-color-rgb']
 })
 
 

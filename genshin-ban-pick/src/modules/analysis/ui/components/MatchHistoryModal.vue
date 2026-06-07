@@ -1,18 +1,11 @@
 <!-- src/modules/analysis/ui/components/MatchHistoryModal.vue -->
 
 <script setup lang="ts">
-import { computed, toRef } from 'vue';
-
 import { Dices, Swords, X } from '@lucide/vue';
 import { useMatchHistoryModal } from '../composables/useMatchHistoryModal';
-import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
-import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
 import { getWishImagePath } from '@/modules/shared/infrastructure/imageRegistry';
 import CharacterHoverCard from './CharacterHoverCard.vue';
 import { MoveSource, MoveType } from '@shared/contracts/match/value-types';
-
-import type { IMatchTeam } from '@shared/contracts/match/IMatchTeam';
-import type { IMatchTeamMember } from '@shared/contracts/match/IMatchTeamMember';
 
 const props = defineProps<{
     open: boolean;
@@ -23,75 +16,22 @@ const emit = defineEmits<{
     (e: 'update:open', value: boolean): void;
 }>();
 
-const { isLoading, error, match, teams, moveColumnsOf, utilityMoves, moveLabel, membersUsing } = useMatchHistoryModal(
-    toRef(props, 'open'),
-    toRef(props, 'matchId'),
-);
-const { getByKey: getCharacterDisplayName } = useCharacterDisplayName();
-
-const dateLabel = computed(() => (match.value ? new Date(match.value.createdAt).toLocaleString() : ''));
-
-// 隊伍主題色：依 slot 取，cache 每個 slot 第一次取到的 themeVars，避免每次 render 都新建 computed 造成記憶體累積。
-// useTeamTheme 內部會以 slot 0/1 映射到 team-first/team-second，未知 slot fallback first；themeVars 本身無 reactive 依賴，cache 一次即永久有效。
-const themeVarsCache = new Map<number, Record<string, string>>();
-function themeVarsOf(slot: number) {
-    let vars = themeVarsCache.get(slot);
-    if (!vars) {
-        vars = useTeamTheme(slot).themeVars.value;
-        themeVarsCache.set(slot, vars);
-    }
-    return vars;
-}
-
-function teamLabel(team: IMatchTeam, index: number): string {
-    return team.name?.trim() || `Team ${String.fromCharCode(65 + index)}`;
-}
-
-function moveTypeClass(type: MoveType): string {
-    if (type === MoveType.Ban) return 'is-ban';
-    if (type === MoveType.Pick) return 'is-pick';
-    return 'is-utility';
-}
-
-// 將一隊的 lineupSlots 攤平成「成員為欄、setupNumber 為列」的唯讀矩陣
-interface LineupView {
-    members: IMatchTeamMember[];
-    rows: { setupNumber: number; cells: { memberId: number; characterKey?: string }[] }[];
-}
-function buildLineup(team: IMatchTeam): LineupView {
-    const members = [...(team.teamMembers ?? [])].sort((a, b) => a.slot - b.slot);
-    const setupSet = new Set<number>();
-    members.forEach((m) => m.lineupSlots?.forEach((s) => setupSet.add(s.setupNumber)));
-    const setups = [...setupSet].sort((a, b) => a - b);
-    const rows = setups.map((setupNumber) => ({
-        setupNumber,
-        cells: members.map((m) => ({
-            memberId: m.id,
-            characterKey: m.lineupSlots?.find((s) => s.setupNumber === setupNumber)?.characterKey,
-        })),
-    }));
-    return { members, rows };
-}
-const hasLineup = (view: LineupView) => view.members.length > 0 && view.rows.length > 0;
-
-// 攤平成純值陣列供 template 走訪，避免在 v-for 中放 ref 造成 unwrap 混淆。
-const flowColumns = computed(() =>
-    teams.value.map((team, i) => ({
-        key: team.id,
-        slot: team.slot,
-        label: teamLabel(team, i),
-        teamId: team.id,
-    })),
-);
-
-const lineupBlocks = computed(() =>
-    teams.value.map((team, i) => ({
-        key: team.id,
-        slot: team.slot,
-        label: teamLabel(team, i),
-        view: buildLineup(team),
-    })),
-);
+const {
+    isLoading,
+    error,
+    match,
+    moveColumnsOf,
+    utilityMoves,
+    moveLabel,
+    membersUsing,
+    dateLabel,
+    themeVarsOf,
+    moveTypeClass,
+    hasLineup,
+    flowColumns,
+    lineupBlocks,
+    getCharacterDisplayName,
+} = useMatchHistoryModal(() => props.open, () => props.matchId);
 </script>
 
 <template>

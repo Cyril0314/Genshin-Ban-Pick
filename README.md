@@ -78,7 +78,7 @@ flowchart LR
     analysis --> user
 ```
 
-- **`banPick`** 是頁面層 orchestrator（`useBanPickFacade` 把所有 feature 串起來），fan-out 最大。
+- **`banPick`** 是頁面層 orchestrator（`useBanPickView` 把所有 feature 串起來），fan-out 最大。
 - **`lineup → board`** 不只是型別共用：`useLineupPool` 讀 `boardStore.boardImageMap` + `matchSteps` 來決定哪些 Pick 過的角色可以拖進 lineup 格子。砍掉這條邊就得複製 board state 或把 pool 解析推到 `board` 裡。
 - **`auth`** 是底層 identity provider（leaf）。
 - **`shared`**（圖中略）是 DI keys / image registry / theme composable / 共用元件的雜物間，每個模組都會 import 它，但反向不會。
@@ -284,3 +284,10 @@ pg_restore -h localhost -p 5432 -U wangxiaoyu -d genshin_banpick -F c prod_dump.
 | 5435 | SSH tunnel → EC2 docker PG（genshin stack） |
 | 3000 | backend（同時服 frontend 靜態檔）           |
 | 5173 | Vite dev server（HMR）                      |
+
+
+連線到 ec2 docker pg
+psql -h localhost -p 5435 -U postgres -d genshin_banpick
+
+合併
+UPDATE "MatchTeamMember" SET "memberRef" = 28 WHERE "memberRef" = 19;

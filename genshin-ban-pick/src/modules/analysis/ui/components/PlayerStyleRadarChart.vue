@@ -5,13 +5,13 @@ import { CanvasRenderer } from 'echarts/renderers';
 import { RadarChart, PieChart } from 'echarts/charts';
 import { GridComponent, TooltipComponent, LegendComponent } from 'echarts/components';
 import { usePlayerStyleChart } from '../composables/usePlayerStyleChart';
-import { usePlayerHistory } from '@/modules/shared/ui/composables/usePlayerHistory';
+import { usePlayerHistoryController } from '@/modules/shared/ui/context/playerHistoryContext';
 import { getTeamMemberName } from '@shared/contracts/team/TeamMember';
 
 use([CanvasRenderer, RadarChart, PieChart, GridComponent, TooltipComponent, LegendComponent]);
 
 const { option, scopes, selectedScope, selectedScopeKey, getScopeKey } = usePlayerStyleChart();
-const playerHistory = usePlayerHistory();
+const playerHistory = usePlayerHistoryController();
 
 function openSelectedPlayerHistory() {
     if (selectedScope.value?.type !== 'Player') return;

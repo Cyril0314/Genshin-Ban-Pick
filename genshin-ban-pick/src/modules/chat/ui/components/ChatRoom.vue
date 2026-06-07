@@ -9,11 +9,11 @@ import { useUserStore } from '@/modules/user';
 import { useCurrentTime, formatRelativeTime } from '@/modules/shared/ui/composables/useRelativeTime';
 import { useChatSync } from '../../sync/useChatSync.ts';
 import { useChatStore } from '../../store/chatStore.ts';
-import { usePlayerHistory } from '@/modules/shared/ui/composables/usePlayerHistory';
+import { usePlayerHistoryController } from '@/modules/shared/ui/context/playerHistoryContext';
 import { isSameIdentity } from '@shared/contracts/identity/Identity';
 import type { IChatMessage } from '@shared/contracts/chat/IChatMessage.ts';
 
-const playerHistory = usePlayerHistory();
+const playerHistory = usePlayerHistoryController();
 
 const newMessage = ref('');
 const messagesContainer = ref<HTMLElement | null>(null);

@@ -3,7 +3,7 @@
 import { storeToRefs } from 'pinia';
 import { ref, computed, watch } from 'vue';
 
-import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
+import { getTeamTheme } from '@/modules/shared/ui/composables/getTeamTheme';
 import { useTeamInfoStore } from '@/modules/team';
 import { useBoardStore } from '../../store/boardStore';
 import { ZoneType } from '@shared/contracts/board/value-types';
@@ -24,7 +24,7 @@ const currentTeam = computed(() => {
 const teamColorRGB = computed(() => {
   const slot = currentStep.value?.teamSlot
   if (slot === undefined) return 'var(--md-sys-color-on-surface-rgb)'
-  return useTeamTheme(slot).themeVars.value['--team-color-rgb']
+  return getTeamTheme(slot).themeVars['--team-color-rgb']
 })
 
 const displayText = computed(() => {

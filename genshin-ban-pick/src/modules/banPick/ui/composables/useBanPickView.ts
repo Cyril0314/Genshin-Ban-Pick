@@ -1,4 +1,5 @@
-// src/modules/banPick/ui/composables/useBanPickFacade.ts
+// src/modules/banPick/ui/composables/useBanPickView.ts
+
 import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
 
@@ -12,7 +13,7 @@ import { buildUserToTeamSlotMap } from '@/modules/team/domain/buildUserToTeamSlo
 import { useBanPickMatchSave } from './useBanPickMatchSave';
 import { useLineupSync } from '@/modules/lineup';
 
-export function useBanPickFacade(roomId: string) {
+export function useBanPickView(roomId: string) {
     const { isLoading: isInitLoading, roomSetting, filteredCharacterKeys, characterFilter } = useBanPickInitializer(roomId);
 
     const boardStore = useBoardStore();

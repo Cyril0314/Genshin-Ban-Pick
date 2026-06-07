@@ -1,7 +1,7 @@
 <!-- src/app/ui/views/BanPickView.vue -->
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 import { createLogger } from '@/app/utils/logger';
@@ -15,10 +15,10 @@ import MatchHistoryModal from '@/modules/analysis/ui/components/MatchHistoryModa
 import CharacterHoverCard from '@/modules/analysis/ui/components/CharacterHoverCard.vue';
 
 import { useViewportScale } from '../composables/useViewportScale';
-import { useBanPickFacade } from '../composables/useBanPickFacade';
-import { providePlayerHistory } from '@/modules/shared/ui/composables/usePlayerHistory';
-import { provideMatchHistory } from '@/modules/shared/ui/composables/useMatchHistory';
-import { provideCharacterAvatarWrapper } from '@/modules/shared/ui/composables/useCharacterAvatarWrapper';
+import { useBanPickView } from '../composables/useBanPickView';
+import { providePlayerHistoryController } from '@/modules/shared/ui/context/playerHistoryContext';
+import { provideMatchHistoryController } from '@/modules/shared/ui/context/matchHistoryContext';
+import { provideCharacterHoverWrapper } from '@/modules/shared/ui/context/characterHoverWrapperContext';
 
 import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 
@@ -38,7 +38,7 @@ const {
     team: { userToTeamSlotMap, memberInput, memberDrop, memberRestore },
 
     match: { save, reset, isLoading: isMatchSaveLoading, result: matchResult, error: matchError },
-} = useBanPickFacade(roomId);
+} = useBanPickView(roomId);
 
 watch(matchResult, (val) => {
     if (val) {
@@ -54,9 +54,12 @@ watch(matchError, (err) => {
     }
 });
 
+// Cross-cut context wiring: refs bridge provide()'s open command to v-model below.
+// Lives in .vue (not facade) because this is composition glue — modal state,
+// open handler, and template binding form one inseparable unit at the view level.
 const isPlayerHistoryOpen = ref(false);
 const playerHistoryIdentity = ref<PlayerIdentity>();
-providePlayerHistory({
+providePlayerHistoryController({
     open(identity) {
         playerHistoryIdentity.value = identity;
         isPlayerHistoryOpen.value = true;
@@ -65,14 +68,14 @@ providePlayerHistory({
 
 const isMatchHistoryOpen = ref(false);
 const matchHistoryId = ref<number>();
-provideMatchHistory({
+provideMatchHistoryController({
     open(matchId) {
         matchHistoryId.value = matchId;
         isMatchHistoryOpen.value = true;
     },
 });
 
-provideCharacterAvatarWrapper(CharacterHoverCard);
+provideCharacterHoverWrapper(CharacterHoverCard);
 </script>
 <template>
     <div class="ban-pick-page scale-context">

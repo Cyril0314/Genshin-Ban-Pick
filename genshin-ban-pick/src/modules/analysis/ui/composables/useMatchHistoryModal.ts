@@ -1,9 +1,11 @@
 // src/modules/analysis/ui/composables/useMatchHistoryModal.ts
 
-import { computed, ref, watch, type Ref } from 'vue';
+import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue';
 
 import { createLogger } from '@/app/utils/logger';
 import { useMatchUseCase } from '@/modules/match';
+import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
+import { getTeamTheme } from '@/modules/shared/ui/composables/getTeamTheme';
 import { chunk } from '@/modules/shared/utils/array';
 
 import { MoveType } from '@shared/contracts/match/value-types';
@@ -20,14 +22,15 @@ const MAX_PICKS_PER_COLUMN = 8;
 
 const byOrder = (a: IMatchMove, b: IMatchMove) => a.order - b.order;
 
-export function useMatchHistoryModal(open: Ref<boolean>, matchId: Ref<number | undefined>) {
+export function useMatchHistoryModal(open: MaybeRefOrGetter<boolean>, matchId: MaybeRefOrGetter<number | undefined>) {
     const matchUseCase = useMatchUseCase();
+    const { getByKey: getCharacterDisplayName } = useCharacterDisplayName();
 
     const isLoading = ref(false);
     const match = ref<IMatch | undefined>(undefined);
     const error = ref<string | undefined>(undefined);
 
-    watch([open, matchId], async ([isOpen, id], _old, onCleanup) => {
+    watch([() => toValue(open), () => toValue(matchId)], async ([isOpen, id], _old, onCleanup) => {
         if (!isOpen || id === undefined) return;
         // 用旗標處理 race：當 matchId 連續變動（例如使用者快速點不同 scatter），
         // 舊請求的 await 回來時 stale 為 true，直接放棄，不覆蓋新請求的結果。
@@ -92,6 +95,7 @@ export function useMatchHistoryModal(open: Ref<boolean>, matchId: Ref<number | u
         });
         return map;
     });
+
     function moveLabel(m: IMatchMove): string {
         return moveLabels.value.get(m.id) ?? m.type;
     }
@@ -103,5 +107,81 @@ export function useMatchHistoryModal(open: Ref<boolean>, matchId: Ref<number | u
         return scope.flatMap((team) => team.teamMembers?.filter((m) => m.lineupSlots?.some((s) => s.characterKey === characterKey)) ?? []);
     }
 
-    return { isLoading, error, match, teams, moveColumnsOf, utilityMoves, moveLabel, membersUsing };
+    // ---- View shape ----
+
+    const dateLabel = computed(() => (match.value ? new Date(match.value.createdAt).toLocaleString() : ''));
+
+    function teamLabel(team: IMatchTeam, index: number): string {
+        return team.name?.trim() || `Team ${String.fromCharCode(65 + index)}`;
+    }
+
+    function moveTypeClass(type: MoveType): string {
+        if (type === MoveType.Ban) return 'is-ban';
+        if (type === MoveType.Pick) return 'is-pick';
+        return 'is-utility';
+    }
+
+    // getTeamTheme 是 module-level 靜態查表（每個 slot 全 app 共用同一 themeVars 物件），直接呼叫即可。
+    function themeVarsOf(slot: number) {
+        return getTeamTheme(slot).themeVars;
+    }
+
+    // 將一隊的 lineupSlots 攤平成「成員為欄、setupNumber 為列」的唯讀矩陣
+    interface ILineupView {
+        members: IMatchTeamMember[];
+        rows: { setupNumber: number; cells: { memberId: number; characterKey?: string }[] }[];
+    }
+
+    function buildLineup(team: IMatchTeam): ILineupView {
+        const members = [...(team.teamMembers ?? [])].sort((a, b) => a.slot - b.slot);
+        const setupSet = new Set<number>();
+        members.forEach((m) => m.lineupSlots?.forEach((s) => setupSet.add(s.setupNumber)));
+        const setups = [...setupSet].sort((a, b) => a - b);
+        const rows = setups.map((setupNumber) => ({
+            setupNumber,
+            cells: members.map((m) => ({
+                memberId: m.id,
+                characterKey: m.lineupSlots?.find((s) => s.setupNumber === setupNumber)?.characterKey,
+            })),
+        }));
+        return { members, rows };
+    }
+
+    const hasLineup = (view: ILineupView) => view.members.length > 0 && view.rows.length > 0;
+
+    // 攤平成純值陣列供 template 走訪，避免在 v-for 中放 ref 造成 unwrap 混淆。
+    const flowColumns = computed(() =>
+        teams.value.map((team, i) => ({
+            key: team.id,
+            slot: team.slot,
+            label: teamLabel(team, i),
+            teamId: team.id,
+        })),
+    );
+
+    const lineupBlocks = computed(() =>
+        teams.value.map((team, i) => ({
+            key: team.id,
+            slot: team.slot,
+            label: teamLabel(team, i),
+            view: buildLineup(team),
+        })),
+    );
+
+    return {
+        isLoading,
+        error,
+        match,
+        moveColumnsOf,
+        utilityMoves,
+        moveLabel,
+        membersUsing,
+        dateLabel,
+        themeVarsOf,
+        moveTypeClass,
+        hasLineup,
+        flowColumns,
+        lineupBlocks,
+        getCharacterDisplayName,
+    };
 }

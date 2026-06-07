@@ -4,11 +4,11 @@ import { computed, ref } from 'vue';
 
 import { createLogger } from '@/app/utils/logger';
 import { getProfileImagePath } from '@/modules/shared/infrastructure/imageRegistry'
-import { useCharacterAvatarWrapper } from '@/modules/shared/ui/composables/useCharacterAvatarWrapper';
+import { useCharacterHoverWrapper } from '@/modules/shared/ui/context/characterHoverWrapperContext';
 import type { ICharacter } from '@shared/contracts/character/ICharacter';
 import { DragTypes } from '@/app/constants/customMIMETypes';
 
-const AvatarWrapper = useCharacterAvatarWrapper();
+const CharacterHoverWrapper = useCharacterHoverWrapper();
 
 const logger = createLogger('board.ui.imageOptions');
 
@@ -45,7 +45,7 @@ function handleDragEndEvent() {
 
 <template>
   <div class="image-options">
-    <component :is="AvatarWrapper" v-for="id in availableCharacterKeys" :key="id" :character-key="id" :disabled="isDragging">
+    <component :is="CharacterHoverWrapper" v-for="id in availableCharacterKeys" :key="id" :character-key="id" :disabled="isDragging">
         <img class="option" :class="{ 'is-dimmed': !isFiltered(id) }" :id="id" :src="getProfileImagePath(id)"
             draggable="true" @dragstart="handleDragStartEvent(id, $event)" @dragend="handleDragEndEvent" />
     </component>

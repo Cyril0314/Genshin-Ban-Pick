@@ -6,13 +6,13 @@ import { ref, computed } from 'vue';
 import { History, LogOut } from '@lucide/vue';
 import { useSession } from '@/app/composables/useSession';
 import { useUserStore } from '../../store/userStore';
-import { usePlayerHistory } from '@/modules/shared/ui/composables/usePlayerHistory';
+import { usePlayerHistoryController } from '@/modules/shared/ui/context/playerHistoryContext';
 
 const router = useRouter();
 const userStore = useUserStore();
 const { user, nickname } = storeToRefs(userStore);
 const session = useSession();
-const playerHistory = usePlayerHistory();
+const playerHistory = usePlayerHistoryController();
 
 const showMenu = ref(false);
 

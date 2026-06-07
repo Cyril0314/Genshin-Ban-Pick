@@ -6,15 +6,15 @@ import { storeToRefs } from 'pinia';
 
 import { createLogger } from '@/app/utils/logger';
 import { DragTypes } from '@/app/constants/customMIMETypes.ts';
-import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme.ts';
+import { getTeamTheme } from '@/modules/shared/ui/composables/getTeamTheme.ts';
 import { useRoomUserStore } from '../../store/roomUserStore';
-import { usePlayerHistory } from '@/modules/shared/ui/composables/usePlayerHistory';
+import { usePlayerHistoryController } from '@/modules/shared/ui/context/playerHistoryContext';
 import { stringifyPlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 
 import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 
 const logger = createLogger('room.ui.userPool');
-const playerHistory = usePlayerHistory();
+const playerHistory = usePlayerHistoryController();
 
 const props = defineProps<{ userToTeamSlotMap: Record<string, number> }>();
 
@@ -54,8 +54,8 @@ function getStyleForUser(roomUser: IRoomUser) {
             '--team-on-color-bg': `var(--md-sys-color-on-surface-variant)`,
         };
     }
-    const { themeVars } = useTeamTheme(teamSlot);
-    return themeVars.value;
+    const { themeVars } = getTeamTheme(teamSlot);
+    return themeVars;
 }
 </script>
 

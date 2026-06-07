@@ -11,7 +11,7 @@ import { useAnalysisUseCase } from './useAnalysisUseCase';
 import { useCharacterStore } from '@/modules/character';
 import { useGenshinVersionUseCase } from '@/modules/genshinVersion';
 import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
-import { useMatchHistory } from '@/modules/shared/ui/composables/useMatchHistory';
+import { useMatchHistoryController } from '@/modules/shared/ui/context/matchHistoryContext';
 import { chartColors } from '@/modules/shared/ui/constants/chartColors';
 
 import type { IGenshinVersionPeriod } from '@shared/contracts/genshinVersion/IGenshinVersionPeriod';
@@ -31,7 +31,7 @@ export function useMatchOverviewChart() {
     const { characterMap } = storeToRefs(characterStore);
 
     const { getByKey } = useCharacterDisplayName();
-    const matchHistory = useMatchHistory();
+    const matchHistory = useMatchHistoryController();
 
     const overview = ref<IAnalysisOverview>();
     const periods = ref<IGenshinVersionPeriod[]>();

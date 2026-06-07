@@ -91,6 +91,62 @@ The README codifies this and code follows it:
 
 Pick the right form when adding a new store; mixing them tends to produce stale-cache bugs.
 
+### Frontend composable convention
+
+Six categories with different rules — using the wrong one is a common source of churn:
+
+| Category | Path | Purpose | Rule |
+| --- | --- | --- | --- |
+| `useX*UseCase` | `modules/*/ui/composables/` | `inject(DIKeys.X)` gateway | One file, one inject. Even single-caller views go through this. |
+| `useX*Sync` | `modules/*/sync/` | Socket ↔ store bridge | Subscribe in `onMounted`, unsubscribe in `onUnmounted`. Never holds UI state. |
+| `useX*Chart` | `modules/*/ui/composables/` | Reactive echart option builder | Inputs reactive → outputs reactive options. |
+| Shared UI helper | `modules/shared/ui/composables/` | Cross-module reactive helper (display names, theming, relative time…) | Extract when ≥ 2 consumers; before that, leave inline. |
+| Feature composable / facade | `modules/*/ui/composables/use<X>{View,Modal,HoverCard}.ts` | View-model for a single non-trivial view | See facade rule below. |
+| Cross-cut context (provide/inject pair) | `modules/shared/ui/context/<name>Context.ts` | Ancestor-owned channel a descendant subtree consumes (open-a-modal command, wrapper component injection) | See context rule below. |
+
+**Facade rule (view-model per view).** Any view whose `<script setup>` exceeds ~50 lines, fetches data, or composes 3+ stores/UseCases gets a dedicated facade composable. When it exists:
+
+- The `.vue` calls **one** composable and does nothing else in script besides `defineProps` / `defineEmits` and template wiring.
+- All view dependencies (data fetch, derived computed, view-shape transforms, formatters, theming, presentation helpers — including shared helpers like `useCharacterDisplayName`) are wired inside the facade and re-exported. The view never imports a second composable just to grab a helper.
+- Performance hacks (`Map` caches, debouncers) live inside the facade, not in `.vue`.
+- Pure data transforms used only by this view stay inside the facade; promote to `modules/*/domain/` only when a second caller appears.
+
+**Thin-component exception.** Views without a facade — small modals, hover cards, dumb presentational components — wire shared helpers directly in `.vue`. The "all-deps-from-facade" rule only kicks in once a facade exists.
+
+**What stays in `.vue` even when a facade exists.** The facade owns reactive data + view-shape, not view composition. These belong in `.vue`:
+
+- **Side-effect `watch`** (e.g. `watch(matchResult, val => alert(...))`) — the facade can expose the data, but observing it to fire `alert` / DOM work is view-level.
+- **`provide()` calls + the refs that close over them** — `provide/inject` scope is "ancestor → descendant", so providers must live in the actual view component (siblings can't see a `<ChildModals>`'s provide). Refs whose only job is to bridge a `provide`'s open handler to the consumer modal's `v-model` are composition glue, not VM state. Putting them in the facade makes the facade a "ref holder + side-effect emitter" with no work in between, which is the wrong abstraction.
+- **Component imports** consumed only by the template or fed into `provideXWrapper(Component)` — these are UI primitives the view composes, not data dependencies.
+
+Heuristic: if removing the line from the facade and the .vue would still be 1:1 mirrors of each other (refs ↔ v-model, handler ↔ provide), the code never belonged in the facade.
+
+**Naming rule.** The facade hook mirrors the host component's filename suffix:
+
+- `<X>View.vue` → `use<X>View()`
+- `<X>Modal.vue` → `use<X>Modal()`
+- `<X>HoverCard.vue` → `use<X>HoverCard()`
+
+Don't name facades after the OO pattern (`*Facade`, `*Adapter`) — the suffix should reflect *what host it serves*, not *what pattern it implements*. A reader looking at `FooModal.vue` should reflexively know its facade is `useFooModal()`.
+
+**Facade templates.** Two shapes by host UX model — controlled (parent owns `:show`) vs uncontrolled (host element self-manages). Pick by host, not personal preference. Page-orchestrator views with no fetch host follow neither — they just compose sub-composables; see `useBanPickView.ts`.
+
+| Host UX | Open state owned by | Template | Shape | Reference |
+| --- | --- | --- | --- | --- |
+| `<n-modal>`, `<n-drawer>` | Parent (`v-model:show`) | A — watch-driven | `(open, id)` as `MaybeRefOrGetter` → `watch([() => toValue(open), () => toValue(id)])` → fetch on `(open && id !== undefined)` with stale-flag race guard | `useMatchHistoryModal.ts`, `usePlayerHistoryModal.ts` |
+| `<n-popover trigger="hover">`, `<n-tooltip>` | Host element internally | B — command-exposed | `(key)` as `MaybeRefOrGetter` → expose `load()`; host invokes on `@update:show` | `useCharacterHoverCard.ts` |
+
+Symptom you picked wrong: needing to mirror the host's internal open state into a parent `ref` just to feed Template A's watcher — switch to B.
+
+**Context rule (cross-cut provide/inject).** Files in `modules/shared/ui/context/<name>Context.ts` export an `InjectionKey` + `provide*()` + `use*()` triple. Two flavors:
+
+| Flavor | Use case | `use*` returns | When provider missing | Reference |
+| --- | --- | --- | --- | --- |
+| Command channel | Descendant tells ancestor to act (open-a-modal) | `{ open, ... }` object — return object even for single command so future `close()` / `refresh()` don't force renames | **Throws** (no provider = bug) | `playerHistoryContext.ts`, `matchHistoryContext.ts` |
+| Value reference | Descendant renders ancestor-injected value; used for cross-module dep inversion | `Component` | **Falls back** to no-op `Passthrough` (graceful degradation) | `characterHoverWrapperContext.ts` |
+
+Naming inside the file: type ends in `Controller` for command channels, `Wrapper` / `Provider` for value references. Never put context files in `composables/` — the folder split is the signal.
+
 ### Real-time flow
 
 Socket.IO is the live channel; REST (Express routers) is for static/historical data and auth. Backend socket handlers receive `RoomUserService`, `BoardService`, `ChatService`, `TeamService`, `LineupService` (all sharing a single `RoomStateRepository` over an in-memory `RoomStateManager`). Frontend mirrors this: each feature has a `sync/` folder (e.g. `modules/board/sync/useBoardSync.ts`) that bridges socket events ↔ Pinia store.
