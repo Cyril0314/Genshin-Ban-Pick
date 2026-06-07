@@ -40,7 +40,7 @@ const {
             <div class="modal-header">
                 <div class="header-title">
                     <span class="header-icon">
-                        <Swords :size="20" />
+                        <Swords/>
                     </span>
                     <div class="header-text">
                         <span class="modal-title">對戰紀錄</span>

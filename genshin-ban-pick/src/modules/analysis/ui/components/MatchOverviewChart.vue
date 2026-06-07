@@ -42,13 +42,11 @@ function onZrClick(event: any) {
     const point = [event.offsetX, event.offsetY];
     if (!chart.containPixel('grid', point)) return;
 
-    const converted = chart.convertFromPixel({ gridIndex: 0 }, point);
-    const timeMs = Array.isArray(converted) ? converted[0] : converted;
+    const timeMs = chart.convertFromPixel({ xAxisIndex: 0 }, event.offsetX);
     const match = findNearestMatch(timeMs);
     if (!match) return;
 
-    const matchPixel = chart.convertToPixel({ gridIndex: 0 }, [match.createdAt, 0.5]);
-    const matchX = Array.isArray(matchPixel) ? matchPixel[0] : matchPixel;
+    const matchX = chart.convertToPixel({ xAxisIndex: 0 }, match.createdAt);
     if (Math.abs(matchX - event.offsetX) <= HIT_TOLERANCE_PX) {
         openMatch(match.id);
     }
