@@ -10,7 +10,7 @@ import { useAnalysisUseCase } from './useAnalysisUseCase';
 import { useAnalysisMetaStore } from '../../store/analysisMetaStore';
 
 import { Element } from '@shared/contracts/character/value-types';
-import type { CharacterSynergyMatrix } from '@shared/contracts/analysis/CharacterSynergyMatrix';
+import { pickTopSynergies } from '@shared/contracts/analysis/ICharacterSynergy';
 
 const TOP_SYNERGY_COUNT = 5;
 
@@ -42,17 +42,16 @@ export function useCharacterHoverCard(characterKey: MaybeRefOrGetter<string>) {
 
     const pickPriorityText = computed(() => (pickPriority.value ? `${((1 - pickPriority.value.pickPriority) * 100).toFixed(0)}%` : '—'));
 
-    const topSynergies = computed(() => (isInitialized.value ? topCoOccurring(synergyMatrix.value, key.value) : []));
-
-    function topCoOccurring(matrix: CharacterSynergyMatrix, key: string) {
-        const row = matrix[key];
-        if (!row) return [] as { key: string; name: string; count: number }[];
-        return Object.entries(row)
-            .filter(([otherKey, count]) => otherKey !== key && (count ?? 0) > 0)
-            .map(([otherKey, count]) => ({ key: otherKey, name: getCharacterDisplayName(otherKey), count: count as number }))
-            .sort((a, b) => b.count - a.count)
-            .slice(0, TOP_SYNERGY_COUNT);
-    }
+    const topSynergies = computed(() =>
+        isInitialized.value
+            ? pickTopSynergies(key.value, synergyMatrix.value, TOP_SYNERGY_COUNT).map((entry) => {
+                  return {
+                      ...entry,
+                      name: getCharacterDisplayName(entry.characterKey),
+                  };
+              })
+            : [],
+    );
 
     return {
         load,

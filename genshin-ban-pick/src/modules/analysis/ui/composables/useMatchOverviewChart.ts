@@ -19,7 +19,7 @@ import type { IAnalysisOverview } from '@shared/contracts/analysis/IAnalysisOver
 
 const logger = createLogger('analysis.ui.matchOverview');
 
-const LANE_CHARACTER = '角色釋出';
+const LANE_CHARACTER = '角色';
 const LANE_MATCH = '場次';
 
 export function useMatchOverviewChart() {

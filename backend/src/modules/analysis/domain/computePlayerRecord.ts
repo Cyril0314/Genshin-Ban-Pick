@@ -1,17 +1,14 @@
 // backend/src/modules/analysis/domain/computePlayerRecord.ts
 
-import type {
-    IPlayerCharacterFrequency,
-    ICharacterSynergy,
-    IPlayerRecord,
-} from '@shared/contracts/analysis/IPlayerRecord';
 import { countCharacterKeys } from './countCharacterKeys';
 
+import { pickTopSynergies } from '@shared/contracts/analysis/ICharacterSynergy';
+import type { IPlayerCharacterFrequency, IPlayerRecord } from '@shared/contracts/analysis/IPlayerRecord';
 import type { CharacterSynergyMatrix } from '@shared/contracts/analysis/CharacterSynergyMatrix';
 import type { TeamMember } from '@shared/contracts/team/TeamMember';
 
-const TOP_CHARACTERS_COUNT = 10;
-const TOP_SYNERGIES_COUNT = 3;
+const TOP_CHARACTER_COUNT = 10;
+const TOP_SYNERGY_COUNT = 3;
 
 export function computePlayerRecord(
     playerRows: { characterKey: string }[],
@@ -25,12 +22,12 @@ export function computePlayerRecord(
 
     const characterFrequency: IPlayerCharacterFrequency[] = Object.entries(characterCounts)
         .sort((a, b) => b[1] - a[1])
-        .slice(0, TOP_CHARACTERS_COUNT)
+        .slice(0, TOP_CHARACTER_COUNT)
         .map(([characterKey, count]) => ({
             characterKey,
             count,
             rate: totalSetups > 0 ? count / totalSetups : 0,
-            topSynergies: pickTopSynergies(characterKey, synergyMatrix),
+            topSynergies: pickTopSynergies(characterKey, synergyMatrix, TOP_SYNERGY_COUNT),
         }));
 
     return {
@@ -38,20 +35,4 @@ export function computePlayerRecord(
         totalSetups,
         characterFrequency,
     };
-}
-
-/**
- * 從全域 synergy matrix 中查出角色 A 的 Top N 共現搭檔（只回 key + count）。
- */
-function pickTopSynergies(characterKey: string, synergyMatrix: CharacterSynergyMatrix): ICharacterSynergy[] {
-    const row = synergyMatrix[characterKey];
-    if (!row) return [];
-    const entries: ICharacterSynergy[] = [];
-    for (const [partnerKey, count] of Object.entries(row)) {
-        if (count === undefined) continue;
-        entries.push({ characterKey: partnerKey, count });
-    }
-    return entries
-        .sort((x, y) => y.count - x.count)
-        .slice(0, TOP_SYNERGIES_COUNT);
 }

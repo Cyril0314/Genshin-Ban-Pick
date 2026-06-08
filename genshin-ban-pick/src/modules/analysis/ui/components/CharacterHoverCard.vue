@@ -124,7 +124,7 @@ function handleShowChange(show: boolean) {
             <section class="synergy">
                 <span class="synergy-title">常用隊友</span>
                 <ol v-if="topSynergies.length" class="synergy-list">
-                    <li v-for="entry in topSynergies" :key="entry.key" class="synergy-item">
+                    <li v-for="entry in topSynergies" :key="entry.characterKey" class="synergy-item">
                         <span class="synergy-name">{{ entry.name }}</span>
                         <span class="synergy-count">{{ entry.count }}</span>
                     </li>

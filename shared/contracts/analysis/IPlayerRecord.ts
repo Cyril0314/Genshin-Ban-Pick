@@ -1,9 +1,5 @@
 import type { TeamMember } from '../team/TeamMember';
-
-export interface ICharacterSynergy {
-    characterKey: string;     // 與本角色共現的搭檔
-    count: number;            // 該 partner 在全域 setup 中共現次數
-}
+import type { ICharacterSynergy } from './ICharacterSynergy';
 
 export interface IPlayerCharacterFrequency {
     characterKey: string;
