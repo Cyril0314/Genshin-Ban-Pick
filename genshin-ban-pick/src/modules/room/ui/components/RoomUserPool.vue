@@ -8,13 +8,13 @@ import { createLogger } from '@/app/utils/logger';
 import { DragTypes } from '@/app/constants/customMIMETypes.ts';
 import { getTeamTheme } from '@/modules/shared/ui/composables/getTeamTheme.ts';
 import { useRoomUserStore } from '../../store/roomUserStore';
-import { usePlayerHistoryController } from '@/modules/shared/ui/context/playerHistoryContext';
+import { usePlayerProfileController } from '@/modules/shared/ui/context/playerProfileContext';
 import { stringifyPlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 
 import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 
 const logger = createLogger('room.ui.userPool');
-const playerHistory = usePlayerHistoryController();
+const playerProfile = usePlayerProfileController();
 
 const props = defineProps<{ userToTeamSlotMap: Record<string, number> }>();
 
@@ -43,7 +43,7 @@ function handleDragStartEvent(roomUser: IRoomUser, event: DragEvent) {
 }
 
 function handleClick(roomUser: IRoomUser) {
-    playerHistory.open(roomUser.identity);
+    playerProfile.open(roomUser.identity);
 }
 
 function getStyleForUser(roomUser: IRoomUser) {

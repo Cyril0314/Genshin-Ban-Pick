@@ -4,23 +4,24 @@
 import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
-import { createLogger } from '@/app/utils/logger';
 import Toolbar from '../components/ToolBar.vue';
-import StepIndicator from '@/modules/board/ui/components/StepIndicator.vue';
-import RoomUserPool from '@/modules/room/ui/components/RoomUserPool.vue';
-import BanPickBoard from '@/modules/board/ui/components/BanPickBoard.vue';
-import UserProfile from '@/modules/user/ui/components/UserProfile.vue';
-import PlayerHistoryModal from '@/modules/analysis/ui/components/PlayerHistoryModal.vue';
-import MatchHistoryModal from '@/modules/analysis/ui/components/MatchHistoryModal.vue';
-import CharacterHoverCard from '@/modules/analysis/ui/components/CharacterHoverCard.vue';
-
-import { useViewportScale } from '../composables/useViewportScale';
 import { useBanPickView } from '../composables/useBanPickView';
-import { providePlayerHistoryController } from '@/modules/shared/ui/context/playerHistoryContext';
-import { provideMatchHistoryController } from '@/modules/shared/ui/context/matchHistoryContext';
-import { provideCharacterHoverWrapper } from '@/modules/shared/ui/context/characterHoverWrapperContext';
+import { useViewportScale } from '../composables/useViewportScale';
 
 import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
+
+import { createLogger } from '@/app/utils/logger';
+import CharacterHoverCard from '@/modules/analysis/ui/components/CharacterHoverCard.vue';
+import MatchHistoryModal from '@/modules/analysis/ui/components/MatchHistoryModal.vue';
+import PlayerProfileModal from '@/modules/analysis/ui/components/PlayerProfileModal.vue';
+import BanPickBoard from '@/modules/board/ui/components/BanPickBoard.vue';
+import StepIndicator from '@/modules/board/ui/components/StepIndicator.vue';
+import RoomUserPool from '@/modules/room/ui/components/RoomUserPool.vue';
+import { provideCharacterHoverWrapper } from '@/modules/shared/ui/context/characterHoverWrapperContext';
+import { provideMatchHistoryController } from '@/modules/shared/ui/context/matchHistoryContext';
+import { providePlayerProfileController } from '@/modules/shared/ui/context/playerProfileContext';
+import UserProfile from '@/modules/user/ui/components/UserProfile.vue';
+
 
 const route = useRoute();
 const logger = createLogger('banPick.ui.view');
@@ -57,12 +58,12 @@ watch(matchError, (err) => {
 // Cross-cut context wiring: refs bridge provide()'s open command to v-model below.
 // Lives in .vue (not facade) because this is composition glue — modal state,
 // open handler, and template binding form one inseparable unit at the view level.
-const isPlayerHistoryOpen = ref(false);
-const playerHistoryIdentity = ref<PlayerIdentity>();
-providePlayerHistoryController({
+const isPlayerProfileOpen = ref(false);
+const playerProfileIdentity = ref<PlayerIdentity>();
+providePlayerProfileController({
     open(identity) {
-        playerHistoryIdentity.value = identity;
-        isPlayerHistoryOpen.value = true;
+        playerProfileIdentity.value = identity;
+        isPlayerProfileOpen.value = true;
     },
 });
 
@@ -124,7 +125,7 @@ provideCharacterHoverWrapper(CharacterHoverCard);
             </div>
         </div>
 
-        <PlayerHistoryModal v-model:open="isPlayerHistoryOpen" :identity="playerHistoryIdentity" />
+        <PlayerProfileModal v-model:open="isPlayerProfileOpen" :identity="playerProfileIdentity" />
         <MatchHistoryModal v-model:open="isMatchHistoryOpen" :match-id="matchHistoryId" />
     </div>
 </template>

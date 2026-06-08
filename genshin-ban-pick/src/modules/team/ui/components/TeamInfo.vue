@@ -6,14 +6,14 @@ import { X } from '@lucide/vue';
 import { createLogger } from '@/app/utils/logger';
 import { getTeamTheme } from '@/modules/shared/ui/composables/getTeamTheme';
 import { DragTypes } from '@/app/constants/customMIMETypes';
-import { usePlayerHistoryController } from '@/modules/shared/ui/context/playerHistoryContext';
+import { usePlayerProfileController } from '@/modules/shared/ui/context/playerProfileContext';
 import { parsePlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 import { getTeamMemberName } from '@shared/contracts/team/TeamMember';
 import type { Identity } from '@shared/contracts/identity/Identity';
 import type { TeamMember } from '@shared/contracts/team/TeamMember';
 
 const logger = createLogger('team.ui.info');
-const playerHistory = usePlayerHistoryController();
+const playerProfile = usePlayerProfileController();
 
 const props = defineProps<{
     side: 'left' | 'right';
@@ -85,7 +85,7 @@ function handleDropEvent( memberSlot: number, event: DragEvent) {
 function handleMemberNameClick(memberSlot: number) {
     const m = props.teamInfo.members[memberSlot];
     if (!m) return;
-    playerHistory.open(m);
+    playerProfile.open(m);
 }
 
 </script>

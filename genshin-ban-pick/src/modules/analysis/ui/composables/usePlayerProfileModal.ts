@@ -1,27 +1,29 @@
-// src/modules/analysis/ui/composables/usePlayerHistoryModal.ts
+// src/modules/analysis/ui/composables/usePlayerProfileModal.ts
 //
-// PlayerHistoryModal 的 state & 載入邏輯。
+// PlayerProfileModal 的 state & 載入邏輯。
 // 吃進 props（open / identity）的 ref，自動 fetch record；
 // 元件只負責 template 渲染。
 
-import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue';
+import { getTeamMemberName } from '@shared/contracts/team/TeamMember';
 import { storeToRefs } from 'pinia';
+import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue';
+
+import { useAnalysisUseCase } from './useAnalysisUseCase';
+
+import type { IPlayerRecord } from '@shared/contracts/analysis/IPlayerRecord';
+import type { Element } from '@shared/contracts/character/value-types';
+import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 
 import { createLogger } from '@/app/utils/logger';
 import { useCharacterStore } from '@/modules/character';
 import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
 import { elementColors } from '@/modules/shared/ui/constants/elementColors';
-import { useAnalysisUseCase } from './useAnalysisUseCase';
 
-import { getTeamMemberName } from '@shared/contracts/team/TeamMember';
 
-import type { Element } from '@shared/contracts/character/value-types';
-import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
-import type { IPlayerRecord } from '@shared/contracts/analysis/IPlayerRecord';
 
-const logger = createLogger('analysis.ui.playerHistory');
+const logger = createLogger('analysis.ui.playerProfile');
 
-export function usePlayerHistoryModal(
+export function usePlayerProfileModal(
     open: MaybeRefOrGetter<boolean>,
     identity: MaybeRefOrGetter<PlayerIdentity | undefined>,
 ) {

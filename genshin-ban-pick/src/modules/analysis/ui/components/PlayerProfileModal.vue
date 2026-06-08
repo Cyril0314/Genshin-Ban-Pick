@@ -1,12 +1,15 @@
-<!-- src/modules/analysis/ui/components/PlayerHistoryModal.vue -->
+<!-- src/modules/analysis/ui/components/PlayerProfileModal.vue -->
 
 <script setup lang="ts">
 import { X } from '@lucide/vue';
-import { usePlayerHistoryModal } from '../composables/usePlayerHistoryModal';
-import { getProfileImagePath } from '@/modules/shared/infrastructure/imageRegistry';
+
 import CharacterHoverCard from './CharacterHoverCard.vue';
+import { usePlayerProfileModal } from '../composables/usePlayerProfileModal';
 
 import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
+
+import { getProfileImagePath } from '@/modules/shared/infrastructure/imageRegistry';
+
 
 const props = defineProps<{
     open: boolean;
@@ -17,7 +20,7 @@ const emit = defineEmits<{
     (e: 'update:open', value: boolean): void;
 }>();
 
-const { isLoading, record, error, title, getBarWidth, getRowStyle, getCharacterDisplayName } = usePlayerHistoryModal(
+const { isLoading, record, error, title, getBarWidth, getRowStyle, getCharacterDisplayName } = usePlayerProfileModal(
     () => props.open,
     () => props.identity,
 );
@@ -44,7 +47,7 @@ const { isLoading, record, error, title, getBarWidth, getRowStyle, getCharacterD
                         <section class="section">
                             <div class="section-header">
                                 <h3 class="section-title">角色使用頻率（Top 10）</h3>
-                                <span class="section-meta">共 {{ record.totalSetups }} 場</span>
+                                <span class="section-meta">共 {{ record.totalSetups }} 次</span>
                             </div>
                             <ol class="frequency-list">
                                 <li

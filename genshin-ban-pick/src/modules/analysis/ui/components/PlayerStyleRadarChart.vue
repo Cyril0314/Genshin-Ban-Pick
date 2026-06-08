@@ -5,17 +5,17 @@ import { CanvasRenderer } from 'echarts/renderers';
 import { RadarChart, PieChart } from 'echarts/charts';
 import { GridComponent, TooltipComponent, LegendComponent } from 'echarts/components';
 import { usePlayerStyleChart } from '../composables/usePlayerStyleChart';
-import { usePlayerHistoryController } from '@/modules/shared/ui/context/playerHistoryContext';
+import { usePlayerProfileController } from '@/modules/shared/ui/context/playerProfileContext';
 import { getTeamMemberName } from '@shared/contracts/team/TeamMember';
 
 use([CanvasRenderer, RadarChart, PieChart, GridComponent, TooltipComponent, LegendComponent]);
 
 const { option, scopes, selectedScope, selectedScopeKey, getScopeKey } = usePlayerStyleChart();
-const playerHistory = usePlayerHistoryController();
+const playerProfile = usePlayerProfileController();
 
-function openSelectedPlayerHistory() {
+function openSelectedPlayerProfile() {
     if (selectedScope.value?.type !== 'Player') return;
-    playerHistory.open(selectedScope.value.player);
+    playerProfile.open(selectedScope.value.player);
 }
 </script>
 
@@ -29,7 +29,7 @@ function openSelectedPlayerHistory() {
                     v-if="selectedScope?.type === 'Player'"
                     type="button"
                     class="player-chip"
-                    @click="openSelectedPlayerHistory"
+                    @click="openSelectedPlayerProfile"
                 >
                     <span class="player-chip-name">{{ getTeamMemberName(selectedScope.player) }}</span>
                     <span class="player-chip-hint">查看紀錄</span>

@@ -6,13 +6,13 @@ import { ref, computed } from 'vue';
 import { History, LogOut } from '@lucide/vue';
 import { useSession } from '@/app/composables/useSession';
 import { useUserStore } from '../../store/userStore';
-import { usePlayerHistoryController } from '@/modules/shared/ui/context/playerHistoryContext';
+import { usePlayerProfileController } from '@/modules/shared/ui/context/playerProfileContext';
 
 const router = useRouter();
 const userStore = useUserStore();
 const { user, nickname } = storeToRefs(userStore);
 const session = useSession();
-const playerHistory = usePlayerHistoryController();
+const playerProfile = usePlayerProfileController();
 
 const showMenu = ref(false);
 
@@ -23,7 +23,7 @@ const userInitial = computed(() => {
 function handleViewHistory() {
     showMenu.value = false;
     if (!user.value) return;
-    playerHistory.open(user.value);
+    playerProfile.open(user.value);
 }
 
 function handleLogout() {
