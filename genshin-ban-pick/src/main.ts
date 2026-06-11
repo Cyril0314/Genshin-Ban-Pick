@@ -4,27 +4,28 @@ import './assets/main.css';
 import '@/assets/styles/semantic-colors.css';
 import '@/assets/styles/alpha.css';
 
-import { createApp } from 'vue';
-import { createPinia } from 'pinia';
 import naive from 'naive-ui';
+import { createPinia } from 'pinia';
+import { createApp } from 'vue';
 
-import App from './App.vue';
-import router from './router';
-import { createLogger } from './app/utils/logger';
 import { registerHttpClient } from './app/bootstrap/registerHttpClient';
 import { useSession } from './app/composables/useSession';
 import api from './app/infrastructure/http/httpClient';
-import { registerAuthDependencies, useAuthStore } from './modules/auth';
-import { registerUserDependencies, useUserStore } from './modules/user';
-import { registerGenshinVersionDependencies } from './modules/genshinVersion';
-import { registerCharacterDependencies, useCharacterStore } from './modules/character';
-import { registerBoardDependencies, useBoardStore } from './modules/board';
-import { registerChatDependencies, useChatStore} from './modules/chat';
-import { registerRoomDependencies, useRoomUserStore } from './modules/room';
-import { registerMatchDependencies } from './modules/match';
-import { registerTeamDependencies, useTeamInfoStore } from './modules/team';
-import { registerLineupDependencies, useLineupStore } from './modules/lineup';
+import { createLogger } from './app/utils/logger';
+import App from './App.vue';
 import { registerAnalysisDependencies, useAnalysisMetaStore } from './modules/analysis';
+import { registerAuthDependencies, useAuthStore } from './modules/auth';
+import { registerBoardDependencies, useBoardStore } from './modules/board';
+import { registerCharacterDependencies, useCharacterStore } from './modules/character';
+import { registerChatDependencies, useChatStore} from './modules/chat';
+import { registerGenshinVersionDependencies } from './modules/genshinVersion';
+import { registerLineupDependencies, useLineupStore } from './modules/lineup';
+import { registerMatchDependencies } from './modules/match';
+import { registerPlayerDependencies } from './modules/player';
+import { registerRoomDependencies, useRoomUserStore } from './modules/room';
+import { registerTeamDependencies, useTeamInfoStore } from './modules/team';
+import { registerUserDependencies, useUserStore } from './modules/user';
+import router from './router';
 
 const logger = createLogger('app.main');
 
@@ -54,6 +55,7 @@ registerGenshinVersionDependencies(app, httpClient)
 registerCharacterDependencies(app, httpClient, characterStore);
 registerMatchDependencies(app, httpClient)
 registerAnalysisDependencies(app, httpClient, analysisMetaStore)
+registerPlayerDependencies(app, httpClient)
 registerRoomDependencies(app, httpClient, roomUserStore);
 registerBoardDependencies(app, boardStore);
 registerTeamDependencies(app, teamInfoStore);

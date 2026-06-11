@@ -48,7 +48,7 @@ npm run format       # prettier --write src/
 
 ### Clean Architecture per module
 
-Both backend and frontend organize features under `src/modules/<feature>/` with the same four layers. **Don't cross layers backwards** — UI/controller depends on application, application depends on domain, infrastructure implements interfaces declared in domain.
+Both backend and frontend organize features under `src/modules/<feature>/` with the same four layers (this describes **domain modules** under `src/modules/`; cross-domain **composition views** live separately under `src/views/` — see "Two layers" below). **Don't cross layers backwards** — UI/controller depends on application, application depends on domain, infrastructure implements interfaces declared in domain.
 
 | Layer              | Backend path                  | Frontend path                                   | Responsibility                                                   |
 | ------------------ | ----------------------------- | ----------------------------------------------- | ---------------------------------------------------------------- |
@@ -64,6 +64,34 @@ Both backend and frontend organize features under `src/modules/<feature>/` with 
 
 Rule of thumb: if it has methods or encodes a rule it belongs in `domain/`; if it is just fields it belongs in `types/`. (Cross-boundary data shapes go in `shared/contracts/` instead — `types/` is for module-internal shapes.)
 
+### Two layers: domain modules (`modules/`) vs composition views (`views/`)
+
+Code splits into **two physically separate top-level layers**. Conflating them is what makes "which module does this page belong to?" feel unanswerable — a page is *composition*, not a domain, so it naturally spans several. `modules/` holds only domain capability; `views/` holds the cross-domain screens that orchestrate them. A composition view is a *consumer* of modules, never another domain.
+
+| Layer | Lives in | Owns | Structure | Named after |
+| --- | --- | --- | --- | --- |
+| **Domain module** | `src/modules/<domain>/` | A slice of domain capability (data access + rules) | Full four layers (`domain`/`application`/`infra`+`ui`…). Exposes a `UseCase` via DI. | The **domain** (`match`, `analysis`, `player`, `room`, `auth`, `board`) |
+| **Composition view** | `src/views/<screen>/` | One cross-domain feature surface — a route view, and/or the same feature's embedded modal/drawer | Flat — `<Screen>View.vue` at the root + `components/` + `composables/` (facades). **No** `domain`/`application`/`infra`, no `register*Dependencies`. Consumes domain modules via `inject`. | The **screen function** (`banPick`, `playerProfile`) |
+
+**Derived ≠ composition.** A module that *computes from another domain's data* is still a **domain module**, not a composition layer — the derivation is cohesive domain knowledge, and a downstream data dependency is normal between domains (`analysis` derives cooccurrence/cluster from `match` data; `player` reads `match` rows). What makes something a composition view is the **absence of a capability layer**, not whether its data is second-hand: has its own compute/rules (`application`/`infra`/`domain`) → domain module, however derived; only injects others' UseCases to assemble a screen → composition view. So `analysis` (full capability layer + derived charts that `banPick` *embeds*) stays a domain module.
+
+**The sharp line — orchestration, not nesting.** "Cross-domain" comes in two flavors that look alike but place differently:
+
+| Flavor | What it does | Where it lives |
+| --- | --- | --- |
+| **UI-block nesting** | `template` embeds another domain's *public* component, or reads another domain's store, just to display. Data core is still one domain; it's a controlled component fed by props. | **Stays** in its own domain module `ui/` |
+| **Capability orchestration** | Injects ≥2 domains' UseCases / runs multiple `sync`s / owns the screen's fetch + lifecycle + data flow. | **Composition view** (`views/`) |
+
+Deciding question: *does it coordinate multiple domains' capabilities (inject several UseCases, drive the data flow), or does it just arrange other domains' UI blocks?* Only the **orchestrator** moves out. This is why `BanPickBoard.vue` (embeds `character`'s selector + `team`'s info, but is a props-fed presentational component) **stays in `board`**, while `BanPickView.vue` (orchestrates board+match+analysis+player+room+user) **is** the composition view `views/banPick/`.
+
+**Single-domain route views stay home.** A route view that pulls from **one** domain (`LoginView`, `RoomListView`) lives in that domain module's `ui/views/` — no composition view needed. Only promote to a composition view when the view orchestrates ≥2 domains.
+
+**Don't decide a domain module's existence by where its page goes.** `player` (capability: per-player queries) is worth being its own module based on *capability cohesion* — independent of the fact that `PlayerProfileView` lives in `views/playerProfile/`. The page injecting both `player` and `analysis` UseCases is normal composition, not a smell.
+
+**A feature's surfaces live together; consumers import them.** The same feature's route view and embedded modal/drawer (`PlayerProfileView` + `PlayerProfileModal`) belong in **one** composition view, even when the modal's only caller is a *different* composition view (`banPick` opens `PlayerProfileModal`). Import the surface from where the feature lives — don't push the modal into the caller, that leaks the feature's cross-domain assembly into it.
+
+**Inside a composition view the same UI conventions apply** — facades (`use<Screen>View`), chart composables, presentational components — just rooted at `views/<screen>/composables/` and `views/<screen>/components/` instead of `modules/*/ui/*`. The "Frontend composable convention" table below describes the shapes; only the path prefix differs. Logger scope for a composition view is `<screen>.<detail>` (e.g. `banPick.view`, `playerProfile.modal`) — no layer segment, since the view is flat.
+
 ### Persistence → domain mappers
 
 Functions that turn a DB row into a domain/contract value follow one split. **The prefix states the action (`map` = row→domain); the variant is shown by suffix + folder, never by changing the prefix:**
@@ -73,7 +101,7 @@ Functions that turn a DB row into a domain/contract value follow one split. **Th
 
 Deciding question: **will it be shared across modules?** Yes → it must be Prisma-agnostic (structural input) and live in `domain/`. No, and it imports Prisma → it's an adapter, put it in `infra/`. Never import another module's `infra/`; when a module needs another's aggregate, depend on that module's repository/service interface (returns a contract DTO), not its mapper. Don't decouple a `*FromPrisma` mapper into structural types just for uniformity — own-module + Prisma means `infra/` is already correct, and the parallel type tree buys nothing.
 
-Mapper vs converter prefix: use `map*` only when the input carries a **DB shape** (Prisma types, `*Ref` columns, groupBy rows). To turn an already-clean domain value into another representation (query DTO, view model, primitive) use `to*` instead — e.g. `toPlayerIdentityQuery`, `toAnalysisTimeWindowQuery`.
+Mapper vs converter prefix: use `map*` only when the input carries a **DB shape** (Prisma types, `*Ref` columns, groupBy rows). To turn an already-clean domain value into another representation (query DTO, view model, primitive) use `to*` instead — e.g. `toPlayerIdentityQuery`, `toTimeWindowQuery`.
 
 ### Module composition (DI)
 

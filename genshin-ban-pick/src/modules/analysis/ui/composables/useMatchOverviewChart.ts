@@ -1,21 +1,24 @@
 // src/modules/analysis/ui/composables/useMatchOverviewChart.ts
 
-import { computed, onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
+import { computed, onMounted, ref } from 'vue';
 
-import { useEchartTheme } from '@/modules/shared/ui/composables/useEchartTheme';
-import { useDesignTokens } from '@/modules/shared/ui/composables/useDesignTokens';
-import { createLogger } from '@/app/utils/logger';
 import { useAnalysisUseCase } from './useAnalysisUseCase';
+
+import type { IAnalysisOverview } from '@shared/contracts/analysis/IAnalysisOverview';
+import type { ICharacter } from '@shared/contracts/character/ICharacter';
+import type { IGenshinVersionPeriod } from '@shared/contracts/genshinVersion/IGenshinVersionPeriod';
+import type { IMatchTimestamp } from '@shared/contracts/match/IMatchTimestamp';
+
+import { createLogger } from '@/app/utils/logger';
 import { useCharacterStore } from '@/modules/character';
 import { useGenshinVersionUseCase } from '@/modules/genshinVersion';
+import { useMatchUseCase } from '@/modules/match';
 import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
+import { useDesignTokens } from '@/modules/shared/ui/composables/useDesignTokens';
+import { useEchartTheme } from '@/modules/shared/ui/composables/useEchartTheme';
 import { useMatchHistoryController } from '@/modules/shared/ui/context/matchHistoryContext';
 
-import type { IGenshinVersionPeriod } from '@shared/contracts/genshinVersion/IGenshinVersionPeriod';
-import type { ICharacter } from '@shared/contracts/character/ICharacter';
-import type { IMatchTimeMinimal } from '@shared/contracts/analysis/IMatchTimeMinimal';
-import type { IAnalysisOverview } from '@shared/contracts/analysis/IAnalysisOverview';
 
 const logger = createLogger('analysis.ui.matchOverview');
 
@@ -27,6 +30,7 @@ export function useMatchOverviewChart() {
     const designTokens = useDesignTokens();
     const genshinVersionUseCase = useGenshinVersionUseCase();
     const analysisUseCase = useAnalysisUseCase();
+    const matchUseCase = useMatchUseCase();
 
     const characterStore = useCharacterStore();
     const { characterMap } = storeToRefs(characterStore);
@@ -36,14 +40,14 @@ export function useMatchOverviewChart() {
 
     const overview = ref<IAnalysisOverview>();
     const periods = ref<IGenshinVersionPeriod[]>();
-    const matchTimeline = ref<IMatchTimeMinimal[]>();
+    const matchTimeline = ref<IMatchTimestamp[]>();
 
     onMounted(async () => {
         logger.debug('fetching overview + version periods + match timeline');
         const [overviewResult, periodsResult, matchTimelineResult] = await Promise.all([
             analysisUseCase.fetchOverview(),
             genshinVersionUseCase.fetchGenshinVersionPeriods(),
-            analysisUseCase.fetchMatchTimeline(),
+            matchUseCase.fetchMatchTimestamps(),
         ]);
 
         periodsResult.sort((a, b) => a.startAt.getTime() - b.startAt.getTime());
@@ -203,7 +207,7 @@ export function useMatchOverviewChart() {
     });
 
     // 依時間（epoch ms）找最接近的 match，供 canvas 點擊就近開窗使用。
-    function findNearestMatch(timeMs: number): IMatchTimeMinimal | undefined {
+    function findNearestMatch(timeMs: number): IMatchTimestamp | undefined {
         const list = matchTimeline.value;
         if (!list || list.length === 0) return undefined;
         return list.reduce((best, m) =>

@@ -1,6 +1,6 @@
 import type { ICharacterAttributeDistributions } from "@shared/contracts/analysis/character/ICharacterAttributeDistributions";
 import type { ICharacter } from "@shared/contracts/character/ICharacter";
-import type { IMatchLineupSlotWithCharacter } from "../types/IMatchLineupSlotWithCharacter";
+import type { IMatchLineupSlotWithCharacter } from "../../match/types/IMatchLineupSlotWithCharacter";
 
 export function computeCharacterAttributeDistributions(usages: IMatchLineupSlotWithCharacter[]): ICharacterAttributeDistributions {
     const roleDistribution = countBy(usages, 'role');

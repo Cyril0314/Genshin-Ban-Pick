@@ -5,8 +5,9 @@ import { createLogger } from '../../../utils/logger';
 import { dedupTeamMembers } from '../domain/dedupTeamMembers';
 import { validateSnapshot } from '../domain/validateSnapshot';
 
-import type { IMatchSnapshotRepository } from '../domain/IMatchSnapshotRepository';
 import type { IMatchRepository } from '../domain/IMatchRepository';
+import type { IMatchSnapshotRepository } from '../domain/IMatchSnapshotRepository';
+import type { ITimeWindow } from '@shared/contracts/common/ITimeWindow';
 
 const logger = createLogger('match.service');
 
@@ -40,7 +41,11 @@ export default class MatchService {
     }
 
     async fetchMatchTeamMembers() {
-        const rows = await this.matchRepository.findAllMatchTeamMembers();
+        const rows = await this.matchRepository.findMatchTeamMembers();
         return dedupTeamMembers(rows);
+    }
+
+    async fetchMatchTimestamps(timeWindow?: ITimeWindow) {
+        return this.matchRepository.findMatchTimestamps(timeWindow);
     }
 }

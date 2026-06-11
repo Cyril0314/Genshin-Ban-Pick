@@ -2,10 +2,11 @@
 
 import { inject } from 'vue';
 
+import type MatchUseCase from '../../application/MatchUseCase';
+
 import { DIKeys } from '@/app/constants/diKeys';
 import { DependencyNotProvided } from '@/app/errors/AppError';
 
-import type MatchUseCase from '../../application/MatchUseCase';
 
 export function useMatchUseCase() {
     const useCase = inject<MatchUseCase>(DIKeys.MatchUseCase);

@@ -63,7 +63,6 @@ function openSelectedPlayerProfile() {
         </div>
         <footer class="footer">
             <small>
-                ※ 本分析僅反映玩家的選角分佈與偏好結構，並不代表角色強度或表現。<br />
                 ※ 各維度數值為相對於全體玩家資料的調整結果，用於描述風格差異。
             </small>
         </footer>

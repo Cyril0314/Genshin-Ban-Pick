@@ -1,9 +1,9 @@
 // src/modules/analysis/infrastructure/AnalysisService.ts
 
 import type { HttpClient } from '@/app/infrastructure/http/httpClient';
-import type { SynergyMode } from '@shared/contracts/analysis/value-types';
-import type { IPlayerIdentityQuery } from '@shared/contracts/analysis/dto/IPlayerIdentityQuery';
-import type { IAnalysisTimeWindowQuery } from '@shared/contracts/analysis/dto/IAnalysisTimeWindowQuery';
+import type { CooccurrenceGrain } from '@shared/contracts/analysis/value-types';
+import type { ITimeWindowQuery } from '@shared/contracts/common/dto/ITimeWindowQuery';
+import type { IPlayerIdentityQuery } from '@shared/contracts/identity/dto/IPlayerIdentityQuery';
 
 export default class AnalysisService {
     constructor(private client: HttpClient) {}
@@ -12,11 +12,7 @@ export default class AnalysisService {
         return this.client.get(`/analyses/overview`);
     }
 
-    async getMatchTimeline(query?: IAnalysisTimeWindowQuery) {
-        return this.client.get(`/analyses/match-timeline`, { params: query });
-    }
-
-    async getCharacterUsageSummary(query?: IAnalysisTimeWindowQuery) {
+    async getCharacterUsageSummary(query?: ITimeWindowQuery) {
         return this.client.get(`/analyses/character-usages/summary`, { params: query });
     }
 
@@ -28,12 +24,12 @@ export default class AnalysisService {
         return this.client.get(`/analyses/character-attribute/distributions`, { params: query });
     }
 
-    async getCharacterSynergyMatrix(payload: { mode: SynergyMode }) {
-        return this.client.get(`/analyses/character-synergy/matrix`, { params: payload });
+    async getCharacterCooccurrenceMatrix(payload: { grain: CooccurrenceGrain }) {
+        return this.client.get(`/analyses/character-cooccurrence/matrix`, { params: payload });
     }
 
-    async getCharacterSynergyGraph() {
-        return this.client.get(`/analyses/character-synergy/graph`);
+    async getCharacterSimilarityGraph() {
+        return this.client.get(`/analyses/character-similarity/graph`);
     }
 
     async getCharacterCluster() {
@@ -46,9 +42,5 @@ export default class AnalysisService {
 
     async getPlayerStyleProfile(query: IPlayerIdentityQuery) {
         return this.client.get(`/analyses/player-style/profile`, { params: query });
-    }
-
-    async getPlayerRecord(query: IPlayerIdentityQuery) {
-        return this.client.get(`/analyses/player-records`, { params: query });
     }
 }

@@ -6,5 +6,5 @@ export interface IMatchTeam {
     name?: string;
     matchId: number;
 
-    teamMembers?: IMatchTeamMember[];
+    teamMembers: IMatchTeamMember[];
 }

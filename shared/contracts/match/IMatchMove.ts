@@ -12,6 +12,6 @@ export interface IMatchMove {
     teamId?: number;
     characterKey: string;
 
-    character?: ICharacter;
+    character: ICharacter;
     randomMoveContext?: IRandomMoveContext;
 }

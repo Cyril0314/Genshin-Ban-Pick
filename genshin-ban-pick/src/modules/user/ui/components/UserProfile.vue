@@ -1,18 +1,21 @@
 <!-- src/modules/user/ui/components/UserProfile.vue -->
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
-import { useRouter } from 'vue-router';
-import { ref, computed } from 'vue';
 import { History, LogOut } from '@lucide/vue';
-import { useSession } from '@/app/composables/useSession';
+import { toPlayerIdentityQuery } from '@shared/contracts/identity/dto/IPlayerIdentityQuery';
+import { storeToRefs } from 'pinia';
+import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
+
 import { useUserStore } from '../../store/userStore';
-import { usePlayerProfileController } from '@/modules/shared/ui/context/playerProfileContext';
+
+import { useSession } from '@/app/composables/useSession';
+
+
 
 const router = useRouter();
 const userStore = useUserStore();
 const { user, nickname } = storeToRefs(userStore);
 const session = useSession();
-const playerProfile = usePlayerProfileController();
 
 const showMenu = ref(false);
 
@@ -20,15 +23,15 @@ const userInitial = computed(() => {
     return nickname.value ? nickname.value.charAt(0).toUpperCase() : 'G';
 });
 
-function handleViewHistory() {
-    showMenu.value = false;
-    if (!user.value) return;
-    playerProfile.open(user.value);
-}
+const historyTo = computed(() => {
+    if (!user.value) return undefined;
+    const query: Record<string, string | number | undefined> = { ...toPlayerIdentityQuery(user.value) };
+    return { name: 'PlayerProfile', query };
+});
 
 function handleLogout() {
     showMenu.value = false;
-    // eslint-disable-next-line no-restricted-globals
+     
     if (!confirm('確定要登出嗎？')) return;
 
     session.logout();
@@ -57,10 +60,10 @@ function handleLogout() {
                 <div class="divider"></div>
 
                 <div class="actions">
-                    <button class="item" @click="handleViewHistory">
+                    <RouterLink v-if="historyTo" :to="historyTo" class="item" target="_blank" rel="noopener" @click="showMenu = false">
                         <History class="icon" />
                         <span>我的紀錄</span>
-                    </button>
+                    </RouterLink>
                     <button class="item item--danger" @click="handleLogout">
                         <LogOut class="icon" />
                         <span>登出</span>
@@ -181,6 +184,7 @@ function handleLogout() {
     color: var(--md-sys-color-on-surface-variant);
     cursor: pointer;
     text-align: left;
+    text-decoration: none;
     font-size: var(--font-size-sm);
     transition:
         background-color 0.15s ease,

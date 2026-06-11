@@ -3,14 +3,14 @@
 import { aggregateMoveWeightContext } from './aggregateMoveWeightContext';
 import { calculateTacticalWeight } from './calculateTacticalWeight';
 
-import type { IMatchTimeMinimal } from '@shared/contracts/analysis/IMatchTimeMinimal';
-import type { IMatchMoveWeightCalcCore } from '../types/IMatchMoveWeightCalcCore';
+import type { IMatchTimestamp } from '@shared/contracts/match/IMatchTimestamp';
+import type { IMatchMove } from '@shared/contracts/match/IMatchMove';
 import type { IWeightContext } from '@shared/contracts/analysis/IWeightContext';
 import type { ICharacterUsage } from '@shared/contracts/analysis/ICharacterUsage';
 
 export function computeCharacterUsage(
-    matches: IMatchTimeMinimal[],
-    matchMoves: IMatchMoveWeightCalcCore[],
+    matches: IMatchTimestamp[],
+    matchMoves: IMatchMove[],
     matchLineupSlots: { matchId: number; characterKey: string }[],
 ): ICharacterUsage[] {
     const matchCount = matches.length;
@@ -32,7 +32,7 @@ export function computeCharacterUsage(
         const wasUsed = usedSet.has(`${matchId}:${key}`);
         const usedBoth = (usageCountByMatch.get(`${matchId}:${key}`) ?? 0) >= 2;
 
-        releaseMap.set(key, matchMove.characterReleaseAt ?? undefined);
+        releaseMap.set(key, matchMove.character?.releaseAt ?? undefined);
 
         const ctx = aggregateMoveWeightContext({
             type: matchMove.type,

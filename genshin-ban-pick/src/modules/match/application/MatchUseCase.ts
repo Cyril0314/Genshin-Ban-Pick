@@ -1,6 +1,7 @@
 // src/modules/match/application/matchUseCase.ts
 
 import type MatchRepository from '../infrastructure/MatchRepository';
+import type { ITimeWindow } from '@shared/contracts/common/ITimeWindow';
 
 export default class MatchUseCase {
     constructor(private matchRepository: MatchRepository) {}
@@ -21,5 +22,9 @@ export default class MatchUseCase {
     async fetchMatchTeamMembers() {
         const matchTeamMembers = await this.matchRepository.fetchMatchTeamMembers();
         return matchTeamMembers;
+    }
+
+    async fetchMatchTimestamps(timeWindow?: ITimeWindow) {
+        return await this.matchRepository.fetchMatchTimestamps(timeWindow);
     }
 }

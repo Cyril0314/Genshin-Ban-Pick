@@ -2,11 +2,11 @@
 
 import type AnalysisRepository from '../infrastructure/AnalysisRepository';
 import type { useAnalysisMetaStore } from '../store/analysisMetaStore';
-import type { SynergyMode } from '@shared/contracts/analysis/value-types';
-import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
-import type { IAnalysisTimeWindow } from '@shared/contracts/analysis/IAnalysisTimeWindow';
-import type { ICharacterUsage } from '@shared/contracts/analysis/ICharacterUsage';
 import type { ICharacterPickPriority } from '@shared/contracts/analysis/ICharacterPickPriority';
+import type { ICharacterUsage } from '@shared/contracts/analysis/ICharacterUsage';
+import type { CooccurrenceGrain } from '@shared/contracts/analysis/value-types';
+import type { ITimeWindow } from '@shared/contracts/common/ITimeWindow';
+import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 
 export default class AnalysisUseCase {
     constructor(
@@ -14,14 +14,23 @@ export default class AnalysisUseCase {
         private analysisRepository: AnalysisRepository,
     ) {}
 
+    // 只載共現矩陣（冪等）。供只需要矩陣的頁面（playerProfile）用，避免連帶抓 usage/pickPriority 兩個字典。
+    async loadCharacterCooccurrenceMatrix() {
+        const store = this.analysisMetaStore;
+        if (store.characterCooccurrenceMatrix) return; // 已載（資料在即載過）
+
+        const matrix = await this.analysisRepository.fetchCharacterCooccurrenceMatrix({ grain: 'setup' });
+        store.setCharacterCooccurrenceMatrix(matrix);
+    }
+
     async loadCharacterMeta() {
         const store = this.analysisMetaStore;
-        if (store.isInitialized) return;
+        if (store.usageMap) return; // 字典已載
 
-        const [usages, pickPriorities, synergyMatrix] = await Promise.all([
+        const [usages, pickPriorities] = await Promise.all([
             this.analysisRepository.fetchCharacterUsageSummary(),
             this.analysisRepository.fetchCharacterUsagePickPriority(),
-            this.analysisRepository.fetchCharacteSynergyMatrix({ mode: 'setup' }),
+            this.loadCharacterCooccurrenceMatrix(), // 矩陣冪等載入，與字典並行；若 playerProfile 已載則跳過
         ]);
 
         const usageMap: Record<string, ICharacterUsage> = {};
@@ -34,18 +43,14 @@ export default class AnalysisUseCase {
             pickPriorityMap[pickPriority.characterKey] = pickPriority;
         }
 
-        store.setMeta({ usageMap, pickPriorityMap, synergyMatrix });
+        store.setCharacterDictionaries({ usageMap, pickPriorityMap });
     }
 
     async fetchOverview() {
         return await this.analysisRepository.fetchOverview();
     }
 
-    async fetchMatchTimeline(timeWindow?: IAnalysisTimeWindow) {
-        return await this.analysisRepository.fetchMatchTimeline(timeWindow);
-    }
-
-    async fetchCharacterUsageSummary(timeWindow?: IAnalysisTimeWindow) {
+    async fetchCharacterUsageSummary(timeWindow?: ITimeWindow) {
         return await this.analysisRepository.fetchCharacterUsageSummary(timeWindow);
     }
 
@@ -53,24 +58,12 @@ export default class AnalysisUseCase {
         return await this.analysisRepository.fetchCharacterUsagePickPriority();
     }
 
-    async fetchCharacteSynergyMatrix(payload: { mode: SynergyMode }) {
-        return await this.analysisRepository.fetchCharacteSynergyMatrix(payload);
-    }
-    
     async fetchCharacterCluster() {
         return await this.analysisRepository.fetchCharacterCluster();
     }
 
-    async fetchPlayerCharacterUsage() {
-        return await this.analysisRepository.fetchPlayerCharacterUsage();
-    }
-
     async fetchPlayerStyleProfile(playerIdentity: PlayerIdentity) {
         return await this.analysisRepository.fetchPlayerStyleProfile(playerIdentity);
-    }
-
-    async fetchPlayerRecord(playerIdentity: PlayerIdentity) {
-        return await this.analysisRepository.fetchPlayerRecord(playerIdentity);
     }
 
     async fetchCharacterAttributeDistributions(playerIdentity?: PlayerIdentity) {

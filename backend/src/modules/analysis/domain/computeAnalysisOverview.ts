@@ -4,11 +4,11 @@ import { Element, Rarity } from '@shared/contracts/character/value-types';
 import { MoveSource, MoveType } from '@shared/contracts/match/value-types';
 import { PlayerIdentity, stringifyPlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 
-import type { IMatchStatisticsRaw } from '../types/IMatchStatisticsRaw';
-import type { IMatchLineupSlotCooccurrenceRow } from '../types/IMatchLineupSlotCooccurrenceRow';
+import type { IMatchStatisticsRaw } from '../../match/types/IMatchStatisticsRaw';
+import type { IMatchLineupSlotPlacement } from '../../match/types/IMatchLineupSlotPlacement';
 import type { IAnalysisOverview } from '@shared/contracts/analysis/IAnalysisOverview';
 
-export function computeAnalysisOverview(raw: IMatchStatisticsRaw, cooccurrenceRows: IMatchLineupSlotCooccurrenceRow[]): IAnalysisOverview {
+export function computeAnalysisOverview(raw: IMatchStatisticsRaw, cooccurrenceRows: IMatchLineupSlotPlacement[]): IAnalysisOverview {
     const uniquePlayers = countUniquePlayers(raw.teamMemberGroups);
     return {
         volume: {
@@ -45,7 +45,7 @@ function fillCounts<E extends string>(values: E[], partial: Partial<Record<E, nu
 }
 
 // 以 (match, team, setup) 為一組陣容，計算去重後的角色組合數量。
-function countCharacterCombinations(rows: IMatchLineupSlotCooccurrenceRow[]): number {
+function countCharacterCombinations(rows: IMatchLineupSlotPlacement[]): number {
     const setupMap = new Map<string, string[]>();
     for (const row of rows) {
         const setupKey = `${row.matchId}|${row.teamId}|${row.setupNumber}`;
@@ -65,7 +65,7 @@ function countCharacterCombinations(rows: IMatchLineupSlotCooccurrenceRow[]): nu
 }
 
 // 從 lineup slots 去重計算出場過的不重複角色數。
-function countUniqueCharacters(rows: IMatchLineupSlotCooccurrenceRow[]): number {
+function countUniqueCharacters(rows: IMatchLineupSlotPlacement[]): number {
     return new Set(rows.map((row) => row.characterKey)).size;
 }
 

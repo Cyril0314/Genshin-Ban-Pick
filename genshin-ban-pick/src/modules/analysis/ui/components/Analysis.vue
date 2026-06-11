@@ -4,13 +4,11 @@
 import { ref } from 'vue';
 
 import CharacterClusterChart from './CharacterClusterChart.vue';
-import CharacterSynergyChart from './CharacterSynergyChart.vue';
 import CharacterUsagesChart from './CharacterUsagesChart.vue';
 import CharacterUsagesCompositionChart from './CharacterUsagesCompositionChart.vue';
 import CharacterPickPriorityChart from './CharacterPickPriorityChart.vue';
 import CharacterScatterChart from './CharacterScatterChart.vue';
 
-import PlayerCharacterChart from './PlayerCharacterChart.vue';
 import PlayerStyleRadarChart from './PlayerStyleRadarChart.vue';
 import MatchOverviewChart from './MatchOverviewChart.vue';
 
@@ -26,8 +24,6 @@ const tabs = [
     { name: '角色定位象限', component: CharacterScatterChart },
     { name: '角色使用構成', component: CharacterUsagesCompositionChart },
     { name: '角色群聚圖', component: CharacterClusterChart },
-    // { name: '角色共現熱圖', component: CharacterSynergyChart }, 暫時移除原因：被 CharacterHoverCard 取代
-    { name: '玩家偏好角色', component: PlayerCharacterChart },
 ];
 
 const currentTabIndex = ref<number>(0);

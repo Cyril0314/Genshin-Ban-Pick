@@ -1,7 +1,7 @@
 // backend/src/modules/analysis/domain/computePlayerStyleProfile.ts
 
 import type { IPlayerStyleProfile } from '@shared/contracts/analysis/IPlayerStyleProfile';
-import type { IMatchLineupSlotWithCharacter } from '../types/IMatchLineupSlotWithCharacter';
+import type { IMatchLineupSlotWithCharacter } from '../../match/types/IMatchLineupSlotWithCharacter';
 import type { ICharacter } from '@shared/contracts/character/ICharacter';
 import { computeCharacterAttributeDistributions } from './computeCharacterAttributeDistributions';
 

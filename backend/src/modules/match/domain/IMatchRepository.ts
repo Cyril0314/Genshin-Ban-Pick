@@ -1,7 +1,11 @@
 // src/modules/match/domain/IMatchRepository.ts
 
-import type { IMatch } from '@shared/contracts/match/IMatch';
 import type { IMatchSnapshot } from './IMatchSnapshot';
+import type { ITimeWindow } from '@shared/contracts/common/ITimeWindow';
+import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
+import type { IMatch } from '@shared/contracts/match/IMatch';
+import type { IMatchMove } from '@shared/contracts/match/IMatchMove';
+import type { IMatchTimestamp } from '@shared/contracts/match/IMatchTimestamp';
 import type { TeamMember } from '@shared/contracts/team/TeamMember';
 
 export interface IMatchRepository {
@@ -13,5 +17,9 @@ export interface IMatchRepository {
 
     delete(matchId: number): Promise<void>;
 
-    findAllMatchTeamMembers(): Promise<TeamMember[]>;
+    findMatchTeamMembers(playerIdentity?: PlayerIdentity): Promise<TeamMember[]>;
+
+    findMatchTimestamps(timeWindow?: ITimeWindow): Promise<IMatchTimestamp[]>;
+
+    findMatchMoves(timeWindow?: ITimeWindow): Promise<IMatchMove[]>;
 }

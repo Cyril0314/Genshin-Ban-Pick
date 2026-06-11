@@ -1,6 +1,7 @@
 // src/modules/match/infrastructure/MatchService.ts
 
 import type { HttpClient } from '@/app/infrastructure/http/httpClient';
+import type { ITimeWindowQuery } from '@shared/contracts/common/dto/ITimeWindowQuery';
 
 export default class MatchService {
     constructor(private client: HttpClient) {}
@@ -19,5 +20,9 @@ export default class MatchService {
 
     async getMatchTeamMembers() {
         return this.client.get(`/matches/team-members`);
+    }
+
+    async getMatchTimestamps(query?: ITimeWindowQuery) {
+        return this.client.get(`/matches/timestamps`, { params: query });
     }
 }

@@ -14,7 +14,7 @@ import MatrixNormalizer from '../matrix/MatrixNormalizer';
 import DimensionProjector from '../projection/DimensionProjector';
 
 import type { ICommunityScanResult } from '../../domain/ICommunityScanResult';
-import type { CharacterSynergyMatrix } from '@shared/contracts/analysis/CharacterSynergyMatrix';
+import type { CharacterCooccurrenceMatrix } from '@shared/contracts/analysis/CharacterCooccurrenceMatrix';
 import type { IBridgeScoreResult } from '@shared/contracts/analysis/IBridgeScoreResult';
 import type { IArchetypePoint } from '@shared/contracts/analysis/IArchetypePoint';
 import CharacterFeatureMatrixBuilder from '../../domain/CharacterFeatureMatrixBuilder';
@@ -37,15 +37,14 @@ export default class CharacterCommunityScanEngine {
         this.rng2 = createSeededRandom2(seed);
     }
 
-    async computeCluster(graph: UndirectedGraph, synergy: CharacterSynergyMatrix, characterFeatureMatrix: FeatureMatrix<string, string>) {
+    async computeCluster(graph: UndirectedGraph, characterCooccurrenceMatrix: CharacterCooccurrenceMatrix, characterFeatureMatrix: FeatureMatrix<string, string>) {
         const k = await this.findBestClusterCount(graph);
-        const synergySignatureFeatureMatrix = this.featureMatrixBuilder.buildSynergySignatureFeatureMatrix(synergy);
-        // const featureMatrix = this.mergeFeatureMatrices(synergySignatureFeatureMatrix, characterFeatureMatrix);
-        
+        const featureMatrix = this.featureMatrixBuilder.build(characterCooccurrenceMatrix);
+
         // const blockScaler = new BlockScaler(FEATURE_BLOCKS);
         // const scaledFM = blockScaler.applyScaling(featureMatrix);
 
-        const { rowKeys, colKeys, data } = this.matrixNormalizer.normalize(synergySignatureFeatureMatrix);
+        const { rowKeys, colKeys, data } = this.matrixNormalizer.normalize(featureMatrix);
         const clusterIds = this.clusterCharacters(data, k);
 
         // const projected = this.umapProjector.project(data, 2, this.rng2);

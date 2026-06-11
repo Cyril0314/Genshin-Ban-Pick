@@ -24,8 +24,8 @@ const {
     usage,
     totalAppearances,
     pickPriorityText,
-    topSynergies,
-    isInitialized,
+    topCooccurrenceEntries,
+    isReady,
 } = useCharacterHoverCard(() => props.characterKey);
 
 function handleShowChange(show: boolean) {
@@ -118,18 +118,18 @@ function handleShowChange(show: boolean) {
                     </dl>
                 </div>
             </div>
-            <span v-else-if="!isInitialized" class="hint">載入中…</span>
+            <span v-else-if="!isReady" class="hint">載入中…</span>
             <span v-else class="hint">無資料</span>
 
-            <section class="synergy">
-                <span class="synergy-title">常用隊友</span>
-                <ol v-if="topSynergies.length" class="synergy-list">
-                    <li v-for="entry in topSynergies" :key="entry.characterKey" class="synergy-item">
-                        <span class="synergy-name">{{ entry.name }}</span>
-                        <span class="synergy-count">{{ entry.count }}</span>
+            <section class="cooccurrence">
+                <span class="cooccurrence-title">常用隊友</span>
+                <ol v-if="topCooccurrenceEntries.length" class="cooccurrence-list">
+                    <li v-for="entry in topCooccurrenceEntries" :key="entry.key" class="cooccurrence-item">
+                        <span class="cooccurrence-name">{{ entry.name }}</span>
+                        <span class="cooccurrence-count">{{ entry.count }}</span>
                     </li>
                 </ol>
-                <span v-else-if="!isInitialized" class="hint">載入中…</span>
+                <span v-else-if="!isReady" class="hint">載入中…</span>
                 <span v-else class="hint">無資料</span>
             </section>
 
@@ -281,19 +281,19 @@ function handleShowChange(show: boolean) {
     font-weight: var(--font-weight-medium);
 }
 
-.synergy {
+.cooccurrence {
     display: flex;
     flex-direction: column;
     gap: var(--space-xs);
 }
 
-.synergy-title {
+.cooccurrence-title {
     color: var(--element-color);
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-medium);
 }
 
-.synergy-list {
+.cooccurrence-list {
     display: flex;
     flex-direction: column;
     gap: calc(var(--space-xs) / 2);
@@ -301,13 +301,13 @@ function handleShowChange(show: boolean) {
     list-style: none;
 }
 
-.synergy-item {
+.cooccurrence-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-.synergy-count {
+.cooccurrence-count {
     color: var(--md-sys-color-on-surface-variant);
 }
 

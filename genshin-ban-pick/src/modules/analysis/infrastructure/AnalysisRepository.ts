@@ -1,14 +1,12 @@
 // src/modules/analysis/infrastructure/AnalysisRepository.ts
 
-import { toPlayerIdentityQuery } from '@shared/contracts/analysis/dto/IPlayerIdentityQuery';
-import { toAnalysisTimeWindowQuery } from '@shared/contracts/analysis/dto/IAnalysisTimeWindowQuery';
+import { toTimeWindowQuery } from '@shared/contracts/common/dto/ITimeWindowQuery';
+import { toPlayerIdentityQuery } from '@shared/contracts/identity/dto/IPlayerIdentityQuery';
 
 import type AnalysisService from './AnalysisService';
-
-import type { SynergyMode } from '@shared/contracts/analysis/value-types';
+import type { CooccurrenceGrain } from '@shared/contracts/analysis/value-types';
+import type { ITimeWindow } from '@shared/contracts/common/ITimeWindow';
 import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
-import type { IAnalysisTimeWindow } from '@shared/contracts/analysis/IAnalysisTimeWindow';
-import type { IMatchTimeMinimal } from '@shared/contracts/analysis/IMatchTimeMinimal';
 
 export default class AnalysisRepository {
     constructor(private analysisService: AnalysisService) {}
@@ -18,19 +16,8 @@ export default class AnalysisRepository {
         return response.data;
     }
 
-    async fetchMatchTimeline(timeWindow?: IAnalysisTimeWindow) {
-        const query = timeWindow ? toAnalysisTimeWindowQuery(timeWindow) : undefined
-        const response = await this.analysisService.getMatchTimeline(query);
-        const matchTimestamps: IMatchTimeMinimal[] = response.data.map((m: any) => ({
-            id: m.id,
-            createdAt: new Date(m.createdAt)
-        }))
-        return matchTimestamps;
-    }
-
-
-    async fetchCharacterUsageSummary(timeWindow?: IAnalysisTimeWindow) {
-        const query = timeWindow ? toAnalysisTimeWindowQuery(timeWindow) : undefined
+    async fetchCharacterUsageSummary(timeWindow?: ITimeWindow) {
+        const query = timeWindow ? toTimeWindowQuery(timeWindow) : undefined
         const response = await this.analysisService.getCharacterUsageSummary(query);
         return response.data;
     }
@@ -46,8 +33,8 @@ export default class AnalysisRepository {
         return response.data;
     }
 
-    async fetchCharacteSynergyMatrix(payload: { mode: SynergyMode }) {
-        const response = await this.analysisService.getCharacterSynergyMatrix(payload);
+    async fetchCharacterCooccurrenceMatrix(payload: { grain: CooccurrenceGrain }) {
+        const response = await this.analysisService.getCharacterCooccurrenceMatrix(payload);
         return response.data;
     }
 
@@ -56,20 +43,9 @@ export default class AnalysisRepository {
         return response.data;
     }
 
-    async fetchPlayerCharacterUsage() {
-        const response = await this.analysisService.getPlayerCharacterUsage();
-        return response.data;
-    }
-
     async fetchPlayerStyleProfile(playerIdentity: PlayerIdentity) {
         const query = toPlayerIdentityQuery(playerIdentity);
         const response = await this.analysisService.getPlayerStyleProfile(query);
-        return response.data;
-    }
-
-    async fetchPlayerRecord(playerIdentity: PlayerIdentity) {
-        const query = toPlayerIdentityQuery(playerIdentity);
-        const response = await this.analysisService.getPlayerRecord(query);
         return response.data;
     }
 }

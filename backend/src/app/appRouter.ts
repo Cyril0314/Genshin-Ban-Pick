@@ -7,6 +7,7 @@ import { createRoomModule } from '../modules/room';
 import { createCharacterModule } from '../modules/character';
 import { createMatchModule } from '../modules/match';
 import { createAnalysisModule } from '../modules/analysis';
+import { createPlayerModule } from '../modules/player';
 import { createAuthModule } from '../modules/auth';
 import { createUserModule } from '../modules/user';
 import { createGenshinVersionModule } from '../modules/genshinVersion';
@@ -24,7 +25,7 @@ export function registerAppRouters(app: Express, prisma: PrismaClient, roomState
 
     const authModule = createAuthModule(userModule.userService, jwtProvider);
     app.use('/api/auth', authModule.router);
-    
+
     const roomModule = createRoomModule(prisma, roomStateManager);
     app.use('/api/rooms', roomModule.router);
 
@@ -37,13 +38,11 @@ export function registerAppRouters(app: Express, prisma: PrismaClient, roomState
     const matchModule = createMatchModule(prisma, roomStateManager);
     app.use('/api/matches', matchModule.router);
 
-    const analysisModule = createAnalysisModule(
-        prisma,
-        characterModule.repository,
-        matchModule.repository,
-        userModule.userService,
-    );
+    const analysisModule = createAnalysisModule(characterModule.repository, matchModule.repository, matchModule.readModel);
     app.use('/api/analyses', analysisModule.router);
+
+    const playerModule = createPlayerModule(matchModule.playerMatchReadModel, matchModule.repository, userModule.userService);
+    app.use('/api/players', playerModule.router);
 
     return {
         userModule,
@@ -51,6 +50,7 @@ export function registerAppRouters(app: Express, prisma: PrismaClient, roomState
         genshinVersionModule,
         characterModule,
         matchModule,
-        analysisModule
-    }
+        analysisModule,
+        playerModule,
+    };
 }

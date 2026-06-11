@@ -9,32 +9,37 @@ import type { IMatchLineupSlot } from '@shared/contracts/match/IMatchLineupSlot'
 import type { IMatchMove } from '@shared/contracts/match/IMatchMove';
 import type { MoveSource, MoveType } from '@shared/contracts/match/value-types';
 
-// Prisma include 查詢結果轉 Domain IMatch
-// 入參需保證非 null/undefined — 由 caller (repository) 確認資料存在
-export function mapMatchFromPrisma(m: Match & { teams?: MatchTeam[]; moves?: MatchMove[] }): IMatch {
+// 完整查詢的關聯形狀（對齊 matchInclude）：必存在的關聯不為 undefined；
+// 只有 schema 真正可空的（character 以外的 to-one、name）才 null/undefined。
+type SlotWithCharacter = MatchLineupSlot & { character: Character };
+type MoveWithRelations = MatchMove & { character: Character; randomMoveContext: RandomMoveContext | null };
+type TeamMemberWithRelations = MatchTeamMember & { lineupSlots: SlotWithCharacter[]; member: Member | null; guest: Guest | null };
+type TeamWithRelations = MatchTeam & { teamMembers: TeamMemberWithRelations[] };
+
+export function mapMatchFromPrisma(m: Match & { teams: TeamWithRelations[]; moves: MoveWithRelations[] }): IMatch {
     return {
         id: m.id,
         createdAt: m.createdAt,
         updatedAt: m.updatedAt,
         flowVersion: m.flowVersion,
-        teams: m.teams?.map(mapTeamFromPrisma) ?? undefined,
-        moves: m.moves?.map(mapMoveFromPrisma) ?? undefined,
+        teams: m.teams.map(mapTeamFromPrisma),
+        moves: m.moves.map(mapMoveFromPrisma),
     };
 }
 
 // nested: TeamMapper
-function mapTeamFromPrisma(team: MatchTeam & { teamMembers?: MatchTeamMember[] }): IMatchTeam {
+function mapTeamFromPrisma(team: TeamWithRelations): IMatchTeam {
     return {
         id: team.id,
         slot: team.slot,
         name: team.name ?? undefined,
         matchId: team.matchId,
-        teamMembers: team.teamMembers?.map(mapTeamMemberFromPrisma) ?? undefined,
+        teamMembers: team.teamMembers.map(mapTeamMemberFromPrisma),
     };
 }
 
 // nested: TeamMemberMapper
-function mapTeamMemberFromPrisma(tm: MatchTeamMember & { lineupSlots?: MatchLineupSlot[]; member?: Member; guest?: Guest }): IMatchTeamMember {
+function mapTeamMemberFromPrisma(tm: TeamMemberWithRelations): IMatchTeamMember {
     return {
         id: tm.id,
         slot: tm.slot,
@@ -42,26 +47,26 @@ function mapTeamMemberFromPrisma(tm: MatchTeamMember & { lineupSlots?: MatchLine
         teamId: tm.teamId,
         memberRef: tm.memberRef ?? undefined,
         guestRef: tm.guestRef ?? undefined,
-        lineupSlots: tm.lineupSlots?.map(mapLineupSlotFromPrisma),
-        member: tm.member,
-        guest: tm.guest,
+        lineupSlots: tm.lineupSlots.map(mapLineupSlotFromPrisma),
+        member: tm.member ?? undefined,
+        guest: tm.guest ?? undefined,
     };
 }
 
 // nested: LineupSlotMapper
-function mapLineupSlotFromPrisma(t: MatchLineupSlot & { character?: Character }): IMatchLineupSlot {
+function mapLineupSlotFromPrisma(t: SlotWithCharacter): IMatchLineupSlot {
     return {
         id: t.id,
         modelVersion: t.modelVersion,
         setupNumber: t.setupNumber,
         teamMemberId: t.teamMemberId,
         characterKey: t.characterKey,
-        character: t.character ? mapCharacter(t.character) : undefined,
+        character: mapCharacter(t.character),
     };
 }
 
 // nested: MoveMapper
-function mapMoveFromPrisma(move: MatchMove & { character?: Character; randomMoveContext?: RandomMoveContext }): IMatchMove {
+export function mapMoveFromPrisma(move: MoveWithRelations): IMatchMove {
     return {
         id: move.id,
         order: move.order,
@@ -70,7 +75,7 @@ function mapMoveFromPrisma(move: MatchMove & { character?: Character; randomMove
         matchId: move.matchId,
         teamId: move.teamId ?? undefined,
         characterKey: move.characterKey,
-        character: move.character ? mapCharacter(move.character) : undefined,
-        randomMoveContext: move.randomMoveContext,
+        character: mapCharacter(move.character),
+        randomMoveContext: move.randomMoveContext ?? undefined,
     };
 }

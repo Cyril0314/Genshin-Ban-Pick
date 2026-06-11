@@ -3,12 +3,12 @@ import { PrismaClient } from '@prisma/client';
 import type { Member } from '@prisma/client';
 import type { MemberRole } from '@shared/contracts/auth/value_types';
 import type { IMemberRepository } from '../domain/IMemberRepository';
-import type { IMemberData } from '../types/IMemberData';
+import type { IMember } from '../types/IMember';
 
 export default class MemberRepository implements IMemberRepository {
     constructor(private prisma: PrismaClient) {}
 
-    async create(account: string, passwordHash: string, nickname: string): Promise<IMemberData> {
+    async create(account: string, passwordHash: string, nickname: string): Promise<IMember> {
         const member = await this.prisma.member.create({
             data: { account, passwordHash, nickname },
         });
@@ -23,19 +23,19 @@ export default class MemberRepository implements IMemberRepository {
         return result !== null;
     }
 
-    async findById(id: number): Promise<IMemberData | undefined> {
+    async findById(id: number): Promise<IMember | undefined> {
         const member = await this.prisma.member.findUnique({ where: { id } });
         if (!member) return undefined;
         return this.map(member)
     }
 
-    async findByAccount(account: string): Promise<IMemberData | undefined> {
+    async findByAccount(account: string): Promise<IMember | undefined> {
         const member =  await this.prisma.member.findUnique({ where: { account } });
         if (!member) return undefined;
         return this.map(member)
     }
 
-    private map(member: Member): IMemberData {
+    private map(member: Member): IMember {
         return {
             id: member.id,
             account: member.account,

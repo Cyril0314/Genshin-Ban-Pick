@@ -4,26 +4,23 @@ import { defineStore } from 'pinia';
 
 import type { ICharacterUsage } from '@shared/contracts/analysis/ICharacterUsage';
 import type { ICharacterPickPriority } from '@shared/contracts/analysis/ICharacterPickPriority';
-import type { CharacterSynergyMatrix } from '@shared/contracts/analysis/CharacterSynergyMatrix';
+import type { CharacterCooccurrenceMatrix } from '@shared/contracts/analysis/CharacterCooccurrenceMatrix';
 
 export const useAnalysisMetaStore = defineStore('analysisMeta', {
+    // 每片資料的「是否載入」用 nullability 表達（undefined = 未載），不用 isXLoaded flag —— 加新 slice 不必加 flag。
     state: () => ({
-        usageMap: {} as Record<string, ICharacterUsage>,
-        pickPriorityMap: {} as Record<string, ICharacterPickPriority>,
-        synergyMatrix: {} as CharacterSynergyMatrix,
-        isInitialized: false,
+        usageMap: undefined as Record<string, ICharacterUsage> | undefined,
+        pickPriorityMap: undefined as Record<string, ICharacterPickPriority> | undefined,
+        characterCooccurrenceMatrix: undefined as CharacterCooccurrenceMatrix | undefined,
     }),
 
     actions: {
-        setMeta(payload: {
-            usageMap: Record<string, ICharacterUsage>;
-            pickPriorityMap: Record<string, ICharacterPickPriority>;
-            synergyMatrix: CharacterSynergyMatrix;
-        }) {
+        setCharacterDictionaries(payload: { usageMap: Record<string, ICharacterUsage>; pickPriorityMap: Record<string, ICharacterPickPriority> }) {
             this.usageMap = payload.usageMap;
             this.pickPriorityMap = payload.pickPriorityMap;
-            this.synergyMatrix = payload.synergyMatrix;
-            this.isInitialized = true;
+        },
+        setCharacterCooccurrenceMatrix(matrix: CharacterCooccurrenceMatrix) {
+            this.characterCooccurrenceMatrix = matrix;
         },
     },
 });

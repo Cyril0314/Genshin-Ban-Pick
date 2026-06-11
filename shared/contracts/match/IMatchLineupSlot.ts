@@ -8,5 +8,5 @@ export interface IMatchLineupSlot {
     teamMemberId: number;
     characterKey: string;
 
-    character?: ICharacter;
+    character: ICharacter;
 }

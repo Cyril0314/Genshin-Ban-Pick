@@ -291,3 +291,8 @@ psql -h localhost -p 5435 -U postgres -d genshin_banpick
 
 合併
 UPDATE "MatchTeamMember" SET "memberRef" = 28 WHERE "memberRef" = 19;
+
+TODO:
+
+PlayerStyleChart 留全體玩家 並且用兩層 Chart 顯示角色
+PlayerStyleChart 開新一頁列出所有 Player 清單，點擊開啟 PlayerProfileView

@@ -8,14 +8,25 @@ import createMatchesRouter from './http/matches.routes';
 
 import MatchSnapshotRepository from './infra/MatchSnapshotRepository';
 import MatchRepository from './infra/MatchRepository';
+import MatchReadModel from './infra/MatchReadModel';
+import PlayerMatchReadModel from './infra/PlayerMatchReadModel';
 
 import type { IRoomStateManager } from '../room/domain/IRoomStateManager';
 
 export function createMatchModule(prisma: PrismaClient, roomStateManager: IRoomStateManager) {
     const matchRepository = new MatchRepository(prisma);
     const matchSnapshotRepository = new MatchSnapshotRepository(roomStateManager);
+    const matchReadModel = new MatchReadModel(prisma);
+    const playerMatchReadModel = new PlayerMatchReadModel(prisma);
     const service = new MatchService(matchRepository, matchSnapshotRepository);
     const controller = new MatchController(service);
     const router = createMatchesRouter(controller);
-    return { router, controller, service, repository: matchRepository };
+    return {
+        router,
+        controller,
+        service,
+        repository: matchRepository,
+        readModel: matchReadModel,
+        playerMatchReadModel,
+    };
 }
