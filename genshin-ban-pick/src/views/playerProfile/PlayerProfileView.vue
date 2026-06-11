@@ -154,11 +154,14 @@ function openMatchHistory(matchId: number) {
     display: flex;
     flex-direction: column;
     gap: var(--space-lg);
-    max-width: 1080px;
-    margin: 0 auto;
     padding: var(--space-xl);
     color: var(--md-sys-color-on-surface);
+    background-size: cover;
+    /* height: 100vh; */
     background-color: var(--md-sys-color-background);
+    /* background:
+        linear-gradient(to right, rgba(var(--md-sys-color-background-rgb) / 0.1) 10%, rgba(var(--md-sys-color-background-rgb) / 0.9) 65%), */
+        /* url('@/assets/images/background/background.jpg') no-repeat center center; */
 }
 
 .header {

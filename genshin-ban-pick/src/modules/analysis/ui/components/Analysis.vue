@@ -9,7 +9,7 @@ import CharacterUsagesCompositionChart from './CharacterUsagesCompositionChart.v
 import CharacterPickPriorityChart from './CharacterPickPriorityChart.vue';
 import CharacterScatterChart from './CharacterScatterChart.vue';
 
-import PlayerStyleRadarChart from './PlayerStyleRadarChart.vue';
+import CharacterAttributeDistributionsChart from './CharacterAttributeDistributionsChart.vue';
 import MatchOverviewChart from './MatchOverviewChart.vue';
 
 const props = defineProps<{}>();
@@ -18,7 +18,7 @@ const emit = defineEmits<{}>();
 
 const tabs = [
     { name: '總覽', component: MatchOverviewChart },
-    { name: '玩家統計數據', component: PlayerStyleRadarChart },
+    { name: '角色統計數據', component: CharacterAttributeDistributionsChart },
     { name: '角色使用權重', component: CharacterUsagesChart },
     { name: '搶角優先級', component: CharacterPickPriorityChart },
     { name: '角色定位象限', component: CharacterScatterChart },

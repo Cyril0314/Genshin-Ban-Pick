@@ -10,7 +10,6 @@ import { getTeamMemberName } from '@shared/contracts/team/TeamMember';
 import { storeToRefs } from 'pinia';
 import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue';
 
-
 import type { Element } from '@shared/contracts/character/value-types';
 import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 import type { IPlayerMatchSummary } from '@shared/contracts/player/IPlayerMatchSummary';
@@ -22,12 +21,11 @@ import { createLogger } from '@/app/utils/logger';
 import { useAnalysisMetaStore } from '@/modules/analysis';
 import { useAnalysisUseCase } from '@/modules/analysis/ui/composables/useAnalysisUseCase';
 import { usePlayerStyleChart } from '@/modules/analysis/ui/composables/usePlayerStyleChart';
-import { useCharacterStore } from '@/modules/character';
+import { useCharacterStore, useCharacterUseCase } from '@/modules/character';
 import { usePlayerUseCase } from '@/modules/player';
 import { getProfileImagePath } from '@/modules/shared/infrastructure/imageRegistry';
 import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
 import { elementColors } from '@/modules/shared/ui/constants/elementColors';
-
 
 const logger = createLogger('playerProfile.view');
 
@@ -37,6 +35,7 @@ const dateFormatter = new Intl.DateTimeFormat('zh-TW', { year: 'numeric', month:
 export function usePlayerProfileView(identity: MaybeRefOrGetter<PlayerIdentity | undefined>) {
     const playerUseCase = usePlayerUseCase();
     const analysisUseCase = useAnalysisUseCase();
+    const characterUseCase = useCharacterUseCase();
     const { characterMap } = storeToRefs(useCharacterStore());
     const { characterCooccurrenceMatrix } = storeToRefs(useAnalysisMetaStore());
     const { getByKey: getCharacterDisplayName } = useCharacterDisplayName();
@@ -57,7 +56,7 @@ export function usePlayerProfileView(identity: MaybeRefOrGetter<PlayerIdentity |
             onCleanup(() => {
                 stale = true;
             });
-
+            characterUseCase.loadCharacterMap().catch((e) => logger.warn('character map load failed', e));
             analysisUseCase.loadCharacterCooccurrenceMatrix().catch((e) => logger.warn('cooccurrence matrix load failed; chips omitted', e));
 
             isLoading.value = true;

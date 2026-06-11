@@ -57,7 +57,20 @@
       "Bash(rm -f /tmp/icon.svg.png /tmp/icon_big.png /tmp/icon_48.png)",
       "Bash(qlmanage -t -s 48 -o /tmp icon.svg)",
       "Bash(mv /tmp/icon.svg.png /tmp/icon_48.png)",
-      "Bash(rm -f /tmp/icon.svg.png /tmp/icon_big.png)"
+      "Bash(rm -f /tmp/icon.svg.png /tmp/icon_big.png)",
+      "Bash(echo \"frontend-exit=$?\")",
+      "Bash(echo \"backend tsc exit=$?\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/api/analyses/overview)",
+      "Bash(docker exec *)",
+      "Bash(curl -s \"http://localhost:3000/api/analyses/player-matches?type=Member&id=1\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('count=',len\\(d\\)\\); print\\(json.dumps\\(d[:2], ensure_ascii=False, indent=2\\)\\)\")",
+      "Bash(curl -s \"http://localhost:3000/api/analyses/player-teammates?type=Member&id=1\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d, ensure_ascii=False, indent=2\\)\\)\")",
+      "Bash(curl -s -w \"\\\\n[status=%{http_code}]\\\\n\" \"http://localhost:3000/api/analyses/player-matches?type=Member&id=1\")",
+      "Bash(curl -s -w \"\\\\n[status=%{http_code}]\\\\n\" \"http://localhost:3000/api/analyses/player-teammates?type=Member&id=1\")",
+      "Bash(curl -s -o /dev/null -w \"[status=%{http_code}]\\\\n\" \"http://localhost:3000/api/analyses/player-records?type=Member&id=1\")",
+      "Bash(echo \"frontend type-check exit=$?\")",
+      "Bash(echo \"type-check exit=$?\")"
     ]
   }
 }
