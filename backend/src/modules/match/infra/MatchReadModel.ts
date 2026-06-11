@@ -5,7 +5,7 @@ import { mapCharacter } from '../../character';
 import { buildMatchTeamMemberWhere } from './buildMatchTeamMemberWhere';
 
 import type { IMatchReadModel } from '../domain/IMatchReadModel';
-import type { IMatchStatisticsRaw } from '../types/IMatchStatisticsRaw';
+import type { IMatchStatistics } from '../types/IMatchStatistics';
 import type { IMatchLineupSlotPlacement } from '../types/IMatchLineupSlotPlacement';
 import type { IMatchLineupSlotWithCharacter } from '../types/IMatchLineupSlotWithCharacter';
 import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
@@ -14,7 +14,7 @@ import type { ITimeWindow } from '@shared/contracts/common/ITimeWindow';
 export default class MatchReadModel implements IMatchReadModel {
     constructor(private prisma: PrismaClient) {}
 
-    async findMatchStatisticsRaw(): Promise<IMatchStatisticsRaw> {
+    async findMatchStatistics(): Promise<IMatchStatistics> {
         const [matches, moveCount, uniqueCharacterRarityCounts, uniqueCharacterElementCounts, moveTypeCounts, moveSourceCounts] = await Promise.all([
             this.prisma.match.findMany({
                 select: {

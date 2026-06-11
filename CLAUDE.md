@@ -99,7 +99,7 @@ A module's `infra/` persistence comes in **two kinds**, split on *write-vs-read*
 | Kind | Named | Owns | Returns | Examples |
 | --- | --- | --- | --- | --- |
 | **Repository** | `<Entity>Repository` | The entity: writes (`create`/`update`/`delete`) **and** canonical reads | An entity's **canonical** domain/contract value | `MatchRepository` (`create`/`findById`/`delete` + `findMatchTeamMembers`/`findMatchTimestamps`/`findMatchMoves` → `IMatch`/`TeamMember`/`IMatchTimestamp`), `MemberRepository`, `CharacterRepository` |
-| **ReadModel** | `<Source>ReadModel`, or `<Perspective><Source>ReadModel` | Nothing — read-only projections shaped for downstream compute | A **projection / aggregate row**, not a canonical entity | `MatchReadModel` (`findMatchStatisticsRaw`/`findMatchLineupSlotPlacements`/`findMatchLineupSlotsWithCharacter`), `PlayerMatchReadModel` (`findPlayerMatchLineupSlots`/`findPlayerMatchPlacements`) |
+| **ReadModel** | `<Source>ReadModel`, or `<Perspective><Source>ReadModel` | Nothing — read-only projections shaped for downstream compute | A **projection / aggregate row**, not a canonical entity | `MatchReadModel` (`findMatchStatistics`/`findMatchLineupSlotPlacements`/`findMatchLineupSlotsWithCharacter`), `PlayerMatchReadModel` (`findPlayerMatchLineupSlots`/`findPlayerMatchPlacements`) |
 
 Deciding question: **is the return value an entity's canonical shape, or a row shaped for one compute function?** Canonical → Repository (even when a caller derives from it — `findMatchTeamMembers` returns canonical `TeamMember[]`, so it lives on `MatchRepository` though `player.service` counts teammates from it). Compute-input projection (`I*Raw`, `I*Placement`, `I*WithCharacter`) → ReadModel.
 

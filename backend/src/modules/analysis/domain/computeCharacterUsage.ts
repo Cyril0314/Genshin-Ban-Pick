@@ -11,15 +11,15 @@ import type { ICharacterUsage } from '@shared/contracts/analysis/ICharacterUsage
 export function computeCharacterUsage(
     matches: IMatchTimestamp[],
     matchMoves: IMatchMove[],
-    matchLineupSlots: { matchId: number; characterKey: string }[],
+    lineupSlotPlacements: { matchId: number; characterKey: string }[],
 ): ICharacterUsage[] {
     const matchCount = matches.length;
 
-    const usedSet = new Set(matchLineupSlots.map((u) => `${u.matchId}:${u.characterKey}`));
+    const usedSet = new Set(lineupSlotPlacements.map((lineupSlotPlacement) => `${lineupSlotPlacement.matchId}:${lineupSlotPlacement.characterKey}`));
 
     const usageCountByMatch = new Map<string, number>();
-    for (const u of matchLineupSlots) {
-        const key = `${u.matchId}:${u.characterKey}`;
+    for (const lineupSlotPlacement of lineupSlotPlacements) {
+        const key = `${lineupSlotPlacement.matchId}:${lineupSlotPlacement.characterKey}`;
         usageCountByMatch.set(key, (usageCountByMatch.get(key) ?? 0) + 1);
     }
 

@@ -1,22 +1,21 @@
 // src/modules/analysis/index.ts
 
-import AnalysisController from './controller/analysis.controller';
 import AnalysisService from './application/analysis.service';
-import createAnalysesRouter from './http/analyses.routes';
-import SquareSimilarityMatrixBuilder from './domain/SquareSimilarityMatrixBuilder';
-import CooccurrenceMatrixBuilder from './domain/CooccurrenceMatrixBuilder';
-import CooccurrenceCalculator from './domain/CooccurrenceCalculator';
-import CharacterSimilarityGraphBuilder from './infra/graph/CharacterSimilarityGraphBuilder';
-import FeatureMatrixBuilder from './domain/FeatureMatrixBuilder';
+import AnalysisController from './controller/analysis.controller';
 import CharacterFeatureMatrixBuilder from './domain/CharacterFeatureMatrixBuilder';
+import CooccurrenceMatrixBuilder from './domain/CooccurrenceMatrixBuilder';
+import FeatureMatrixBuilder from './domain/FeatureMatrixBuilder';
+import SquareSimilarityMatrixBuilder from './domain/SquareSimilarityMatrixBuilder';
+import createAnalysesRouter from './http/analyses.routes';
+import CharacterCommunityScanEngine from './infra/clustering/CharacterCommunityScanEngine';
+import CharacterSimilarityGraphBuilder from './infra/graph/CharacterSimilarityGraphBuilder';
 import MatrixNormalizer from './infra/matrix/MatrixNormalizer';
 import DimensionProjector from './infra/projection/DimensionProjector';
 import UMAPProjector from './infra/projection/UMAPProjector';
-import CharacterCommunityScanEngine from './infra/clustering/CharacterCommunityScanEngine';
 
 import type { ICharacterRepository } from '../character/domain/ICharacterRepository';
-import type { IMatchRepository } from '../match/domain/IMatchRepository';
 import type { IMatchReadModel } from '../match/domain/IMatchReadModel';
+import type { IMatchRepository } from '../match/domain/IMatchRepository';
 
 export function createAnalysisModule(
     characterRepository: ICharacterRepository,
@@ -27,7 +26,6 @@ export function createAnalysisModule(
     const umapProjector = new UMAPProjector();
     const dimensionProjector = new DimensionProjector();
     const squareSimilarityMatrixBuilder = new SquareSimilarityMatrixBuilder();
-    const cooccurrenceCalculator = new CooccurrenceCalculator();
     const cooccurrenceMatrixBuilder = new CooccurrenceMatrixBuilder();
     const characterSimilarityGraphBuilder = new CharacterSimilarityGraphBuilder(squareSimilarityMatrixBuilder);
     const featureMatrixBuilder = new FeatureMatrixBuilder();
@@ -36,7 +34,6 @@ export function createAnalysisModule(
 
     const service = new AnalysisService(
         matchReadModel,
-        cooccurrenceCalculator,
         cooccurrenceMatrixBuilder,
         characterSimilarityGraphBuilder,
         characterFeatureMatrixBuilder,
