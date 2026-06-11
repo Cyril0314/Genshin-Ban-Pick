@@ -7,7 +7,7 @@ import AnalysisController from '../controller/analysis.controller';
 
 export default function createAnalysesRouter(analysisController: AnalysisController) {
     const router = express.Router();
-    router.get('/overview', asyncHandler(analysisController.fetchOverview))
+    router.get('/match-overview', asyncHandler(analysisController.fetchMatchOverview))
 
     router.get('/character-usages/summary', asyncHandler(analysisController.fetchCharacterUsageSummary));
     router.get('/character-usages/pick-priority', asyncHandler(analysisController.fetchCharacterUsagePickPriority));

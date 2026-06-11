@@ -11,8 +11,8 @@ import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 export default class AnalysisRepository {
     constructor(private analysisService: AnalysisService) {}
 
-    async fetchOverview() {
-        const response = await this.analysisService.getOverview();
+    async fetchMatchOverview() {
+        const response = await this.analysisService.getMatchOverview();
         return response.data;
     }
 

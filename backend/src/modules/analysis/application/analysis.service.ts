@@ -2,12 +2,12 @@
 
 import { createLogger } from '../../../utils/logger';
 import { buildCooccurrenceGroups } from '../domain/buildCooccurrenceGroups';
-import CharacterFeatureMatrixBuilder from '../domain/CharacterFeatureMatrixBuilder';
 import { computeAnalysisOverview } from '../domain/computeAnalysisOverview';
 import { computeCharacterAttributeDistributions } from '../domain/computeCharacterAttributeDistributions';
 import { computeCharacterPickPriority } from '../domain/computeCharacterPickPriority';
 import { computeCharacterUsage } from '../domain/computeCharacterUsage';
 import { computePlayerStyle } from '../domain/computePlayerStyle';
+import CharacterFeatureMatrixBuilder from '../domain/CharacterFeatureMatrixBuilder';
 import CooccurrenceMatrixBuilder from '../domain/CooccurrenceMatrixBuilder';
 import CharacterCommunityScanEngine from '../infra/clustering/CharacterCommunityScanEngine';
 import CharacterSimilarityGraphBuilder from '../infra/graph/CharacterSimilarityGraphBuilder';
@@ -18,7 +18,7 @@ import type { IMatchRepository } from '../../match/domain/IMatchRepository';
 import type { ICharacterAttributeDistributions } from '@shared/contracts/analysis/character/ICharacterAttributeDistributions';
 import type { ICharacterGraphLink } from '@shared/contracts/analysis/character/ICharacterGraphLink';
 import type { CharacterCooccurrenceMatrix } from '@shared/contracts/analysis/CharacterCooccurrenceMatrix';
-import type { IAnalysisOverview } from '@shared/contracts/analysis/IAnalysisOverview';
+import type { IMatchOverview } from '@shared/contracts/analysis/IMatchOverview';
 import type { IArchetypePoint } from '@shared/contracts/analysis/IArchetypePoint';
 import type { ICharacterCluster } from '@shared/contracts/analysis/ICharacterCluster';
 import type { ICharacterPickPriority } from '@shared/contracts/analysis/ICharacterPickPriority';
@@ -41,7 +41,7 @@ export default class AnalysisService {
         private matchRepository: IMatchRepository,
     ) {}
 
-    async fetchOverview(): Promise<IAnalysisOverview> {
+    async fetchMatchOverview(): Promise<IMatchOverview> {
         const [statistics, lineupSlotPlacements, teamMemberPlacements] = await Promise.all([
             this.matchReadModel.findMatchStatistics(),
             this.matchReadModel.findMatchLineupSlotPlacements(),

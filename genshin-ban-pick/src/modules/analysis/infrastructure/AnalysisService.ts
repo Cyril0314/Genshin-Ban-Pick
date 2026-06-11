@@ -8,8 +8,8 @@ import type { IPlayerIdentityQuery } from '@shared/contracts/identity/dto/IPlaye
 export default class AnalysisService {
     constructor(private client: HttpClient) {}
 
-    async getOverview() {
-        return this.client.get(`/analyses/overview`);
+    async getMatchOverview() {
+        return this.client.get(`/analyses/match-overview`);
     }
 
     async getCharacterUsageSummary(query?: ITimeWindowQuery) {

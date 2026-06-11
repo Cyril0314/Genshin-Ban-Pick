@@ -13,8 +13,8 @@ import type { CooccurrenceGrain } from '@shared/contracts/analysis/value-types';
 export default class AnalysisController {
     constructor(private analysisService: AnalysisService) {}
 
-    fetchOverview = async (req: Request, res: Response) => {
-        const overview = await this.analysisService.fetchOverview();
+    fetchMatchOverview = async (req: Request, res: Response) => {
+        const overview = await this.analysisService.fetchMatchOverview();
         res.status(200).json(overview);
     };
 

@@ -3,22 +3,20 @@
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
 
-import { useAnalysisUseCase } from './useAnalysisUseCase';
-
-import type { IAnalysisOverview } from '@shared/contracts/analysis/IAnalysisOverview';
-import type { ICharacter } from '@shared/contracts/character/ICharacter';
-import type { IGenshinVersionPeriod } from '@shared/contracts/genshinVersion/IGenshinVersionPeriod';
-import type { IMatchTimestamp } from '@shared/contracts/match/IMatchTimestamp';
-
 import { createLogger } from '@/app/utils/logger';
 import { useCharacterStore } from '@/modules/character';
 import { useGenshinVersionUseCase } from '@/modules/genshinVersion';
 import { useMatchUseCase } from '@/modules/match';
+import { useAnalysisUseCase } from './useAnalysisUseCase';
 import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
 import { useDesignTokens } from '@/modules/shared/ui/composables/useDesignTokens';
 import { useEchartTheme } from '@/modules/shared/ui/composables/useEchartTheme';
 import { useMatchHistoryController } from '@/modules/shared/ui/context/matchHistoryContext';
 
+import type { IMatchOverview } from '@shared/contracts/analysis/IMatchOverview';
+import type { ICharacter } from '@shared/contracts/character/ICharacter';
+import type { IGenshinVersionPeriod } from '@shared/contracts/genshinVersion/IGenshinVersionPeriod';
+import type { IMatchTimestamp } from '@shared/contracts/match/IMatchTimestamp';
 
 const logger = createLogger('analysis.ui.matchOverview');
 
@@ -38,14 +36,14 @@ export function useMatchOverviewChart() {
     const { getByKey } = useCharacterDisplayName();
     const matchHistory = useMatchHistoryController();
 
-    const overview = ref<IAnalysisOverview>();
+    const overview = ref<IMatchOverview>();
     const periods = ref<IGenshinVersionPeriod[]>();
     const matchTimeline = ref<IMatchTimestamp[]>();
 
     onMounted(async () => {
         logger.debug('fetching overview + version periods + match timeline');
         const [overviewResult, periodsResult, matchTimelineResult] = await Promise.all([
-            analysisUseCase.fetchOverview(),
+            analysisUseCase.fetchMatchOverview(),
             genshinVersionUseCase.fetchGenshinVersionPeriods(),
             matchUseCase.fetchMatchTimestamps(),
         ]);
@@ -210,9 +208,7 @@ export function useMatchOverviewChart() {
     function findNearestMatch(timeMs: number): IMatchTimestamp | undefined {
         const list = matchTimeline.value;
         if (!list || list.length === 0) return undefined;
-        return list.reduce((best, m) =>
-            Math.abs(m.createdAt.getTime() - timeMs) < Math.abs(best.createdAt.getTime() - timeMs) ? m : best,
-        );
+        return list.reduce((best, m) => (Math.abs(m.createdAt.getTime() - timeMs) < Math.abs(best.createdAt.getTime() - timeMs) ? m : best));
     }
 
     function openMatch(id: number) {

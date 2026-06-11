@@ -1,11 +1,7 @@
 import type { Element, Rarity } from '../character/value-types';
 import type { MoveSource, MoveType } from '../match/value-types';
 
-export interface IAnalysisOverview {
-    volume: IOverviewVolume;
-}
-
-interface IOverviewVolume {
+export interface IMatchOverview {
     matchCount: number;
     matchCharacterCombinationCount: number;
     matchTeamMemberCombinationCount: number;

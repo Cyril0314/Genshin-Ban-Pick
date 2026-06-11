@@ -9,35 +9,33 @@ import { buildCooccurrenceGroups } from './buildCooccurrenceGroups';
 import type { IMatchLineupSlotPlacement } from '../../match/types/IMatchLineupSlotPlacement';
 import type { IMatchStatistics } from '../../match/types/IMatchStatistics';
 import type { IMatchTeamMemberPlacement } from '../../match/types/IMatchTeamMemberPlacement';
-import type { IAnalysisOverview } from '@shared/contracts/analysis/IAnalysisOverview';
+import type { IMatchOverview } from '@shared/contracts/analysis/IMatchOverview';
 
 export function computeAnalysisOverview(
     statistics: IMatchStatistics,
     lineupSlotPlacements: IMatchLineupSlotPlacement[],
     teamMemberPlacements: IMatchTeamMemberPlacement[],
-): IAnalysisOverview {
+): IMatchOverview {
     const uniquePlayers = countUniquePlayers(teamMemberPlacements);
     return {
-        volume: {
-            matchCount: statistics.matchCount,
-            matchCharacterCombinationCount: countCharacterCombinations(lineupSlotPlacements),
-            matchTeamMemberCombinationCount: countTeamMemberCombinations(teamMemberPlacements),
-            players: {
-                total: uniquePlayers.member + uniquePlayers.guest + uniquePlayers.onlyName,
-                member: uniquePlayers.member,
-                guest: uniquePlayers.guest,
-                onlyName: uniquePlayers.onlyName,
-            },
-            characters: {
-                total: countUniqueCharacters(lineupSlotPlacements),
-                byRarity: fillCounts(Object.values(Rarity), statistics.characterRarityCounts),
-                byElement: fillCounts(Object.values(Element), statistics.characterElementCounts),
-            },
-            moves: {
-                total: statistics.moveCount,
-                byType: fillCounts(Object.values(MoveType), statistics.moveTypeCounts),
-                bySource: fillCounts(Object.values(MoveSource), statistics.moveSourceCounts),
-            },
+        matchCount: statistics.matchCount,
+        matchCharacterCombinationCount: countCharacterCombinations(lineupSlotPlacements),
+        matchTeamMemberCombinationCount: countTeamMemberCombinations(teamMemberPlacements),
+        players: {
+            total: uniquePlayers.member + uniquePlayers.guest + uniquePlayers.onlyName,
+            member: uniquePlayers.member,
+            guest: uniquePlayers.guest,
+            onlyName: uniquePlayers.onlyName,
+        },
+        characters: {
+            total: countUniqueCharacters(lineupSlotPlacements),
+            byRarity: fillCounts(Object.values(Rarity), statistics.characterRarityCounts),
+            byElement: fillCounts(Object.values(Element), statistics.characterElementCounts),
+        },
+        moves: {
+            total: statistics.moveCount,
+            byType: fillCounts(Object.values(MoveType), statistics.moveTypeCounts),
+            bySource: fillCounts(Object.values(MoveSource), statistics.moveSourceCounts),
         },
     };
 }

@@ -46,8 +46,8 @@ export default class AnalysisUseCase {
         store.setCharacterDictionaries({ usageMap, pickPriorityMap });
     }
 
-    async fetchOverview() {
-        return await this.analysisRepository.fetchOverview();
+    async fetchMatchOverview() {
+        return await this.analysisRepository.fetchMatchOverview();
     }
 
     async fetchCharacterUsageSummary(timeWindow?: ITimeWindow) {
