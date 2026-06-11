@@ -92,6 +92,23 @@ Deciding question: *does it coordinate multiple domains' capabilities (inject se
 
 **Inside a composition view the same UI conventions apply** — facades (`use<Screen>View`), chart composables, presentational components — just rooted at `views/<screen>/composables/` and `views/<screen>/components/` instead of `modules/*/ui/*`. The "Frontend composable convention" table below describes the shapes; only the path prefix differs. Logger scope for a composition view is `<screen>.<detail>` (e.g. `banPick.view`, `playerProfile.modal`) — no layer segment, since the view is flat.
 
+### Backend persistence: Repository vs ReadModel
+
+A module's `infra/` persistence comes in **two kinds**, split on *write-vs-read* and *canonical-entity-vs-projection*:
+
+| Kind | Named | Owns | Returns | Examples |
+| --- | --- | --- | --- | --- |
+| **Repository** | `<Entity>Repository` | The entity: writes (`create`/`update`/`delete`) **and** canonical reads | An entity's **canonical** domain/contract value | `MatchRepository` (`create`/`findById`/`delete` + `findMatchTeamMembers`/`findMatchTimestamps`/`findMatchMoves` → `IMatch`/`TeamMember`/`IMatchTimestamp`), `MemberRepository`, `CharacterRepository` |
+| **ReadModel** | `<Source>ReadModel`, or `<Perspective><Source>ReadModel` | Nothing — read-only projections shaped for downstream compute | A **projection / aggregate row**, not a canonical entity | `MatchReadModel` (`findMatchStatisticsRaw`/`findMatchLineupSlotPlacements`/`findMatchLineupSlotsWithCharacter`), `PlayerMatchReadModel` (`findPlayerMatchLineupSlots`/`findPlayerMatchPlacements`) |
+
+Deciding question: **is the return value an entity's canonical shape, or a row shaped for one compute function?** Canonical → Repository (even when a caller derives from it — `findMatchTeamMembers` returns canonical `TeamMember[]`, so it lives on `MatchRepository` though `player.service` counts teammates from it). Compute-input projection (`I*Raw`, `I*Placement`, `I*WithCharacter`) → ReadModel.
+
+- **Any write → Repository.** Pure read returning a canonical entity → still Repository (`GenshinVersionRepository` is read-only `findAll`). Pure read returning a projection → ReadModel. (Persistence may be Prisma or in-memory — `RoomStateRepository`, `MatchSnapshotRepository` — the split is unchanged.)
+- **ReadModel perspective.** Global/source-perspective projections → `<Source>ReadModel` (`MatchReadModel`, methods `findMatch*`). Projections filtered to and shaped for a subject → `<Perspective><Source>ReadModel` (`PlayerMatchReadModel`, methods `findPlayerMatch*`). Only split out a perspective when its projections form a cohesive set; otherwise keep them on the source ReadModel behind an optional param (`findMatchLineupSlotsWithCharacter(playerIdentity?)`).
+- **Derived modules own no persistence.** `analysis` and `player` have **no `*Repository`** (the old `AnalysisRepository` was removed) — their data is `match`'s projections/canonical reads, obtained by injecting `IMatchReadModel` / `IPlayerMatchReadModel` / `IMatchRepository`. A derived module is a *consumer* of the source's persistence, never an owner (the backend mirror of composition views in "Module kinds").
+- **Method naming.** Projections: `find<Source><Entity><Projection>` (`findMatchLineupSlotPlacements`, `findPlayerMatchPlacements`). Canonical collections: `find<Entity>s` (`findMatchTimestamps`, `findMatchMoves`, `findAll`). Optional filters are optional params where absent = all (`timeWindow?`, `playerIdentity?`) — matching the frontend optional-filter pattern.
+- **Interfaces live in `domain/`** (`I<Name>Repository` / `I<Name>ReadModel`); `infra/` implements. Cross-module access depends on the interface, never the other module's `infra/`.
+
 ### Persistence → domain mappers
 
 Functions that turn a DB row into a domain/contract value follow one split. **The prefix states the action (`map` = row→domain); the variant is shown by suffix + folder, never by changing the prefix:**
