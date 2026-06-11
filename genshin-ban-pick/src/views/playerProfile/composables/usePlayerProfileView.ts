@@ -1,7 +1,7 @@
 // src/views/playerProfile/composables/usePlayerProfileView.ts
 //
 // PlayerProfileView 的 view-model：吃一個 identity，組裝四個區塊的資料 +
-// 顯示輔助。雷達交給 usePlayerProfileStyleChart；match drill-down 的開窗狀態
+// 顯示輔助。雷達交給 usePlayerStyleChart；match drill-down 的開窗狀態
 // 屬 view 組裝層，留在 .vue。
 
 import { pickTopCooccurrenceEntries } from '@shared/contracts/analysis/ICooccurrenceEntry';
@@ -21,7 +21,7 @@ import type { TeamMember } from '@shared/contracts/team/TeamMember';
 import { createLogger } from '@/app/utils/logger';
 import { useAnalysisMetaStore } from '@/modules/analysis';
 import { useAnalysisUseCase } from '@/modules/analysis/ui/composables/useAnalysisUseCase';
-import { usePlayerProfileStyleChart } from '@/modules/analysis/ui/composables/usePlayerProfileStyleChart';
+import { usePlayerStyleChart } from '@/modules/analysis/ui/composables/usePlayerStyleChart';
 import { useCharacterStore } from '@/modules/character';
 import { usePlayerUseCase } from '@/modules/player';
 import { getProfileImagePath } from '@/modules/shared/infrastructure/imageRegistry';
@@ -41,7 +41,7 @@ export function usePlayerProfileView(identity: MaybeRefOrGetter<PlayerIdentity |
     const { characterCooccurrenceMatrix } = storeToRefs(useAnalysisMetaStore());
     const { getByKey: getCharacterDisplayName } = useCharacterDisplayName();
 
-    const styleChart = usePlayerProfileStyleChart(identity);
+    const styleChart = usePlayerStyleChart(identity);
 
     const isLoading = ref(false);
     const error = ref<string | undefined>(undefined);

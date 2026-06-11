@@ -40,7 +40,7 @@ export default class AnalysisService {
         return this.client.get('/analyses/player-character-usages');
     }
 
-    async getPlayerStyleProfile(query: IPlayerIdentityQuery) {
-        return this.client.get(`/analyses/player-style/profile`, { params: query });
+    async getPlayerStyle(query: IPlayerIdentityQuery) {
+        return this.client.get(`/analyses/player-styles`, { params: query });
     }
 }

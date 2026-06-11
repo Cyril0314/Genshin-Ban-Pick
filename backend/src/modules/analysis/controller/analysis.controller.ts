@@ -40,10 +40,10 @@ export default class AnalysisController {
         res.status(200).json(characterClusters);
     };
 
-    fetchPlayerStyleProfile = async (req: Request, res: Response) => {
+    fetchPlayerStyle = async (req: Request, res: Response) => {
         const playerIdentity = fromPlayerIdentityQuery(req.query);
         if (!playerIdentity) throw new InvalidFieldsError();
-        const style = await this.analysisService.fetchPlayerStyleProfile(playerIdentity);
+        const style = await this.analysisService.fetchPlayerStyle(playerIdentity);
         res.status(200).json(style);
     };
 

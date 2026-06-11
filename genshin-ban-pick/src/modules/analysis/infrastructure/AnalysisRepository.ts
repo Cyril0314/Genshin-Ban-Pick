@@ -43,9 +43,9 @@ export default class AnalysisRepository {
         return response.data;
     }
 
-    async fetchPlayerStyleProfile(playerIdentity: PlayerIdentity) {
+    async fetchPlayerStyle(playerIdentity: PlayerIdentity) {
         const query = toPlayerIdentityQuery(playerIdentity);
-        const response = await this.analysisService.getPlayerStyleProfile(query);
+        const response = await this.analysisService.getPlayerStyle(query);
         return response.data;
     }
 }

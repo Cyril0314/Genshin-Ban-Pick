@@ -1,6 +1,6 @@
 import type { ICharacterAttributeDistributions } from "./character/ICharacterAttributeDistributions";
 
-export interface IPlayerStyleProfile {
+export interface IPlayerStyle {
     versatility: number; // 0-100
     metaAffinity: number; // 0-100
     roleAdjustedDiversity: number; // 0-100

@@ -21,8 +21,6 @@ import { usePlayerUseCase } from '@/modules/player';
 import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
 import { elementColors } from '@/modules/shared/ui/constants/elementColors';
 
-
-
 const TOP_COOCCURRENCE_COUNT = 3;
 const logger = createLogger('playerProfile.modal');
 

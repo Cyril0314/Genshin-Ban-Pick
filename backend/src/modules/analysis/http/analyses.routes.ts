@@ -15,7 +15,7 @@ export default function createAnalysesRouter(analysisController: AnalysisControl
     router.get('/character-cooccurrence/matrix', asyncHandler(analysisController.fetchCharacterCooccurrenceMatrix));
     router.get('/character-cluster', asyncHandler(analysisController.fetchCharacterCluster));
 
-    router.get('/player-style/profile', asyncHandler(analysisController.fetchPlayerStyleProfile));
+    router.get('/player-styles', asyncHandler(analysisController.fetchPlayerStyle));
 
     router.get('/character-attribute/distributions', asyncHandler(analysisController.fetchCharacterAttributeDistributions))
 

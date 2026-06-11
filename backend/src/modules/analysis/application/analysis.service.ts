@@ -7,7 +7,7 @@ import CharacterSimilarityGraphBuilder from '../infra/graph/CharacterSimilarityG
 import CharacterFeatureMatrixBuilder from '../domain/CharacterFeatureMatrixBuilder';
 import { computeCharacterUsage } from '../domain/computeCharacterUsage';
 import { computeCharacterPickPriority } from '../domain/computeCharacterPickPriority';
-import { computePlayerStyleProfile } from '../domain/computePlayerStyleProfile';
+import { computePlayerStyle } from '../domain/computePlayerStyle';
 import { computeCharacterAttributeDistributions } from '../domain/computeCharacterAttributeDistributions';
 import { computeAnalysisOverview } from '../domain/computeAnalysisOverview';
 import { createLogger } from '../../../utils/logger';
@@ -19,7 +19,7 @@ import type { ICharacterCluster } from '@shared/contracts/analysis/ICharacterClu
 import type { IArchetypePoint } from '@shared/contracts/analysis/IArchetypePoint';
 import type { CharacterCooccurrenceMatrix } from '@shared/contracts/analysis/CharacterCooccurrenceMatrix';
 import type { ICharacterUsage } from '@shared/contracts/analysis/ICharacterUsage';
-import type { IPlayerStyleProfile } from '@shared/contracts/analysis/IPlayerStyleProfile';
+import type { IPlayerStyle } from '@shared/contracts/analysis/IPlayerStyle';
 import type { CooccurrenceGrain } from '@shared/contracts/analysis/value-types';
 import type { ICharacterGraphLink } from '@shared/contracts/analysis/character/ICharacterGraphLink';
 import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
@@ -109,13 +109,13 @@ export default class AnalysisService {
         };
     }
 
-    async fetchPlayerStyleProfile(playerIdentity: PlayerIdentity): Promise<IPlayerStyleProfile | undefined> {
+    async fetchPlayerStyle(playerIdentity: PlayerIdentity): Promise<IPlayerStyle | undefined> {
         const [playerSlots, globalSlots] = await Promise.all([
             this.matchReadModel.findMatchLineupSlotsWithCharacter(playerIdentity),
             this.matchReadModel.findMatchLineupSlotsWithCharacter(),
         ]);
 
-        return computePlayerStyleProfile(playerSlots, globalSlots);
+        return computePlayerStyle(playerSlots, globalSlots);
     }
 
     async fetchCharacterAttributeDistributions(playerIdentity?: PlayerIdentity): Promise<ICharacterAttributeDistributions> {

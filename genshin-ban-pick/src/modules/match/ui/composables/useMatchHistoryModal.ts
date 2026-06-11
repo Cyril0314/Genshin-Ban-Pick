@@ -14,8 +14,6 @@ import { getTeamTheme } from '@/modules/shared/ui/composables/getTeamTheme';
 import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
 import { chunk } from '@/modules/shared/utils/array';
 
-
-
 const logger = createLogger('analysis.ui.matchHistory');
 
 // 與 useBoardZonesLayout.maxNumberOfPickPerColumn 對齊：一欄最多 8 個 Pick，超過自動換欄。

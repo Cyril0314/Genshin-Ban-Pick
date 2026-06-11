@@ -17,7 +17,7 @@ import {
     rarityTranslator,
 } from '@/modules/shared/ui/composables/useCharacterTranslators';
 
-import type { IPlayerStyleProfile } from '@shared/contracts/analysis/IPlayerStyleProfile';
+import type { IPlayerStyle } from '@shared/contracts/analysis/IPlayerStyle';
 import type { ICharacterAttributeDistributions } from '@shared/contracts/analysis/character/ICharacterAttributeDistributions';
 import type { CharacterFilterKey } from '@shared/contracts/character/CharacterFilterKey';
 import type { EnumOrderValue } from '@/modules/shared/ui/composables/useCharacterSorter';
@@ -29,7 +29,7 @@ interface IStyleColors {
 }
 
 interface IStyleOptionParams extends IStyleColors {
-    profile?: IPlayerStyleProfile;
+    profile?: IPlayerStyle;
     distributions?: ICharacterAttributeDistributions;
     tooltip: object;
 }
@@ -98,7 +98,7 @@ function buildRadarConfig(colors: IStyleColors, center: [string, string], radius
     };
 }
 
-function buildRadarSeries(profile: IPlayerStyleProfile, primary: string | undefined) {
+function buildRadarSeries(profile: IPlayerStyle, primary: string | undefined) {
     return {
         type: 'radar' as const,
         data: [
@@ -153,7 +153,7 @@ export function buildPlayerStyleOption(params: IStyleOptionParams) {
 
 // ---- 分離版（profile 頁）----
 
-export function buildStyleRadarOption(profile: IPlayerStyleProfile, colors: IStyleColors, tooltip: object) {
+export function buildStyleRadarOption(profile: IPlayerStyle, colors: IStyleColors, tooltip: object) {
     return {
         tooltip,
         radar: buildRadarConfig(colors, ['50%', '55%'], '68%'),

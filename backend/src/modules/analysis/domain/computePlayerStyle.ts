@@ -1,14 +1,14 @@
-// backend/src/modules/analysis/domain/computePlayerStyleProfile.ts
+// backend/src/modules/analysis/domain/computePlayerStyle.ts
 
-import type { IPlayerStyleProfile } from '@shared/contracts/analysis/IPlayerStyleProfile';
+import type { IPlayerStyle } from '@shared/contracts/analysis/IPlayerStyle';
 import type { IMatchLineupSlotWithCharacter } from '../../match/types/IMatchLineupSlotWithCharacter';
 import type { ICharacter } from '@shared/contracts/character/ICharacter';
 import { computeCharacterAttributeDistributions } from './computeCharacterAttributeDistributions';
 
-export function computePlayerStyleProfile(
+export function computePlayerStyle(
     playerSlots: IMatchLineupSlotWithCharacter[],
     globalSlots: IMatchLineupSlotWithCharacter[],
-): IPlayerStyleProfile | undefined {
+): IPlayerStyle | undefined {
     const playerTotalPicks = playerSlots.length;
 
     if (playerTotalPicks === 0) { return undefined }
