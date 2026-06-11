@@ -6,8 +6,8 @@ import { MoveSource, MoveType } from '@shared/contracts/match/value-types';
 
 import { useMatchHistoryModal } from '../composables/useMatchHistoryModal';
 
-import CharacterHoverCard from '@/modules/analysis/ui/components/CharacterHoverCard.vue';
 import { getWishImagePath } from '@/modules/shared/infrastructure/imageRegistry';
+import { useCharacterHoverWrapper } from '@/modules/shared/ui/context/characterHoverWrapperContext';
 
 const props = defineProps<{
     open: boolean;
@@ -34,6 +34,8 @@ const {
     lineupBlocks,
     getCharacterDisplayName,
 } = useMatchHistoryModal(() => props.open, () => props.matchId);
+
+const CharacterHoverWrapper = useCharacterHoverWrapper();
 </script>
 
 <template>
@@ -74,10 +76,10 @@ const {
                         <ul v-if="utilityMoves.length > 0" class="utility-list">
                             <li v-for="m in utilityMoves" :key="m.id" class="move-row is-utility-row">
                                 <div class="move-thumb">
-                                    <CharacterHoverCard :character-key="m.characterKey">
+                                    <component :is="CharacterHoverWrapper" :character-key="m.characterKey">
                                         <img class="move-avatar" :src="getWishImagePath(m.characterKey)"
                                             :alt="getCharacterDisplayName(m.characterKey)" />
-                                    </CharacterHoverCard>
+                                    </component>
                                     <span class="move-badge is-utility">{{ moveLabel(m) }}</span>
                                     <span v-if="m.source === MoveSource.Random" class="random-mark" title="隨機選取">
                                         <Dices />
@@ -104,10 +106,10 @@ const {
                                         <li v-for="m in moves" :key="m.id" class="move-row"
                                             :class="moveTypeClass(m.type)">
                                             <div class="move-thumb">
-                                                <CharacterHoverCard :character-key="m.characterKey">
+                                                <component :is="CharacterHoverWrapper" :character-key="m.characterKey">
                                                     <img class="move-avatar" :src="getWishImagePath(m.characterKey)"
                                                         :alt="getCharacterDisplayName(m.characterKey)" />
-                                                </CharacterHoverCard>
+                                                </component>
                                                 <span class="move-badge" :class="moveTypeClass(m.type)">{{ moveLabel(m)
                                                     }}</span>
                                                 <span v-if="m.source === MoveSource.Random" class="random-mark"
@@ -155,11 +157,11 @@ const {
                                     <div v-for="row in block.view.rows" :key="row.setupNumber" class="lineup-row">
                                         <span class="lineup-setup-label">{{ row.setupNumber }}</span>
                                         <div v-for="cell in row.cells" :key="cell.memberId" class="lineup-cell">
-                                            <CharacterHoverCard v-if="cell.characterKey"
+                                            <component :is="CharacterHoverWrapper" v-if="cell.characterKey"
                                                 :character-key="cell.characterKey">
                                                 <img class="lineup-avatar" :src="getWishImagePath(cell.characterKey)"
                                                     :alt="getCharacterDisplayName(cell.characterKey)" />
-                                            </CharacterHoverCard>
+                                            </component>
                                             <span v-else class="lineup-empty" />
                                         </div>
                                     </div>

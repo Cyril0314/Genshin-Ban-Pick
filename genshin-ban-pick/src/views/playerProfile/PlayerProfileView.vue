@@ -14,6 +14,7 @@ import { usePlayerProfileView } from './composables/usePlayerProfileView';
 
 import CharacterHoverCard from '@/modules/analysis/ui/components/CharacterHoverCard.vue';
 import MatchHistoryModal from '@/modules/match/ui/components/MatchHistoryModal.vue';
+import { provideCharacterHoverWrapper } from '@/modules/shared/ui/context/characterHoverWrapperContext';
 
 use([CanvasRenderer, RadarChart, PieChart, TooltipComponent]);
 
@@ -25,6 +26,8 @@ const {
     style: { radarOption, donutCharts, isLoading: styleLoading },
     display: { getCharacterDisplayName, getProfileImagePath, getTeamMemberName, getBarWidth, getRowStyle, dateLabel, teammateQuery },
 } = usePlayerProfileView(identity);
+
+provideCharacterHoverWrapper(CharacterHoverCard);
 
 // match drill-down 的開窗狀態屬 view 組裝層，留在這裡
 const matchHistoryOpen = ref(false);

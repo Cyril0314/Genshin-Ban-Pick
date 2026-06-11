@@ -4,6 +4,7 @@ import { Prisma, PrismaClient } from '@prisma/client';
 
 import { buildMatchTeamMemberWhere } from './buildMatchTeamMemberWhere';
 import { mapMatchFromPrisma, mapMoveFromPrisma } from './mapMatchFromPrisma';
+import { mapTeamMember } from '../domain/mapTeamMember';
 import { DataNotFoundError, DbConnectionError, DbForeignKeyConstraintError, DbUniqueConstraintError, DryRunError } from '../../../errors/AppError';
 import { createLogger } from '../../../utils/logger';
 import MatchCreator from '../application/creators/MatchCreator';
@@ -11,7 +12,6 @@ import MatchLineupSlotCreator from '../application/creators/MatchLineupSlotCreat
 import MatchMoveCreator from '../application/creators/MatchMoveCreator';
 import MatchTeamCreator from '../application/creators/MatchTeamCreator';
 import MatchTeamMemberCreator from '../application/creators/MatchTeamMemberCreator';
-import { mapTeamMember } from '../domain/mapTeamMember';
 
 import type { IMatchRepository } from '../domain/IMatchRepository';
 import type { IMatchSnapshot } from '../domain/IMatchSnapshot';
@@ -49,13 +49,50 @@ export default class MatchRepository implements IMatchRepository {
         return this.run(snapshot, true);
     }
 
+    async delete(matchId: number) {
+        await this.prisma.match.delete({
+            where: { id: matchId },
+        });
+    }
+
+    async findMatchTeamMembers(playerIdentity?: PlayerIdentity): Promise<TeamMember[]> {
+        // 無 playerIdentity → 全部 team members；有 → target 同隊的成員
+        const rows = await this.prisma.matchTeamMember.findMany({
+            where: playerIdentity ? { team: { teamMembers: { some: buildMatchTeamMemberWhere(playerIdentity) } } } : undefined,
+            select: {
+                name: true,
+                memberRef: true,
+                guestRef: true,
+                member: { select: { nickname: true } },
+                guest: { select: { nickname: true } },
+            },
+        });
+
+        return rows.map(mapTeamMember);
+    }
+
+    async findMatchTimestamps(timeWindow?: ITimeWindow): Promise<IMatchTimestamp[]> {
+        return this.prisma.match.findMany({
+            where: timeWindow ? this.buildTimeWindowWhere(timeWindow) : undefined,
+            select: { id: true, createdAt: true },
+        });
+    }
+
+    async findMatchMoves(timeWindow?: ITimeWindow): Promise<IMatchMove[]> {
+        const moves = await this.prisma.matchMove.findMany({
+            where: timeWindow ? { match: this.buildTimeWindowWhere(timeWindow) } : undefined,
+            include: { character: true, randomMoveContext: true },
+        });
+        return moves.map(mapMoveFromPrisma);
+    }
+
     private async run(snapshot: IMatchSnapshot, dryRun: boolean): Promise<IMatch> {
         const { roomSetting } = snapshot;
         try {
             const match = await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
                 const flowVersion = roomSetting.matchFlow.version;
                 // 1. Match: 對局
-                
+
                 const match = await MatchCreator.createMatch(tx, flowVersion);
 
                 // 2. MatchTeam 隊伍
@@ -119,43 +156,6 @@ export default class MatchRepository implements IMatchRepository {
 
             throw new DbConnectionError(err);
         }
-    }
-
-    async delete(matchId: number) {
-        await this.prisma.match.delete({
-            where: { id: matchId },
-        });
-    }
-
-    async findMatchTeamMembers(playerIdentity?: PlayerIdentity): Promise<TeamMember[]> {
-        // 無 playerIdentity → 全部 team members；有 → target 同隊的成員
-        const rows = await this.prisma.matchTeamMember.findMany({
-            where: playerIdentity ? { team: { teamMembers: { some: buildMatchTeamMemberWhere(playerIdentity) } } } : undefined,
-            select: {
-                name: true,
-                memberRef: true,
-                guestRef: true,
-                member: { select: { nickname: true } },
-                guest: { select: { nickname: true } },
-            },
-        });
-
-        return rows.map(mapTeamMember);
-    }
-
-    async findMatchTimestamps(timeWindow?: ITimeWindow): Promise<IMatchTimestamp[]> {
-        return this.prisma.match.findMany({
-            where: timeWindow ? this.buildTimeWindowWhere(timeWindow) : undefined,
-            select: { id: true, createdAt: true },
-        });
-    }
-
-    async findMatchMoves(timeWindow?: ITimeWindow): Promise<IMatchMove[]> {
-        const moves = await this.prisma.matchMove.findMany({
-            where: timeWindow ? { match: this.buildTimeWindowWhere(timeWindow) } : undefined,
-            include: { character: true, randomMoveContext: true },
-        });
-        return moves.map(mapMoveFromPrisma)
     }
 
     private buildTimeWindowWhere(timeWindow: ITimeWindow): { createdAt: Prisma.DateTimeFilter<never> } | undefined {
