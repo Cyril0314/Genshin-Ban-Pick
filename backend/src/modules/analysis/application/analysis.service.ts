@@ -42,12 +42,13 @@ export default class AnalysisService {
     ) {}
 
     async fetchOverview(): Promise<IAnalysisOverview> {
-        const [statistics, lineupSlotPlacements] = await Promise.all([
+        const [statistics, lineupSlotPlacements, teamMemberPlacements] = await Promise.all([
             this.matchReadModel.findMatchStatistics(),
             this.matchReadModel.findMatchLineupSlotPlacements(),
+            this.matchReadModel.findMatchTeamMemberPlacements(),
         ]);
 
-        return computeAnalysisOverview(statistics, lineupSlotPlacements);
+        return computeAnalysisOverview(statistics, lineupSlotPlacements, teamMemberPlacements);
     }
 
     async fetchCharacterUsageSummary(timeWindow?: ITimeWindow): Promise<ICharacterUsage[]> {

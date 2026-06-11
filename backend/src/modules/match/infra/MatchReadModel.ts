@@ -1,37 +1,24 @@
 // src/modules/match/infra/MatchReadModel.ts
 
 import { Prisma, PrismaClient } from '@prisma/client';
-import { mapCharacter } from '../../character';
+
 import { buildMatchTeamMemberWhere } from './buildMatchTeamMemberWhere';
+import { mapCharacter } from '../../character';
 
 import type { IMatchReadModel } from '../domain/IMatchReadModel';
-import type { IMatchStatistics } from '../types/IMatchStatistics';
 import type { IMatchLineupSlotPlacement } from '../types/IMatchLineupSlotPlacement';
 import type { IMatchLineupSlotWithCharacter } from '../types/IMatchLineupSlotWithCharacter';
-import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
+import type { IMatchStatistics } from '../types/IMatchStatistics';
+import type { IMatchTeamMemberPlacement } from '../types/IMatchTeamMemberPlacement';
 import type { ITimeWindow } from '@shared/contracts/common/ITimeWindow';
+import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 
 export default class MatchReadModel implements IMatchReadModel {
     constructor(private prisma: PrismaClient) {}
 
     async findMatchStatistics(): Promise<IMatchStatistics> {
-        const [matches, moveCount, uniqueCharacterRarityCounts, uniqueCharacterElementCounts, moveTypeCounts, moveSourceCounts] = await Promise.all([
-            this.prisma.match.findMany({
-                select: {
-                    id: true,
-                    teams: {
-                        select: {
-                            teamMembers: {
-                                select: {
-                                    memberRef: true,
-                                    guestRef: true,
-                                    name: true,
-                                },
-                            },
-                        },
-                    },
-                },
-            }),
+        const [matchCount, moveCount, uniqueCharacterRarityCounts, uniqueCharacterElementCounts, moveTypeCounts, moveSourceCounts] = await Promise.all([
+            this.prisma.match.count(),
             this.prisma.matchMove.count(),
             this.prisma.character.groupBy({
                 by: ['rarity'],
@@ -62,9 +49,8 @@ export default class MatchReadModel implements IMatchReadModel {
         ]);
 
         return {
-            matchCount: matches.length,
-            moveCount: moveCount,
-            teamMemberGroups: matches.flatMap((match) => match.teams.map((team) => team.teamMembers.map(this.mapPlayerIdentity))),
+            matchCount,
+            moveCount,
             characterRarityCounts: this.mapGroupCount(uniqueCharacterRarityCounts, 'rarity'),
             characterElementCounts: this.mapGroupCount(uniqueCharacterElementCounts, 'element'),
             moveTypeCounts: this.mapGroupCount(moveTypeCounts, 'type'),
@@ -100,6 +86,24 @@ export default class MatchReadModel implements IMatchReadModel {
             teamId: entity.teamMember.teamId,
             setupNumber: entity.setupNumber,
             characterKey: entity.characterKey,
+        }));
+    }
+
+    async findMatchTeamMemberPlacements(): Promise<IMatchTeamMemberPlacement[]> {
+        const entities = await this.prisma.matchTeamMember.findMany({
+            select: {
+                teamId: true,
+                team: { select: { matchId: true } },
+                memberRef: true,
+                guestRef: true,
+                name: true,
+            },
+        });
+
+        return entities.map((entity) => ({
+            matchId: entity.team.matchId,
+            teamId: entity.teamId,
+            teamMember: this.mapPlayerIdentity(entity),
         }));
     }
 

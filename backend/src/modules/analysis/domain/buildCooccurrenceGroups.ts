@@ -2,11 +2,12 @@
 
 import type { CooccurrenceGrain } from '@shared/contracts/analysis/value-types';
 
-// grain 分組所需的座標（match / team / setup）
+// grain 分組所需的座標（match / team / setup）。setupNumber 只有 'setup' grain 用得到，
+// team member 沒有編成維度，故為 optional。
 interface IGrainCoordinates {
     matchId: number;
     teamId: number;
-    setupNumber: number;
+    setupNumber?: number;
 }
 
 // 按 grain 把 rows 分組，每組 = 該 grain 單位內的 member key 陣列。

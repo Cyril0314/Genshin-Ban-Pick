@@ -1,22 +1,27 @@
 // backend/src/modules/analysis/domain/computeAnalysisOverview.ts
 
 import { Element, Rarity } from '@shared/contracts/character/value-types';
-import { PlayerIdentity, stringifyPlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
+import { stringifyPlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 import { MoveSource, MoveType } from '@shared/contracts/match/value-types';
 
 import { buildCooccurrenceGroups } from './buildCooccurrenceGroups';
 
 import type { IMatchLineupSlotPlacement } from '../../match/types/IMatchLineupSlotPlacement';
 import type { IMatchStatistics } from '../../match/types/IMatchStatistics';
+import type { IMatchTeamMemberPlacement } from '../../match/types/IMatchTeamMemberPlacement';
 import type { IAnalysisOverview } from '@shared/contracts/analysis/IAnalysisOverview';
 
-export function computeAnalysisOverview(statistics: IMatchStatistics, lineupSlotPlacements: IMatchLineupSlotPlacement[]): IAnalysisOverview {
-    const uniquePlayers = countUniquePlayers(statistics.teamMemberGroups);
+export function computeAnalysisOverview(
+    statistics: IMatchStatistics,
+    lineupSlotPlacements: IMatchLineupSlotPlacement[],
+    teamMemberPlacements: IMatchTeamMemberPlacement[],
+): IAnalysisOverview {
+    const uniquePlayers = countUniquePlayers(teamMemberPlacements);
     return {
         volume: {
             matchCount: statistics.matchCount,
             matchCharacterCombinationCount: countCharacterCombinations(lineupSlotPlacements),
-            matchTeamMemberCombinationCount: countTeamMemberCombinations(statistics.teamMemberGroups),
+            matchTeamMemberCombinationCount: countTeamMemberCombinations(teamMemberPlacements),
             players: {
                 total: uniquePlayers.member + uniquePlayers.guest + uniquePlayers.onlyName,
                 member: uniquePlayers.member,
@@ -62,26 +67,25 @@ function countUniqueCharacters(lineupSlotPlacements: IMatchLineupSlotPlacement[]
     return new Set(lineupSlotPlacements.map((lineupSlotPlacement) => lineupSlotPlacement.characterKey)).size;
 }
 
+// 以隊（match, team）為一組，計算去重後的隊伍成員組合數量。
+function countTeamMemberCombinations(teamMemberPlacements: IMatchTeamMemberPlacement[]): number {
+    const groups = buildCooccurrenceGroups(teamMemberPlacements, (placement) => stringifyPlayerIdentity(placement.teamMember), 'team');
+    const signatures = new Set<string>();
+    for (const members of Object.values(groups)) {
+        signatures.add([...members].sort().join('|'));
+    }
+    return signatures.size;
+}
+
 // 從每隊成員身份去重計算不重複玩家數（Member/Guest 依 id、Name 依名稱）。
-function countUniquePlayers(teamMemberGroups: PlayerIdentity[][]): { member: number; guest: number; onlyName: number } {
+function countUniquePlayers(teamMemberPlacements: IMatchTeamMemberPlacement[]): { member: number; guest: number; onlyName: number } {
     const members = new Set<number>();
     const guests = new Set<number>();
     const names = new Set<string>();
-    for (const group of teamMemberGroups) {
-        for (const player of group) {
-            if (player.type === 'Member') members.add(player.id);
-            else if (player.type === 'Guest') guests.add(player.id);
-            else names.add(player.name);
-        }
+    for (const { teamMember } of teamMemberPlacements) {
+        if (teamMember.type === 'Member') members.add(teamMember.id);
+        else if (teamMember.type === 'Guest') guests.add(teamMember.id);
+        else names.add(teamMember.name);
     }
     return { member: members.size, guest: guests.size, onlyName: names.size };
-}
-
-// 計算去重後的隊伍成員組合數量。
-function countTeamMemberCombinations(teamMemberGroups: PlayerIdentity[][]): number {
-    const signatures = new Set<string>();
-    for (const teamMembers of teamMemberGroups) {
-        signatures.add(teamMembers.map(stringifyPlayerIdentity).sort().join('|'));
-    }
-    return signatures.size;
 }
