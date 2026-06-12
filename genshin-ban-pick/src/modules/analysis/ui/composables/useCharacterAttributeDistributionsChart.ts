@@ -30,7 +30,7 @@ export function useCharacterAttributeDistributionsChart() {
     const donutCharts = computed(() => {
         const d = characterAttributeDistributions.value;
         if (!d) return [];
-        return buildAttributeDonutOptions(d, designTokens.colorOnSurface.value, tooltipStyle('single'));
+        return buildAttributeDonutOptions(d, designTokens.colorOnSurface.value, tooltipStyle('single'), { sliceLabels: true });
     });
 
     return { donutCharts };

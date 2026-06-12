@@ -3,7 +3,7 @@
 <script setup lang="ts">
 import { fromPlayerIdentityQuery } from '@shared/contracts/identity/dto/IPlayerIdentityQuery';
 import { RadarChart, PieChart } from 'echarts/charts';
-import { TooltipComponent } from 'echarts/components';
+import { TooltipComponent, TitleComponent } from 'echarts/components';
 import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { computed, ref } from 'vue';
@@ -16,7 +16,7 @@ import CharacterHoverCard from '@/modules/analysis/ui/components/CharacterHoverC
 import MatchHistoryModal from '@/modules/match/ui/components/MatchHistoryModal.vue';
 import { provideCharacterHoverWrapper } from '@/modules/shared/ui/context/characterHoverWrapperContext';
 
-use([CanvasRenderer, RadarChart, PieChart, TooltipComponent]);
+use([CanvasRenderer, RadarChart, PieChart, TooltipComponent, TitleComponent]);
 
 const route = useRoute();
 const identity = computed(() => fromPlayerIdentityQuery(route.query));
@@ -40,18 +40,14 @@ function openMatchHistory(matchId: number) {
 
 <template>
     <div class="player-profile scale-context">
-        <header class="header">
-            <h1 class="title">{{ title }}</h1>
-        </header>
-
         <div v-if="!identity" class="state-message is-error">缺少玩家參數</div>
         <div v-else-if="isLoading" class="state-message">載入中…</div>
         <div v-else-if="error" class="state-message is-error">{{ error }}</div>
 
-        <template v-else>
+        <div v-else class="dashboard">
             <!-- (b) PlayerStyle 雷達 hero -->
-            <section class="card">
-                <h2 class="card-title">打法風格</h2>
+            <section class="card area-radar">
+                <h2 class="card-title">{{ title }}</h2>
                 <div class="radar-hero">
                     <VChart v-if="radarOption" :option="radarOption" :update-options="{ notMerge: true }" autoresize />
                     <div v-else-if="styleLoading" class="state-message">分析中…</div>
@@ -59,31 +55,26 @@ function openMatchHistory(matchId: number) {
                 </div>
             </section>
 
-            <!-- (b) 屬性分佈 donut 格 -->
-            <section v-if="donutCharts.length" class="card">
-                <h2 class="card-title">屬性分佈</h2>
+            <!-- (b) 角色分佈 donut 格 -->
+            <section v-if="donutCharts.length" class="card area-donut">
+                <h2 class="card-title">角色分佈</h2>
                 <div class="donut-grid">
                     <div v-for="d in donutCharts" :key="d.key" class="donut-cell">
-                        <span class="donut-label">{{ d.label }}</span>
                         <VChart class="donut-chart" :option="d.option" :update-options="{ notMerge: true }" autoresize />
+                        <span class="donut-label">{{ d.label }}</span>
                     </div>
                 </div>
             </section>
 
             <!-- (a) 角色使用頻率 -->
-            <section class="card">
+            <section class="card area-frequency">
                 <div class="card-header">
-                    <h2 class="card-title">角色使用頻率（Top 10）</h2>
+                    <h2 class="card-title">角色使用頻率</h2>
                     <span class="card-meta" v-if="record">共 {{ record.totalSetups }} 次</span>
                 </div>
                 <div v-if="!record || record.totalSetups === 0" class="state-message">尚無紀錄</div>
                 <ol v-else class="frequency-list">
-                    <li
-                        v-for="f in characterFrequency"
-                        :key="f.characterKey"
-                        class="frequency-row"
-                        :style="getRowStyle(f.characterKey)"
-                    >
+                    <li v-for="f in characterFrequency" :key="f.characterKey" class="frequency-row" :style="getRowStyle(f.characterKey)">
                         <CharacterHoverCard :character-key="f.characterKey">
                             <img class="avatar" :src="getProfileImagePath(f.characterKey)" :alt="getCharacterDisplayName(f.characterKey)" />
                         </CharacterHoverCard>
@@ -113,7 +104,7 @@ function openMatchHistory(matchId: number) {
             </section>
 
             <!-- (d) 最常隊友 -->
-            <section class="card">
+            <section class="card area-teammate">
                 <h2 class="card-title">最常搭配隊友</h2>
                 <div v-if="teammates.length === 0" class="state-message">尚無隊友資料</div>
                 <ul v-else class="teammate-list">
@@ -127,7 +118,7 @@ function openMatchHistory(matchId: number) {
             </section>
 
             <!-- (c) 參與場次 -->
-            <section class="card">
+            <section class="card area-matches">
                 <h2 class="card-title">參與場次（{{ matches.length }}）</h2>
                 <div v-if="matches.length === 0" class="state-message">尚無場次</div>
                 <ul v-else class="match-list">
@@ -143,7 +134,7 @@ function openMatchHistory(matchId: number) {
                     </li>
                 </ul>
             </section>
-        </template>
+        </div>
 
         <MatchHistoryModal v-model:open="matchHistoryOpen" :match-id="matchHistoryId" />
     </div>
@@ -159,23 +150,75 @@ function openMatchHistory(matchId: number) {
     gap: var(--space-lg);
     padding: var(--space-xl);
     color: var(--md-sys-color-on-surface);
-    background-size: cover;
-    /* height: 100vh; */
     background-color: var(--md-sys-color-background);
-    /* background:
-        linear-gradient(to right, rgba(var(--md-sys-color-background-rgb) / 0.1) 10%, rgba(var(--md-sys-color-background-rgb) / 0.9) 65%), */
-        /* url('@/assets/images/background/background.jpg') no-repeat center center; */
+    /* 軟上限：內容少時頁面自然縮，內容多時夾住、由卡片內捲消化 */
+    max-height: 100vh;
+    overflow: hidden;
 }
 
-.header {
-    display: flex;
-    align-items: baseline;
-    gap: var(--space-md);
+/* bento dashboard：左欄固定分析視覺、中欄 Top10 整欄、右欄隊友+場次 */
+.dashboard {
+    display: grid;
+    grid-template-columns: minmax(320px, 1fr) minmax(0, 1.2fr) minmax(280px, 0.85fr);
+    grid-template-areas:
+        'radar frequency teammate'
+        'donut frequency matches';
+    grid-template-rows: auto 1fr;
+    gap: var(--space-lg);
+    /* 吃掉 header 以外的剩餘高度（不手算 header 尺寸），溢出由卡片內捲處理 */
+    min-height: 0;
 }
 
-.title {
-    font-size: var(--font-size-xl);
-    font-weight: var(--font-weight-bold);
+.area-radar {
+    grid-area: radar;
+}
+
+.area-donut {
+    grid-area: donut;
+}
+
+.area-frequency {
+    grid-area: frequency;
+}
+
+.area-teammate {
+    grid-area: teammate;
+}
+
+.area-matches {
+    grid-area: matches;
+}
+
+/* 中等寬度：收成 2 欄 */
+@media (max-width: 1200px) {
+    .dashboard {
+        grid-template-columns: minmax(320px, 1fr) minmax(0, 1.2fr);
+        grid-template-areas:
+            'radar    frequency'
+            'donut    frequency'
+            'teammate matches';
+        grid-template-rows: auto auto 1fr;
+    }
+}
+
+/* 窄螢幕：回到單欄垂直堆疊，解除高度夾制讓頁面自然捲動 */
+@media (max-width: 860px) {
+    .player-profile {
+        max-height: none;
+        overflow: visible;
+    }
+
+    .dashboard {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            'radar'
+            'donut'
+            'frequency'
+            'teammate'
+            'matches';
+        grid-template-rows: none;
+        flex: none;
+    }
 }
 
 .card {
@@ -185,6 +228,8 @@ function openMatchHistory(matchId: number) {
     padding: var(--space-lg);
     background-color: var(--md-sys-color-surface-container-high);
     border-radius: var(--radius-lg);
+    /* grid 子項需 min-height:0 才能讓內部列表接管溢出 */
+    min-height: 0;
 }
 
 .card-header {
@@ -205,7 +250,7 @@ function openMatchHistory(matchId: number) {
 
 .radar-hero {
     width: 100%;
-    height: 380px;
+    height: 250px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -214,7 +259,13 @@ function openMatchHistory(matchId: number) {
 .donut-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    /* grid-auto-rows: min-content; */
     gap: var(--space-md);
+    /* 列被壓縮時 donut 在卡片內捲，不外溢邊界（與其他卡片一致） */
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    align-content: start;
 }
 
 .donut-cell {
@@ -227,15 +278,10 @@ function openMatchHistory(matchId: number) {
     border-radius: var(--radius-md);
 }
 
-.donut-label {
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
-    color: var(--md-sys-color-on-surface-variant);
-}
-
 .donut-chart {
-    width: 100%;
-    height: 160px;
+    /* width: 100%; */
+    height: 140px;
+    /* aspect-ratio: 1; */
 }
 
 @media (max-width: 720px) {
@@ -258,6 +304,9 @@ function openMatchHistory(matchId: number) {
 .frequency-list {
     display: flex;
     flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
     padding: 0;
     list-style: none;
 }
@@ -373,6 +422,9 @@ function openMatchHistory(matchId: number) {
 .teammate-list {
     display: flex;
     flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
     padding: 0;
     list-style: none;
 }
@@ -408,6 +460,9 @@ function openMatchHistory(matchId: number) {
 .match-list {
     display: flex;
     flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
     gap: var(--space-sm);
     padding: 0;
     list-style: none;

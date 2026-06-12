@@ -75,7 +75,7 @@ export default class PlayerService {
 
         const characterFrequency: IPlayerCharacterFrequency[] = Object.entries(characterCounts)
             .sort((a, b) => b[1] - a[1])
-            .slice(0, count)
+            // .slice(0, count)
             .map(([characterKey, count]) => ({
                 characterKey,
                 count,

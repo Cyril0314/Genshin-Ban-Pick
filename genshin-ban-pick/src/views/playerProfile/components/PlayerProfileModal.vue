@@ -56,7 +56,7 @@ const profileTo = computed(() => {
                     <template v-else>
                         <section class="section">
                             <div class="section-header">
-                                <h3 class="section-title">角色使用頻率（Top 10）</h3>
+                                <h3 class="section-title">角色使用頻率</h3>
                                 <span class="section-meta">共 {{ record.totalSetups }} 次</span>
                             </div>
                             <ol class="frequency-list">

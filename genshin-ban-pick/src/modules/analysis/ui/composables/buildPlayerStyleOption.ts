@@ -7,6 +7,7 @@
 
 import { sortByEnumOrder } from '@/modules/shared/ui/composables/useCharacterSorter';
 import { elementColors } from '@/modules/shared/ui/constants/elementColors';
+import { rarityColors } from '@/modules/shared/ui/constants/rarityColors';
 import {
     elementTranslator,
     modelTypeTranslator,
@@ -61,6 +62,9 @@ function getPieColor<K extends CharacterFilterKey>(key: K, name: EnumOrderValue<
     if (key === 'element') {
         const elementName = name as keyof typeof elementColors;
         return elementColors[elementName]?.main ?? '#999999';
+    }
+    if (key === 'rarity') {
+        return rarityColors[name as keyof typeof rarityColors];
     }
     return undefined;
 }
@@ -125,21 +129,43 @@ export interface IAttributeDonut {
     option: Record<string, unknown>;
 }
 
-export function buildAttributeDonutOptions(d: ICharacterAttributeDistributions, labelColor: string | undefined, tooltip: object): IAttributeDonut[] {
-    return ATTRIBUTES.map((attr) => ({
-        key: attr.key,
-        // label: attr.label,
-        option: {
-            tooltip,
-            series: [
-                {
-                    type: 'pie' as const,
-                    radius: ['45%', '72%'],
-                    center: ['50%', '50%'],
-                    data: toPieSorted(attr.key, attr.pick(d), attr.translator),
-                    label: { color: labelColor },
-                },
-            ],
-        },
-    }));
+// sliceLabels：大圖（有空間）顯示切片標籤 + 輔助線；小圈（player-profile）關掉、改用環心主類別
+export function buildAttributeDonutOptions(
+    d: ICharacterAttributeDistributions,
+    labelColor: string | undefined,
+    tooltip: object,
+    options: { sliceLabels?: boolean } = {},
+): IAttributeDonut[] {
+    const { sliceLabels = false } = options;
+    return ATTRIBUTES.map((attr) => {
+        const data = toPieSorted(attr.key, attr.pick(d), attr.translator);
+        const dominant = data.reduce<(typeof data)[number] | undefined>((top, slice) => (!top || slice.value > top.value ? slice : top), undefined);
+        return {
+            key: attr.key,
+            label: attr.label,
+            option: {
+                tooltip,
+                // 緊湊模式（無切片標籤）才在環心顯示主類別；有切片標籤時就重複了
+                title: sliceLabels
+                    ? undefined
+                    : {
+                          text: dominant?.name ?? '',
+                          left: 'center',
+                          top: 'center',
+                          textStyle: { color: labelColor, fontSize: 12, fontWeight: 'normal' },
+                      },
+                series: [
+                    {
+                        type: 'pie' as const,
+                        // 有外側標籤時縮小環體留出標籤空間
+                        radius: sliceLabels ? ['45%', '72%'] : ['58%', '82%'],
+                        center: ['50%', '50%'],
+                        data,
+                        label: sliceLabels ? { color: labelColor } : { show: false },
+                        labelLine: { show: sliceLabels },
+                    },
+                ],
+            },
+        };
+    });
 }

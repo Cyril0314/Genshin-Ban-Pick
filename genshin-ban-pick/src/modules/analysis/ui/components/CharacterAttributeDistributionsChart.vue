@@ -23,6 +23,7 @@ const { donutCharts } = useCharacterAttributeDistributionsChart();
             <div v-if="donutCharts.length" class="donut-grid">
                 <div v-for="d in donutCharts" :key="d.key" class="donut-cell">
                     <VChart class="donut-chart" :option="d.option" :update-options="{ notMerge: true }" autoresize />
+                    <span class="donut-label">{{ d.label }}</span>
                 </div>
             </div>
             <div v-else class="empty">尚無足夠數據進行分析</div>
@@ -81,6 +82,7 @@ const { donutCharts } = useCharacterAttributeDistributionsChart();
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: var(--space-xs);
     min-height: 0;
     padding: var(--space-sm);
     background-color: var(--md-sys-color-surface-container-low);
@@ -91,6 +93,12 @@ const { donutCharts } = useCharacterAttributeDistributionsChart();
     width: 100%;
     height: 100%;
     min-height: 0;
+}
+
+.donut-label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--md-sys-color-on-surface-variant);
 }
 
 .empty {
