@@ -8,8 +8,13 @@ import { createLogger } from '@/app/utils/logger';
 import ChatFloatWindow from '@/modules/chat/ui/components/ChatFloatWindow.vue';
 import LineupDrawer from '@/modules/lineup/ui/components/LineupDrawer.vue';
 import AnalysisDrawer from '@/modules/analysis/ui/components/AnalysisDrawer.vue';
+import PlayerListDrawer from '@/modules/player/ui/components/PlayerListDrawer.vue';
 import { useAuthStore } from '@/modules/auth';
 import { useChatWindow } from '@/modules/chat/ui/composables/useChatWindow';
+
+const props = defineProps<{
+    teamMemberToTeamSlotMap: Record<string, number>;
+}>();
 
 const emit = defineEmits<{
     (e: 'match-reset'): void;
@@ -23,6 +28,7 @@ const { isChatOpen, hasUnreadMessage } = useChatWindow()
 const logger = createLogger('banPick.toolbar');
 const isLineupDrawerOpen = ref(false);
 const isAnalysisDrawerOpen = ref(false);
+const isPlayerListDrawerOpen = ref(false);
 
 function handleLineupButtonClickEvent() {
     logger.debug('lineup button click');
@@ -37,6 +43,11 @@ function handleChatButtonClickEvent() {
 function handleAnalysisButtonClickEvent() {
     logger.debug('analysis button click');
     isAnalysisDrawerOpen.value = !isAnalysisDrawerOpen.value;
+}
+
+function handlePlayerListButtonClickEvent() {
+    logger.debug('player list button click');
+    isPlayerListDrawerOpen.value = !isPlayerListDrawerOpen.value;
 }
 
 function handleResetButtonClickEvent() {
@@ -63,6 +74,9 @@ function handleSaveButtonClickEvent() {
 
         <button class="button button--analysis" @click="handleAnalysisButtonClickEvent">報表</button>
         <AnalysisDrawer v-model:open="isAnalysisDrawerOpen" />
+
+        <button class="button button--player-list" @click="handlePlayerListButtonClickEvent">玩家</button>
+        <PlayerListDrawer v-model:open="isPlayerListDrawerOpen" :team-member-to-team-slot-map="props.teamMemberToTeamSlotMap" />
 
         <button v-if="isAdmin" class="button button--reset" @click="handleResetButtonClickEvent">重置</button>
 

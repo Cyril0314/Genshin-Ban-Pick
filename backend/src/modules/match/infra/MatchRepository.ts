@@ -4,6 +4,7 @@ import { Prisma, PrismaClient } from '@prisma/client';
 
 import { buildMatchTeamMemberWhere } from './buildMatchTeamMemberWhere';
 import { mapMatchFromPrisma, mapMoveFromPrisma } from './mapMatchFromPrisma';
+import { mapPlayerIdentity } from '../domain/mapPlayerIdentity';
 import { mapTeamMember } from '../domain/mapTeamMember';
 import { DataNotFoundError, DbConnectionError, DbForeignKeyConstraintError, DbUniqueConstraintError, DryRunError } from '../../../errors/AppError';
 import { createLogger } from '../../../utils/logger';
@@ -15,6 +16,7 @@ import MatchTeamMemberCreator from '../application/creators/MatchTeamMemberCreat
 
 import type { IMatchRepository } from '../domain/IMatchRepository';
 import type { IMatchSnapshot } from '../domain/IMatchSnapshot';
+import type { IMatchLineupSlotLight } from '../types/IMatchLineupSlotLight';
 import type { ITimeWindow } from '@shared/contracts/common/ITimeWindow';
 import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 import type { IMatch } from '@shared/contracts/match/IMatch';
@@ -84,6 +86,21 @@ export default class MatchRepository implements IMatchRepository {
             include: { character: true, randomMoveContext: true },
         });
         return moves.map(mapMoveFromPrisma);
+    }
+
+    async findMatchLineupSlotLights(): Promise<IMatchLineupSlotLight[]> {
+        // 全站 lineup slot 的輕量讀取：只取擁有者身分 + 角色（無 character/nickname join）
+        const rows = await this.prisma.matchLineupSlot.findMany({
+            select: {
+                characterKey: true,
+                teamMember: { select: { memberRef: true, guestRef: true, name: true } },
+            },
+        });
+
+        return rows.map((row) => ({
+            teamMember: mapPlayerIdentity(row.teamMember),
+            characterKey: row.characterKey,
+        }));
     }
 
     private async run(snapshot: IMatchSnapshot, dryRun: boolean): Promise<IMatch> {

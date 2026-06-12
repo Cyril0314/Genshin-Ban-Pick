@@ -5,10 +5,16 @@ import { toPlayerIdentityQuery } from '@shared/contracts/identity/dto/IPlayerIde
 import type PlayerService from './PlayerService';
 import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 import type { IPlayerMatchSummary } from '@shared/contracts/player/IPlayerMatchSummary';
+import type { IPlayerSummary } from '@shared/contracts/player/IPlayerSummary';
 import type { IPlayerTeammate } from '@shared/contracts/player/IPlayerTeammate';
 
 export default class PlayerRepository {
     constructor(private playerService: PlayerService) {}
+
+    async fetchPlayers(): Promise<IPlayerSummary[]> {
+        const response = await this.playerService.getPlayers();
+        return response.data;
+    }
 
     async fetchPlayerRecord(playerIdentity: PlayerIdentity) {
         const response = await this.playerService.getPlayerRecord(toPlayerIdentityQuery(playerIdentity));

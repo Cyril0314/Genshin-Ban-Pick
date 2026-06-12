@@ -6,6 +6,10 @@ import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 export default class PlayerUseCase {
     constructor(private playerRepository: PlayerRepository) {}
 
+    async fetchPlayers() {
+        return await this.playerRepository.fetchPlayers();
+    }
+
     async fetchPlayerRecord(playerIdentity: PlayerIdentity) {
         return await this.playerRepository.fetchPlayerRecord(playerIdentity);
     }

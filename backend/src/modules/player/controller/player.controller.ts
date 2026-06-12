@@ -9,6 +9,11 @@ import PlayerService from '../application/player.service';
 export default class PlayerController {
     constructor(private playerService: PlayerService) {}
 
+    fetchPlayers = async (_req: Request, res: Response) => {
+        const players = await this.playerService.fetchPlayers();
+        res.status(200).json(players);
+    };
+
     fetchPlayerRecord = async (req: Request, res: Response) => {
         const playerIdentity = fromPlayerIdentityQuery(req.query);
         if (!playerIdentity) throw new InvalidFieldsError();

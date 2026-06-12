@@ -6,6 +6,10 @@ import type { IPlayerIdentityQuery } from '@shared/contracts/identity/dto/IPlaye
 export default class PlayerService {
     constructor(private client: HttpClient) {}
 
+    async getPlayers() {
+        return this.client.get(`/players`);
+    }
+
     async getPlayerRecord(query: IPlayerIdentityQuery) {
         return this.client.get(`/players/records`, { params: query });
     }

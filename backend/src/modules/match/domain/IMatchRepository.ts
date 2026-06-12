@@ -1,6 +1,7 @@
 // src/modules/match/domain/IMatchRepository.ts
 
 import type { IMatchSnapshot } from './IMatchSnapshot';
+import type { IMatchLineupSlotLight } from '../types/IMatchLineupSlotLight';
 import type { ITimeWindow } from '@shared/contracts/common/ITimeWindow';
 import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 import type { IMatch } from '@shared/contracts/match/IMatch';
@@ -22,4 +23,6 @@ export interface IMatchRepository {
     findMatchTimestamps(timeWindow?: ITimeWindow): Promise<IMatchTimestamp[]>;
 
     findMatchMoves(timeWindow?: ITimeWindow): Promise<IMatchMove[]>;
+
+    findMatchLineupSlotLights(): Promise<IMatchLineupSlotLight[]>;
 }

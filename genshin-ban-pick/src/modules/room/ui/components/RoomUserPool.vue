@@ -16,7 +16,7 @@ import type { IRoomUser } from '@shared/contracts/room/IRoomUser';
 const logger = createLogger('room.ui.userPool');
 const playerProfile = usePlayerProfileController();
 
-const props = defineProps<{ userToTeamSlotMap: Record<string, number> }>();
+const props = defineProps<{ teamMemberToTeamSlotMap: Record<string, number> }>();
 
 const roomUserStore = useRoomUserStore();
 const { roomUsers } = storeToRefs(roomUserStore);
@@ -47,7 +47,7 @@ function handleClick(roomUser: IRoomUser) {
 }
 
 function getStyleForUser(roomUser: IRoomUser) {
-    const teamSlot = props.userToTeamSlotMap[stringifyPlayerIdentity(roomUser.identity)];
+    const teamSlot = props.teamMemberToTeamSlotMap[stringifyPlayerIdentity(roomUser.identity)];
     if (teamSlot === undefined) {
         return {
             '--team-color-bg': `var(--md-sys-color-surface-container-high)`,

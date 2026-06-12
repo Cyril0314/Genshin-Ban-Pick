@@ -9,7 +9,7 @@ import { useBanPickRandomPull } from './useBanPickRandomPull';
 import { useBoardStore, useBoardSync } from '@/modules/board';
 import { useCharacterStore } from '@/modules/character';
 import { useTeamInfoStore, useTeamInfoSync } from '@/modules/team';
-import { buildUserToTeamSlotMap } from '@/modules/team/domain/buildUserToTeamSlotMap';
+import { buildTeamMemberToTeamSlotMap } from '@/modules/team/domain/buildTeamMemberToTeamSlotMap';
 import { useBanPickMatchSave } from './useBanPickMatchSave';
 import { useLineupSync } from '@/modules/lineup';
 
@@ -28,7 +28,7 @@ export function useBanPickView(roomId: string) {
 
     const teamInfoStore = useTeamInfoStore();
     const { teamMembersMap } = storeToRefs(teamInfoStore);
-    const userToTeamSlotMap = computed(() => buildUserToTeamSlotMap(teamMembersMap.value));
+    const teamMemberToTeamSlotMap = computed(() => buildTeamMemberToTeamSlotMap(teamMembersMap.value));
     const { memberInput, memberDrop, memberRestore } = useTeamInfoSync();
 
     const { allTeamLineupImageMapReset } = useLineupSync();
@@ -62,7 +62,7 @@ export function useBanPickView(roomId: string) {
         },
 
         team: {
-            userToTeamSlotMap,
+            teamMemberToTeamSlotMap,
             memberInput,
             memberDrop,
             memberRestore,

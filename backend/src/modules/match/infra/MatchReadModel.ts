@@ -4,6 +4,7 @@ import { Prisma, PrismaClient } from '@prisma/client';
 
 import { buildMatchTeamMemberWhere } from './buildMatchTeamMemberWhere';
 import { mapCharacter } from '../../character';
+import { mapPlayerIdentity } from '../domain/mapPlayerIdentity';
 
 import type { IMatchReadModel } from '../domain/IMatchReadModel';
 import type { IMatchLineupSlotPlacement } from '../types/IMatchLineupSlotPlacement';
@@ -103,7 +104,7 @@ export default class MatchReadModel implements IMatchReadModel {
         return entities.map((entity) => ({
             matchId: entity.team.matchId,
             teamId: entity.teamId,
-            teamMember: this.mapPlayerIdentity(entity),
+            teamMember: mapPlayerIdentity(entity),
         }));
     }
 
@@ -141,11 +142,5 @@ export default class MatchReadModel implements IMatchReadModel {
             },
             {} as Record<string, number>,
         );
-    }
-
-    private mapPlayerIdentity(member: { memberRef: number | null; guestRef: number | null; name: string }): PlayerIdentity {
-        if (member.memberRef) return { type: 'Member', id: member.memberRef };
-        if (member.guestRef) return { type: 'Guest', id: member.guestRef };
-        return { type: 'Name', name: member.name };
     }
 }

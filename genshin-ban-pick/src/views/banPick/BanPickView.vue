@@ -36,7 +36,7 @@ const {
 
     board: { imageMap, usedImageIds, imageDrop, imageRestore, randomPull },
 
-    team: { userToTeamSlotMap, memberInput, memberDrop, memberRestore },
+    team: { teamMemberToTeamSlotMap, memberInput, memberDrop, memberRestore },
 
     match: { save, reset, isLoading: isMatchSaveLoading, result: matchResult, error: matchError },
 } = useBanPickView(roomId);
@@ -91,7 +91,7 @@ provideCharacterHoverWrapper(CharacterHoverCard);
                             <div class="top-section top-section--align-left">
                                 <UserProfile />
                                 <div class="separator"></div>
-                                <RoomUserPool :user-to-team-slot-map="userToTeamSlotMap" />
+                                <RoomUserPool :team-member-to-team-slot-map="teamMemberToTeamSlotMap" />
                             </div>
 
                             <div class="indicator-slot">
@@ -99,7 +99,7 @@ provideCharacterHoverWrapper(CharacterHoverCard);
                             </div>
 
                             <div class="top-section top-section--align-right">
-                                <Toolbar @match-reset="reset" @match-save="save" />
+                                <Toolbar :team-member-to-team-slot-map="teamMemberToTeamSlotMap" @match-reset="reset" @match-save="save" />
                             </div>
                         </div>
 
