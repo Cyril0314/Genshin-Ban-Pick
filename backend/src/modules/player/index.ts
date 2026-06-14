@@ -9,11 +9,11 @@ import type { IPlayerMatchReadModel } from '../match/domain/IPlayerMatchReadMode
 import type UserService from '../user/application/user.service';
 
 export function createPlayerModule(
-    playerMatchReadModel: IPlayerMatchReadModel,
     matchRepository: IMatchRepository,
+    playerMatchReadModel: IPlayerMatchReadModel,
     userService: UserService,
 ) {
-    const service = new PlayerService(playerMatchReadModel, matchRepository, userService);
+    const service = new PlayerService(matchRepository, playerMatchReadModel, userService);
     const controller = new PlayerController(service);
     const router = createPlayersRouter(controller);
 

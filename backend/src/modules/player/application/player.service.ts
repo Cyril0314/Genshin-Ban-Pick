@@ -14,8 +14,8 @@ import type { TeamMember } from '@shared/contracts/team/TeamMember';
 
 export default class PlayerService {
     constructor(
-        private playerMatchReadModel: IPlayerMatchReadModel,
         private matchRepository: IMatchRepository,
+        private playerMatchReadModel: IPlayerMatchReadModel,
         private userService: UserService,
     ) {}
 
@@ -63,14 +63,14 @@ export default class PlayerService {
     }
 
     async fetchPlayerRecord(playerIdentity: PlayerIdentity, count = 10): Promise<IPlayerRecord> {
-        const slots = await this.playerMatchReadModel.findPlayerMatchLineupSlots(playerIdentity);
-        const teamMember = slots[0]?.teamMember ?? (await this.resolveTeamMember(playerIdentity));
+        const lineupSlots = await this.matchRepository.findMatchLineupSlotLights(playerIdentity);
+        const teamMember = await this.resolveTeamMember(playerIdentity);
 
-        const totalSetups = slots.length;
+        const totalSetups = lineupSlots.length;
 
         const characterCounts: Record<string, number> = {};
-        for (const row of slots) {
-            characterCounts[row.characterKey] = (characterCounts[row.characterKey] ?? 0) + 1;
+        for (const lineupSlot of lineupSlots) {
+            characterCounts[lineupSlot.characterKey] = (characterCounts[lineupSlot.characterKey] ?? 0) + 1;
         }
 
         const characterFrequency: IPlayerCharacterFrequency[] = Object.entries(characterCounts)

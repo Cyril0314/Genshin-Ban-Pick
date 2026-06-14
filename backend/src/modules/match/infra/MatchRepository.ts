@@ -4,8 +4,6 @@ import { Prisma, PrismaClient } from '@prisma/client';
 
 import { buildMatchTeamMemberWhere } from './buildMatchTeamMemberWhere';
 import { mapMatchFromPrisma, mapMoveFromPrisma } from './mapMatchFromPrisma';
-import { mapPlayerIdentity } from '../domain/mapPlayerIdentity';
-import { mapTeamMember } from '../domain/mapTeamMember';
 import { DataNotFoundError, DbConnectionError, DbForeignKeyConstraintError, DbUniqueConstraintError, DryRunError } from '../../../errors/AppError';
 import { createLogger } from '../../../utils/logger';
 import MatchCreator from '../application/creators/MatchCreator';
@@ -13,6 +11,8 @@ import MatchLineupSlotCreator from '../application/creators/MatchLineupSlotCreat
 import MatchMoveCreator from '../application/creators/MatchMoveCreator';
 import MatchTeamCreator from '../application/creators/MatchTeamCreator';
 import MatchTeamMemberCreator from '../application/creators/MatchTeamMemberCreator';
+import { mapPlayerIdentity } from '../domain/mapPlayerIdentity';
+import { mapTeamMember } from '../domain/mapTeamMember';
 
 import type { IMatchRepository } from '../domain/IMatchRepository';
 import type { IMatchSnapshot } from '../domain/IMatchSnapshot';
@@ -58,7 +58,6 @@ export default class MatchRepository implements IMatchRepository {
     }
 
     async findMatchTeamMembers(playerIdentity?: PlayerIdentity): Promise<TeamMember[]> {
-        // 無 playerIdentity → 全部 team members；有 → target 同隊的成員
         const rows = await this.prisma.matchTeamMember.findMany({
             where: playerIdentity ? { team: { teamMembers: { some: buildMatchTeamMemberWhere(playerIdentity) } } } : undefined,
             select: {
@@ -88,12 +87,12 @@ export default class MatchRepository implements IMatchRepository {
         return moves.map(mapMoveFromPrisma);
     }
 
-    async findMatchLineupSlotLights(): Promise<IMatchLineupSlotLight[]> {
-        // 全站 lineup slot 的輕量讀取：只取擁有者身分 + 角色（無 character/nickname join）
+    async findMatchLineupSlotLights(playerIdentity?: PlayerIdentity): Promise<IMatchLineupSlotLight[]> {
         const rows = await this.prisma.matchLineupSlot.findMany({
+            where: playerIdentity ? { teamMember: buildMatchTeamMemberWhere(playerIdentity) } : undefined,
             select: {
                 characterKey: true,
-                teamMember: { select: { memberRef: true, guestRef: true, name: true } },
+                teamMember: { select: { name: true, memberRef: true, guestRef: true } },
             },
         });
 

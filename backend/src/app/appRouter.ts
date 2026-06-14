@@ -41,7 +41,7 @@ export function registerAppRouters(app: Express, prisma: PrismaClient, roomState
     const analysisModule = createAnalysisModule(characterModule.repository, matchModule.repository, matchModule.readModel);
     app.use('/api/analyses', analysisModule.router);
 
-    const playerModule = createPlayerModule(matchModule.playerMatchReadModel, matchModule.repository, userModule.userService);
+    const playerModule = createPlayerModule(matchModule.repository, matchModule.playerMatchReadModel, userModule.userService);
     app.use('/api/players', playerModule.router);
 
     return {

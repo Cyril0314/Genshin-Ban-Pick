@@ -18,36 +18,37 @@ export default class MatchReadModel implements IMatchReadModel {
     constructor(private prisma: PrismaClient) {}
 
     async findMatchStatistics(): Promise<IMatchStatistics> {
-        const [matchCount, moveCount, uniqueCharacterRarityCounts, uniqueCharacterElementCounts, moveTypeCounts, moveSourceCounts] = await Promise.all([
-            this.prisma.match.count(),
-            this.prisma.matchMove.count(),
-            this.prisma.character.groupBy({
-                by: ['rarity'],
-                where: {
-                    matchLineupSlots: {
-                        some: {},
+        const [matchCount, moveCount, uniqueCharacterRarityCounts, uniqueCharacterElementCounts, moveTypeCounts, moveSourceCounts] =
+            await Promise.all([
+                this.prisma.match.count(),
+                this.prisma.matchMove.count(),
+                this.prisma.character.groupBy({
+                    by: ['rarity'],
+                    where: {
+                        matchLineupSlots: {
+                            some: {},
+                        },
                     },
-                },
-                _count: { _all: true },
-            }),
-            this.prisma.character.groupBy({
-                by: ['element'],
-                where: {
-                    matchLineupSlots: {
-                        some: {},
+                    _count: { _all: true },
+                }),
+                this.prisma.character.groupBy({
+                    by: ['element'],
+                    where: {
+                        matchLineupSlots: {
+                            some: {},
+                        },
                     },
-                },
-                _count: { _all: true },
-            }),
-            this.prisma.matchMove.groupBy({
-                by: ['type'],
-                _count: { _all: true },
-            }),
-            this.prisma.matchMove.groupBy({
-                by: ['source'],
-                _count: { _all: true },
-            }),
-        ]);
+                    _count: { _all: true },
+                }),
+                this.prisma.matchMove.groupBy({
+                    by: ['type'],
+                    _count: { _all: true },
+                }),
+                this.prisma.matchMove.groupBy({
+                    by: ['source'],
+                    _count: { _all: true },
+                }),
+            ]);
 
         return {
             matchCount,

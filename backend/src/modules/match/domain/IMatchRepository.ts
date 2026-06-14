@@ -24,5 +24,5 @@ export interface IMatchRepository {
 
     findMatchMoves(timeWindow?: ITimeWindow): Promise<IMatchMove[]>;
 
-    findMatchLineupSlotLights(): Promise<IMatchLineupSlotLight[]>;
+    findMatchLineupSlotLights(playerIdentity?: PlayerIdentity): Promise<IMatchLineupSlotLight[]>;
 }
