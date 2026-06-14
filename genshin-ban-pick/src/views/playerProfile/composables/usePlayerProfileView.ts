@@ -4,7 +4,6 @@
 // 顯示輔助。雷達交給 usePlayerStyleChart；match drill-down 的開窗狀態
 // 屬 view 組裝層，留在 .vue。
 
-import { pickTopCooccurrenceEntries } from '@shared/contracts/analysis/ICooccurrenceEntry';
 import { toPlayerIdentityQuery } from '@shared/contracts/identity/dto/IPlayerIdentityQuery';
 import { getTeamMemberName } from '@shared/contracts/team/TeamMember';
 import { storeToRefs } from 'pinia';
@@ -18,8 +17,6 @@ import type { IPlayerTeammate } from '@shared/contracts/player/IPlayerTeammate';
 import type { TeamMember } from '@shared/contracts/team/TeamMember';
 
 import { createLogger } from '@/app/utils/logger';
-import { useAnalysisMetaStore } from '@/modules/analysis';
-import { useAnalysisUseCase } from '@/modules/analysis/ui/composables/useAnalysisUseCase';
 import { usePlayerStyleChart } from '@/modules/analysis/ui/composables/usePlayerStyleChart';
 import { useCharacterStore, useCharacterUseCase } from '@/modules/character';
 import { usePlayerUseCase } from '@/modules/player';
@@ -29,15 +26,12 @@ import { elementColors } from '@/modules/shared/ui/constants/elementColors';
 
 const logger = createLogger('playerProfile.view');
 
-const TOP_COOCCURRENCE_COUNT = 3;
 const dateFormatter = new Intl.DateTimeFormat('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' });
 
 export function usePlayerProfileView(identity: MaybeRefOrGetter<PlayerIdentity | undefined>) {
     const playerUseCase = usePlayerUseCase();
-    const analysisUseCase = useAnalysisUseCase();
     const characterUseCase = useCharacterUseCase();
     const { characterMap } = storeToRefs(useCharacterStore());
-    const { characterCooccurrenceMatrix } = storeToRefs(useAnalysisMetaStore());
     const { getByKey: getCharacterDisplayName } = useCharacterDisplayName();
 
     const styleChart = usePlayerStyleChart(identity);
@@ -57,7 +51,6 @@ export function usePlayerProfileView(identity: MaybeRefOrGetter<PlayerIdentity |
                 stale = true;
             });
             characterUseCase.loadCharacterMap().catch((e) => logger.warn('character map load failed', e));
-            analysisUseCase.loadCharacterCooccurrenceMatrix().catch((e) => logger.warn('cooccurrence matrix load failed; chips omitted', e));
 
             isLoading.value = true;
             error.value = undefined;
@@ -87,13 +80,7 @@ export function usePlayerProfileView(identity: MaybeRefOrGetter<PlayerIdentity |
         return teamMember ? getTeamMemberName(teamMember) : '玩家紀錄';
     });
 
-    const characterFrequency = computed(() => {
-        const matrix = characterCooccurrenceMatrix.value;
-        return (record.value?.characterFrequency ?? []).map((f) => ({
-            ...f,
-            topCooccurrenceEntries: matrix ? pickTopCooccurrenceEntries(f.characterKey, matrix, TOP_COOCCURRENCE_COUNT) : [],
-        }));
-    });
+    const characterFrequency = computed(() => record.value?.characterFrequency ?? []);
 
     const maxCount = computed(() => record.value?.characterFrequency[0]?.count ?? 0);
     function getBarWidth(count: number): string {

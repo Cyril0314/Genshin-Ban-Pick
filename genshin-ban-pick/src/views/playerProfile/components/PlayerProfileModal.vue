@@ -80,23 +80,6 @@ const profileTo = computed(() => {
                                         <div class="rate-bar">
                                             <div class="rate-fill" :style="{ width: getBarWidth(f.count) }" />
                                         </div>
-                                        <div v-if="f.topCooccurrenceEntries.length > 0" class="synergies">
-                                            <span class="synergies-label">常用隊友</span>
-                                            <ul class="cooccurrence-list">
-                                                <CharacterHoverCard v-for="s in f.topCooccurrenceEntries" :key="s.key" :character-key="s.key">
-                                                    <li class="cooccurrence-chip">
-                                                        <img
-                                                            class="cooccurrence-avatar"
-                                                            :src="getProfileImagePath(s.key)"
-                                                            :alt="getCharacterDisplayName(s.key)"
-                                                        />
-                                                        <span class="cooccurrence-name">{{ getCharacterDisplayName(s.key) }}</span>
-                                                        <span class="cooccurrence-count">×{{ s.count }}</span>
-                                                    </li>
-                                                </CharacterHoverCard>
-                                            </ul>
-                                        </div>
-                                        <div v-else class="cooccurrence-empty">尚無全域共現資料</div>
                                     </div>
                                 </li>
                             </ol>
@@ -156,7 +139,6 @@ const profileTo = computed(() => {
 
 .player-history {
     --size-avatar: calc(var(--base-size) * 3);
-    --size-cooccurrence-avatar: calc(var(--base-size) * 1.5);
 
     display: flex;
     flex-direction: column;
@@ -285,68 +267,9 @@ const profileTo = computed(() => {
     transition: width 0.35s ease;
 }
 
-.synergies {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-    flex-wrap: wrap;
-}
-
-.synergies-label {
-    font-size: var(--font-size-sm);
-    color: var(--md-sys-color-on-surface-variant);
-    font-weight: var(--font-weight-regular);
-    flex-shrink: 0;
-}
-
-.cooccurrence-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-xs);
-    padding: 0;
-    list-style: none;
-}
-
-.cooccurrence-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-xs);
-    padding: var(--space-xs) var(--space-sm);
-    background-color: rgba(0, 0, 0, 0.25);
-    border: 1px solid var(--md-sys-color-outline-variant);
-    border-radius: 999px;
-    color: var(--md-sys-color-on-surface);
-    font-size: var(--font-size-sm);
-}
-
-.cooccurrence-name {
-    font-weight: var(--font-weight-medium);
-}
-
-.cooccurrence-count {
-    color: var(--md-sys-color-on-surface-variant);
-    font-size: var(--font-size-sm);
-}
-
-.cooccurrence-empty {
-    padding-left: calc(var(--size-avatar) + var(--space-sm));
-    color: var(--md-sys-color-on-surface-variant);
-    font-size: var(--font-size-sm);
-    font-style: italic;
-}
-
 .avatar {
     width: var(--size-avatar);
     height: var(--size-avatar);
-    border-radius: 50%;
-    object-fit: cover;
-    background-color: var(--md-sys-color-surface-container);
-    flex-shrink: 0;
-}
-
-.cooccurrence-avatar {
-    width: var(--size-cooccurrence-avatar);
-    height: var(--size-cooccurrence-avatar);
     border-radius: 50%;
     object-fit: cover;
     background-color: var(--md-sys-color-surface-container);

@@ -4,7 +4,6 @@
 // 吃進 props（open / identity）的 ref，自動 fetch record；
 // 元件只負責 template 渲染。
 
-import { pickTopCooccurrenceEntries } from '@shared/contracts/analysis/ICooccurrenceEntry';
 import { getTeamMemberName } from '@shared/contracts/team/TeamMember';
 import { storeToRefs } from 'pinia';
 import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue';
@@ -14,14 +13,11 @@ import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 import type { IPlayerRecord } from '@shared/contracts/player/IPlayerRecord';
 
 import { createLogger } from '@/app/utils/logger';
-import { useAnalysisMetaStore } from '@/modules/analysis';
-import { useAnalysisUseCase } from '@/modules/analysis/ui/composables/useAnalysisUseCase';
 import { useCharacterStore } from '@/modules/character';
 import { usePlayerUseCase } from '@/modules/player';
 import { useCharacterDisplayName } from '@/modules/shared/ui/composables/useCharacterDisplayName';
 import { elementColors } from '@/modules/shared/ui/constants/elementColors';
 
-const TOP_COOCCURRENCE_COUNT = 3;
 const logger = createLogger('playerProfile.modal');
 
 export function usePlayerProfileModal(
@@ -29,9 +25,7 @@ export function usePlayerProfileModal(
     identity: MaybeRefOrGetter<PlayerIdentity | undefined>,
 ) {
     const playerUseCase = usePlayerUseCase();
-    const analysisUseCase = useAnalysisUseCase();
     const { characterMap } = storeToRefs(useCharacterStore());
-    const { characterCooccurrenceMatrix } = storeToRefs(useAnalysisMetaStore());
     const { getByKey: getCharacterDisplayName } = useCharacterDisplayName();
 
     const isLoading = ref(false);
@@ -42,8 +36,6 @@ export function usePlayerProfileModal(
         [() => toValue(open), () => toValue(identity)],
         async ([isOpen, id]) => {
             if (!isOpen || !id) return;
-
-            analysisUseCase.loadCharacterCooccurrenceMatrix().catch((e) => logger.warn('cooccurrence matrix load failed; chips omitted', e));
 
             isLoading.value = true;
             error.value = undefined;
@@ -66,14 +58,7 @@ export function usePlayerProfileModal(
         return teamMember ? getTeamMemberName(teamMember) : '玩家紀錄';
     });
 
-    // player record 只給參與事實；該角色的全域共現由組合視圖用 analysis 快取矩陣 enrich
-    const characterFrequency = computed(() => {
-        const matrix = characterCooccurrenceMatrix.value;
-        return (record.value?.characterFrequency ?? []).map((f) => ({
-            ...f,
-            topCooccurrenceEntries: matrix ? pickTopCooccurrenceEntries(f.characterKey, matrix, TOP_COOCCURRENCE_COUNT) : [],
-        }));
-    });
+    const characterFrequency = computed(() => record.value?.characterFrequency ?? []);
 
     // bar 寬度分母：Top 1 的 count
     const maxCount = computed(() => record.value?.characterFrequency[0]?.count ?? 0);

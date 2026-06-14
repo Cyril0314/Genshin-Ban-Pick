@@ -89,15 +89,6 @@ function openMatchHistory(matchId: number) {
                             <div class="rate-bar">
                                 <div class="rate-fill" :style="{ width: getBarWidth(f.count) }" />
                             </div>
-                            <ul v-if="f.topCooccurrenceEntries.length > 0" class="cooccurrence-list">
-                                <CharacterHoverCard v-for="s in f.topCooccurrenceEntries" :key="s.key" :character-key="s.key">
-                                    <li class="cooccurrence-chip">
-                                        <img class="cooccurrence-avatar" :src="getProfileImagePath(s.key)" :alt="getCharacterDisplayName(s.key)" />
-                                        <span class="cooccurrence-name">{{ getCharacterDisplayName(s.key) }}</span>
-                                        <span class="cooccurrence-count">×{{ s.count }}</span>
-                                    </li>
-                                </CharacterHoverCard>
-                            </ul>
                         </div>
                     </li>
                 </ol>
@@ -144,6 +135,7 @@ function openMatchHistory(matchId: number) {
 .player-profile {
     --size-avatar: calc(var(--base-size) * 3);
     --size-cooccurrence-avatar: calc(var(--base-size) * 1.5);
+    --size-match-avatar: calc(var(--base-size) * 2.5);
 
     display: flex;
     flex-direction: column;
@@ -191,6 +183,11 @@ function openMatchHistory(matchId: number) {
 
 /* 中等寬度：收成 2 欄 */
 @media (max-width: 1200px) {
+    .player-profile {
+        max-height: none;
+        overflow: visible;
+    }
+
     .dashboard {
         grid-template-columns: minmax(320px, 1fr) minmax(0, 1.2fr);
         grid-template-areas:
@@ -250,7 +247,7 @@ function openMatchHistory(matchId: number) {
 
 .radar-hero {
     width: 100%;
-    height: 250px;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -383,42 +380,6 @@ function openMatchHistory(matchId: number) {
     transition: width 0.35s ease;
 }
 
-.cooccurrence-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-xs);
-    padding: 0;
-    list-style: none;
-}
-
-.cooccurrence-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-xs);
-    padding: var(--space-xs) var(--space-sm);
-    background-color: rgba(0, 0, 0, 0.25);
-    border: 1px solid var(--md-sys-color-outline-variant);
-    border-radius: 999px;
-    font-size: var(--font-size-sm);
-}
-
-.cooccurrence-avatar {
-    width: var(--size-cooccurrence-avatar);
-    height: var(--size-cooccurrence-avatar);
-    border-radius: 50%;
-    object-fit: cover;
-    background-color: var(--md-sys-color-surface-container);
-    flex-shrink: 0;
-}
-
-.cooccurrence-name {
-    font-weight: var(--font-weight-medium);
-}
-
-.cooccurrence-count {
-    color: var(--md-sys-color-on-surface-variant);
-}
-
 .teammate-list {
     display: flex;
     flex-direction: column;
@@ -443,7 +404,7 @@ function openMatchHistory(matchId: number) {
 }
 
 .teammate-link {
-    color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-surface);
     text-decoration: none;
     font-weight: var(--font-weight-medium);
 }
@@ -463,7 +424,7 @@ function openMatchHistory(matchId: number) {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
-    gap: var(--space-sm);
+    gap: var(--space-md);
     padding: 0;
     list-style: none;
 }
@@ -493,24 +454,18 @@ function openMatchHistory(matchId: number) {
 
 .match-date {
     font-weight: var(--font-weight-medium);
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-md);
 }
-
-.match-team {
-    color: var(--md-sys-color-on-surface-variant);
-    font-size: var(--font-size-sm);
-}
-
 .match-characters {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-xs);
+    gap: var(--space-md);
     justify-content: flex-end;
 }
 
 .match-avatar {
-    width: var(--size-cooccurrence-avatar);
-    height: var(--size-cooccurrence-avatar);
+    width: var(--size-match-avatar);
+    aspect-ratio: 1;
     border-radius: 50%;
     object-fit: cover;
     background-color: var(--md-sys-color-surface-container);
