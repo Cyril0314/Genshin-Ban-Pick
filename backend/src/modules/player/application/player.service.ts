@@ -2,12 +2,14 @@
 
 import { stringifyPlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 
+import { computeSignatureCharacter } from '../domain/computeSignatureCharacter';
+
 import type { IMatchRepository } from '../../match/domain/IMatchRepository';
 import type { IPlayerMatchReadModel } from '../../match/domain/IPlayerMatchReadModel';
 import type UserService from '../../user/application/user.service';
 import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
+import type { IPlayerCharacterUsage } from '@shared/contracts/player/IPlayerCharacterUsage';
 import type { IPlayerMatchSummary } from '@shared/contracts/player/IPlayerMatchSummary';
-import type { IPlayerCharacterFrequency, IPlayerRecord } from '@shared/contracts/player/IPlayerRecord';
 import type { IPlayerSummary } from '@shared/contracts/player/IPlayerSummary';
 import type { IPlayerTeammate } from '@shared/contracts/player/IPlayerTeammate';
 import type { TeamMember } from '@shared/contracts/team/TeamMember';
@@ -27,11 +29,11 @@ export default class PlayerService {
 
         // 每位玩家各角色的被選次數（key → characterKey → count）
         const characterCountsByKey = new Map<string, Map<string, number>>();
-        for (const row of lineupSlots) {
-            const key = stringifyPlayerIdentity(row.teamMember);
+        for (const lineupSlot of lineupSlots) {
+            const key = stringifyPlayerIdentity(lineupSlot.teamMember);
             let counts = characterCountsByKey.get(key);
             if (!counts) characterCountsByKey.set(key, (counts = new Map()));
-            counts.set(row.characterKey, (counts.get(row.characterKey) ?? 0) + 1);
+            counts.set(lineupSlot.characterKey, (counts.get(lineupSlot.characterKey) ?? 0) + 1);
         }
 
         // team members 去重 → 計參與場次，併入角色統計（去重數 + 本命角色）
@@ -39,50 +41,41 @@ export default class PlayerService {
         for (const teamMember of teamMembers) {
             const key = stringifyPlayerIdentity(teamMember);
             const entry = playerByKey.get(key);
-            if (entry) entry.matchCount += 1;
-            else playerByKey.set(key, { teamMember, matchCount: 1, ...this.summarizeCharacters(characterCountsByKey.get(key)) });
+            if (entry) {
+                entry.matchCount += 1;
+            } else {
+                const characterCounts = characterCountsByKey.get(key);
+                if (characterCounts) {
+                    playerByKey.set(key, {
+                        teamMember,
+                        matchCount: 1,
+                        characterCount: characterCounts.size,
+                        signatureCharacter: computeSignatureCharacter(characterCounts),
+                    });
+                } else {
+                    playerByKey.set(key, { teamMember, matchCount: 1, characterCount: 0 });
+                }
+            }
         }
 
         return [...playerByKey.values()].sort((a, b) => b.matchCount - a.matchCount);
     }
 
-    // 角色使用次數 → 去重角色數 + 本命角色（次數最多者，同票時取先出現者）
-    private summarizeCharacters(counts: Map<string, number> | undefined): Pick<IPlayerSummary, 'characterCount' | 'signatureCharacter'> {
-        if (!counts || counts.size === 0) return { characterCount: 0 };
-
-        let signatureCharacter: string | undefined;
-        let max = 0;
-        for (const [characterKey, count] of counts) {
-            if (count > max) {
-                max = count;
-                signatureCharacter = characterKey;
-            }
-        }
-
-        return { characterCount: counts.size, signatureCharacter };
-    }
-
-    async fetchPlayerRecord(playerIdentity: PlayerIdentity, count = 10): Promise<IPlayerRecord> {
-        const lineupSlots = await this.matchRepository.findMatchLineupSlotLights(playerIdentity);
+    async fetchPlayerCharacterUsage(playerIdentity: PlayerIdentity): Promise<IPlayerCharacterUsage> {
         const teamMember = await this.resolveTeamMember(playerIdentity);
-
-        const totalSetups = lineupSlots.length;
+        const lineupSlots = await this.matchRepository.findMatchLineupSlotLights(playerIdentity);
 
         const characterCounts: Record<string, number> = {};
         for (const lineupSlot of lineupSlots) {
             characterCounts[lineupSlot.characterKey] = (characterCounts[lineupSlot.characterKey] ?? 0) + 1;
         }
 
-        const characterFrequency: IPlayerCharacterFrequency[] = Object.entries(characterCounts)
-            .sort((a, b) => b[1] - a[1])
-            // .slice(0, count)
-            .map(([characterKey, count]) => ({
-                characterKey,
-                count,
-                rate: totalSetups > 0 ? count / totalSetups : 0,
-            }));
-
-        return { teamMember, totalSetups, characterFrequency };
+        return {
+            teamMember,
+            characterCounts,
+            setupCount: lineupSlots.length,
+            signatureCharacter: computeSignatureCharacter(Object.entries(characterCounts)),
+        };
     }
 
     async fetchPlayerMatches(playerIdentity: PlayerIdentity): Promise<IPlayerMatchSummary[]> {
@@ -104,7 +97,7 @@ export default class PlayerService {
         return [...byMatch.values()].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
     }
 
-    async fetchPlayerTeammates(playerIdentity: PlayerIdentity, count = 5): Promise<IPlayerTeammate[]> {
+    async fetchPlayerTeammates(playerIdentity: PlayerIdentity): Promise<IPlayerTeammate[]> {
         const teamMembers = await this.matchRepository.findMatchTeamMembers(playerIdentity);
         const selfKey = stringifyPlayerIdentity(playerIdentity);
 
@@ -117,7 +110,7 @@ export default class PlayerService {
             else byKey.set(key, { teamMember, count: 1 });
         }
 
-        return [...byKey.values()].sort((a, b) => b.count - a.count).slice(0, count);
+        return [...byKey.values()].sort((a, b) => b.count - a.count);
     }
 
     private async resolveTeamMember(playerIdentity: PlayerIdentity): Promise<TeamMember> {

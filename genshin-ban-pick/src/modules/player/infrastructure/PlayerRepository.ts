@@ -4,6 +4,7 @@ import { toPlayerIdentityQuery } from '@shared/contracts/identity/dto/IPlayerIde
 
 import type PlayerService from './PlayerService';
 import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
+import type { IPlayerCharacterUsage } from '@shared/contracts/player/IPlayerCharacterUsage';
 import type { IPlayerMatchSummary } from '@shared/contracts/player/IPlayerMatchSummary';
 import type { IPlayerSummary } from '@shared/contracts/player/IPlayerSummary';
 import type { IPlayerTeammate } from '@shared/contracts/player/IPlayerTeammate';
@@ -16,8 +17,8 @@ export default class PlayerRepository {
         return response.data;
     }
 
-    async fetchPlayerRecord(playerIdentity: PlayerIdentity) {
-        const response = await this.playerService.getPlayerRecord(toPlayerIdentityQuery(playerIdentity));
+    async fetchPlayerCharacterUsage(playerIdentity: PlayerIdentity): Promise<IPlayerCharacterUsage> {
+        const response = await this.playerService.getPlayerCharacterUsage(toPlayerIdentityQuery(playerIdentity));
         return response.data;
     }
 

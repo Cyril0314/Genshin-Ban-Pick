@@ -70,7 +70,10 @@
       "Bash(curl -s -w \"\\\\n[status=%{http_code}]\\\\n\" \"http://localhost:3000/api/analyses/player-teammates?type=Member&id=1\")",
       "Bash(curl -s -o /dev/null -w \"[status=%{http_code}]\\\\n\" \"http://localhost:3000/api/analyses/player-records?type=Member&id=1\")",
       "Bash(echo \"frontend type-check exit=$?\")",
-      "Bash(echo \"type-check exit=$?\")"
+      "Bash(echo \"type-check exit=$?\")",
+      "Bash(npx prettier *)",
+      "Bash(git diff *)",
+      "Read(//tmp/**)"
     ]
   }
 }

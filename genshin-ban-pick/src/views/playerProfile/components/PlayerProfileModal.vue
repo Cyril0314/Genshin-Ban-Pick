@@ -7,12 +7,9 @@ import { computed } from 'vue';
 
 import { usePlayerProfileModal } from '../composables/usePlayerProfileModal';
 
-
 import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 
-import CharacterHoverCard from '@/modules/analysis/ui/components/CharacterHoverCard.vue';
-import { getProfileImagePath } from '@/modules/shared/infrastructure/imageRegistry';
-
+import PlayerCharacterFrequencyList from '@/modules/player/ui/components/PlayerCharacterFrequencyList.vue';
 
 const props = defineProps<{
     open: boolean;
@@ -23,7 +20,7 @@ const emit = defineEmits<{
     (e: 'update:open', value: boolean): void;
 }>();
 
-const { isLoading, record, error, title, characterFrequency, getBarWidth, getRowStyle, getCharacterDisplayName } = usePlayerProfileModal(
+const { isLoading, usage, error, title, characterFrequency } = usePlayerProfileModal(
     () => props.open,
     () => props.identity,
 );
@@ -52,37 +49,13 @@ const profileTo = computed(() => {
                 <div class="player-history">
                     <div v-if="isLoading" class="state-message">載入中…</div>
                     <div v-else-if="error" class="state-message is-error">{{ error }}</div>
-                    <div v-else-if="!record || record.totalSetups === 0" class="state-message">尚無紀錄</div>
+                    <div v-else-if="!usage" class="state-message">尚無紀錄</div>
                     <template v-else>
                         <section class="section">
                             <div class="section-header">
-                                <h3 class="section-title">角色使用頻率</h3>
-                                <span class="section-meta">共 {{ record.totalSetups }} 次</span>
+                                <h3 class="section-title">角色使用次數</h3>
                             </div>
-                            <ol class="frequency-list">
-                                <li
-                                    v-for="f in characterFrequency"
-                                    :key="f.characterKey"
-                                    class="frequency-row"
-                                    :style="getRowStyle(f.characterKey)"
-                                >
-                                    <CharacterHoverCard :character-key="f.characterKey">
-                                        <img class="avatar" :src="getProfileImagePath(f.characterKey)" :alt="getCharacterDisplayName(f.characterKey)" />
-                                    </CharacterHoverCard>
-                                    <div class="content">
-                                        <div class="head">
-                                            <span class="name">{{ getCharacterDisplayName(f.characterKey) }}</span>
-                                            <div class="stats">
-                                                <span class="count">{{ f.count }} 次</span>
-                                                <span class="rate">{{ (f.rate * 100).toFixed(0) }}%</span>
-                                            </div>
-                                        </div>
-                                        <div class="rate-bar">
-                                            <div class="rate-fill" :style="{ width: getBarWidth(f.count) }" />
-                                        </div>
-                                    </div>
-                                </li>
-                            </ol>
+                            <PlayerCharacterFrequencyList :frequency="characterFrequency" />
                         </section>
                     </template>
                 </div>
@@ -174,105 +147,5 @@ const profileTo = computed(() => {
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-bold);
     color: var(--md-sys-color-on-surface);
-}
-
-.section-meta {
-    color: var(--md-sys-color-on-surface-variant);
-    font-size: var(--font-size-sm);
-}
-
-.frequency-list {
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    list-style: none;
-}
-
-.frequency-row {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--space-md);
-    padding: var(--space-md) var(--space-sm);
-    border-bottom: 1px solid var(--md-sys-color-outline-variant);
-    color: var(--md-sys-color-on-surface);
-    font-size: var(--font-size-md);
-    background: linear-gradient(to right, color-mix(in srgb, var(--row-accent, transparent) 14%, transparent) 0%, transparent 70%);
-    transition: background-color 0.18s ease;
-}
-
-.frequency-row:last-child {
-    border-bottom: none;
-}
-
-.frequency-row:hover {
-    background:
-        linear-gradient(to right, color-mix(in srgb, var(--row-accent, transparent) 14%, transparent) 0%, transparent 70%),
-        var(--md-sys-color-surface-container-low);
-}
-
-.content {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-sm);
-    flex: 1;
-    min-width: 0;
-}
-
-.head {
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-}
-
-.head .name {
-    flex: 1;
-    font-weight: var(--font-weight-medium);
-    font-size: var(--font-size-md);
-}
-
-.stats {
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-    flex-shrink: 0;
-}
-
-.count {
-    color: var(--md-sys-color-on-surface-variant);
-    min-width: calc(var(--base-size) * 2.5);
-    text-align: right;
-    font-size: var(--font-size-sm);
-}
-
-.rate {
-    font-weight: var(--font-weight-bold);
-    color: var(--md-sys-color-on-surface);
-    min-width: calc(var(--base-size) * 2.5);
-    text-align: right;
-    font-size: var(--font-size-sm);
-}
-
-.rate-bar {
-    width: 100%;
-    height: 3px;
-    background: var(--md-sys-color-outline-variant);
-    border-radius: 999px;
-    overflow: hidden;
-}
-
-.rate-fill {
-    height: 100%;
-    background: var(--row-accent, var(--md-sys-color-primary));
-    border-radius: inherit;
-    transition: width 0.35s ease;
-}
-
-.avatar {
-    width: var(--size-avatar);
-    height: var(--size-avatar);
-    border-radius: 50%;
-    object-fit: cover;
-    background-color: var(--md-sys-color-surface-container);
-    flex-shrink: 0;
 }
 </style>

@@ -14,11 +14,11 @@ export default class PlayerController {
         res.status(200).json(players);
     };
 
-    fetchPlayerRecord = async (req: Request, res: Response) => {
+    fetchPlayerCharacterUsage = async (req: Request, res: Response) => {
         const playerIdentity = fromPlayerIdentityQuery(req.query);
         if (!playerIdentity) throw new InvalidFieldsError();
-        const record = await this.playerService.fetchPlayerRecord(playerIdentity);
-        res.status(200).json(record);
+        const usage = await this.playerService.fetchPlayerCharacterUsage(playerIdentity);
+        res.status(200).json(usage);
     };
 
     fetchPlayerMatches = async (req: Request, res: Response) => {

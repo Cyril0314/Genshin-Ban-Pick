@@ -10,8 +10,8 @@ export default class PlayerUseCase {
         return await this.playerRepository.fetchPlayers();
     }
 
-    async fetchPlayerRecord(playerIdentity: PlayerIdentity) {
-        return await this.playerRepository.fetchPlayerRecord(playerIdentity);
+    async fetchPlayerCharacterUsage(playerIdentity: PlayerIdentity) {
+        return await this.playerRepository.fetchPlayerCharacterUsage(playerIdentity);
     }
 
     async fetchPlayerMatches(playerIdentity: PlayerIdentity) {

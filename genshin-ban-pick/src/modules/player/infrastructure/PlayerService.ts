@@ -10,8 +10,8 @@ export default class PlayerService {
         return this.client.get(`/players`);
     }
 
-    async getPlayerRecord(query: IPlayerIdentityQuery) {
-        return this.client.get(`/players/records`, { params: query });
+    async getPlayerCharacterUsage(query: IPlayerIdentityQuery) {
+        return this.client.get(`/players/character-usage`, { params: query });
     }
 
     async getPlayerMatches(query: IPlayerIdentityQuery) {

@@ -63,8 +63,8 @@ const {
                                 </div>
 
                                 <div class="stats">
-                                    <span class="stat">{{ player.matchCount }} 場</span>
-                                    <span class="stat">{{ player.characterCount }} 名角色</span>
+                                    <span class="stat">{{ player.matchCount }} 遊玩場次</span>
+                                    <span class="stat">{{ player.characterCount }} 使用角色</span>
                                 </div>
                             </div>
                         </a>
