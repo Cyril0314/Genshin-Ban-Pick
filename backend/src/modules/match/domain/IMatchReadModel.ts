@@ -15,4 +15,6 @@ export interface IMatchReadModel {
     findMatchTeamMemberPlacements(): Promise<IMatchTeamMemberPlacement[]>;
 
     findMatchLineupSlotsWithCharacter(playerIdentity?: PlayerIdentity): Promise<IMatchLineupSlotWithCharacter[]>;
+
+    findMatchLineupSlotCharacterCounts(playerIdentity?: PlayerIdentity): Promise<Record<string, number>>;
 }

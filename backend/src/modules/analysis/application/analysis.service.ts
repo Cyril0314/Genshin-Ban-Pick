@@ -3,7 +3,6 @@
 import { createLogger } from '../../../utils/logger';
 import { buildCooccurrenceGroups } from '../domain/buildCooccurrenceGroups';
 import { computeAnalysisOverview } from '../domain/computeAnalysisOverview';
-import { computeCharacterAttributeDistributions } from '../domain/computeCharacterAttributeDistributions';
 import { computeCharacterPickPriority } from '../domain/computeCharacterPickPriority';
 import { computeCharacterUsage } from '../domain/computeCharacterUsage';
 import { computePlayerStyle } from '../domain/computePlayerStyle';
@@ -15,7 +14,6 @@ import CharacterSimilarityGraphBuilder from '../infra/graph/CharacterSimilarityG
 import type { ICharacterRepository } from '../../character/domain/ICharacterRepository';
 import type { IMatchReadModel } from '../../match/domain/IMatchReadModel';
 import type { IMatchRepository } from '../../match/domain/IMatchRepository';
-import type { ICharacterAttributeDistributions } from '@shared/contracts/analysis/character/ICharacterAttributeDistributions';
 import type { ICharacterGraphLink } from '@shared/contracts/analysis/character/ICharacterGraphLink';
 import type { CharacterCooccurrenceMatrix } from '@shared/contracts/analysis/CharacterCooccurrenceMatrix';
 import type { IMatchOverview } from '@shared/contracts/analysis/IMatchOverview';
@@ -59,6 +57,10 @@ export default class AnalysisService {
         ]);
 
         return computeCharacterUsage(matches, matcheMoves, lineupSlotPlacements);
+    }
+
+    async fetchCharacterUsageCounts(): Promise<Record<string, number>> {
+        return this.matchReadModel.findMatchLineupSlotCharacterCounts();
     }
 
     async fetchCharacterUsagePickPriority(): Promise<ICharacterPickPriority[]> {
@@ -116,10 +118,5 @@ export default class AnalysisService {
         ]);
 
         return computePlayerStyle(playerSlots, globalSlots);
-    }
-
-    async fetchCharacterAttributeDistributions(playerIdentity?: PlayerIdentity): Promise<ICharacterAttributeDistributions> {
-        const slots = await this.matchReadModel.findMatchLineupSlotsWithCharacter(playerIdentity);
-        return computeCharacterAttributeDistributions(slots);
     }
 }

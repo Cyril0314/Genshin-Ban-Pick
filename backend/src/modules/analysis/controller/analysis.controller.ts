@@ -23,6 +23,11 @@ export default class AnalysisController {
         const summary = await this.analysisService.fetchCharacterUsageSummary(timeWindow);
         res.status(200).json(summary);
     };
+    
+    fetchCharacterUsageCounts = async (req: Request, res: Response) => {
+        const counts = await this.analysisService.fetchCharacterUsageCounts();
+        res.status(200).json(counts);
+    };
 
     fetchCharacterUsagePickPriority = async (req: Request, res: Response) => {
         const pickPriority = await this.analysisService.fetchCharacterUsagePickPriority();
@@ -45,13 +50,5 @@ export default class AnalysisController {
         if (!playerIdentity) throw new InvalidFieldsError();
         const style = await this.analysisService.fetchPlayerStyle(playerIdentity);
         res.status(200).json(style);
-    };
-
-    fetchCharacterAttributeDistributions = async (req: Request, res: Response) => {
-        const playerIdentity = fromPlayerIdentityQuery(req.query);
-        // identity 選填（無 → 全域）；但有帶 type 卻 parse 不出 = malformed，回 400，不可靜默退回全域
-        if (req.query.type !== undefined && !playerIdentity) throw new InvalidFieldsError();
-        const distributions = await this.analysisService.fetchCharacterAttributeDistributions(playerIdentity);
-        res.status(200).json(distributions);
     };
 }

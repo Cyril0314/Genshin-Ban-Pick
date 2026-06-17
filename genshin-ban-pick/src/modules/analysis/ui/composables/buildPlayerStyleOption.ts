@@ -1,9 +1,4 @@
 // src/modules/analysis/ui/composables/buildPlayerStyleOption.ts
-//
-// PlayerStyle echarts option 的單一來源。共用原子（雷達 config/series、屬性
-// pie data）拼出三種輸出：
-//   - buildStyleRadarOption   ：只有雷達、放大置中
-//   - buildAttributeDonutOptions：六個屬性各一張小 donuts
 
 import { sortByEnumOrder } from '@/modules/shared/ui/composables/useCharacterSorter';
 import { elementColors } from '@/modules/shared/ui/constants/elementColors';
@@ -28,15 +23,14 @@ interface IStyleColors {
     primary: string | undefined;
 }
 
-interface IStyleOptionParams extends IStyleColors {
-    profile?: IPlayerStyle;
-    distributions?: ICharacterAttributeDistributions;
-    tooltip: object;
-}
+// ---- 屬性配置（單一來源；donut 與分層大圖共用，後者由 buildLayeredCharacterChartOption import） ----
 
-// ---- 屬性配置（單一來源；dashboard 合併版與頁面 donut 格共用） ----
-
-const ATTRIBUTES: { key: CharacterFilterKey; label: string; pick: (d: ICharacterAttributeDistributions) => Record<string, number>; translator: (key: string) => string }[] = [
+export const ATTRIBUTES: {
+    key: CharacterFilterKey;
+    label: string;
+    pick: (d: ICharacterAttributeDistributions) => Record<string, number>;
+    translator: (key: string) => string;
+}[] = [
     { key: 'element', label: '元素', pick: (d) => d.elementDistribution, translator: elementTranslator },
     { key: 'weapon', label: '武器', pick: (d) => d.weaponDistribution, translator: weaponTranslator },
     { key: 'modelType', label: '體型', pick: (d) => d.modelTypeDistribution, translator: modelTypeTranslator },
@@ -58,7 +52,7 @@ const RADAR_INDICATORS = [
 
 // ---- 原子 ----
 
-function getPieColor<K extends CharacterFilterKey>(key: K, name: EnumOrderValue<K>) {
+export function getPieColor<K extends CharacterFilterKey>(key: K, name: EnumOrderValue<K>) {
     if (key === 'element') {
         const elementName = name as keyof typeof elementColors;
         return elementColors[elementName]?.main ?? '#999999';

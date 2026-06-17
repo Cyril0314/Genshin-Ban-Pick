@@ -66,7 +66,7 @@ export default class AnalysisUseCase {
         return await this.analysisRepository.fetchPlayerStyle(playerIdentity);
     }
 
-    async fetchCharacterAttributeDistributions(playerIdentity?: PlayerIdentity) {
-        return await this.analysisRepository.fetchCharacterAttributeDistributions(playerIdentity);
+    async fetchCharacterUsageCounts() {
+        return await this.analysisRepository.fetchCharacterUsageCounts();
     }
 }

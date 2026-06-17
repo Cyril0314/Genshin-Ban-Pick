@@ -20,8 +20,8 @@ export default class AnalysisService {
         return this.client.get(`/analyses/character-usages/pick-priority`);
     }
 
-    async getCharacterAttributeDistributions(query?: IPlayerIdentityQuery) {
-        return this.client.get(`/analyses/character-attribute/distributions`, { params: query });
+    async getCharacterUsageCounts() {
+        return this.client.get(`/analyses/character-usages/counts`);
     }
 
     async getCharacterCooccurrenceMatrix(payload: { grain: CooccurrenceGrain }) {

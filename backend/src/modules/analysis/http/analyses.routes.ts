@@ -10,14 +10,13 @@ export default function createAnalysesRouter(analysisController: AnalysisControl
     router.get('/match-overview', asyncHandler(analysisController.fetchMatchOverview))
 
     router.get('/character-usages/summary', asyncHandler(analysisController.fetchCharacterUsageSummary));
+    router.get('/character-usages/counts', asyncHandler(analysisController.fetchCharacterUsageCounts));
     router.get('/character-usages/pick-priority', asyncHandler(analysisController.fetchCharacterUsagePickPriority));
 
     router.get('/character-cooccurrence/matrix', asyncHandler(analysisController.fetchCharacterCooccurrenceMatrix));
     router.get('/character-cluster', asyncHandler(analysisController.fetchCharacterCluster));
 
     router.get('/player-styles', asyncHandler(analysisController.fetchPlayerStyle));
-
-    router.get('/character-attribute/distributions', asyncHandler(analysisController.fetchCharacterAttributeDistributions))
 
     return router;
 }

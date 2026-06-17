@@ -27,9 +27,8 @@ export default class AnalysisRepository {
         return response.data;
     }
 
-    async fetchCharacterAttributeDistributions(playerIdentity?: PlayerIdentity) {
-        const query = playerIdentity ? toPlayerIdentityQuery(playerIdentity) : undefined;
-        const response = await this.analysisService.getCharacterAttributeDistributions(query);
+    async fetchCharacterUsageCounts() {
+        const response = await this.analysisService.getCharacterUsageCounts();
         return response.data;
     }
 

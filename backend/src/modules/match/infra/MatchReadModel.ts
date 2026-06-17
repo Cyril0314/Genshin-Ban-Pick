@@ -121,6 +121,17 @@ export default class MatchReadModel implements IMatchReadModel {
         }));
     }
 
+    // playerIdentity 選填：無 → 全域；有 → 過濾到該玩家。
+    async findMatchLineupSlotCharacterCounts(playerIdentity?: PlayerIdentity): Promise<Record<string, number>> {
+        const rows = await this.prisma.matchLineupSlot.groupBy({
+            by: ['characterKey'],
+            where: playerIdentity ? { teamMember: buildMatchTeamMemberWhere(playerIdentity) } : undefined,
+            _count: { _all: true },
+        });
+
+        return this.mapGroupCount(rows, 'characterKey');
+    }
+
     private buildMatchTimeWindowWhere(timeWindow: ITimeWindow): { createdAt: Prisma.DateTimeFilter<never> } | undefined {
         const filter: Prisma.DateTimeFilter = {};
 

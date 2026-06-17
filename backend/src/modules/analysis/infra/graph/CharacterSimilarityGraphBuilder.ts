@@ -5,6 +5,7 @@ import { UndirectedGraph } from 'graphology';
 import SquareSimilarityMatrixBuilder from '../../domain/SquareSimilarityMatrixBuilder';
 
 import type { CharacterCooccurrenceMatrix } from '@shared/contracts/analysis/CharacterCooccurrenceMatrix';
+import type { ICharacter } from '@shared/contracts/character/ICharacter';
 
 export default class CharacterSimilarityGraphBuilder {
     constructor(private squareSimilarityMatrixBuilder: SquareSimilarityMatrixBuilder) {}
@@ -16,7 +17,7 @@ export default class CharacterSimilarityGraphBuilder {
      */
     async build(
         characterCooccurrenceMatrix: CharacterCooccurrenceMatrix,
-        characterMap: Record<string, any>,
+        characterMap: Record<string, ICharacter>,
         pickCounts: Record<string, number>,
         K_NEIGHBORS: number = 10,
         ADAPTIVE_FACTOR: number = 0.6,

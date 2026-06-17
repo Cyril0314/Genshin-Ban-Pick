@@ -4,6 +4,7 @@ import { stringifyPlayerIdentity } from '@shared/contracts/identity/PlayerIdenti
 
 import { computeSignatureCharacter } from '../domain/computeSignatureCharacter';
 
+import type { IMatchReadModel } from '../../match/domain/IMatchReadModel';
 import type { IMatchRepository } from '../../match/domain/IMatchRepository';
 import type { IPlayerMatchReadModel } from '../../match/domain/IPlayerMatchReadModel';
 import type UserService from '../../user/application/user.service';
@@ -17,6 +18,7 @@ import type { TeamMember } from '@shared/contracts/team/TeamMember';
 export default class PlayerService {
     constructor(
         private matchRepository: IMatchRepository,
+        private matchReadModel: IMatchReadModel,
         private playerMatchReadModel: IPlayerMatchReadModel,
         private userService: UserService,
     ) {}
@@ -62,18 +64,17 @@ export default class PlayerService {
     }
 
     async fetchPlayerCharacterUsage(playerIdentity: PlayerIdentity): Promise<IPlayerCharacterUsage> {
-        const teamMember = await this.resolveTeamMember(playerIdentity);
-        const lineupSlots = await this.matchRepository.findMatchLineupSlotLights(playerIdentity);
+        const [teamMember, characterCounts] = await Promise.all([
+            this.resolveTeamMember(playerIdentity),
+            this.matchReadModel.findMatchLineupSlotCharacterCounts(playerIdentity),
+        ]);
 
-        const characterCounts: Record<string, number> = {};
-        for (const lineupSlot of lineupSlots) {
-            characterCounts[lineupSlot.characterKey] = (characterCounts[lineupSlot.characterKey] ?? 0) + 1;
-        }
+        const setupCount = Object.values(characterCounts).reduce((sum, count) => sum + count, 0);
 
         return {
             teamMember,
             characterCounts,
-            setupCount: lineupSlots.length,
+            setupCount,
             signatureCharacter: computeSignatureCharacter(Object.entries(characterCounts)),
         };
     }

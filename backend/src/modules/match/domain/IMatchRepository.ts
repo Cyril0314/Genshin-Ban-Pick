@@ -1,13 +1,13 @@
 // src/modules/match/domain/IMatchRepository.ts
 
-import type { IMatchSnapshot } from './IMatchSnapshot';
-import type { IMatchLineupSlotLight } from '../types/IMatchLineupSlotLight';
-import type { ITimeWindow } from '@shared/contracts/common/ITimeWindow';
 import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
+import type { TeamMember } from '@shared/contracts/team/TeamMember';
+import type { IMatchSnapshot } from './IMatchSnapshot';
+import type { ITimeWindow } from '@shared/contracts/common/ITimeWindow';
 import type { IMatch } from '@shared/contracts/match/IMatch';
 import type { IMatchMove } from '@shared/contracts/match/IMatchMove';
 import type { IMatchTimestamp } from '@shared/contracts/match/IMatchTimestamp';
-import type { TeamMember } from '@shared/contracts/team/TeamMember';
+import type { IMatchLineupSlotLight } from '../types/IMatchLineupSlotLight';
 
 export interface IMatchRepository {
     findAll(): Promise<IMatch[]>;

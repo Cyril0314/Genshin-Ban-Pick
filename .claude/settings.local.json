@@ -73,7 +73,12 @@
       "Bash(echo \"type-check exit=$?\")",
       "Bash(npx prettier *)",
       "Bash(git diff *)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(xargs kill)",
+      "Bash(cp /tmp/tm.cjs ./tm.cjs)",
+      "Bash(node ./tm.cjs)",
+      "Bash(npx vue-tsc *)"
     ]
   }
 }
