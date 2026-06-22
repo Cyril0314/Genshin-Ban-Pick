@@ -72,6 +72,7 @@ function getRowStyle(characterKey: string) {
     overflow-y: auto;
     padding: 0;
     list-style: none;
+    scrollbar-width: none;
 }
 
 .frequency-row {

@@ -51,12 +51,7 @@ const profileTo = computed(() => {
                     <div v-else-if="error" class="state-message is-error">{{ error }}</div>
                     <div v-else-if="!usage" class="state-message">尚無紀錄</div>
                     <template v-else>
-                        <section class="section">
-                            <div class="section-header">
-                                <h3 class="section-title">角色使用次數</h3>
-                            </div>
-                            <PlayerCharacterFrequencyList :frequency="characterFrequency" />
-                        </section>
+                        <PlayerCharacterFrequencyList :frequency="characterFrequency" />
                     </template>
                 </div>
             </div>
@@ -115,6 +110,7 @@ const profileTo = computed(() => {
 
     display: flex;
     flex-direction: column;
+
     /* gap: var(--space-md); */
 }
 

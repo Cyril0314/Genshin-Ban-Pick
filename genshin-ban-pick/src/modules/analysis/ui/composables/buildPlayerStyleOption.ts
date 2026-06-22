@@ -36,7 +36,7 @@ export const ATTRIBUTES: {
     { key: 'modelType', label: '體型', pick: (d) => d.modelTypeDistribution, translator: modelTypeTranslator },
     { key: 'role', label: '定位', pick: (d) => d.roleDistribution, translator: roleTranslator },
     { key: 'region', label: '地區', pick: (d) => d.regionDistribution, translator: regionTranslator },
-    { key: 'rarity', label: '稀有', pick: (d) => d.rarityDistribution, translator: rarityTranslator },
+    { key: 'rarity', label: '星級', pick: (d) => d.rarityDistribution, translator: rarityTranslator },
 ];
 
 const RADAR_INDICATORS = [
@@ -47,7 +47,7 @@ const RADAR_INDICATORS = [
     { name: '武器多樣性', max: 100 },
     { name: '體型多樣性', max: 100 },
     { name: '地區多樣性', max: 100 },
-    { name: '稀有度多樣性', max: 100 },
+    { name: '星級多樣性', max: 100 },
 ];
 
 // ---- 原子 ----

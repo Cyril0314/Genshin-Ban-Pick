@@ -95,7 +95,7 @@ function openMatchHistory(matchId: number) {
                     <div class="radar-chart">
                         <VChart v-if="radarOption" :option="radarOption" :update-options="{ notMerge: true }" autoresize />
                         <div v-else-if="styleLoading" class="state-message">分析中…</div>
-                        <div v-else class="state-message">尚無足夠數據進行分析</div>
+                        <div v-else class="state-message">尚無足夠資料進行分析</div>
                     </div>
                 </section>
 
@@ -370,6 +370,7 @@ function openMatchHistory(matchId: number) {
     min-height: 0;
     /* 空間不足時（窄螢幕 / auto 高）才內捲，由 donut-chart 的 min-height 保底 */
     overflow-y: auto;
+    scrollbar-width: none;
 }
 
 .donut-cell {
@@ -453,6 +454,7 @@ function openMatchHistory(matchId: number) {
     gap: var(--space-md);
     padding: 0;
     list-style: none;
+    scrollbar-width: none;
 }
 
 .match-row {

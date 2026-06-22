@@ -18,7 +18,7 @@ const emit = defineEmits<{}>();
 
 const tabs = [
     { name: '總覽', component: MatchOverviewChart },
-    { name: '角色統計數據', component: CharacterAttributeDistributionsChart },
+    { name: '角色統計資料', component: CharacterAttributeDistributionsChart },
     { name: '角色使用權重', component: CharacterUsagesChart },
     { name: '搶角優先級', component: CharacterPickPriorityChart },
     { name: '角色定位象限', component: CharacterScatterChart },

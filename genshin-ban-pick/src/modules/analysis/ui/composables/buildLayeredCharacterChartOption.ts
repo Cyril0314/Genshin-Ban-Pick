@@ -46,7 +46,7 @@ function sortCategories<K extends CharacterFilterKey>(key: K, categories: string
 }
 
 // 依「已選屬性順序」遞迴分桶，最外圈固定是角色。每條分支的色相由最內層（depth 0）的分類決定
-// （元素/稀有用專屬色，其餘取 echarts 預設盤），往外每層提亮一階 → 同色系、由深到淺、內外對得到。
+// （元素/星級用專屬色，其餘取 echarts 預設盤），往外每層提亮一階 → 同色系、由深到淺、內外對得到。
 function buildLayerNodes(
     items: ICharacterUsageItem[],
     layerKeys: CharacterFilterKey[],

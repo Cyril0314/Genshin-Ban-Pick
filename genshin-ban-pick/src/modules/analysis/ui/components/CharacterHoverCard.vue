@@ -1,7 +1,7 @@
 <!-- src/modules/analysis/ui/components/CharacterHoverCard.vue -->
 
 <script setup lang="ts">
-import { getProfileImagePath } from '@/modules/shared/infrastructure/imageRegistry';
+import { getElementImagePath, getProfileImagePath, getWeaponImagePath } from '@/modules/shared/infrastructure/imageRegistry';
 import {
     elementTranslator,
     weaponTranslator,
@@ -57,10 +57,12 @@ function handleShowChange(show: boolean) {
             <dl class="attributes">
                 <div class="attribute">
                     <dt>屬性</dt>
+                    <span class="icon is-element" :style="{ '--icon-url': `url(${getElementImagePath(character.element)})` }" />
                     <dd class="is-element">{{ elementTranslator(character.element) }}</dd>
                 </div>
                 <div class="attribute">
                     <dt>武器</dt>
+                    <span class="icon" :style="{ '--icon-url': `url(${getWeaponImagePath(character.weapon)})` }" />
                     <dd>{{ weaponTranslator(character.weapon) }}</dd>
                 </div>
                 <div class="attribute">
@@ -133,7 +135,7 @@ function handleShowChange(show: boolean) {
                 <span v-else class="hint">無資料</span>
             </section>
 
-            <p class="footnote">數據為全站歷史統計，非當前對局</p>
+            <p class="footnote">資料為全站歷史統計，非當前對局</p>
         </div>
     </n-popover>
 </template>
@@ -193,8 +195,20 @@ function handleShowChange(show: boolean) {
 
 .attribute {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: var(--space-xs);
+}
+
+.attribute .icon {
+    width: var(--base-size);
+    height: var(--base-size);
+    background-color: currentColor;
+    -webkit-mask: var(--icon-url) center / contain no-repeat;
+    mask: var(--icon-url) center / contain no-repeat;
+}
+
+.attribute .icon.is-element {
+    background-color: var(--element-color);
 }
 
 .attribute dt {

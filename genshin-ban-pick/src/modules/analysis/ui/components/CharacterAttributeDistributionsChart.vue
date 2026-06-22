@@ -34,7 +34,7 @@ const { option, selectedLayers, layerOptions, chartType } = useCharacterAttribut
         <div class="canvas">
             <!-- notMerge:false（merge）讓 universalTransition 有前後連續性，切換才會 morph -->
             <VChart v-if="option" class="viz" :option="option" :update-options="{ notMerge: false }" autoresize />
-            <div v-else class="empty">尚無足夠數據進行分析</div>
+            <div v-else class="empty">尚無足夠資料進行分析</div>
         </div>
     </div>
 </template>

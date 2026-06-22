@@ -806,6 +806,19 @@
         "wish": "Standard Wish"
     },
     {
+        "icon": "Lohen Icon",
+        "name": "Lohen",
+        "rarity": "5 Stars",
+        "element": "Cryo",
+        "weapon": "Polearm",
+        "region": "Mondstadt",
+        "model_type": "Medium Male",
+        "release_at": "June 09, 2026",
+        "version": "Luna VII",
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
+    },
+    {
         "icon": "Lynette Icon",
         "name": "Lynette",
         "rarity": "4 Stars",

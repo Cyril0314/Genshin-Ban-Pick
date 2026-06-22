@@ -78,7 +78,11 @@
       "Bash(xargs kill)",
       "Bash(cp /tmp/tm.cjs ./tm.cjs)",
       "Bash(node ./tm.cjs)",
-      "Bash(npx vue-tsc *)"
+      "Bash(npx vue-tsc *)",
+      "Bash(node scripts/generate-image-manifest.mjs)",
+      "Bash(echo \"=== type-check EXIT: $? \\(clean = current assets fully covered\\) ===\")",
+      "Bash(echo \"type-check EXIT: $?\")",
+      "Bash(sips -g hasAlpha -g pixelWidth -g pixelHeight weapon/Sword.webp)"
     ]
   }
 }

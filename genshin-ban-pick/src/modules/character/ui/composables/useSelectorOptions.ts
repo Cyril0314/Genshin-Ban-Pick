@@ -10,7 +10,10 @@ import {
     wishTranslator,
 } from '@/modules/shared/ui/composables/useCharacterTranslators';
 import { createTranslator } from '@/modules/shared/domain/createTranslator';
-import { sortByEnumOrder} from '@/modules/shared/ui/composables/useCharacterSorter';
+import { sortByEnumOrder } from '@/modules/shared/ui/composables/useCharacterSorter';
+import { getElementImagePath, getWeaponImagePath } from '@/modules/shared/infrastructure/imageRegistry';
+
+import type { Element, Weapon } from '@shared/contracts/character/value-types';
 
 import type { ICharacter } from '@shared/contracts/character/ICharacter.ts';
 import type { CharacterFilterKey } from '@shared/contracts/character/CharacterFilterKey';
@@ -21,6 +24,7 @@ export interface SelectorOption {
     label: string;
     items: string[];
     translateFn: (val: string) => string;
+    iconFn?: (val: string) => string | undefined;
 }
 
 export enum CommonOption {
@@ -32,50 +36,52 @@ export function useSelectorOptions(characterMap: Record<string, ICharacter>): Se
     return [
         {
             key: 'weapon',
-            label: '選擇武器',
+            label: '武器',
             items: [...uniqueByKey(characters, 'weapon'), CommonOption.All],
             translateFn: (v: string) => translateWeapon(v),
+            iconFn: (v: string) => getWeaponImagePath(v as Weapon),
         },
         {
             key: 'element',
-            label: '選擇屬性',
+            label: '屬性',
             items: [...uniqueByKey(characters, 'element'), CommonOption.All],
             translateFn: (v: string) => translateElement(v),
+            iconFn: (v: string) => getElementImagePath(v as Element),
         },
         {
             key: 'region',
-            label: '選擇國家',
+            label: '國家',
             items: [...uniqueByKey(characters, 'region'), CommonOption.All],
             translateFn: (v: string) => translateRegion(v),
         },
         {
             key: 'modelType',
-            label: '選擇體型',
+            label: '體型',
             items: [...uniqueByKey(characters, 'modelType'), CommonOption.All],
             translateFn: (v: string) => translateModelType(v),
         },
         {
             key: 'role',
-            label: '選擇功能',
+            label: '功能',
             items: [...uniqueByKey(characters, 'role'), CommonOption.All],
             translateFn: (v: string) => translateRole(v),
         },
         {
             key: 'wish',
-            label: '選擇祈願',
+            label: '祈願',
             items: [...uniqueByKey(characters, 'wish'), CommonOption.All],
             translateFn: (v: string) => translateWish(v),
         },
         {
             key: 'rarity',
-            label: '選擇星級',
+            label: '星級',
             items: [...uniqueByKey(characters, 'rarity'), CommonOption.All],
             translateFn: (v: string) => translateRarity(v),
         },
     ];
 }
 
-function uniqueByKey<K extends CharacterFilterKey>(data: ICharacter[], key: K,): EnumOrderValue<K>[] {
+function uniqueByKey<K extends CharacterFilterKey>(data: ICharacter[], key: K): EnumOrderValue<K>[] {
     const rawValues = Array.from(new Set(data.map((c) => c[key]))) as EnumOrderValue<K>[];
     return sortByEnumOrder(key, rawValues);
 }
@@ -109,5 +115,5 @@ function translateWish(wish: string) {
 }
 
 const commonOptionTranslator = createTranslator({
-    [CommonOption.All]: '所有',
+    [CommonOption.All]: '全選',
 });

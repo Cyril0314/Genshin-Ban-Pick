@@ -71,9 +71,9 @@ function handleRandomButtonClick(zoneType: ZoneType) {
 
 <template>
     <div class="character-selector">
-        <div class="row" v-for="selectorOption in selectorOptions" :key="selectorOption.key">
+        <div class="grid" v-for="selectorOption in selectorOptions" :key="selectorOption.key">
             <v-select :options="selectorOption.items" :reduce="(val: string) => val"
-                :multiple="true" :placeholder="`${selectorOption.label}`"
+                :multiple="true" :placeholder="`篩選${selectorOption.label}`"
                 :get-option-label="(val: string) => selectorOption.translateFn(val)"
                 v-model="characterFilter[selectorOption.key]">
                 <template #open-indicator="{ attributes }">
@@ -95,11 +95,11 @@ function handleRandomButtonClick(zoneType: ZoneType) {
         </div>
         <div class="toolbar">
             <button class="action-button action-button--utility"
-                @click="handleRandomButtonClick(ZoneType.Utility)">Utility</button>
+                @click="handleRandomButtonClick(ZoneType.Utility)">自由</button>
             <button class="action-button action-button--ban"
-                @click="handleRandomButtonClick(ZoneType.Ban)">Ban</button>
+                @click="handleRandomButtonClick(ZoneType.Ban)">禁用</button>
             <button class="action-button action-button--pick"
-                @click="handleRandomButtonClick(ZoneType.Pick)">Pick</button>
+                @click="handleRandomButtonClick(ZoneType.Pick)">選取</button>
         </div>
     </div>
 </template>
@@ -116,7 +116,7 @@ function handleRandomButtonClick(zoneType: ZoneType) {
     background-color: var(--md-sys-color-surface-container-low);
 }
 
-.row {
+.grid {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -126,7 +126,7 @@ function handleRandomButtonClick(zoneType: ZoneType) {
 /* vue-select 3rd-party component, target via its own class */
 .v-select {
     flex-grow: 1;
-    --vs-font-size: var(--font-size-sm);
+    --vs-font-size: var(--font-size-md);
     --vs-font-family: var(--font-family-tech-ui);
     background-color: var(--md-sys-color-surface-container-high);
     color: var(--md-sys-color-on-surface);
@@ -134,19 +134,16 @@ function handleRandomButtonClick(zoneType: ZoneType) {
     cursor: pointer;
     transition: all 0.2s ease;
     gap: var(--space-xs);
+    min-height: calc(var(--base-size) * 2.05);
 }
 
 .v-select:hover {
-    background-color: color-mix(in srgb,
-        var(--md-sys-color-surface-container-high),
-        white 6%);
-    transform: scale(1.02);
+    background-color: var(--md-sys-color-surface-container-highest);
 }
 
 :deep(.vs__search) {
     font-weight: var(--font-weight-regular);
     text-align: start;
-    padding: 0px;
 }
 
 :deep(.vs__dropdown-toggle) {
@@ -174,6 +171,7 @@ function handleRandomButtonClick(zoneType: ZoneType) {
 
 :deep(.vs__dropdown-menu) {
     background-color: var(--md-sys-color-surface-container);
+    max-height: calc(var(--base-size) * 8);
 }
 
 :deep(.vs__dropdown-option) {
@@ -194,7 +192,7 @@ function handleRandomButtonClick(zoneType: ZoneType) {
     cursor: pointer;
     color: var(--md-sys-color-on-surface);
     font-size: var(--font-size-sm);
-    font-family: var(--font-family-tech-ui);
+    font-family: var(--font-family-sans);
     font-weight: var(--font-weight-regular);
 }
 
@@ -212,22 +210,22 @@ function handleRandomButtonClick(zoneType: ZoneType) {
     justify-content: center;
     cursor: pointer;
     padding: calc(var(--space-xs) / 2) 0;
-    color: var(--md-sys-color-on-surface);
-    background-color: var(--md-sys-color-surface-container-highest);
+    color: var(--md-sys-color-on-tertiary);
+    background-color: var(--md-sys-color-tertiary);
     border-radius: var(--radius-xs);
 }
 
 .selected-option-label {
     cursor: pointer;
     padding: 0 0 0 var(--space-sm);
-    font-size: var(--font-size-sm);
-    font-family: var(--font-family-tech-ui);
-    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    font-family: var(--font-family-sans);
 }
 
 .remove-btn {
     cursor: pointer;
-    color: var(--md-sys-color-on-surface);
+    color: var(--md-sys-color-on-tertiary);
     padding: 0 var(--space-xs);
     transition: color 0.2s ease;
 }
@@ -253,8 +251,8 @@ function handleRandomButtonClick(zoneType: ZoneType) {
     justify-content: center;
     flex: 1;
     z-index: 50;
-    background-color: var(--md-sys-color-tertiary-container);
-    color: var(--md-sys-color-on-tertiary-container);
+    background-color: var(--md-sys-color-tertiary);
+    color: var(--md-sys-color-on-tertiary);
     border: none;
     border-radius: var(--radius-sm);
     padding: var(--space-sm);
@@ -263,9 +261,9 @@ function handleRandomButtonClick(zoneType: ZoneType) {
         background-color 0.3s ease,
         transform 0.2s ease;
     text-align: center;
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-regular);
-    font-family: var(--font-family-tech-ui);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    font-family: var(--font-family-sans);
 }
 
 .action-button:hover {
