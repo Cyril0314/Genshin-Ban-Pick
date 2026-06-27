@@ -3,23 +3,23 @@
 import { aggregateMoveWeightContext } from './aggregateMoveWeightContext';
 import { calculateTacticalWeight } from './calculateTacticalWeight';
 
-import type { IMatchTimeMinimal } from '@shared/contracts/analysis/IMatchTimeMinimal';
-import type { IMatchMoveWeightCalcCore } from '../types/IMatchMoveWeightCalcCore';
+import type { IMatchTimestamp } from '@shared/contracts/match/IMatchTimestamp';
+import type { IMatchMove } from '@shared/contracts/match/IMatchMove';
 import type { IWeightContext } from '@shared/contracts/analysis/IWeightContext';
 import type { ICharacterUsage } from '@shared/contracts/analysis/ICharacterUsage';
 
 export function computeCharacterUsage(
-    matches: IMatchTimeMinimal[],
-    matchMoves: IMatchMoveWeightCalcCore[],
-    matchLineupSlots: { matchId: number; characterKey: string }[],
+    matches: IMatchTimestamp[],
+    matchMoves: IMatchMove[],
+    lineupSlotPlacements: { matchId: number; characterKey: string }[],
 ): ICharacterUsage[] {
     const matchCount = matches.length;
 
-    const usedSet = new Set(matchLineupSlots.map((u) => `${u.matchId}:${u.characterKey}`));
+    const usedSet = new Set(lineupSlotPlacements.map((lineupSlotPlacement) => `${lineupSlotPlacement.matchId}:${lineupSlotPlacement.characterKey}`));
 
     const usageCountByMatch = new Map<string, number>();
-    for (const u of matchLineupSlots) {
-        const key = `${u.matchId}:${u.characterKey}`;
+    for (const lineupSlotPlacement of lineupSlotPlacements) {
+        const key = `${lineupSlotPlacement.matchId}:${lineupSlotPlacement.characterKey}`;
         usageCountByMatch.set(key, (usageCountByMatch.get(key) ?? 0) + 1);
     }
 
@@ -32,7 +32,7 @@ export function computeCharacterUsage(
         const wasUsed = usedSet.has(`${matchId}:${key}`);
         const usedBoth = (usageCountByMatch.get(`${matchId}:${key}`) ?? 0) >= 2;
 
-        releaseMap.set(key, matchMove.characterReleaseAt ?? undefined);
+        releaseMap.set(key, matchMove.character?.releaseAt ?? undefined);
 
         const ctx = aggregateMoveWeightContext({
             type: matchMove.type,

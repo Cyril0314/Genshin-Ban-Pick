@@ -8,7 +8,7 @@ export default class GenshinVersionService {
     constructor(private genshinVersionRepository: IGenshinVersionRepository) {}
 
     async fetchGenshinVersionPeriods() {
-        const periods = await this.genshinVersionRepository.findAllGenshinVersionPeriods();
+        const periods = await this.genshinVersionRepository.findAll();
         if (!periods || periods.length === 0) {
             throw new DataNotFoundError();
         }

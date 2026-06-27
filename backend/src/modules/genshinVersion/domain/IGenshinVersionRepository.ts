@@ -3,5 +3,5 @@
 import type { IGenshinVersionPeriod } from "@shared/contracts/genshinVersion/IGenshinVersionPeriod";
 
 export interface IGenshinVersionRepository {
-    findAllGenshinVersionPeriods(): Promise<IGenshinVersionPeriod[]>;
+    findAll(): Promise<IGenshinVersionPeriod[]>;
 }

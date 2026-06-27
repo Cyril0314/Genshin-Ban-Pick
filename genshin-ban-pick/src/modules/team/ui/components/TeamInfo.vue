@@ -4,16 +4,16 @@ import { computed, ref } from 'vue';
 import { X } from '@lucide/vue';
 
 import { createLogger } from '@/app/utils/logger';
-import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
+import { getTeamTheme } from '@/modules/shared/ui/composables/getTeamTheme';
 import { DragTypes } from '@/app/constants/customMIMETypes';
-import { usePlayerHistory } from '@/modules/shared/ui/composables/usePlayerHistory';
+import { usePlayerProfileController } from '@/modules/shared/ui/context/playerProfileContext';
 import { parsePlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 import { getTeamMemberName } from '@shared/contracts/team/TeamMember';
 import type { Identity } from '@shared/contracts/identity/Identity';
 import type { TeamMember } from '@shared/contracts/team/TeamMember';
 
 const logger = createLogger('team.ui.info');
-const playerHistory = usePlayerHistory();
+const playerProfile = usePlayerProfileController();
 
 const props = defineProps<{
     side: 'left' | 'right';
@@ -33,7 +33,7 @@ const emit = defineEmits<{
 
 const numberOfReservedSlot = 1
 const inputValue = ref('');
-const { themeVars } = useTeamTheme(props.teamInfo.slot);
+const { themeVars } = getTeamTheme(props.teamInfo.slot);
 
 const totalSlots = computed(() => 
   Array.from({ length: props.numberOfSetupCharacter + numberOfReservedSlot })
@@ -85,7 +85,7 @@ function handleDropEvent( memberSlot: number, event: DragEvent) {
 function handleMemberNameClick(memberSlot: number) {
     const m = props.teamInfo.members[memberSlot];
     if (!m) return;
-    playerHistory.open(m);
+    playerProfile.open(m);
 }
 
 </script>

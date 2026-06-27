@@ -1,1 +1,1 @@
-export type SynergyMode = 'match' | 'team' | 'setup';
+export type CooccurrenceGrain = 'match' | 'team' | 'setup';

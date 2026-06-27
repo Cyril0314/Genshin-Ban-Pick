@@ -3,8 +3,8 @@ import { UserExistsError, UserNotFoundError } from '../../../errors/AppError';
 
 import type { IMemberRepository } from '../domain/IMemberRepository';
 import type { IGuestRepository } from '../domain/IGuestRepository';
-import type { IMemberData } from '../types/IMemberData';
-import type { IGuestData } from '../types/IGuestData';
+import type { IMember } from '../types/IMember';
+import type { IGuest } from '../types/IGuest';
 import type { User } from '@shared/contracts/user/User';
 import type { Identity } from '@shared/contracts/identity/Identity';
 
@@ -16,7 +16,7 @@ export default class UserService {
         private guestRepository: IGuestRepository,
     ) {}
 
-    async createMember(account: string, passwordHash: string, nickname: string): Promise<IMemberData> {
+    async createMember(account: string, passwordHash: string, nickname: string): Promise<IMember> {
         const exists = await this.memberRepository.existsByAccount(account);
         if (exists) {
             logger.warn(`create member failed: account exists account=${account}`);
@@ -27,25 +27,25 @@ export default class UserService {
         return member;
     }
 
-    async createGuest(nickname: string): Promise<IGuestData> {
+    async createGuest(nickname: string): Promise<IGuest> {
         const guest = await this.guestRepository.create(nickname);
         logger.debug(`create guest ok id=${guest.id}`);
         return guest;
     }
 
-    async fetchMemberByAccount(account: string): Promise<IMemberData> {
+    async fetchMemberByAccount(account: string): Promise<IMember> {
         const member = await this.memberRepository.findByAccount(account);
         if (!member) throw new UserNotFoundError();
         return member;
     }
 
-    async fetchMemberById(id: number): Promise<IMemberData> {
+    async fetchMemberById(id: number): Promise<IMember> {
         const member = await this.memberRepository.findById(id);
         if (!member) throw new UserNotFoundError();
         return member;
     }
 
-    async fetchGuestById(id: number): Promise<IGuestData> {
+    async fetchGuestById(id: number): Promise<IGuest> {
         const guest = await this.guestRepository.findById(id);
         if (!guest) throw new UserNotFoundError();
         return guest;

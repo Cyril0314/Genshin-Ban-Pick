@@ -4,7 +4,7 @@ import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import { createLogger } from '@/app/utils/logger';
-import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
+import { getTeamTheme } from '@/modules/shared/ui/composables/getTeamTheme';
 import LineupCell from './LineupCell.vue';
 import { useLineupStore } from '../../store/lineupStore';
 import { getTeamMemberName } from '@shared/contracts/team/TeamMember';
@@ -43,7 +43,7 @@ const rowsData = computed(() =>
     })),
 );
 
-const themeVars = computed(() => useTeamTheme(props.teamSlot).themeVars.value);
+const themeVars = computed(() => getTeamTheme(props.teamSlot).themeVars);
 
 const logger = createLogger('lineup.ui.board');
 const imageId = (cellId: number) => lineupImageMap.value[cellId];

@@ -1,11 +1,12 @@
 // src/router/index.ts
 import { createRouter, createWebHistory } from 'vue-router';
 
-import BanPickView from '@/modules/banPick/ui/views/BanPickView.vue';
+import BanPickView from '@/views/banPick/BanPickView.vue';
 import LoginView from '@/modules/auth/ui/views/LoginView.vue';
 import RegisterView from '@/modules/auth/ui/views/RegisterView.vue';
 import RoomSettingView from '@/modules/room/ui/views/RoomSettingView.vue';
 import RoomListView from '@/modules/room/ui/views/RoomListView.vue';
+import PlayerProfileView from '@/views/playerProfile/PlayerProfileView.vue';
 
 import { useAuthStore } from '@/modules/auth';
 
@@ -40,6 +41,12 @@ const router = createRouter({
             path: '/ban-pick',
             name: 'BanPick',
             component: BanPickView,
+            meta: { requiresAuth: true },
+        },
+        {
+            path: '/player-profile',
+            name: 'PlayerProfile',
+            component: PlayerProfileView,
             meta: { requiresAuth: true },
         },
     ],

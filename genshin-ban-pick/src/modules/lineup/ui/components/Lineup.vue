@@ -7,7 +7,7 @@ import { storeToRefs } from 'pinia';
 import { createLogger } from '@/app/utils/logger';
 import LineupBoard from './LineupBoard.vue'
 import LineupPool from './LineupPool.vue'
-import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
+import { getTeamTheme } from '@/modules/shared/ui/composables/getTeamTheme';
 import { useTeamInfoStore } from '@/modules/team';
 import { useLineupSync } from '../../sync/useLineupSync';
 
@@ -46,7 +46,7 @@ function handleImageRestore({ teamSlot, cellId }: { teamSlot: number, cellId: nu
     <div class="tabs">
       <button v-for="teamInfo in teamInfoPair" :key="teamInfo.slot" class="tab"
         :class="{ 'is-active': currentTeamSlot === teamInfo.slot }"
-        :style="useTeamTheme(teamInfo.slot).themeVars.value" @click="currentTeamSlot = teamInfo.slot">
+        :style="getTeamTheme(teamInfo.slot).themeVars" @click="currentTeamSlot = teamInfo.slot">
         {{ teamInfo.name }}
       </button>
     </div>

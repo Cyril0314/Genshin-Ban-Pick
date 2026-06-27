@@ -1,7 +1,7 @@
 <!-- src/modules/analysis/ui/components/CharacterHoverCard.vue -->
 
 <script setup lang="ts">
-import { getProfileImagePath } from '@/modules/shared/infrastructure/imageRegistry';
+import { getElementImagePath, getProfileImagePath, getWeaponImagePath } from '@/modules/shared/infrastructure/imageRegistry';
 import {
     elementTranslator,
     weaponTranslator,
@@ -24,8 +24,8 @@ const {
     usage,
     totalAppearances,
     pickPriorityText,
-    topSynergies,
-    isInitialized,
+    topCooccurrenceEntries,
+    isReady,
 } = useCharacterHoverCard(() => props.characterKey);
 
 function handleShowChange(show: boolean) {
@@ -57,10 +57,12 @@ function handleShowChange(show: boolean) {
             <dl class="attributes">
                 <div class="attribute">
                     <dt>屬性</dt>
+                    <span class="icon is-element" :style="{ '--icon-url': `url(${getElementImagePath(character.element)})` }" />
                     <dd class="is-element">{{ elementTranslator(character.element) }}</dd>
                 </div>
                 <div class="attribute">
                     <dt>武器</dt>
+                    <span class="icon" :style="{ '--icon-url': `url(${getWeaponImagePath(character.weapon)})` }" />
                     <dd>{{ weaponTranslator(character.weapon) }}</dd>
                 </div>
                 <div class="attribute">
@@ -118,22 +120,22 @@ function handleShowChange(show: boolean) {
                     </dl>
                 </div>
             </div>
-            <span v-else-if="!isInitialized" class="hint">載入中…</span>
+            <span v-else-if="!isReady" class="hint">載入中…</span>
             <span v-else class="hint">無資料</span>
 
-            <section class="synergy">
-                <span class="synergy-title">常用隊友</span>
-                <ol v-if="topSynergies.length" class="synergy-list">
-                    <li v-for="entry in topSynergies" :key="entry.key" class="synergy-item">
-                        <span class="synergy-name">{{ entry.name }}</span>
-                        <span class="synergy-count">{{ entry.count }}</span>
+            <section class="cooccurrence">
+                <span class="cooccurrence-title">常用隊友</span>
+                <ol v-if="topCooccurrenceEntries.length" class="cooccurrence-list">
+                    <li v-for="entry in topCooccurrenceEntries" :key="entry.key" class="cooccurrence-item">
+                        <span class="cooccurrence-name">{{ entry.name }}</span>
+                        <span class="cooccurrence-count">{{ entry.count }}</span>
                     </li>
                 </ol>
-                <span v-else-if="!isInitialized" class="hint">載入中…</span>
+                <span v-else-if="!isReady" class="hint">載入中…</span>
                 <span v-else class="hint">無資料</span>
             </section>
 
-            <p class="footnote">數據為全站歷史統計，非當前對局</p>
+            <p class="footnote">資料為全站歷史統計，非當前對局</p>
         </div>
     </n-popover>
 </template>
@@ -193,8 +195,20 @@ function handleShowChange(show: boolean) {
 
 .attribute {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: var(--space-xs);
+}
+
+.attribute .icon {
+    width: var(--base-size);
+    height: var(--base-size);
+    background-color: currentColor;
+    -webkit-mask: var(--icon-url) center / contain no-repeat;
+    mask: var(--icon-url) center / contain no-repeat;
+}
+
+.attribute .icon.is-element {
+    background-color: var(--element-color);
 }
 
 .attribute dt {
@@ -281,19 +295,19 @@ function handleShowChange(show: boolean) {
     font-weight: var(--font-weight-medium);
 }
 
-.synergy {
+.cooccurrence {
     display: flex;
     flex-direction: column;
     gap: var(--space-xs);
 }
 
-.synergy-title {
+.cooccurrence-title {
     color: var(--element-color);
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-medium);
 }
 
-.synergy-list {
+.cooccurrence-list {
     display: flex;
     flex-direction: column;
     gap: calc(var(--space-xs) / 2);
@@ -301,13 +315,13 @@ function handleShowChange(show: boolean) {
     list-style: none;
 }
 
-.synergy-item {
+.cooccurrence-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-.synergy-count {
+.cooccurrence-count {
     color: var(--md-sys-color-on-surface-variant);
 }
 

@@ -37,3 +37,11 @@ npm run build
 ```sh
 npm run lint
 ```
+
+### Regenerate the image manifest
+
+`src/modules/shared/infrastructure/imageRegistry.manifest.ts` is generated from the files under `src/assets/images/{profile,wish,element,weapon}` and gives `imageRegistry.ts` compile-time coverage checks (a missing element/weapon/character image becomes a type error instead of a silent `undefined`). Run this after adding or removing any of those image assets, then commit the regenerated manifest:
+
+```sh
+npm run gen:images
+```

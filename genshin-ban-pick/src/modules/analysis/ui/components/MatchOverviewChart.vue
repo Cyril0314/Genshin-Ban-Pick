@@ -42,13 +42,11 @@ function onZrClick(event: any) {
     const point = [event.offsetX, event.offsetY];
     if (!chart.containPixel('grid', point)) return;
 
-    const converted = chart.convertFromPixel({ gridIndex: 0 }, point);
-    const timeMs = Array.isArray(converted) ? converted[0] : converted;
+    const timeMs = chart.convertFromPixel({ xAxisIndex: 0 }, event.offsetX);
     const match = findNearestMatch(timeMs);
     if (!match) return;
 
-    const matchPixel = chart.convertToPixel({ gridIndex: 0 }, [match.createdAt, 0.5]);
-    const matchX = Array.isArray(matchPixel) ? matchPixel[0] : matchPixel;
+    const matchX = chart.convertToPixel({ xAxisIndex: 0 }, match.createdAt);
     if (Math.abs(matchX - event.offsetX) <= HIT_TOLERANCE_PX) {
         openMatch(match.id);
     }
@@ -67,65 +65,65 @@ function onZrClick(event: any) {
             <div class="stats-grid">
                 <div class="stat-card">
                     <span class="stat-label">總遊玩局數</span>
-                    <span class="stat-value">{{ overview.volume.matchCount }} <small>次</small></span>
+                    <span class="stat-value">{{ overview.matchCount }} <small>次</small></span>
                 </div>
 
                 <div class="stat-card">
                     <span class="stat-label">總玩家數</span>
-                    <span class="stat-value">{{ overview.volume.players.total }} <small>人</small></span>
+                    <span class="stat-value">{{ overview.players.total }} <small>人</small></span>
                     <div class="stat-breakdowns">
                         <div class="stat-breakdown">
-                            <span title="會員">會員 {{ overview.volume.players.member }}</span>
-                            <span title="訪客">訪客 {{ overview.volume.players.guest }}</span>
-                            <span title="僅名稱">僅名稱 {{ overview.volume.players.onlyName }}</span>
+                            <span title="會員">會員 {{ overview.players.member }}</span>
+                            <span title="訪客">訪客 {{ overview.players.guest }}</span>
+                            <span title="僅名稱">僅名稱 {{ overview.players.onlyName }}</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="stat-card">
                     <span class="stat-label">出場角色數</span>
-                    <span class="stat-value">{{ overview.volume.characters.total }} <small>名</small></span>
+                    <span class="stat-value">{{ overview.characters.total }} <small>名</small></span>
                     <div class="stat-breakdowns">
                         <div class="stat-breakdown">
-                            <span title="5★">5★ {{ overview.volume.characters.byRarity[Rarity.FiveStar] }}</span>
-                            <span title="4★">4★ {{ overview.volume.characters.byRarity[Rarity.FourStar] }}</span>
+                            <span title="5★">5★ {{ overview.characters.byRarity[Rarity.FiveStar] }}</span>
+                            <span title="4★">4★ {{ overview.characters.byRarity[Rarity.FourStar] }}</span>
                         </div>
                         <div class="stat-breakdown">
-                            <span title="風">風 {{ overview.volume.characters.byElement[Element.Anemo] }}</span>
-                            <span title="岩">岩 {{ overview.volume.characters.byElement[Element.Geo] }}</span>
-                            <span title="雷">雷 {{ overview.volume.characters.byElement[Element.Electro] }}</span>
-                            <span title="草">草 {{ overview.volume.characters.byElement[Element.Dendro] }}</span>
-                            <span title="水">水 {{ overview.volume.characters.byElement[Element.Hydro] }}</span>
-                            <span title="火">火 {{ overview.volume.characters.byElement[Element.Pyro] }}</span>
-                            <span title="冰">冰 {{ overview.volume.characters.byElement[Element.Cryo] }}</span>
-                            <span title="無">無 {{ overview.volume.characters.byElement[Element.None] }}</span>
+                            <span title="風">風 {{ overview.characters.byElement[Element.Anemo] }}</span>
+                            <span title="岩">岩 {{ overview.characters.byElement[Element.Geo] }}</span>
+                            <span title="雷">雷 {{ overview.characters.byElement[Element.Electro] }}</span>
+                            <span title="草">草 {{ overview.characters.byElement[Element.Dendro] }}</span>
+                            <span title="水">水 {{ overview.characters.byElement[Element.Hydro] }}</span>
+                            <span title="火">火 {{ overview.characters.byElement[Element.Pyro] }}</span>
+                            <span title="冰">冰 {{ overview.characters.byElement[Element.Cryo] }}</span>
+                            <span title="無">無 {{ overview.characters.byElement[Element.None] }}</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="stat-card">
                     <span class="stat-label">總移動次數</span>
-                    <span class="stat-value">{{ overview.volume.moves.total }} <small>次</small></span>
+                    <span class="stat-value">{{ overview.moves.total }} <small>次</small></span>
                     <div class="stat-breakdowns">
                         <div class="stat-breakdown">
-                            <span title="Ban">Ban {{ overview.volume.moves.byType[MoveType.Ban] }}</span>
-                            <span title="Pick">Pick {{ overview.volume.moves.byType[MoveType.Pick] }}</span>
-                            <span title="Utility">Utility {{ overview.volume.moves.byType[MoveType.Utility] }}</span>
+                            <span title="Ban">Ban {{ overview.moves.byType[MoveType.Ban] }}</span>
+                            <span title="Pick">Pick {{ overview.moves.byType[MoveType.Pick] }}</span>
+                            <span title="Utility">Utility {{ overview.moves.byType[MoveType.Utility] }}</span>
                         </div>
                         <div class="stat-breakdown">
-                            <span title="手動">手動 {{ overview.volume.moves.bySource[MoveSource.Manual] }}</span>
-                            <span title="隨機">隨機 {{ overview.volume.moves.bySource[MoveSource.Random] }}</span>
+                            <span title="手動">手動 {{ overview.moves.bySource[MoveSource.Manual] }}</span>
+                            <span title="隨機">隨機 {{ overview.moves.bySource[MoveSource.Random] }}</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="stat-card">
                     <span class="stat-label">不重複玩家組合數</span>
-                    <span class="stat-value">{{ overview.volume.matchTeamMemberCombinationCount }} <small>組</small></span>
+                    <span class="stat-value">{{ overview.matchTeamMemberCombinationCount }} <small>組</small></span>
                 </div>
                 <div class="stat-card">
                     <span class="stat-label">不重複角色組合數</span>
-                    <span class="stat-value">{{ overview.volume.matchCharacterCombinationCount }} <small>組</small></span>
+                    <span class="stat-value">{{ overview.matchCharacterCombinationCount }} <small>組</small></span>
                 </div>
             </div>
         </div>

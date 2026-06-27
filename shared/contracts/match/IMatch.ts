@@ -7,6 +7,6 @@ export interface IMatch {
     updatedAt: Date;
     flowVersion: number;
 
-    teams?: IMatchTeam[];
-    moves?: IMatchMove[];
+    teams: IMatchTeam[];
+    moves: IMatchMove[];
 }

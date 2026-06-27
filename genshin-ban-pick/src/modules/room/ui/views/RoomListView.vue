@@ -2,7 +2,6 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import router from '@/router';
 
 import { useRoomList } from '../composables/useRoomList';
 
@@ -11,10 +10,6 @@ const { isLoading, errorMessage, rooms, loadRooms } = useRoomList()
 onMounted(async () => {
     loadRooms();
 });
-
-function enterRoom(roomId: string) {
-    router.push({ name: 'BanPick', query: { room: roomId } });
-}
 </script>
 
 <template>
@@ -37,7 +32,7 @@ function enterRoom(roomId: string) {
 
             <!-- 房間列表 -->
             <div v-else class="room-list">
-                <div class="room-card" v-for="(room, roomId) in rooms" :key="roomId" @click="enterRoom(roomId)">
+                <RouterLink class="room-card" v-for="(room, roomId) in rooms" :key="roomId" :to="{ name: 'BanPick', query: { room: roomId } }">
                     <div class="room-header">
                         <h3>{{ roomId }}</h3>
                     </div>
@@ -58,7 +53,7 @@ function enterRoom(roomId: string) {
                             <span>{{ room.roomSetting.numberOfUtility }}</span>
                         </div>
                     </div>
-                </div>
+                </RouterLink>
             </div>
 
             <!-- 重新整理按鈕 -->
@@ -115,6 +110,8 @@ function enterRoom(roomId: string) {
     display: flex;
     flex-direction: column;
     gap: var(--space-md);
+    text-decoration: none;
+    color: inherit;
 }
 .room-card:hover {
     background-color: var(--md-sys-color-surface-container-high);

@@ -41,7 +41,7 @@ const { option } = useCharacterClusterChart()
 
         <footer class="footer">
             <small>
-                本圖透過角色間共現關係（Synergy Matrix）計算特徵向量，
+                本圖透過角色間共現關係（Cooccurrence Matrix）計算特徵向量，
                 經 PCA 降維後以 k-means 聚類劃分角色原型。
             </small>
         </footer>

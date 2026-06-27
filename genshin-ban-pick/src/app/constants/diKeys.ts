@@ -8,6 +8,7 @@ export const DIKeys = {
     GenshinVersionUseCase: Symbol('genshin-version-use-case'),
     CharacterUseCase: Symbol('character-use-case'),
     AnalysisUseCase: Symbol('analysis-use-case'),
+    PlayerUseCase: Symbol('player-use-case'),
     RoomUserUseCase: Symbol('room-user-use-case'),
     BoardUseCase: Symbol('board-use-case'),
     TeamUseCase: Symbol('team-use-case'),

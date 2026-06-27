@@ -8,7 +8,7 @@ import type { IGenshinVersionPeriod } from '@shared/contracts/genshinVersion/IGe
 export default class GenshinVersionRepository implements IGenshinVersionRepository {
     constructor(private prisma: PrismaClient) {}
 
-    async findAllGenshinVersionPeriods(): Promise<IGenshinVersionPeriod[]> {
+    async findAll(): Promise<IGenshinVersionPeriod[]> {
         const versions = await this.prisma.genshinVersion.findMany({
             select: { code: true, startAt: true, endAt: true },
         });

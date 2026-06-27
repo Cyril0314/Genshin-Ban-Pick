@@ -9,11 +9,11 @@ import { useUserStore } from '@/modules/user';
 import { useCurrentTime, formatRelativeTime } from '@/modules/shared/ui/composables/useRelativeTime';
 import { useChatSync } from '../../sync/useChatSync.ts';
 import { useChatStore } from '../../store/chatStore.ts';
-import { usePlayerHistory } from '@/modules/shared/ui/composables/usePlayerHistory';
+import { usePlayerProfileController } from '@/modules/shared/ui/context/playerProfileContext';
 import { isSameIdentity } from '@shared/contracts/identity/Identity';
 import type { IChatMessage } from '@shared/contracts/chat/IChatMessage.ts';
 
-const playerHistory = usePlayerHistory();
+const playerProfile = usePlayerProfileController();
 
 const newMessage = ref('');
 const messagesContainer = ref<HTMLElement | null>(null);
@@ -47,7 +47,7 @@ function handleSend() {
 }
 
 function handleAuthorClick(msg: IChatMessage) {
-    playerHistory.open(msg.identity);
+    playerProfile.open(msg.identity);
 }
 
 function scrollToBottom() {

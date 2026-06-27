@@ -3,12 +3,12 @@
 import { Element } from "@shared/contracts/character/value-types";
 
 export const elementColors = {
-    [Element.Pyro]:   { main: '#FF6A35', light: '#FF9B6E', dark: '#CC4015' },
-    [Element.Hydro]:  { main: '#2FA7FF', light: '#78CCFF', dark: '#0069BF' },
-    [Element.Electro]:{ main: '#AB47BC', light: '#D080D8', dark: '#6A1B9A' },
-    [Element.Cryo]:   { main: '#76E3FF', light: '#B5F2FF', dark: '#35B8E0' },
-    [Element.Anemo]:  { main: '#3DD9A9', light: '#80EAC7', dark: '#149D7A' },
-    [Element.Geo]:    { main: '#D9B145', light: '#F2D574', dark: '#A67C1D' },
-    [Element.Dendro]: { main: '#8DC73F', light: '#B8E67A', dark: '#5F8E1F' },
+    [Element.Pyro]:   { main: '#EF7A35', light: '#F5A97C', dark: '#A24107' },
+    [Element.Hydro]:  { main: '#4CC2F1', light: '#93DAF7', dark: '#0888BA' },
+    [Element.Electro]:{ main: '#AF8CE5', light: '#DACAF3', dark: '#6926D1' },
+    [Element.Cryo]:   { main: '#9FD6E3', light: '#DAEFF4', dark: '#39B2CF' },
+    [Element.Anemo]:  { main: '#74C2A8', light: '#A9D9C9', dark: '#34886C' },
+    [Element.Geo]:    { main: '#FAB632', light: '#FCD17D', dark: '#B27500' },
+    [Element.Dendro]: { main: '#A5C83B', light: '#C0D977', dark: '#5A6F1A' },
     [Element.None]:   { main: '#555555', light: '#999999', dark: '#111111' },
 } as const;

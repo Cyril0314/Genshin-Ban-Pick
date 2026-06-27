@@ -5,7 +5,7 @@ export interface FeatureBlock {
 }
 
 export const FEATURE_BLOCKS: FeatureBlock[] = [
-    { name: 'synergy', prefix: 'synergy:' },
+    { name: 'cooccurrence', prefix: 'cooccurrence:' },
     { name: 'element', prefix: 'element:' },
     // { name: 'weapon', prefix: 'weapon:' },
     // { name: 'region', prefix: 'region:' },

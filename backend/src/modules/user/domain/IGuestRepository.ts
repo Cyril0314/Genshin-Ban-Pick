@@ -1,7 +1,7 @@
-import type { IGuestData } from "../types/IGuestData";
+import type { IGuest } from "../types/IGuest";
 
 export interface IGuestRepository {
-    create(nickname: string): Promise<IGuestData>;
+    create(nickname: string): Promise<IGuest>;
 
-    findById(id: number): Promise<IGuestData | undefined>;
+    findById(id: number): Promise<IGuest | undefined>;
 }

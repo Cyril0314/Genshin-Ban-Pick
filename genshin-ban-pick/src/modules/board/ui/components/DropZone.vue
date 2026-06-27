@@ -7,8 +7,8 @@ import { storeToRefs } from 'pinia';
 import { createLogger } from '@/app/utils/logger';
 import { DragTypes } from '@/app/constants/customMIMETypes';
 import { getWishImagePath } from '@/modules/shared/infrastructure/imageRegistry';
-import { useTeamTheme } from '@/modules/shared/ui/composables/useTeamTheme';
-import { useCharacterAvatarWrapper } from '@/modules/shared/ui/composables/useCharacterAvatarWrapper';
+import { getTeamTheme } from '@/modules/shared/ui/composables/getTeamTheme';
+import { useCharacterHoverWrapper } from '@/modules/shared/ui/context/characterHoverWrapperContext';
 import { useBoardStore } from '../../store/boardStore';
 
 import type { IZone } from '@shared/contracts/board/IZone';
@@ -35,12 +35,12 @@ const logger = createLogger('board.ui.dropZone');
 
 const teamTheme = computed(() => {
     const slot = currentStep.value?.teamSlot ?? undefined;
-    return slot === undefined ? undefined : useTeamTheme(slot);
+    return slot === undefined ? undefined : getTeamTheme(slot);
 });
 
 const highlightColor = computed(() => {
     if (!teamTheme.value) return `var(--md-sys-color-on-surface-rgb)`;
-    return teamTheme.value.themeVars.value['--team-color-rgb'];
+    return teamTheme.value.themeVars['--team-color-rgb'];
 });
 
 const isDragging = ref(false);
@@ -76,7 +76,7 @@ function handleClickEvent(event: MouseEvent) {
 
 const isHighlighted = computed(() => props.zone.id === currentStep.value?.zoneId);
 
-const AvatarWrapper = useCharacterAvatarWrapper();
+const CharacterHoverWrapper = useCharacterHoverWrapper();
 </script>
 
 <template>
@@ -93,7 +93,7 @@ const AvatarWrapper = useCharacterAvatarWrapper();
     >
         <template v-if="imageId">
             <img class="background" :src="getWishImagePath(imageId)" aria-hidden="true" />
-            <component :is="AvatarWrapper" :character-key="imageId" :disabled="isDragging">
+            <component :is="CharacterHoverWrapper" :character-key="imageId" :disabled="isDragging">
                 <img class="image" :src="getWishImagePath(imageId)" />
             </component>
         </template>

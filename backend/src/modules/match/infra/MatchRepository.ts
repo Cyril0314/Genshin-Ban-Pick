@@ -2,19 +2,26 @@
 
 import { Prisma, PrismaClient } from '@prisma/client';
 
-import MatchCreator from '../application/creators/MatchCreator';
-import MatchTeamCreator from '../application/creators/MatchTeamCreator';
-import MatchTeamMemberCreator from '../application/creators/MatchTeamMemberCreator';
-import MatchMoveCreator from '../application/creators/MatchMoveCreator';
-import MatchLineupSlotCreator from '../application/creators/MatchLineupSlotCreator';
+import { buildMatchTeamMemberWhere } from './buildMatchTeamMemberWhere';
+import { mapMatchFromPrisma, mapMoveFromPrisma } from './mapMatchFromPrisma';
 import { DataNotFoundError, DbConnectionError, DbForeignKeyConstraintError, DbUniqueConstraintError, DryRunError } from '../../../errors/AppError';
 import { createLogger } from '../../../utils/logger';
-import { mapMatchFromPrisma } from './mapMatchFromPrisma';
+import MatchCreator from '../application/creators/MatchCreator';
+import MatchLineupSlotCreator from '../application/creators/MatchLineupSlotCreator';
+import MatchMoveCreator from '../application/creators/MatchMoveCreator';
+import MatchTeamCreator from '../application/creators/MatchTeamCreator';
+import MatchTeamMemberCreator from '../application/creators/MatchTeamMemberCreator';
+import { mapPlayerIdentity } from '../domain/mapPlayerIdentity';
 import { mapTeamMember } from '../domain/mapTeamMember';
 
 import type { IMatchRepository } from '../domain/IMatchRepository';
 import type { IMatchSnapshot } from '../domain/IMatchSnapshot';
+import type { IMatchLineupSlotLight } from '../types/IMatchLineupSlotLight';
+import type { ITimeWindow } from '@shared/contracts/common/ITimeWindow';
+import type { PlayerIdentity } from '@shared/contracts/identity/PlayerIdentity';
 import type { IMatch } from '@shared/contracts/match/IMatch';
+import type { IMatchMove } from '@shared/contracts/match/IMatchMove';
+import type { IMatchTimestamp } from '@shared/contracts/match/IMatchTimestamp';
 import type { TeamMember } from '@shared/contracts/team/TeamMember';
 
 const logger = createLogger('match.infra.repository');
@@ -44,15 +51,68 @@ export default class MatchRepository implements IMatchRepository {
         return this.run(snapshot, true);
     }
 
+    async delete(matchId: number) {
+        await this.prisma.match.delete({
+            where: { id: matchId },
+        });
+    }
+
+    async findMatchTeamMembers(playerIdentity?: PlayerIdentity): Promise<TeamMember[]> {
+        const rows = await this.prisma.matchTeamMember.findMany({
+            where: playerIdentity ? { team: { teamMembers: { some: buildMatchTeamMemberWhere(playerIdentity) } } } : undefined,
+            select: {
+                name: true,
+                memberRef: true,
+                guestRef: true,
+                member: { select: { nickname: true } },
+                guest: { select: { nickname: true } },
+            },
+        });
+
+        return rows.map(mapTeamMember);
+    }
+
+    async findMatchTimestamps(timeWindow?: ITimeWindow): Promise<IMatchTimestamp[]> {
+        return this.prisma.match.findMany({
+            where: timeWindow ? this.buildTimeWindowWhere(timeWindow) : undefined,
+            select: { id: true, createdAt: true },
+        });
+    }
+
+    async findMatchMoves(timeWindow?: ITimeWindow): Promise<IMatchMove[]> {
+        const moves = await this.prisma.matchMove.findMany({
+            where: timeWindow ? { match: this.buildTimeWindowWhere(timeWindow) } : undefined,
+            include: { character: true, randomMoveContext: true },
+        });
+        return moves.map(mapMoveFromPrisma);
+    }
+
+    async findMatchLineupSlotLights(playerIdentity?: PlayerIdentity): Promise<IMatchLineupSlotLight[]> {
+        const rows = await this.prisma.matchLineupSlot.findMany({
+            where: playerIdentity ? { teamMember: buildMatchTeamMemberWhere(playerIdentity) } : undefined,
+            select: {
+                characterKey: true,
+                teamMember: { select: { name: true, memberRef: true, guestRef: true } },
+            },
+        });
+
+        return rows.map((row) => ({
+            teamMember: mapPlayerIdentity(row.teamMember),
+            characterKey: row.characterKey,
+        }));
+    }
+
     private async run(snapshot: IMatchSnapshot, dryRun: boolean): Promise<IMatch> {
         const { roomSetting } = snapshot;
         try {
             const match = await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
                 const flowVersion = roomSetting.matchFlow.version;
                 // 1. Match: 對局
+
                 const match = await MatchCreator.createMatch(tx, flowVersion);
 
                 // 2. MatchTeam 隊伍
+
                 const teams = roomSetting.teams;
                 const matchTeams = await MatchTeamCreator.createMatchTeams(tx, match.id, teams);
 
@@ -62,6 +122,7 @@ export default class MatchRepository implements IMatchRepository {
                 });
 
                 // 3. MatchTeamMember: 隊伍成員
+
                 const teamMembersMap = snapshot.teamMembersMap;
 
                 await MatchTeamMemberCreator.createMatchTeamMembers(tx, teamMembersMap, matchTeamIdMap);
@@ -113,24 +174,11 @@ export default class MatchRepository implements IMatchRepository {
         }
     }
 
-    async delete(matchId: number) {
-        await this.prisma.match.delete({
-            where: { id: matchId },
-        });
-    }
-
-    async findAllMatchTeamMembers(): Promise<TeamMember[]> {
-        const rows = await this.prisma.matchTeamMember.findMany({
-            select: {
-                name: true,
-                memberRef: true,
-                guestRef: true,
-                member: { select: { nickname: true } },
-                guest: { select: { nickname: true } },
-            },
-        });
-
-        return rows.map(mapTeamMember);
+    private buildTimeWindowWhere(timeWindow: ITimeWindow): { createdAt: Prisma.DateTimeFilter<never> } | undefined {
+        const filter: Prisma.DateTimeFilter = {};
+        if (timeWindow.startAt) filter.gte = timeWindow.startAt;
+        if (timeWindow.endAt) filter.lte = timeWindow.endAt;
+        return Object.keys(filter).length > 0 ? { createdAt: filter } : undefined;
     }
 }
 

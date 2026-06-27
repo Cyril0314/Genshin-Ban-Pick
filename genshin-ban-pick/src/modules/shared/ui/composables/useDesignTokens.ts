@@ -88,6 +88,8 @@ export function useDesignTokens(selector: string = '.scale-context') {
     const colorOutline = useCssVar('--md-sys-color-outline');
     const colorOutlineVariant = useCssVar('--md-sys-color-outline-variant');
 
+    const colorInverseOnSurface = useCssVar('--md-sys-color-inverse-on-surface');
+
     // ===============================
     // 🪟 透明容器層級
     // ===============================
@@ -163,6 +165,7 @@ export function useDesignTokens(selector: string = '.scale-context') {
         colorOnSurface,
         colorSurfaceVariant,
         colorOnSurfaceVariant,
+        colorInverseOnSurface,
         colorOutline,
         colorOutlineVariant,
         colorSurfaceContainerLowest,

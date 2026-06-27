@@ -10,7 +10,7 @@ export interface IMatchTeamMember {
     memberRef?: number;
     guestRef?: number;
 
-    lineupSlots?: IMatchLineupSlot[];
+    lineupSlots: IMatchLineupSlot[];
 
     member?: IMatchMemberUser;
     guest?: IMatchMemberUser;
