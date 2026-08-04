@@ -1079,6 +1079,19 @@
         "wish": "Standard Wish"
     },
     {
+        "icon": "Sandrone Icon",
+        "name": "Sandrone",
+        "rarity": "5 Stars",
+        "element": "Cryo",
+        "weapon": "Claymore",
+        "region": "Snezhnaya",
+        "model_type": "Medium Female",
+        "release_at": "July 01, 2026",
+        "version": "Luna VIII",
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
+    },
+    {
         "icon": "Sangonomiya Kokomi Icon",
         "name": "Sangonomiya Kokomi",
         "rarity": "5 Stars",
