@@ -1,43 +1,12 @@
 // backend/prisma/scripts/importCharacters.ts
 
-import { PrismaClient, Rarity, Element, Weapon, Region, ModelType, CharacterRole, Wish } from '@prisma/client';
+import { PrismaClient, Element, Weapon } from '@prisma/client';
 import fs from 'node:fs';
+
+import { normalizeKey, normalizeRarity, normalizeWish, normalizeModelType, normalizeRegion, normalizeRole, parseUTC } from './lib/characterData';
 
 const prisma = new PrismaClient();
 const rawData = JSON.parse(fs.readFileSync('./prisma/characters.json', 'utf-8'));
-
-function normalizeKey(name: string): string {
-    return name
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '_') // 空白 & 符號 → _
-        .replace(/^_+|_+$/g, ''); // 去掉頭尾底線
-}
-
-function normalizeRarity(r: string): Rarity {
-    return r === '5 Stars' ? Rarity.FiveStar : Rarity.FourStar;
-}
-
-function normalizeWish(w: string): Wish {
-    if (w.startsWith('Limited')) return Wish.Limited;
-    if (w.startsWith('Standard')) return Wish.Standard;
-    return Wish.None;
-}
-
-function normalizeModelType(m: string): ModelType {
-    return m.replace(/\s+/g, '') as ModelType;
-}
-
-function normalizeRegion(r: string): Region {
-    return r.replace(/\s+/g, '') as Region;
-}
-
-function normalizeRole(r: string): CharacterRole {
-    return r.replace(/\s+/g, '') as CharacterRole;
-}
-
-function parseUTC(date: string) {
-    return new Date(`${date} UTC`);
-}
 
 async function importCharacters() {
     for (const raw of rawData) {
