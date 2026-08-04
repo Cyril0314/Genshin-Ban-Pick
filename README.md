@@ -155,6 +155,28 @@ npx tsx --env-file=../.env prisma/scripts/importCharacters.ts
 
 > `--env-file=../.env` 是必要的，tsx 不會自動載入 .env。
 
+### 新增一個角色
+
+手動準備三處，再跑一鍵 pipeline：
+
+1. **版本**（新版本才需要，須先做）：`backend/prisma/genshin_version.json` 新增一筆，`order` 接續、`code` 供角色引用。
+2. **角色**：`backend/prisma/characters.json` 依名稱**字母序**插入。`element` / `weapon` 直接對應 enum（`Cryo` / `Claymore`）；`region` / `model_type` / `role` 去空白後 cast（`Medium Female` → `MediumFemale`）；`version` 須等於步驟 1 的 `code`。
+3. **圖片**（成對）：
+   - `genshin-ban-pick/src/assets/images/profile/<PascalName>_Profile.webp`
+   - `genshin-ban-pick/src/assets/images/wish/<PascalName>_Wish.png`
+
+   `<PascalName>` = 角色名去符號後 PascalCase（`Sangonomiya Kokomi` → `SangonomiyaKokomi`）。
+
+4. **匯入**（`cd backend`）：
+
+   ```bash
+   npm run add:character
+   ```
+
+   5 步 fail-fast：validate（enum / 版本 / 圖片成對，不碰 DB）→ gen:images → seed 版本 → seed 角色 → type-check。
+
+> seed 用 `upsert`，重複跑安全；但只 create/update 不 delete，改名或刪除會留 DB 孤兒列。
+
 ### Migration 注意事項
 
 - 有資料回填需求：手動新增 SQL migration 檔案，再執行 `npx prisma migrate dev`
