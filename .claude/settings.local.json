@@ -82,7 +82,25 @@
       "Bash(node scripts/generate-image-manifest.mjs)",
       "Bash(echo \"=== type-check EXIT: $? \\(clean = current assets fully covered\\) ===\")",
       "Bash(echo \"type-check EXIT: $?\")",
-      "Bash(sips -g hasAlpha -g pixelWidth -g pixelHeight weapon/Sword.webp)"
+      "Bash(sips -g hasAlpha -g pixelWidth -g pixelHeight weapon/Sword.webp)",
+      "Bash(brew --version)",
+      "Bash(brew install *)",
+      "Bash(docker --version)",
+      "Bash(docker info *)",
+      "Bash(npx dotenv *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/api/characters)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173/api/characters)",
+      "Bash(curl -s http://localhost:3000/api/characters)",
+      "Read(//Users/wangxiaoyu/Desktop/ec2_keys/**)",
+      "Read(//Users/wangxiaoyu/.ssh/**)",
+      "Bash(grep -nA30 \"enum Region\" backend/prisma/schema.prisma)",
+      "Bash(grep -nA12 \"enum ModelType\" backend/prisma/schema.prisma)",
+      "Bash(grep -nA12 \"enum Element\" backend/prisma/schema.prisma)",
+      "Bash(grep -nA10 \"enum Weapon\" backend/prisma/schema.prisma)",
+      "Bash(grep -nA8 \"enum Rarity\\\\|enum Wish\" backend/prisma/schema.prisma)",
+      "Bash(npx tsx -e ' *)",
+      "Bash(NODE_OPTIONS= npx tsx /private/tmp/claude-501/-Users-wangxiaoyu-Desktop-side-Genshin-Ban-Pick/a67ec5ea-0757-4307-844c-02335802291a/scratchpad/_valtest.ts)",
+      "Bash(NODE_OPTIONS= npx tsx --eval \"import\\('/Users/wangxiaoyu/Desktop/side/Genshin-Ban-Pick/backend/prisma/scripts/lib/characterData.ts'\\).then\\(\\(\\)=>console.log\\('lib OK'\\)\\)\")"
     ]
   }
 }
