@@ -9,7 +9,8 @@
     "build": "tsup",
     "start": "node --env-file=../.env dist/index.js",
     "dev": "tsx --env-file=../.env src/index.ts",
-    "prisma": "dotenv -e ../.env -- npx prisma"
+    "prisma": "dotenv -e ../.env -- npx prisma",
+    "add:character": "tsx prisma/scripts/importGameData.ts"
   },
   "repository": {
     "type": "git",

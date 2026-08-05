@@ -347,5 +347,11 @@
         "name": "Truth Amongst the Pages of Purana",
         "order": 49,
         "start_at": "May 20, 2026"
+    },
+    {
+        "code": "Luna VIII",
+        "name": "Sunny Summer Fontinalia",
+        "order": 50,
+        "start_at": "July 1, 2026"
     }
 ]
