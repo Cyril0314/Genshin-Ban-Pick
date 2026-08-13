@@ -45,5 +45,6 @@ RUN npx prisma generate
 ENV NODE_ENV=production
 EXPOSE 3000
 
-# 啟動前先套用 migrations，再起服
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/index.js"]
+# 啟動前先套用 migrations，再 seed 靜態資料（版本→角色，upsert 冪等），最後起服
+# seed 讓每次部署自動同步新角色，免去手動 docker exec；tsx 由 runtime deps 提供
+CMD ["sh", "-c", "npx prisma migrate deploy && npx tsx prisma/scripts/importGenshinVersions.ts && npx tsx prisma/scripts/importCharacters.ts && node dist/index.js"]
