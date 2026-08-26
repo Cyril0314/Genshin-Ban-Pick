@@ -1,6 +1,6 @@
 <!-- src/modules/board/ui/components/ImageOptions.vue -->
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch, nextTick } from 'vue';
 
 import { createLogger } from '@/app/utils/logger';
 import { getProfileImagePath } from '@/modules/shared/infrastructure/imageRegistry'
@@ -18,16 +18,34 @@ const props = defineProps<{
   filteredCharacterKeys?: string[]
 }>()
 
-const availableCharacterKeys = computed(() =>
-  Object.entries(props.characterMap)
-    .filter(([id]) => !props.usedImageIds.includes(id))
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([id]) => id)
-)
-
 const filteredSet = computed(() => new Set(props.filteredCharacterKeys ?? []))
 
 const isFiltered = (id: string) => filteredSet.value.has(id)
+
+const listRef = ref<HTMLElement>()
+
+// A filter change floats the matches to the top; scroll back up so those
+// surfaced results are actually in view — a scrolled-down user would otherwise
+// stay parked below them. Only reacts to the filter (not drop/restore, which
+// also mutate availableCharacterKeys but shouldn't yank the scroll).
+watch(
+    () => props.filteredCharacterKeys,
+    () => nextTick(() => listRef.value?.scrollTo({ top: 0, behavior: 'smooth' })),
+)
+
+// Filtered (matched) characters float to the front, still alphabetical within
+// each group, so an active filter surfaces its results at the top instead of
+// leaving them scattered among the dimmed non-matches. No active filter =>
+// every available id is in filteredSet => pure alphabetical, nothing dimmed.
+const availableCharacterKeys = computed(() =>
+  Object.entries(props.characterMap)
+    .filter(([id]) => !props.usedImageIds.includes(id))
+    .map(([id]) => id)
+    .sort((a, b) => {
+      const rank = Number(filteredSet.value.has(b)) - Number(filteredSet.value.has(a))
+      return rank !== 0 ? rank : a.localeCompare(b)
+    })
+)
 
 const isDragging = ref(false);
 
@@ -44,7 +62,7 @@ function handleDragEndEvent() {
 </script>
 
 <template>
-  <div class="image-options">
+  <div ref="listRef" class="image-options">
     <component :is="CharacterHoverWrapper" v-for="id in availableCharacterKeys" :key="id" :character-key="id" :disabled="isDragging">
         <img class="option" :class="{ 'is-dimmed': !isFiltered(id) }" :id="id" :src="getProfileImagePath(id)"
             draggable="true" @dragstart="handleDragStartEvent(id, $event)" @dragend="handleDragEndEvent" />
