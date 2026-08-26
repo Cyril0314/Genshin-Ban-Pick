@@ -39,6 +39,19 @@
         "wish": "Limited-Time Event Wish"
     },
     {
+        "icon": "Alyosha Icon",
+        "name": "Alyosha",
+        "rarity": "4 Stars",
+        "element": "Electro",
+        "weapon": "Polearm",
+        "region": "Snezhnaya",
+        "model_type": "Medium Male",
+        "release_at": "August 12, 2026",
+        "version": "7.0",
+        "role": "Support",
+        "wish": "Standard Wish"
+    },
+    {
         "icon": "Amber Icon",
         "name": "Amber",
         "rarity": "4 Stars",
@@ -999,6 +1012,19 @@
         "version": "1.0",
         "role": "Support",
         "wish": "Standard Wish"
+    },
+    {
+        "icon": "Odette Icon",
+        "name": "Odette",
+        "rarity": "5 Stars",
+        "element": "Cryo",
+        "weapon": "Sword",
+        "region": "Snezhnaya",
+        "model_type": "Medium Female",
+        "release_at": "August 12, 2026",
+        "version": "7.0",
+        "role": "Support",
+        "wish": "Limited-Time Event Wish"
     },
     {
         "icon": "Ororon Icon",
