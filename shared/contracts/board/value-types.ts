@@ -16,4 +16,10 @@ export enum BoardEvent {
 
     ImageMapStateRequest = 'board.image_map.state.request',
     ImageMapStateSyncSelf = 'board.image_map.state.sync.self',
+
+    StepLockToggleRequest = 'board.step_lock.toggle.request',
+    StepLockToggleBroadcast = 'board.step_lock.toggle.broadcast',
+
+    StepLockStateRequest = 'board.step_lock.state.request',
+    StepLockStateSyncSelf = 'board.step_lock.state.sync.self',
 }

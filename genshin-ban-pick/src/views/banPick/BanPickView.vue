@@ -34,7 +34,7 @@ const {
 
     filter: { change: filterChange },
 
-    board: { imageMap, usedImageIds, imageDrop, imageRestore, randomPull },
+    board: { imageMap, usedImageIds, isStepLocked, toggleStepLock, imageDrop, imageRestore, randomPull },
 
     team: { teamMemberToTeamSlotMap, memberInput, memberDrop, memberRestore },
 
@@ -100,6 +100,14 @@ provideCharacterHoverWrapper(CharacterHoverCard);
 
                             <div class="top-section top-section--align-right">
                                 <Toolbar :team-member-to-team-slot-map="teamMemberToTeamSlotMap" @match-reset="reset" @match-save="save" />
+
+                                <div class="step-lock" role="switch" :aria-checked="isStepLocked"
+                                    @click="toggleStepLock(!isStepLocked)">
+                                    <span class="step-lock-label">順序鎖定</span>
+                                    <span class="step-switch" :class="{ 'is-on': isStepLocked }">
+                                        <span class="step-switch-thumb"></span>
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
@@ -198,7 +206,9 @@ provideCharacterHoverWrapper(CharacterHoverCard);
 /* Top bar */
 .top-bar {
     display: grid;
-    grid-template-columns: 1fr var(--size-step-indicator) 1fr;
+    /* minmax(0, 1fr) forces both side columns to stay equal even when one side's
+       content is wider, so the fixed-width indicator column stays truly centered. */
+    grid-template-columns: minmax(0, 1fr) var(--size-step-indicator) minmax(0, 1fr);
     background-color: var(--md-sys-color-surface-container-high);
     width: 100%;
     border-radius: var(--radius-lg);
@@ -220,6 +230,7 @@ provideCharacterHoverWrapper(CharacterHoverCard);
 
 .top-section--align-right {
     justify-content: end;
+    gap: var(--space-md);
 }
 
 .separator {
@@ -232,6 +243,56 @@ provideCharacterHoverWrapper(CharacterHoverCard);
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* Step-lock switch — standalone control to the right of the toolbar */
+.step-lock {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    cursor: pointer;
+    user-select: none;
+    color: var(--md-sys-color-on-surface);
+}
+
+.step-lock-label {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    font-family: var(--font-family-sans);
+    white-space: nowrap;
+}
+
+/* Custom switch — avoids naive-ui n-switch, whose JS-side seemly color math
+   can't parse our CSS-var design tokens. */
+.step-switch {
+    position: relative;
+    flex-shrink: 0;
+    width: calc(var(--base-size) * 2.1);
+    height: calc(var(--base-size) * 1.1);
+    padding: 2px;
+    border-radius: 999px;
+    background-color: var(--md-sys-color-surface-container-highest);
+    transition: background-color 0.2s ease;
+}
+
+.step-switch.is-on {
+    background-color: var(--md-sys-color-primary);
+}
+
+.step-switch-thumb {
+    display: block;
+    width: calc(var(--base-size) * 0.9);
+    height: calc(var(--base-size) * 0.9);
+    border-radius: 50%;
+    background-color: var(--md-sys-color-on-surface-variant);
+    transition:
+        transform 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.step-switch.is-on .step-switch-thumb {
+    transform: translateX(calc(var(--base-size) * 1.0));
+    background-color: var(--md-sys-color-on-primary);
 }
 
 .loading {

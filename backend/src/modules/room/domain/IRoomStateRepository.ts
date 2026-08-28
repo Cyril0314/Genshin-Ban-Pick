@@ -20,6 +20,9 @@ export interface IRoomStateRepository {
     findBoardImageMapById(roomId: string): BoardImageMap;
     updateBoardImageMapById(roomId: string, boardImageMap: BoardImageMap): number;
 
+    findStepLockById(roomId: string): boolean;
+    updateStepLockById(roomId: string, isStepLocked: boolean): boolean;
+
     findCharacterRandomContextMapById(roomId: string): CharacterRandomContextMap;
     updateCharacterRandomContextMapById(roomId: string, characterRandomContextMap: CharacterRandomContextMap): number;
 

@@ -53,4 +53,24 @@ export function registerBoardSocket(io: Server, socket: Socket, boardService: Bo
         socket.emit(`${BoardEvent.ImageMapStateSyncSelf}`, boardImageMap);
         logger.debug(`Sent ${BoardEvent.ImageMapStateSyncSelf}`, boardImageMap);
     });
+
+    socket.on(`${BoardEvent.StepLockToggleRequest}`, ({ enabled }: { enabled: boolean }) => {
+        logger.debug(`Received ${BoardEvent.StepLockToggleRequest}`, { enabled });
+        const roomId = (socket as any).roomId;
+        if (!roomId) return;
+
+        boardService.setStepLock(roomId, enabled);
+        socket.to(roomId).emit(`${BoardEvent.StepLockToggleBroadcast}`, { enabled });
+        logger.debug(`Sent ${BoardEvent.StepLockToggleBroadcast}`, { enabled });
+    });
+
+    socket.on(`${BoardEvent.StepLockStateRequest}`, () => {
+        logger.debug(`Received ${BoardEvent.StepLockStateRequest}`);
+        const roomId = (socket as any).roomId;
+        if (!roomId) return;
+
+        const enabled = boardService.getStepLock(roomId);
+        socket.emit(`${BoardEvent.StepLockStateSyncSelf}`, { enabled });
+        logger.debug(`Sent ${BoardEvent.StepLockStateSyncSelf}`, { enabled });
+    });
 }

@@ -54,4 +54,12 @@ export default class BoardService {
     getImageMap(roomId: string): BoardImageMap {
         return this.roomStateRepository.findBoardImageMapById(roomId);
     }
+
+    getStepLock(roomId: string): boolean {
+        return this.roomStateRepository.findStepLockById(roomId);
+    }
+
+    setStepLock(roomId: string, isStepLocked: boolean): void {
+        this.roomStateRepository.updateStepLockById(roomId, isStepLocked);
+    }
 }

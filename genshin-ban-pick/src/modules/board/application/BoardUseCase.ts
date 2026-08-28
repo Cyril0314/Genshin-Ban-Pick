@@ -37,4 +37,8 @@ export default class BoardUseCase {
     setBoardImageMap(newBoardImageMap: BoardImageMap) {
         this.boardStore.setBoardImageMap(newBoardImageMap);
     }
+
+    setStepLock(isStepLocked: boolean) {
+        this.boardStore.setStepLock(isStepLocked);
+    }
 }

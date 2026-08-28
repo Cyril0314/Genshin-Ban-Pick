@@ -15,6 +15,7 @@ export const useBoardStore = defineStore('boardImage', () => {
     const zoneMetaTable = shallowRef<Record<number, IZone>>({});
     const matchSteps = shallowRef<IMatchStep[]>([]);
     const boardImageMap = ref<BoardImageMap>({});
+    const isStepLocked = ref(false);
     const usedImageIds = computed(() => [...new Set(Object.values(boardImageMap.value).map((imgId) => imgId))]);
 
     const currentStep = computed(() => {
@@ -46,13 +47,20 @@ export const useBoardStore = defineStore('boardImage', () => {
         boardImageMap.value = { ...newBoardImageMap };
     }
 
+    function setStepLock(newIsStepLocked: boolean) {
+        logger.debug('set step lock', newIsStepLocked);
+        isStepLocked.value = newIsStepLocked;
+    }
+
     return {
         zoneMetaTable,
         matchSteps,
         boardImageMap,
+        isStepLocked,
         usedImageIds,
         currentStep,
         initZoneMetaTableAndSteps,
         setBoardImageMap,
+        setStepLock,
     };
 });

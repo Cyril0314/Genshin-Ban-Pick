@@ -8,6 +8,7 @@ export function createRoomState(roomSetting: IRoomSetting) {
         users: [],
         chatMessages: [],
         boardImageMap: {},
+        isStepLocked: false,
         characterRandomContextMap: {},
         teamMembersMap: initializeTeamMembersMap(roomSetting.teams),
         teamLineupImageMap: initializeTeamLineupImageMap(roomSetting.teams),

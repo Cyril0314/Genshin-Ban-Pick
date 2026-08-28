@@ -42,7 +42,7 @@ export function useBanPickInitializer(roomId: string) {
     const lineupUseCase = useLineupUseCase();
 
     const { joinRoom, leaveRoom } = useRoomUserSync();
-    const { fetchBoardImageMapState } = useBoardSync();
+    const { fetchBoardImageMapState, fetchStepLockState } = useBoardSync();
     const { fetchChatState } = useChatSync();
     const { fetchMembersMapState } = useTeamInfoSync();
 
@@ -75,6 +75,7 @@ export function useBanPickInitializer(roomId: string) {
             joinRoom(roomId).then(() => {
                 logger.debug('joined room', roomId);
                 fetchBoardImageMapState();
+                fetchStepLockState();
                 fetchChatState();
                 fetchMembersMapState();
             });

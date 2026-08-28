@@ -10,6 +10,7 @@ export interface IRoomState {
     users: IRoomUser[];
     chatMessages: IChatMessage[];
     boardImageMap: BoardImageMap;
+    isStepLocked: boolean;
     characterRandomContextMap: CharacterRandomContextMap;
     teamLineupImageMap: TeamLineupImageMap;
     teamMembersMap: TeamMembersMap;

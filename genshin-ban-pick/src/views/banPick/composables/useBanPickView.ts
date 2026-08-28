@@ -17,14 +17,14 @@ export function useBanPickView(roomId: string) {
     const { isLoading: isInitLoading, roomSetting, filteredCharacterKeys, characterFilter } = useBanPickInitializer(roomId);
 
     const boardStore = useBoardStore();
-    const { boardImageMap, usedImageIds } = storeToRefs(boardStore);
+    const { boardImageMap, usedImageIds, isStepLocked } = storeToRefs(boardStore);
     const characterStore = useCharacterStore();
     const { characterMap } = storeToRefs(characterStore);
     const { filterChange } = useBanPickFilters(filteredCharacterKeys, characterFilter);
 
     const { randomPull } = useBanPickRandomPull(roomSetting, filteredCharacterKeys, characterFilter, boardImageMap);
 
-    const { boardImageDrop, boardImageRestore, boardImageMapReset } = useBoardSync();
+    const { boardImageDrop, boardImageRestore, boardImageMapReset, toggleStepLock } = useBoardSync();
 
     const teamInfoStore = useTeamInfoStore();
     const { teamMembersMap } = storeToRefs(teamInfoStore);
@@ -56,6 +56,8 @@ export function useBanPickView(roomId: string) {
         board: {
             imageMap: boardImageMap,
             usedImageIds,
+            isStepLocked,
+            toggleStepLock,
             imageDrop: boardImageDrop,
             imageRestore: boardImageRestore,
             randomPull,

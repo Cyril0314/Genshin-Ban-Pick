@@ -20,6 +20,8 @@ export interface IRoomStateManager {
   setChatMessages(roomId: string, chatMessages: IChatMessage[]): void;
   getBoardImageMap(roomId: string): BoardImageMap | undefined;
   setBoardImageMap(roomId: string, boardImageMap: BoardImageMap): void;
+  getStepLock(roomId: string): boolean | undefined;
+  setStepLock(roomId: string, isStepLocked: boolean): void;
   getCharacterRandomContextMap(roomId: string): CharacterRandomContextMap | undefined;
   setCharacterRandomContextMap(roomId: string, characterRandomContextMap: CharacterRandomContextMap): void;
   getTeamMembersMap(roomId: string): TeamMembersMap | undefined;

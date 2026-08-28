@@ -1,7 +1,7 @@
 <!-- src/modules/board/ui/components/DropZone.vue -->
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onUnmounted } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import { createLogger } from '@/app/utils/logger';
@@ -29,7 +29,25 @@ const isOver = ref(false);
 const imageId = computed(() => props.boardImageMap[props.zone.id] ?? '');
 
 const boardStore = useBoardStore();
-const { currentStep } = storeToRefs(boardStore);
+const { currentStep, isStepLocked } = storeToRefs(boardStore);
+
+// Step-lock (room-synced): when on, only the current step's zone accepts a drop,
+// forcing placements to follow the match flow order. Restore/click stays free.
+const canDrop = computed(() => !isStepLocked.value || props.zone.id === currentStep.value?.zoneId);
+
+// Transient shake feedback when a drop is rejected by step-lock, self-clearing
+// after the animation so a repeat reject can retrigger it.
+const isRejected = ref(false);
+let rejectTimer: ReturnType<typeof setTimeout> | undefined;
+function triggerReject() {
+    isRejected.value = true;
+    if (rejectTimer) clearTimeout(rejectTimer);
+    rejectTimer = setTimeout(() => (isRejected.value = false), 400);
+}
+
+onUnmounted(() => {
+    if (rejectTimer) clearTimeout(rejectTimer);
+});
 
 const logger = createLogger('board.ui.dropZone');
 
@@ -61,6 +79,11 @@ function handleDropEvent(event: DragEvent) {
     logger.debug('drop');
     event.preventDefault();
     isOver.value = false;
+    if (!canDrop.value) {
+        logger.debug('drop blocked by step lock', props.zone.id);
+        triggerReject();
+        return;
+    }
     const imgId = event.dataTransfer?.getData(DragTypes.CHARACTER_IMAGE);
     if (imgId) {
         emit('image-drop', { zoneId: props.zone.id, imgId });
@@ -76,13 +99,23 @@ function handleClickEvent(event: MouseEvent) {
 
 const isHighlighted = computed(() => props.zone.id === currentStep.value?.zoneId);
 
+const zoneClasses = computed(() => [
+    `drop-zone--${props.zone.type || 'default'}`,
+    {
+        'is-active': isOver.value && canDrop.value,
+        'is-blocked': isOver.value && !canDrop.value,
+        'is-rejected': isRejected.value,
+        'is-highlighted': isHighlighted.value,
+    },
+]);
+
 const CharacterHoverWrapper = useCharacterHoverWrapper();
 </script>
 
 <template>
     <div
         class="drop-zone"
-        :class="[`drop-zone--${props.zone.type || 'default'}`, { 'is-active': isOver, 'is-highlighted': isHighlighted }]"
+        :class="zoneClasses"
         :style="{ '--highlight-color-rgb': highlightColor }"
         @dragover.prevent="isOver = true"
         @dragleave="isOver = false"
@@ -165,6 +198,35 @@ const CharacterHoverWrapper = useCharacterHoverWrapper();
 .drop-zone.is-active,
 .drop-zone.is-highlighted.is-active {
     outline: 2px solid rgba(var(--highlight-color-rgb) / 0.55);
+}
+
+/* Step-lock rejection: dragging over a non-current-step zone (blocked), and the
+   shake when a drop is actually attempted there. */
+.drop-zone.is-blocked {
+    outline: 2px solid rgba(var(--md-sys-color-error-rgb) / 0.7);
+    cursor: not-allowed;
+}
+
+.drop-zone.is-rejected {
+    animation: zoneReject 0.4s ease;
+}
+
+@keyframes zoneReject {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    20% {
+        transform: translateX(-4px);
+    }
+    40% {
+        transform: translateX(4px);
+    }
+    60% {
+        transform: translateX(-3px);
+    }
+    80% {
+        transform: translateX(3px);
+    }
 }
 
 .drop-zone:hover {

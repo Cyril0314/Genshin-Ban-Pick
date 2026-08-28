@@ -58,6 +58,15 @@ export default class RoomStateManager implements IRoomStateManager {
         this.roomStates[roomId].boardImageMap = boardImageMap;
     }
 
+    getStepLock(roomId: string) {
+        return this.get(roomId)?.isStepLocked;
+    }
+
+    setStepLock(roomId: string, isStepLocked: boolean) {
+        if (!this.roomStates[roomId]) return
+        this.roomStates[roomId].isStepLocked = isStepLocked;
+    }
+
     getCharacterRandomContextMap(roomId: string) {
         return this.get(roomId)?.characterRandomContextMap;
     }
