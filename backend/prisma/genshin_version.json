@@ -353,5 +353,11 @@
         "name": "Sunny Summer Fontinalia",
         "order": 50,
         "start_at": "July 1, 2026"
+    },
+    {
+        "code": "7.0",
+        "name": "Everwinter Without Mercy",
+        "order": 51,
+        "start_at": "August 12, 2026"
     }
 ]

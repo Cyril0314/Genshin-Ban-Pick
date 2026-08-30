@@ -86,7 +86,7 @@ function handleSaveButtonClickEvent() {
 
 <style scoped>
 .toolbar {
-    --size-tool-button: calc(var(--base-size) * 4);
+    --size-tool-button: calc(var(--base-size) * 3.2);
 
     display: flex;
     flex-direction: row;

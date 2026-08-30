@@ -55,6 +55,17 @@ export default class RoomStateRepository implements IRoomStateRepository {
         return Object.values(boardImageMap).length;
     }
 
+    findStepLockById(roomId: string): boolean {
+        const result = this.roomStateManager.getStepLock(roomId);
+        if (result === undefined) throw new RoomNotFoundError();
+        return result;
+    }
+
+    updateStepLockById(roomId: string, isStepLocked: boolean): boolean {
+        this.roomStateManager.setStepLock(roomId, isStepLocked);
+        return isStepLocked;
+    }
+
     findCharacterRandomContextMapById(roomId: string): CharacterRandomContextMap {
         const result = this.roomStateManager.getCharacterRandomContextMap(roomId);
         if (result === undefined) throw new RoomNotFoundError();

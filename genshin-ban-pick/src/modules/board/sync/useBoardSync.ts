@@ -18,11 +18,26 @@ export function useBoardSync() {
         socket.on(`${BoardEvent.ImageDropBroadcast}`, handleBoardImageDropBroadcast);
         socket.on(`${BoardEvent.ImageRestoreBroadcast}`, handleBoardImageRestoreBroadcast);
         socket.on(`${BoardEvent.ImageMapResetBroadcast}`, handleBoardImageMapResetBroadcast);
+        socket.on(`${BoardEvent.StepLockToggleBroadcast}`, handleStepLockToggleBroadcast);
+        socket.on(`${BoardEvent.StepLockStateSyncSelf}`, handleStepLockStateSync);
     }
 
     function fetchBoardImageMapState() {
         logger.debug('sent image map state request');
         socket.emit(`${BoardEvent.ImageMapStateRequest}`);
+    }
+
+    function fetchStepLockState() {
+        logger.debug('sent step lock state request');
+        socket.emit(`${BoardEvent.StepLockStateRequest}`);
+    }
+
+    function toggleStepLock(enabled: boolean) {
+        logger.debug('toggle step lock', enabled);
+        boardUseCase.setStepLock(enabled);
+
+        logger.debug('sent step lock toggle request', enabled);
+        socket.emit(`${BoardEvent.StepLockToggleRequest}`, { enabled });
     }
 
     function boardImageDrop({ zoneId, imgId, randomContext }: { zoneId: number; imgId: string; randomContext?: ICharacterRandomContext }) {
@@ -69,9 +84,21 @@ export function useBoardSync() {
         boardUseCase.setBoardImageMap(imageMap);
     }
 
+    function handleStepLockToggleBroadcast({ enabled }: { enabled: boolean }) {
+        logger.debug('step lock toggle broadcast', { enabled });
+        boardUseCase.setStepLock(enabled);
+    }
+
+    function handleStepLockStateSync({ enabled }: { enabled: boolean }) {
+        logger.debug('step lock state sync', { enabled });
+        boardUseCase.setStepLock(enabled);
+    }
+
     return {
         registerBoardSync,
         fetchBoardImageMapState,
+        fetchStepLockState,
+        toggleStepLock,
         boardImageDrop,
         boardImageRestore,
         boardImageMapReset,
