@@ -216,6 +216,46 @@ docker exec -it genshin-banpick-backend sh
 docker exec -it genshin-banpick-db psql -U postgres -d genshin_banpick
 ```
 
+### 刪除一場 Match（DB 直接操作）
+
+目前沒有前端 UI 觸發刪除，最直接的方式是進 EC2 docker 的 psql 手動刪。`Match` 的所有子表（`MatchTeam` / `MatchTeamMember` / `MatchLineupSlot` / `MatchMove` / `RandomMoveContext`）都是 `onDelete: Cascade`，所以只要刪 `Match` 那一列，底下會全部連鎖清掉。
+
+```bash
+# 1. SSH 進 EC2
+ssh ec2-user@98.86.73.53
+cd ~/Genshin-Ban-Pick/Genshin-Ban-Pick
+
+# 2. 確認 DB container 有在跑（genshin stack 平常是 down 的）
+docker compose ps
+docker compose up -d postgres   # 若 genshin-banpick-db 沒 running 先起它（別碰 -v）
+
+# 3. 進 psql
+docker exec -it genshin-banpick-db psql -U postgres -d genshin_banpick
+```
+
+```sql
+-- 4. 先查再刪
+SELECT id, "createdAt" FROM "Match" ORDER BY id DESC LIMIT 20;
+DELETE FROM "Match" WHERE id = 42;          -- 單場
+DELETE FROM "Match" WHERE id IN (42, 43);   -- 多場
+```
+
+不進互動 shell 的一行版：
+
+```bash
+ssh ec2-user@98.86.73.53 \
+  "docker exec genshin-banpick-db psql -U postgres -d genshin_banpick -c 'DELETE FROM \"Match\" WHERE id = 42;'"
+```
+
+Windows / WSL（key 在 WSL `~/.ssh/`）：
+
+```powershell
+wsl -d Ubuntu -- ssh -i ~/.ssh/aws-discord-bot-farmer-licence-key.pem ec2-user@98.86.73.53 `
+  "docker exec genshin-banpick-db psql -U postgres -d genshin_banpick -c 'DELETE FROM \`"Match\`" WHERE id = 42;'"
+```
+
+⚠️ 硬刪除、無法復原。動 production 前先確認環境，必要時先 `pg_dump` 備份（見下方「複製 Server DB」）。
+
 ### Mac 端 alias（選用）
 
 ```bash
