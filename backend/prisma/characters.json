@@ -1313,6 +1313,32 @@
         "wish": "Limited-Time Event Wish"
     },
     {
+        "icon": "Vesna Icon",
+        "name": "Vesna",
+        "rarity": "5 Stars",
+        "element": "Anemo",
+        "weapon": "Sword",
+        "region": "Snezhnaya",
+        "model_type": "Medium Female",
+        "release_at": "September 23, 2026",
+        "version": "7.1",
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
+    },
+    {
+        "icon": "Vodyanitsa Icon",
+        "name": "Vodyanitsa",
+        "rarity": "5 Stars",
+        "element": "Hydro",
+        "weapon": "Catalyst",
+        "region": "Snezhnaya",
+        "model_type": "Medium Female",
+        "release_at": "September 23, 2026",
+        "version": "7.1",
+        "role": "Support",
+        "wish": "Limited-Time Event Wish"
+    },
+    {
         "icon": "Wanderer Icon",
         "name": "Wanderer",
         "rarity": "5 Stars",
