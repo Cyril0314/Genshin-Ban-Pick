@@ -346,18 +346,28 @@
         "code": "Luna VII",
         "name": "Truth Amongst the Pages of Purana",
         "order": 49,
-        "start_at": "May 20, 2026"
+        "start_at": "May 20, 2026",
+        "end_at": "July 1, 2026"
+        
     },
     {
         "code": "Luna VIII",
         "name": "Sunny Summer Fontinalia",
         "order": 50,
-        "start_at": "July 1, 2026"
+        "start_at": "July 1, 2026",
+        "end_at": "August 12, 2026"
     },
     {
         "code": "7.0",
         "name": "Everwinter Without Mercy",
         "order": 51,
-        "start_at": "August 12, 2026"
+        "start_at": "August 12, 2026",
+        "end_at": "September 23, 2026"
+    },
+    {
+        "code": "7.1",
+        "name": "A Rekviem for the Underworld",
+        "order": 52,
+        "start_at": "September 23, 2026"
     }
 ]
