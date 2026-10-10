@@ -9,7 +9,8 @@ import type { TeamMember } from '@shared/contracts/team/TeamMember';
 import type { IZone } from '@shared/contracts/board/IZone';
 
 export function useBoardZonesLayout(roomSetting: IRoomSetting, teamInfoPair: { left: { name: string; members: Record<number, TeamMember>; slot: number; }; right: { name: string; members: Record<number, TeamMember>; slot: number; } }) {
-    const maxNumberOfPickPerColumn: number = 8
+    // 一欄 = 一回合：每隊每回合的 Pick 數（預設 32 / 2 隊 / 2 回合 = 8）
+    const maxNumberOfPickPerColumn: number = Math.max(1, Math.ceil(roomSetting.numberOfPick / roomSetting.teams.length / roomSetting.totalRounds))
     const maxNumberOfUtilityPerRow: number = 6
     const maxNumberOfBanPerRow: number = 6
 

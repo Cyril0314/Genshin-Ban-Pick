@@ -5,7 +5,7 @@ import router from '@/router';
 import { ref } from 'vue';
 import { useRoomSetting } from '../composables/useRoomSetting';
 
-const { form, isLoading, errorMessage, submit } = useRoomSetting();
+const { form, banCountStep, pickCountStep, numberOfTeamSetup, isLoading, errorMessage, submit } = useRoomSetting();
 
 async function handleSubmit() {
     const ok = await submit();
@@ -28,20 +28,33 @@ async function handleSubmit() {
                 </div>
 
                 <div class="form-group">
+                    <label for="totalRounds">回合數</label>
+                    <!-- .lazy：離開欄位才套用，打字到一半不會被對齊規則改寫 -->
+                    <input id="totalRounds" v-model.lazy="form.totalRounds" type="number" min="1" step="1"
+                        placeholder="請輸入回合數" required />
+                </div>
+
+                <div class="form-group">
                     <label for="numberOfUtility">自由位數量</label>
-                    <input id="numberOfUtility" v-model="form.numberOfUtility" type="number" placeholder="請輸入自由位數量"
+                    <input id="numberOfUtility" v-model="form.numberOfUtility" type="number" min="0" placeholder="請輸入自由位數量"
                         required />
                 </div>
 
                 <div class="form-group">
                     <label for="numberOfBan">Ban位數量</label>
-                    <input id="numberOfBan" v-model="form.numberOfBan" type="number" placeholder="請輸入Ban位數量" required />
+                    <input id="numberOfBan" v-model.lazy="form.numberOfBan" type="number" min="0" :step="banCountStep"
+                        placeholder="請輸入Ban位數量" required />
+                    <span class="hint">會自動補到 {{ banCountStep }} 的倍數（每回合兩隊各半）</span>
                 </div>
 
                 <div class="form-group">
                     <label for="numberOfPick">Pick位數量</label>
-                    <input id="numberOfPick" v-model="form.numberOfPick" type="number" placeholder="請輸入Pick位數量"
-                        required />
+                    <input id="numberOfPick" v-model.lazy="form.numberOfPick" type="number" min="0" :step="pickCountStep"
+                        placeholder="請輸入Pick位數量" required />
+                    <span class="hint">
+                        會自動補到 {{ pickCountStep }} 的倍數（每回合兩隊各半，且排滿整組陣容）；每隊
+                        {{ numberOfTeamSetup ?? '—' }} 組陣容
+                    </span>
                 </div>
 
                 <div class="actions">
@@ -109,6 +122,11 @@ async function handleSubmit() {
     color: var(--md-sys-color-on-surface);
     font-size: var(--font-size-md);
     outline: 1px solid var(--md-sys-color-on-surface-variant);
+}
+
+.form-group .hint {
+    font-size: var(--font-size-sm);
+    color: var(--md-sys-color-on-surface-variant);
 }
 
 .form-group input::placeholder {

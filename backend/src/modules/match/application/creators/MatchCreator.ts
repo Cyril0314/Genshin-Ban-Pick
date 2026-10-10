@@ -3,10 +3,11 @@
 import { Prisma } from '@prisma/client';
 
 export default class MatchCreator {
-    static async createMatch(tx: Prisma.TransactionClient, flowVersion: number) {
+    static async createMatch(tx: Prisma.TransactionClient, flowVersion: number, totalRounds: number) {
         const match = await tx.match.create({
             data: {
                 flowVersion,
+                totalRounds,
             },
         });
         return match;

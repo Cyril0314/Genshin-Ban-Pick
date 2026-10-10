@@ -22,6 +22,7 @@ export function mapMatchFromPrisma(m: Match & { teams: TeamWithRelations[]; move
         createdAt: m.createdAt,
         updatedAt: m.updatedAt,
         flowVersion: m.flowVersion,
+        totalRounds: m.totalRounds,
         teams: m.teams.map(mapTeamFromPrisma),
         moves: m.moves.map(mapMoveFromPrisma),
     };

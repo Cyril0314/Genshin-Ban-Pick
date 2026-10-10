@@ -92,10 +92,19 @@ function handleImageRestore({ cellId }: { cellId: number }) {
     --border-width: 3px;
     display: flex;
     flex-direction: column;
+    /* 填滿池子以下的剩餘高度，陣容組數多到放不下時在內部捲動 */
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: none;
     gap: var(--space-lg);
     padding: var(--space-lg);
     background-color: var(--md-sys-color-surface-container-low);
     border-radius: var(--radius-lg);
+}
+
+.lineup-board::-webkit-scrollbar {
+    display: none;
 }
 
 /* indent to align with card-slots: card-padding + label + gap */

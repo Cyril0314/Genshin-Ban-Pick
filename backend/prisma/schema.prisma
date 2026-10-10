@@ -49,6 +49,8 @@ model Match {
   updatedAt DateTime @updatedAt
 
   flowVersion Int @default(1)
+  // 回合數無法從 MatchMove.order 反推（步驟是攤平的），所以存下來；舊資料皆為兩回合
+  totalRounds Int @default(2)
 
   teams MatchTeam[]
   moves MatchMove[]

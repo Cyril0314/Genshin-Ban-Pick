@@ -16,9 +16,6 @@ import { chunk } from '@/modules/shared/utils/array';
 
 const logger = createLogger('analysis.ui.matchHistory');
 
-// 與 useBoardZonesLayout.maxNumberOfPickPerColumn 對齊：一欄最多 8 個 Pick，超過自動換欄。
-const MAX_PICKS_PER_COLUMN = 8;
-
 const byOrder = (a: IMatchMove, b: IMatchMove) => a.order - b.order;
 
 export function useMatchHistoryModal(open: MaybeRefOrGetter<boolean>, matchId: MaybeRefOrGetter<number | undefined>) {
@@ -58,14 +55,15 @@ export function useMatchHistoryModal(open: MaybeRefOrGetter<boolean>, matchId: M
     const teams = computed<IMatchTeam[]>(() => [...(match.value?.teams ?? [])].sort((a, b) => a.slot - b.slot));
 
     // 該隊的 Ban/Pick moves，切成 column-major 二維陣列（呼應 board 排版）：
-    // Pick 依 MAX_PICKS_PER_COLUMN 分欄，Ban 平均分配到各欄並排在欄首。
+    // 一欄 = 一回合（與 useBoardZonesLayout 同一套：每隊 Pick 數 / totalRounds），Ban 平均分配到各欄並排在欄首。
     function moveColumnsOf(teamId: number | undefined): IMatchMove[][] {
-        if (teamId === undefined) return [];
-        const teamMoves = (match.value?.moves ?? []).filter((m) => m.teamId === teamId);
+        if (teamId === undefined || match.value === undefined) return [];
+        const teamMoves = match.value.moves.filter((m) => m.teamId === teamId);
         const bans = teamMoves.filter((m) => m.type === MoveType.Ban).sort(byOrder);
         const picks = teamMoves.filter((m) => m.type === MoveType.Pick).sort(byOrder);
 
-        const pickColumns = picks.length > 0 ? chunk(picks, MAX_PICKS_PER_COLUMN) : bans.length > 0 ? [[] as IMatchMove[]] : [];
+        const picksPerColumn = Math.max(1, Math.ceil(picks.length / match.value.totalRounds));
+        const pickColumns = picks.length > 0 ? chunk(picks, picksPerColumn) : bans.length > 0 ? [[] as IMatchMove[]] : [];
         if (pickColumns.length === 0) return [];
 
         const bansPerColumn = Math.ceil(bans.length / pickColumns.length);
