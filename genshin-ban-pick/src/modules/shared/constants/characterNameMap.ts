@@ -115,4 +115,9 @@ export const characterNameMap: Record<string, string> = {
     "linnea": "莉奈婭",
     "nicole": "尼可",
     "prune": "布倫妮",
+    "sandrone": "桑多涅",
+    "odette": "奧黛塔",
+    "alyosha": "阿羅夏",
+    "vesna": "薇斯納",
+    "vodyanitsa": "沃雅妮莎",
 };
