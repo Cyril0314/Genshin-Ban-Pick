@@ -107,9 +107,10 @@ export default class MatchRepository implements IMatchRepository {
         try {
             const match = await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
                 const flowVersion = roomSetting.matchFlow.version;
+                const totalRounds = roomSetting.totalRounds;
                 // 1. Match: 對局
 
-                const match = await MatchCreator.createMatch(tx, flowVersion);
+                const match = await MatchCreator.createMatch(tx, flowVersion, totalRounds);
 
                 // 2. MatchTeam 隊伍
 
