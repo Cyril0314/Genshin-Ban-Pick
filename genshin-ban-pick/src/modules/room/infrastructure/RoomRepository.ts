@@ -14,7 +14,6 @@ export default class RoomRepository {
             numberOfPick?: number;
             totalRounds?: number;
             teams?: ITeam[];
-            numberOfTeamSetup?: number;
             numberOfSetupCharacter?: number;
         },
     ) {

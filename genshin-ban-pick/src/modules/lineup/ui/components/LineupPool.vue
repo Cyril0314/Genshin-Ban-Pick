@@ -32,7 +32,9 @@ function handleDragStartEvent(event: DragEvent, id: string) {
   align-content: start;
   justify-content: start;
   background-color: var(--md-sys-color-surface-container);
-  min-height: calc(var(--size-image-lineup-pool) * 3);
+  /* 固定三列高：Pick 變多（多回合）時池子不往下長，改成在內部捲動，下方的陣容表位置才不會跑 */
+  height: calc(var(--size-image-lineup-pool) * 3);
+  flex-shrink: 0;
   border-radius: var(--radius-lg);
   overflow-y: scroll;
   scrollbar-width: none;

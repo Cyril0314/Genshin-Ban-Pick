@@ -44,6 +44,11 @@ onMounted(async () => {
                         </div>
 
                         <div class="item">
+                            <span class="label">回合數</span>
+                            <span>{{ room.roomSetting.totalRounds }}</span>
+                        </div>
+
+                        <div class="item">
                             <span class="label">Ban / Pick</span>
                             <span>{{ room.roomSetting.numberOfBan }} / {{ room.roomSetting.numberOfPick }}</span>
                         </div>

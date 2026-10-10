@@ -18,7 +18,6 @@ export default class RoomService {
             numberOfPick?: number;
             totalRounds?: number;
             teams?: ITeam[];
-            numberOfTeamSetup?: number;
             numberOfSetupCharacter?: number;
         },
     ) {

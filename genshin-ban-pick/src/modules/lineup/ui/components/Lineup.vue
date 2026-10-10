@@ -116,15 +116,20 @@ function handleImageRestore({ teamSlot, cellId }: { teamSlot: number, cellId: nu
   background-color: var(--team-color-hover);
 }
 
+/* flex: 1 + min-height: 0 一路往下傳，陣容表才拿得到「剩餘高度」並在內部捲動 */
 .content {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-height: 0;
   width: 100%;
 }
 
 .section {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-height: 0;
   gap: var(--space-lg);
 }
 </style>

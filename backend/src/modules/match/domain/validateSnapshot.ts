@@ -6,9 +6,9 @@ import type { IMatchSnapshot } from './IMatchSnapshot';
 export function validateSnapshot(snapshot: IMatchSnapshot) {
     const { roomSetting, teamMembersMap, boardImageMap, teamLineupImageMap } = snapshot;
 
-    // Team 成員驗證
+    // Team 成員驗證：一組陣容一人一格，所以隊員數 = 每組陣容角色數（不是陣容組數）
     for (const [teamSlotString, teamMembers] of Object.entries(teamMembersMap)) {
-        if (Object.values(teamMembers).length !== roomSetting.numberOfTeamSetup) {
+        if (Object.values(teamMembers).length !== roomSetting.numberOfSetupCharacter) {
             throw new InvalidFieldsError();
         }
     }
