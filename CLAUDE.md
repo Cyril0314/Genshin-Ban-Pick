@@ -259,8 +259,9 @@ One logger per file. Scope is "where I am," not "what I do" — keep task wordin
 
 - Schema lives in `backend/prisma/schema.prisma`. Migrations are in `backend/prisma/migrations/` — when destructive (column drops, etc.), the README requires splitting the change across two deploys.
 - For data-backfill migrations, hand-author a SQL file under `migrations/` then run `npx prisma migrate dev` (do not rely on `prisma migrate dev --create-only` automation alone).
-- Production runs under PM2 (`pm2 start "npx tsx src/index.ts" --name genshin-ban-pick`). The backend serves the built frontend statically from `backend/public/` and falls back to `index.html` for unknown routes (Vue Router history mode).
-- CORS allow-list is hard-coded in `backend/src/index.ts` and `modules/socket/index.ts` (`http://localhost:5173`, `http://98.86.73.53:3000`) — update both if origins change.
+- Production URL: **https://banpick.akaloom.com**. Runs as a docker compose stack (postgres + backend) on EC2, deployed with `scripts/deploy-to-ec2.sh` (image built locally, shipped, `docker compose up -d --no-build backend`). The backend serves the built frontend statically from `backend/public/` and falls back to `index.html` for unknown routes (Vue Router history mode).
+- HTTPS is terminated by a host-level Caddy shared with other projects on the same EC2: root `/etc/caddy/Caddyfile` only does `import sites/*.caddy`; this project's site file is `/etc/caddy/sites/banpick.akaloom.com.caddy`, backed up in `deploy/banpick.akaloom.com.caddy` — edit the repo copy, scp it, `caddy validate`, `systemctl reload caddy`. The backend container publishes only `127.0.0.1:3000`, so Caddy is the sole entry point. DNS is Cloudflare with proxy **off** (grey cloud) so Let's Encrypt can validate.
+- CORS allow-list comes from the `CORS_ORIGINS` env var (comma-separated), read by both `backend/src/index.ts` and `modules/socket/index.ts`. On EC2 `.env` it must be `CORS_ORIGINS=https://banpick.akaloom.com`.
 - For copying production DB to local, see the `pg_dump` / `pg_restore` recipe in `README.md` (uses an SSH tunnel on port 5433 and the homebrew `postgresql@15` binary to avoid a server-version mismatch).
 
 ## Scope vocabulary
