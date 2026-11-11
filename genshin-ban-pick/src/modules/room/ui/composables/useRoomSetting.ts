@@ -1,6 +1,6 @@
 // src/modules/room/ui/composables/useRoomSetting.ts
 
-import { alignZoneCountToRounds, deriveNumberOfTeamSetup } from '@shared/contracts/room/roomSettingRules';
+import { alignZoneCountToRounds, deriveNumberOfTeamSetup } from '@shared/rules/room/roomSettingRules';
 import { computed, reactive, ref } from 'vue';
 
 import { createLogger } from '@/app/utils/logger';

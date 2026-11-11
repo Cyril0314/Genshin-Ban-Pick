@@ -10,9 +10,21 @@ import { useAnalysisUseCase } from './useAnalysisUseCase';
 import { useAnalysisMetaStore } from '../../store/analysisMetaStore';
 
 import { Element } from '@shared/contracts/character/value-types';
-import { pickTopCooccurrenceEntries } from '@shared/contracts/analysis/ICooccurrenceEntry';
+
+import type { KeyIndexedMatrix } from '@shared/contracts/analysis/KeyIndexedMatrix';
 
 const TOP_COOCCURRENCE_COUNT = 5;
+
+// 只有這張卡在算「最常同場」，所以留在 facade；第二個 caller 出現再升到 analysis/domain
+function pickTopCooccurrenceEntries(key: string, cooccurrenceMatrix: KeyIndexedMatrix<string, string>, limit: number) {
+    const row = cooccurrenceMatrix[key];
+    if (!row) return [];
+    return Object.entries(row)
+        .filter(([otherKey, count]) => otherKey !== key && (count ?? 0) > 0)
+        .map(([otherKey, count]) => ({ key: otherKey, count: count as number }))
+        .sort((x, y) => y.count - x.count)
+        .slice(0, limit);
+}
 
 export function useCharacterHoverCard(characterKey: MaybeRefOrGetter<string>) {
     const { getByKey: getCharacterDisplayName } = useCharacterDisplayName();

@@ -16,6 +16,7 @@
 backend/            # Express + Socket.IO + Prisma
 genshin-ban-pick/   # Vue 3 frontend
 shared/contracts/   # 共用 TS 型別（兩端都用 @shared/* alias 引入）
+shared/rules/       # 兩邊要算得一樣的純規則（同 alias）
 ```
 
 ## 模組依賴
@@ -83,10 +84,14 @@ flowchart LR
 - **`auth`** 是底層 identity provider（leaf）。
 - **`shared`**（圖中略）是 DI keys / image registry / theme composable / 共用元件的雜物間，每個模組都會 import 它，但反向不會。
 
-### 跨邊（shared contracts）
+### 跨邊（shared/）
 
-`shared/contracts/<domain>/` 是兩邊都吃的 TS-only DTO / value-type 倉庫，用 `@shared/*` alias 引入。
-新增跨邊型別必須放這，不能在某一邊複製一份。
+`shared/` 用 `@shared/*` alias 引入，分兩個資料夾：
+
+- `shared/contracts/<domain>/`：兩邊都吃的 TS-only DTO / value-type 倉庫，加上型別自己的序列化 / 解析 / 比較小工具（`stringifyPlayerIdentity`、`toTimeWindowQuery`）。
+- `shared/rules/<domain>/`：兩邊必須算出同一個結果的純規則，後端是真值、前端拿來預覽（`roomSettingRules.ts`）。
+
+新增跨邊型別或規則必須放這，不能在某一邊複製一份。只有一邊用到的東西不放 `shared/`，回到該邊的 `modules/<domain>/domain/`。`shared/` 裡的檔案只能 import 其他 `shared/` 檔案，不碰框架、I/O、Prisma、Vue。
 
 ## 快速開始
 

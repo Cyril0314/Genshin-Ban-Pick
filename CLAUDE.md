@@ -8,9 +8,9 @@ This is a **modular monolith** split into three top-level workspaces (no root `p
 
 - `backend/` — Node.js + Express + Socket.IO + Prisma (PostgreSQL). Entry: `src/index.ts`.
 - `genshin-ban-pick/` — Vue 3 + Vite + Pinia + Naive UI frontend. Entry: `src/main.ts`.
-- `shared/contracts/` — TypeScript-only contracts (DTOs, value types, interfaces) shared across the boundary. Imported via the alias `@shared/*` from both sides (backend `tsconfig.json` `paths`, frontend `vite.config.ts` `resolve.alias`).
+- `shared/` — TypeScript-only code shared across the boundary, imported via the alias `@shared/*` from both sides (backend `tsconfig.json` `paths`, frontend `vite.config.ts` `resolve.alias`). Two folders: `contracts/` (DTOs, value types, interfaces, plus each type's own serialize/parse/compare helpers) and `rules/` (pure business rules both sides must compute identically). See "Shared code" below.
 
-There is also a near-empty `packages/shared/` left over from earlier scaffolding — the live shared code is `shared/contracts/`.
+There is also a near-empty `packages/shared/` left over from earlier scaffolding — the live shared code is `shared/`.
 
 ## Common Commands
 
@@ -62,7 +62,7 @@ Both backend and frontend organize features under `src/modules/<feature>/` with 
 - `domain/` — declarations that describe **behavior**: repository/provider interfaces (methods), and pure domain functions/business rules.
 - `types/` — plain **data shapes** with no behavior: entity rows returned by repositories, DTOs, query results (e.g. `IMemberData`, `IGuestData`, `IMatchStatisticsOverview`).
 
-Rule of thumb: if it has methods or encodes a rule it belongs in `domain/`; if it is just fields it belongs in `types/`. (Cross-boundary data shapes go in `shared/contracts/` instead — `types/` is for module-internal shapes.)
+Rule of thumb: if it has methods or encodes a rule it belongs in `domain/`; if it is just fields it belongs in `types/`. (Cross-boundary data shapes go in `shared/contracts/` and cross-boundary rules in `shared/rules/` instead — `types/` and `domain/` are for module-internal ones.)
 
 ### Two layers: domain modules (`modules/`) vs composition views (`views/`)
 
@@ -202,9 +202,21 @@ Socket.IO is the live channel; REST (Express routers) is for static/historical d
 
 Auth on sockets goes through `createSocketAuth(jwtProvider)` middleware before `setupSocketIO` registers handlers — it calls `jwtProvider.verify(token)` directly and stores the result in `socket.data.identity` (no DB call).
 
-### Shared contracts
+### Shared code (`shared/`)
 
-When adding a cross-boundary type, put it under `shared/contracts/<domain>/` and import as `@shared/contracts/...`. Both sides resolve this alias; do not duplicate types per side.
+`shared/` has two folders, split by **what kind of thing crosses the boundary**:
+
+| Folder | Holds | Deciding question | Example |
+| --- | --- | --- | --- |
+| `shared/contracts/<domain>/` | Data shapes (DTOs, value types, interfaces) and each shape's **companion** helpers — functions whose only job is to serialize / parse / compare / name that one shape | Is it a shape, or a function that only encodes/decodes one? | `IRoomSetting`; `PlayerIdentity` + `stringifyPlayerIdentity` / `parsePlayerIdentity`; `toTimeWindowQuery` |
+| `shared/rules/<domain>/` | Pure business rules that **both sides must compute identically** — backend as the source of truth, frontend to preview the same result | Would a frontend-only or backend-only copy of this rule drift? | `roomSettingRules.ts` (`alignZoneCountToRounds`) |
+
+Both resolve through the same `@shared/*` alias; adding a file to either folder needs no config change. Rules for anything under `shared/`:
+
+- **No imports from either side.** Only other `shared/` files — no framework, no I/O, no `@prisma/client`, no `vue`.
+- **Single-sided code does not belong here.** If only one side calls it, it is that side's `modules/<domain>/domain/` function (or stays in its facade). `shared/` exists to stop duplication, not to host anything that happens to be pure.
+- **A computation is not a companion.** A function that filters / sorts / aggregates over a contract (rather than encoding or decoding it) is a rule or a module-domain function, never `contracts/`.
+- Never duplicate a shared type or rule per side.
 
 ### Identity model
 

@@ -1,7 +1,7 @@
 // backend/src/modules/room/domain/createRoomSetting.ts
 
 import { InvalidRoomSettingError } from '../../../errors/AppError';
-import { alignZoneCountToRounds, deriveNumberOfTeamSetup, NUMBER_OF_TEAMS } from '@shared/contracts/room/roomSettingRules';
+import { alignZoneCountToRounds, deriveNumberOfTeamSetup, NUMBER_OF_TEAMS } from '@shared/rules/room/roomSettingRules';
 import { createDefaultTeams } from './createDefaultTeams';
 import { createMatchFlow } from './createMatchFlow';
 import { createZoneMetaTable } from './createZoneMetaTable';
