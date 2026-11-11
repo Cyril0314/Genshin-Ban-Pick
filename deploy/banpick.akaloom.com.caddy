@@ -1,10 +1,16 @@
 # Genshin Ban-Pick:EC2 上 /etc/caddy/sites/banpick.akaloom.com.caddy 的備份(由根 Caddyfile import)。
-# Caddy 負責 HTTPS(Let's Encrypt 自動申請、續期)與 WebSocket 升級;backend 只聽 127.0.0.1:3000。
-# DNS:banpick.akaloom.com 在 Cloudflare 指向 EC2(A 記錄,Proxy 關閉/灰色雲,否則憑證申請失敗)。
+# 路徑:瀏覽器 → Cloudflare(橘色雲,擋 DDoS、快取靜態檔、WebSocket 直接穿過)→ Caddy 443 → backend 127.0.0.1:3000。
+# 憑證是 Cloudflare Origin CA 簽的(*.akaloom.com 共用一張,放在 /etc/caddy/certs/,不在 repo 裡;
+# 只有 Cloudflare 會信任它,所以 DNS 必須保持橘色雲;改回灰色雲就拿掉 tls 那行,Caddy 會自動改用 Let's Encrypt)。
+# Security Group 的 443 只放行 Cloudflare 的 IP 段,80 不開;Cloudflare 的信任 IP 段與真實 IP 標頭設定在根 Caddyfile
+# (discord-bot repo 的 deploy/Caddyfile),這裡用 X-Real-IP 把真實客戶端 IP 交給 backend。
 # backend 的 .env 要設 CORS_ORIGINS=https://banpick.akaloom.com。
 # 改完:scp 到 EC2 同路徑 → caddy validate --config /etc/caddy/Caddyfile → sudo systemctl reload caddy
 
 banpick.akaloom.com {
+    tls /etc/caddy/certs/akaloom.pem /etc/caddy/certs/akaloom.key
     encode gzip
-    reverse_proxy 127.0.0.1:3000
+    reverse_proxy 127.0.0.1:3000 {
+        header_up X-Real-IP {client_ip}
+    }
 }
