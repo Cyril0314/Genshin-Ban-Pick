@@ -11,6 +11,9 @@ import {
 } from '@/modules/shared/ui/composables/useCharacterTranslators';
 import { useCharacterHoverCard } from '../composables/useCharacterHoverCard';
 
+// 暫時整站關閉 hover card。所有掛載點（wrapper 與直接使用）都經過這個元件，要重新開啟改回 true 即可
+const HOVER_CARD_ENABLED = false;
+
 const props = defineProps<{
     characterKey: string;
     disabled?: boolean;
@@ -35,7 +38,7 @@ function handleShowChange(show: boolean) {
 
 <template>
     <n-popover trigger="hover" placement="right" :delay="600" :keep-alive-on-hover="true" raw
-        to="body" :z-index="6000" :disabled="disabled" class="character-hover-card-popover"
+        to="body" :z-index="6000" :disabled="disabled || !HOVER_CARD_ENABLED" class="character-hover-card-popover"
         @update:show="handleShowChange">
         <template #trigger>
             <slot />

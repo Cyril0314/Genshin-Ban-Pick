@@ -16,6 +16,7 @@
 backend/            # Express + Socket.IO + Prisma
 genshin-ban-pick/   # Vue 3 frontend
 shared/contracts/   # 共用 TS 型別（兩端都用 @shared/* alias 引入）
+shared/rules/       # 兩邊要算得一樣的純規則（同 alias）
 ```
 
 ## 模組依賴
@@ -83,10 +84,14 @@ flowchart LR
 - **`auth`** 是底層 identity provider（leaf）。
 - **`shared`**（圖中略）是 DI keys / image registry / theme composable / 共用元件的雜物間，每個模組都會 import 它，但反向不會。
 
-### 跨邊（shared contracts）
+### 跨邊（shared/）
 
-`shared/contracts/<domain>/` 是兩邊都吃的 TS-only DTO / value-type 倉庫，用 `@shared/*` alias 引入。
-新增跨邊型別必須放這，不能在某一邊複製一份。
+`shared/` 用 `@shared/*` alias 引入，分兩個資料夾：
+
+- `shared/contracts/<domain>/`：兩邊都吃的 TS-only DTO / value-type 倉庫，加上型別自己的序列化 / 解析 / 比較小工具（`stringifyPlayerIdentity`、`toTimeWindowQuery`）。
+- `shared/rules/<domain>/`：兩邊必須算出同一個結果的純規則，後端是真值、前端拿來預覽（`roomSettingRules.ts`）。
+
+新增跨邊型別或規則必須放這，不能在某一邊複製一份。只有一邊用到的東西不放 `shared/`，回到該邊的 `modules/<domain>/domain/`。`shared/` 裡的檔案只能 import 其他 `shared/` 檔案，不碰框架、I/O、Prisma、Vue。
 
 ## 快速開始
 
@@ -184,7 +189,24 @@ npx tsx --env-file=../.env prisma/scripts/importCharacters.ts
 
 ## 部署（Docker + EC2）
 
+正式網址：**https://banpick.akaloom.com**
+
 服務跑在 EC2 的 docker compose stack（postgres + backend）。本機 build image，用 `scripts/deploy-to-ec2.sh` 推到 EC2（t3.micro 撐不起 docker build）。
+
+### HTTPS / 網域（Caddy）
+
+```
+瀏覽器 ──https──▶ Caddy (:443, 同機) ──▶ 127.0.0.1:3000 backend container（前端 + /api + socket.io）
+```
+
+- DNS：`banpick.akaloom.com` 在 Cloudflare，A 記錄指向 EC2，**Proxy 關閉（灰色雲）**，否則 Let's Encrypt 驗證失敗。
+- Caddy 跟 discord-bot 共用：根 `/etc/caddy/Caddyfile` 只有 `import sites/*.caddy`，本專案的站台檔是
+  `/etc/caddy/sites/banpick.akaloom.com.caddy`，備份在 repo 的 [`deploy/banpick.akaloom.com.caddy`](deploy/banpick.akaloom.com.caddy)。
+  憑證自動申請 / 續期，WebSocket 由 `reverse_proxy` 自動升級。
+- 改站台檔：改 `deploy/` 那份 → scp 到 EC2 同路徑 → `caddy validate --config /etc/caddy/Caddyfile` → `sudo systemctl reload caddy`。
+  Log：`sudo journalctl -u caddy -n 30 --no-pager`。
+- `docker-compose.yml` 的 backend 只綁 `127.0.0.1:3000`，外部只能經 Caddy 進來；Security Group 只需開 22 / 80 / 443。
+- EC2 的 `.env` 要設 `CORS_ORIGINS=https://banpick.akaloom.com`（backend 與 socket.io 共用這個 allow-list）。
 
 ```bash
 # 部署（Mac → EC2）
