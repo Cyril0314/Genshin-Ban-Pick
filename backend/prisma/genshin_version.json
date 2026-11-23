@@ -348,7 +348,6 @@
         "order": 49,
         "start_at": "May 20, 2026",
         "end_at": "July 1, 2026"
-        
     },
     {
         "code": "Luna VIII",
@@ -368,6 +367,13 @@
         "code": "7.1",
         "name": "A Rekviem for the Underworld",
         "order": 52,
-        "start_at": "September 23, 2026"
+        "start_at": "September 23, 2026",
+        "end_at": "November 4, 2026"
+    },
+    {
+        "code": "7.2",
+        "name": "Hour of Ruin",
+        "order": 53,
+        "start_at": "November 4, 2026"
     }
 ]
