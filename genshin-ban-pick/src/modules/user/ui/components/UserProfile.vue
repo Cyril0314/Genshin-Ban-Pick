@@ -89,7 +89,7 @@ function handleLogout() {
     background:
         linear-gradient(var(--md-sys-color-surface), var(--md-sys-color-surface)) padding-box,
         linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-tertiary)) border-box;
-    color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-secondary);
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-medium);
     cursor: pointer;
@@ -104,7 +104,7 @@ function handleLogout() {
 .avatar-button:hover,
 .avatar-button.is-active {
     transform: scale(1.08);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--md-sys-color-primary) 20%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--md-sys-color-secondary) 20%, transparent);
 }
 
 .dropdown {

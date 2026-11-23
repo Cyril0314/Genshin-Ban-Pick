@@ -33,21 +33,22 @@
     --font-family-tech-ui: 'Audiowide', 'Noto Sans TC', sans-serif;
     --font-family-tech-mono: 'Share Tech Mono', monospace;
 
+    /* 隊伍色是玩法資訊(空金、熒藍),不跟品牌色(primary / secondary)連動 */
     /* ===== Aether ===== */
-    --team-first-color: var(--md-sys-color-primary);
-    --team-first-color-rgb: var(--md-sys-color-primary-rgb);
-    --team-first-on-color: var(--md-sys-color-on-primary);
-    --team-first-color-bg: var(--md-sys-color-primary-container);
-    --team-first-on-color-bg: var(--md-sys-color-on-primary-container);
-    --team-first-color-hover: var(--primary-filled-hover);
+    --team-first-color: rgb(239 172 48);
+    --team-first-color-rgb: 239 172 48;
+    --team-first-on-color: rgb(60 36 0);
+    --team-first-color-bg: rgb(247 219 144);
+    --team-first-on-color-bg: rgb(42 22 0);
+    --team-first-color-hover: color-mix(in srgb, var(--team-first-color) 90%, white 10%);
 
     /* ===== Lumine ===== */
-    --team-second-color: var(--md-sys-color-secondary);
-    --team-second-color-rgb: var(--md-sys-color-secondary-rgb);
-    --team-second-on-color: var(--md-sys-color-on-secondary);
-    --team-second-color-bg: var(--md-sys-color-secondary-container);
-    --team-second-on-color-bg: var(--md-sys-color-on-secondary-container);
-    --team-second-color-hover: var(--secondary-filled-hover);
+    --team-second-color: rgb(94 177 252);
+    --team-second-color-rgb: 94 177 252;
+    --team-second-on-color: rgb(1 35 58);
+    --team-second-color-bg: rgb(169 214 255);
+    --team-second-on-color-bg: rgb(0 22 36);
+    --team-second-color-hover: color-mix(in srgb, var(--team-second-color) 90%, white 10%);
     
     /* border-radius */
     --radius-xs: 2px;

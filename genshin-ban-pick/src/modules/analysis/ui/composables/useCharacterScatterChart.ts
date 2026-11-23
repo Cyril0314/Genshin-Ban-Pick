@@ -105,7 +105,7 @@ export function useCharacterScatterChart() {
 
                     return `
                         <b>${getCharacterDisplayName(point.characterKey)}</b><br/>
-                        <span style="color: ${designTokens.colorPrimary.value}">● ${label}</span><br/><br/>
+                        <span style="color: ${designTokens.colorSecondary.value}">● ${label}</span><br/><br/>
                         使用權重 (Usage): ${point.usage.toFixed(2)}<br/>
                         搶角優先 (Priority): ${(point.priority * 100).toFixed(1)}%<br/>
                         採樣場次: ${point.pickCount}

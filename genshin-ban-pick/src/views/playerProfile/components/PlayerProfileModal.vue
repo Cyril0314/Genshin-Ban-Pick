@@ -85,7 +85,7 @@ const profileTo = computed(() => {
 
 .full-link {
     margin-left: auto;
-    color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-secondary);
     text-decoration: none;
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);

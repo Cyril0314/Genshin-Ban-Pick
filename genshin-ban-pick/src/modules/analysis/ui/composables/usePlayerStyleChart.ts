@@ -54,7 +54,7 @@ export function usePlayerStyleChart(identity: MaybeRefOrGetter<PlayerIdentity | 
             {
                 onSurface: designTokens.colorOnSurface.value,
                 onSurfaceVariant: designTokens.colorOnSurfaceVariant.value,
-                primary: designTokens.colorPrimary.value,
+                primary: designTokens.colorSecondary.value,
             },
             tooltipStyle('single'),
         );
