@@ -202,7 +202,7 @@ function onZrClick(event: any) {
 .stat-value {
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-bold);
-    color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-secondary);
 }
 
 .stat-value small {

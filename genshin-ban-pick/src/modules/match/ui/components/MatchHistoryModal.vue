@@ -212,8 +212,8 @@ const CharacterHoverWrapper = useCharacterHoverWrapper();
     width: calc(var(--base-size) * 2);
     height: calc(var(--base-size) * 2);
     border-radius: var(--radius-md);
-    background-color: color-mix(in srgb, var(--md-sys-color-primary) 18%, transparent);
-    color: var(--md-sys-color-primary);
+    background-color: color-mix(in srgb, var(--md-sys-color-secondary) 18%, transparent);
+    color: var(--md-sys-color-secondary);
     flex-shrink: 0;
 }
 

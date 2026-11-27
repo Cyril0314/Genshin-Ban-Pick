@@ -195,7 +195,7 @@ export function useMatchOverviewChart() {
                     symbolSize: 16,
                     cursor: 'pointer',
                     itemStyle: {
-                        color: designTokens.colorPrimary.value,
+                        color: designTokens.colorSecondary.value,
                     },
                     emphasis: { disabled: true },
                     tooltip: { show: true },

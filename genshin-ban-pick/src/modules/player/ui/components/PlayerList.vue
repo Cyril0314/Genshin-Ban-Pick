@@ -131,7 +131,7 @@ const {
 }
 
 .switch:focus-visible {
-    outline: 2px solid var(--md-sys-color-primary);
+    outline: 2px solid var(--md-sys-color-secondary);
     outline-offset: 2px;
 }
 
@@ -191,7 +191,7 @@ const {
 }
 
 .row:focus-visible {
-    outline: 2px solid var(--md-sys-color-primary);
+    outline: 2px solid var(--md-sys-color-secondary);
     outline-offset: 2px;
 }
 
@@ -241,7 +241,7 @@ const {
 
 .type-badge.is-member {
     color: var(--md-sys-color-tertiary);
-    background-color: color-mix(in srgb, var(--md-sys-color-primary) 16%, transparent);
+    background-color: color-mix(in srgb, var(--md-sys-color-tertiary) 16%, transparent);
 }
 
 /* .type-badge.is-guest {

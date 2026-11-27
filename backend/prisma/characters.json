@@ -39,6 +39,19 @@
         "wish": "Limited-Time Event Wish"
     },
     {
+        "icon": "Aloy Icon",
+        "name": "Aloy",
+        "rarity": "4 Stars",
+        "element": "Cryo",
+        "weapon": "Bow",
+        "region": "None",
+        "model_type": "Medium Female",
+        "release_at": "September 01, 2021",
+        "version": "2.1",
+        "role": "Main DPS",
+        "wish": "None"
+    },
+    {
         "icon": "Alyosha Icon",
         "name": "Alyosha",
         "rarity": "4 Stars",
@@ -871,6 +884,19 @@
         "wish": "Limited-Time Event Wish"
     },
     {
+        "icon": "Mitya Icon",
+        "name": "Mitya",
+        "rarity": "5 Stars",
+        "element": "Electro",
+        "weapon": "Catalyst",
+        "region": "Snezhnaya",
+        "model_type": "Medium Male",
+        "release_at": "November 04, 2026",
+        "version": "7.2",
+        "role": "Main DPS",
+        "wish": "Limited-Time Event Wish"
+    },
+    {
         "icon": "Mualani Icon",
         "name": "Mualani",
         "rarity": "5 Stars",
@@ -1272,6 +1298,19 @@
         "version": "1.0",
         "role": "Sub DPS",
         "wish": "None"
+    },
+    {
+        "icon": "Valeriy Icon",
+        "name": "Valeriy",
+        "rarity": "4 Stars",
+        "element": "Electro",
+        "weapon": "Sword",
+        "region": "Snezhnaya",
+        "model_type": "Tall Male",
+        "release_at": "November 04, 2026",
+        "version": "7.2",
+        "role": "Support",
+        "wish": "Standard Wish"
     },
     {
         "icon": "Varesa Icon",

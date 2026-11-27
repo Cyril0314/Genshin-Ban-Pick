@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-label="Dynamic balance through opposition icon">
+    <!--
+      Two opposing masses (gold left, blue right) are PRESSED together along a shared
+      jagged fault line down the center (interlocking teeth = the struggle / 角力).
+      The fault opens at mid-height into a pointy-top regular hexagon (R=46, center
+      128,128) — the contested void = dynamic equilibrium. Outer edges stay spiky.
+      Gold shading is inverted (dark top, light bottom) per request.
+    -->
+    <defs>
+        <linearGradient id="gold" x1="0" y1="0" x2="0.4" y2="1">
+            <stop offset="0" stop-color="#E09A1E" />
+            <stop offset="1" stop-color="#F6C455" />
+        </linearGradient>
+        <linearGradient id="blue" x1="1" y1="0" x2="0.6" y2="1">
+            <stop offset="0" stop-color="#8CCBFD" />
+            <stop offset="1" stop-color="#3A8FE0" />
+        </linearGradient>
+    </defs>
+
+    <!-- GOLD mass (left of the fault) -->
+    <g>
+        <polygon fill="url(#gold)" points="128,30 146,50 110,66 128,82 88,105 88,151 128,174 110,190 146,206 128,226 96,248 70,196 16,210 60,150 4,128 60,106 16,46 70,60 96,8" />
+        <polygon fill="#C9871A" fill-opacity="0.5" points="128,82 88,105 60,106" />
+        <polygon fill="#B97C14" fill-opacity="0.5" points="88,105 88,151 4,128" />
+        <polygon fill="#C9871A" fill-opacity="0.5" points="128,174 88,151 60,150" />
+        <polygon fill="#FBD77E" fill-opacity="0.7" points="96,248 70,196 110,190" />
+    </g>
+
+    <!-- BLUE mass (right of the fault) — shares the fault line, mirrors only the outer edge -->
+    <g>
+        <polygon fill="url(#blue)" points="128,30 146,50 110,66 128,82 168,105 168,151 128,174 110,190 146,206 128,226 160,248 186,196 240,210 196,150 252,128 196,106 240,46 186,60 160,8" />
+        <polygon fill="#2E7FCE" fill-opacity="0.5" points="128,82 168,105 196,106" />
+        <polygon fill="#2670BC" fill-opacity="0.5" points="168,105 168,151 252,128" />
+        <polygon fill="#2E7FCE" fill-opacity="0.5" points="128,174 168,151 196,150" />
+        <polygon fill="#B9E2FE" fill-opacity="0.7" points="160,8 186,60 146,50" />
+    </g>
+</svg>
